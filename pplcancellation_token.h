@@ -25,7 +25,7 @@
 
 #pragma once
 
-#ifndef _PPLCONCRT_H
+#ifndef _PPLWIN_H
 #error This header must not be included directly
 #endif
 

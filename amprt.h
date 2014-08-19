@@ -14,6 +14,10 @@
 ****/
 #pragma once
 
+#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP)
+    #error ERROR: C++ AMP runtime is not supported for applications where WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP.
+#endif
+
 #if !(defined (_M_X64) || defined (_M_IX86) || defined (_M_ARM) || defined (_M_ARM64) )
     #error ERROR: C++ AMP runtime is supported only on X64, X86, ARM, and ARM64 architectures.
 #endif  
@@ -50,11 +54,11 @@
 
 #endif // _CXXAMP
 
-#include <exception>
 #include <unknwn.h>
 #include <crtdbg.h>
 #include <string>
 #include <vector>
+#include <iterator>
 
 #if defined(_CXXAMP)
 #include <strsafe.h>
@@ -68,6 +72,8 @@
 #include <unordered_set>
 #include <concrt.h>
 #include <type_traits>
+
+#include "amprt_exceptions.h"
 
 #if !defined(_AMPIMP)
 #define _AMPIMP     __declspec(dllimport)
@@ -120,7 +126,7 @@ namespace details
         _Reference_counter()  : _M_rc(0) {}
 
         //  Destructor.
-        virtual ~_Reference_counter() {}
+        virtual ~_Reference_counter() noexcept(false) {}
 
         // Add a reference. 
         // Thread-safe.
@@ -827,86 +833,6 @@ enum queuing_mode {
     queuing_mode_immediate,
     queuing_mode_automatic
 }; 
-
-/// <summary>
-///     Exception thrown due to a C++ AMP runtime_exception.
-///     This is the base type for all C++ AMP exception types.
-/// </summary>
-class runtime_exception : public std::exception
-{
-public:
-    /// <summary>
-    ///     Construct a runtime_exception exception with a message and an error code
-    /// </summary>
-    /// <param name="_Message">
-    ///     Descriptive message of error
-    /// </param>
-    /// <param name="_Hresult">
-    ///     HRESULT of error that caused this exception
-    /// </param>
-    _AMPIMP runtime_exception(const char * _Message, HRESULT _Hresult) throw();
-
-    /// <summary>
-    ///     Construct a runtime_exception exception with an error code
-    /// </summary>
-    /// <param name="_Hresult">
-    ///     HRESULT of error that caused this exception
-    /// </param>
-    _AMPIMP explicit runtime_exception(HRESULT _Hresult) throw();
-
-    /// <summary>
-    ///     Copy construct a runtime_exception exception
-    /// </summary>
-    /// <param name="_Other">
-    ///     The runtime_exception object to be copied from
-    /// </param>
-    _AMPIMP runtime_exception(const runtime_exception &_Other) throw();
-
-    /// <summary>
-    ///     Assignment operator
-    /// </summary>
-    /// <param name="_Other">
-    ///     The runtime_exception object to be assigned from
-    /// </param>
-    _AMPIMP runtime_exception &operator=(const runtime_exception &_Other) throw();
-
-    /// <summary>
-    ///     Destruct a runtime_exception exception object instance
-    /// </summary>
-    _AMPIMP virtual ~runtime_exception() throw();
-
-    /// <summary>
-    ///     Get the error code that caused this exception
-    /// </summary>
-    /// <returns>
-    ///     HRESULT of error that caused the exception
-    /// </returns>
-    _AMPIMP HRESULT get_error_code() const throw();
-
-private:
-    HRESULT _M_error_code;
-}; // class runtime_exception
-
-/// <summary>
-///     Exception thrown when an underlying OS/DirectX call fails
-///     due to lack of system or device memory 
-/// </summary>
-class out_of_memory : public runtime_exception
-{
-public:
-    /// <summary>
-    ///     Construct an out_of_memory exception with a message
-    /// </summary>
-    /// <param name="_Message">
-    ///     Descriptive message of error
-    /// </param>
-    _AMPIMP explicit out_of_memory(const char * _Message) throw();
-
-    /// <summary>
-    ///     Construct an out_of_memory exception
-    /// </summary>
-    _AMPIMP out_of_memory () throw();
-}; // class out_of_memory
 
 namespace direct3d
 {
@@ -3479,87 +3405,6 @@ namespace details
 
 } // namespace Concurrency::details
 
-/// <summary>
-/// Exception thrown when an underlying DirectX call fails
-/// due to the Windows timeout detection and recovery mechanism
-/// </summary>
-class accelerator_view_removed : public runtime_exception
-{
-public:
-    /// <summary>
-    ///     Construct an accelerator_view_removed exception with a message and
-    ///     a view removed reason code
-    /// </summary>
-    /// <param name="_Message">
-    ///     Descriptive message of error
-    /// </param>
-    /// <param name="_View_removed_reason">
-    ///     HRESULT error code indicating the cause of removal of the accelerator_view
-    /// </param>
-    _AMPIMP explicit accelerator_view_removed(const char * _Message, HRESULT _View_removed_reason) throw();
-
-    /// <summary>
-    ///     Construct an accelerator_view_removed exception
-    /// </summary>
-    /// <param name="_View_removed_reason">
-    ///     HRESULT error code indicating the cause of removal of the accelerator_view
-    /// </param>
-    _AMPIMP explicit accelerator_view_removed(HRESULT _View_removed_reason) throw();
-
-    /// <summary>
-    ///     Returns an HRESULT error code indicating the cause of the accelerator_view's removal
-    /// </summary>
-    /// <returns>
-    ///     The HRESULT error code that indicates the cause of accelerator_view's removal
-    /// </returns>
-    _AMPIMP HRESULT get_view_removed_reason() const throw();
-
-private:
-
-    HRESULT _M_view_removed_reason_code;
-}; // class accelerator_view_removed
-
-/// <summary>
-///     Exception thrown when the runtime fails to launch a kernel
-///     using the compute domain specified at the parallel_for_each call site.
-/// </summary>
-class invalid_compute_domain : public runtime_exception
-{
-public:
-    /// <summary>
-    ///     Construct an invalid_compute_domain exception with a message
-    /// </summary>
-    /// <param name="_Message">
-    ///     Descriptive message of error
-    /// </param>
-    _AMPIMP explicit invalid_compute_domain(const char * _Message) throw();
-
-    /// <summary>
-    ///     Construct an invalid_compute_domain exception
-    /// </summary>
-    _AMPIMP invalid_compute_domain() throw();
-}; // class invalid_compute_domain
-
-/// <summary>
-///     Exception thrown when an unsupported feature is used
-/// </summary>
-class unsupported_feature  : public runtime_exception
-{
-public:
-    /// <summary>
-    ///     Construct an unsupported_feature exception with a message
-    /// </summary>
-    /// <param name="_Message">
-    ///     Descriptive message of error
-    /// </param>
-    _AMPIMP explicit unsupported_feature(const char * _Message) throw();
-
-    /// <summary>
-    ///     Construct an unsupported_feature exception
-    /// </summary>
-    _AMPIMP unsupported_feature() throw();
-}; // class unsupported_feature
-
 } // namespace Concurrency
 
 // =+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
@@ -3667,13 +3512,6 @@ namespace Concurrency
 {
 namespace details
 {
-    enum _DPC_kernel_func_kind
-    {
-        NON_ALIASED_SHADER  = 0, // slot 0
-        ALIASED_SHADER      = 1,  // slot 1
-        NUM_SHADER_VERSIONS = 2
-    };
-
     struct _DPC_call_handle
     {
         _Accelerator_view_impl *_M_rv;
@@ -3692,7 +3530,7 @@ namespace details
         bool _M_RW_aliasing;
 
         // Kernel funcs
-        _DPC_shader_blob * _M_shader_blobs[NUM_SHADER_VERSIONS];
+        _DPC_shader_blob * _M_shader_blob;
 
         // Compute domain info
         int _M_is_flat_model;
@@ -3733,10 +3571,7 @@ namespace details
 
             _M_RW_aliasing = false;
 
-            for (size_t _I = 0; _I < NUM_SHADER_VERSIONS; _I++) 
-            {
-                _M_shader_blobs[_I] = NULL;
-            }
+            _M_shader_blob = NULL;
 
             _M_is_flat_model = 0;
             _M_compute_rank = 0;
@@ -3758,12 +3593,12 @@ namespace details
             }
         }
 
-        bool _Is_buffer_aliased(_In_ void *_Buffer_ptr)
+        bool _Is_buffer_aliased(_In_ void* const _Buffer_ptr) const
         {
             return ((_M_aliased_buffer_set != nullptr) && (_M_aliased_buffer_set->find(_Buffer_ptr) != _M_aliased_buffer_set->end()));
         }
 
-        bool _Is_buffer_unaccessed(size_t _Buffer_idx)
+        bool _Is_buffer_unaccessed(size_t const _Buffer_idx) const
         {
             return ((_M_is_device_buffer_unaccessed != nullptr) && _M_is_device_buffer_unaccessed->operator[](_Buffer_idx));
         }
@@ -3842,7 +3677,7 @@ extern "C" {
 
     // Set the kernel shader info
     _AMPIMP void HELPERAPI __dpc_set_kernel_shader_info(_In_ _DPC_call_handle * _Handle,
-                                                        _Inout_ void ** _ShaderBlobs) throw(...);
+                                                        _Inout_ void * _ShaderBlobs) throw(...);
     // Set kernel dispatch info
     _AMPIMP void HELPERAPI __dpc_set_kernel_dispatch_info(_In_ _DPC_call_handle * _Handle,
                                                          unsigned int _ComputeRank,

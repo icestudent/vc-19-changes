@@ -1364,8 +1364,7 @@ void __dp_d3d_msad4(_Out_ unsigned int * /* pointer to the return value */,
 void __dp_stub_info(unsigned int /* x */, 
                     unsigned int /* y */, 
                     unsigned int /* z */, 
-                    unsigned int /* group forall? */,
-                    unsigned int /* aliased */ ) __GPU_ONLY;
+                    unsigned int /* group forall? */) __GPU_ONLY;
 
 _Ret_ void * __dp_get_buffer_info(bool /* read write? */, 
                             unsigned int /* unique id */) __GPU_ONLY;

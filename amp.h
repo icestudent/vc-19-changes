@@ -1708,6 +1708,9 @@ protected:
     {
         // Register the view
         _Register_copy(_Other);
+
+        // update this buffer descriptor in case _Register_copy was late and missed the update opportunity.
+        _M_buffer_descriptor = _Other._M_buffer_descriptor;
     }
 
     _Array_view_base(const _Array_view_base& _Other, const Concurrency::extent<_Rank>& _Array_extent) __GPU
@@ -1860,6 +1863,9 @@ protected:
 
             // Register the new view
             _Register_copy(_Other);
+        
+            // update this buffer descriptor in case _Register_copy was late and missed the update opportunity.
+            _M_buffer_descriptor = _Other._M_buffer_descriptor;
         }
 
         return *this;
@@ -5527,7 +5533,7 @@ template <typename _Value_type, int _Rank = 1> class array
     /// <summary>
     ///     Destroys this array and reclaims resources.
     /// </summary>
-    ~array() __CPU_ONLY
+    ~array() __CPU_ONLY noexcept(false)
     {
         bool _Can_throw = (std::current_exception() == nullptr);
 

@@ -18,13 +18,13 @@
 #ifndef _PPLTASKS_H
 #define _PPLTASKS_H
 
-#include <pplconcrt.h>
+#include <pplwin.h>
 
 // Cannot build using a compiler that is older than dev10 SP1
 #ifdef _MSC_VER
-#if _MSC_FULL_VER < 160040219 /*IFSTRIP=IGN*/
+#if _MSC_FULL_VER < 160040219
 #error ERROR: Visual Studio 2010 SP1 or later is required to build ppltasks
-#endif /*IFSTRIP=IGN*/
+#endif
 #endif
 
 #include <functional>
@@ -35,11 +35,10 @@
 
 #if defined (__cplusplus_winrt)
 #include <agile.h>
-#include <winapifamily.h>
 
 #ifndef _UITHREADCTXT_SUPPORT
 
-#ifdef WINAPI_FAMILY /*IFSTRIP=IGN*/
+#ifdef WINAPI_FAMILY
 
 // It is safe to include winapifamily as WINAPI_FAMILY was defined by the user
 #include <winapifamily.h>
@@ -68,7 +67,7 @@
 
 #ifndef _UITHREADCTXT_SUPPORT
     #define _UITHREADCTXT_SUPPORT 0
-#endif /* _UITHREADCTXT_SUPPORT */
+#endif /* _UITHREADCTXT_SUPPORT for non __cplusplus_winrt */
 
 #ifdef _DEBUG
     #define _DBG_ONLY(X) X
@@ -89,18 +88,15 @@ namespace std
 #endif
 
 #ifndef _PPLTASK_ASYNC_LOGGING
-    #if _MSC_VER >= 1800 && defined(__cplusplus_winrt)
-        #define _PPLTASK_ASYNC_LOGGING 1  // Only enable async logging under dev12 winrt
-    #else
-        #define _PPLTASK_ASYNC_LOGGING 0
-    #endif
-#endif
+#define _PPLTASK_ASYNC_LOGGING (_MSC_VER >= 1800)  // Only enable async logging under dev12
+#endif // #ifndef _PPLTASK_ASYNC_LOGGING
 
 #if _PPLTASK_ASYNC_LOGGING
 #pragma detect_mismatch("_PPLTASK_ASYNC_LOGGING", "1")
 #else
 #pragma detect_mismatch("_PPLTASK_ASYNC_LOGGING", "0")
 #endif // #if _PPLTASK_ASYNC_LOGGING
+
 #endif // #ifdef _MSC_VER
 
 #pragma pack(push,_CRT_PACKING)
@@ -172,33 +168,6 @@ template <> class task<void>;
 #define _CAPTURE_CALLSTACK() ::Concurrency::details::_TaskCreationCallstack::_CaptureSingleFrameCallstack(_ReturnAddress())
 #endif
 
-
-/// <summary>
-///     Returns an indication of whether the task that is currently executing has received a request to cancel its
-///     execution. Cancellation is requested on a task if the task was created with a cancellation token, and
-///     the token source associated with that token is canceled.
-/// </summary>
-/// <returns>
-///     <c>true</c> if the currently executing task has received a request for cancellation, <c>false</c> otherwise.
-/// </returns>
-/// <remarks>
-///     If you call this method in the body of a task and it returns <c>true</c>, you must respond with a call to
-///     <see cref="cancel_current_task Function">cancel_current_task</see> to acknowledge the cancellation request,
-///     after performing any cleanup you need. This will abort the execution of the task and cause it to enter into
-///     the <c>canceled</c> state. If you do not respond and continue execution, or return instead of calling
-///     <c>cancel_current_task</c>, the task will enter the <c>completed</c> state when it is done.
-///     state.
-///     <para>A task is not cancellable if it was created without a cancellation token.</para>
-/// </remarks>
-/// <seealso cref="task Class"/>
-/// <seealso cref="cancellation_token_source Class"/>
-/// <seealso cref="cancellation_token Class"/>
-/// <seealso cref="cancel_current_task Function"/>
-/**/
-inline bool __cdecl is_task_cancellation_requested()
-{
-    return ::Concurrency::details::_TaskCollection_t::_Is_cancellation_requested();
-}
 
 /// <summary>
 ///     Cancels the currently executing task. This function can be called from within the body of a task to abort the
@@ -658,17 +627,17 @@ namespace details
             return !(operator==(_Rhs));
         }
 
-        void __cdecl _CallInContext(_CallbackFunction _Func) const;
+        _CRTIMP2 void __thiscall _CallInContext(_CallbackFunction _Func) const;
 
     private:
-        void __cdecl _Reset();
+        _CRTIMP2 void __thiscall _Reset();
 
-        void __cdecl _Assign(void *_PContextCallback);
+        _CRTIMP2 void __thiscall _Assign(void *_PContextCallback);
 
         // Returns the origin information for the caller (runtime / Windows Runtime apartment as far as task continuations need know)
-        static bool __cdecl _IsCurrentOriginSTA();
+        _CRTIMP2 static bool __cdecl _IsCurrentOriginSTA();
 
-        void __cdecl _Capture();
+        _CRTIMP2 void __thiscall _Capture();
 
         union
         {
@@ -794,7 +763,7 @@ namespace details
     struct _ExceptionHolder
     {
     private:
-        void __cdecl ReportUnhandledError();
+        _CRTIMP2 void __thiscall ReportUnhandledError();
 
     public:
         explicit _ExceptionHolder(const std::exception_ptr& _E, const _TaskCreationCallstack &_stackTrace) :
@@ -1071,7 +1040,7 @@ public:
     }
 private:
 
-    task_continuation_context();
+    _CRTIMP2 __thiscall task_continuation_context();
     bool _M_RunInline; // default, it's false
 };
 
@@ -1327,25 +1296,25 @@ namespace details
         bool _M_taskPostEventStarted;
 
         // Log before scheduling task
-        void __cdecl _LogScheduleTask(bool _isContinuation);
+        _CRTIMP2 void __thiscall _LogScheduleTask(bool _isContinuation);
 
         // It will log the cancel event but not canceled state. _LogTaskCompleted will log the terminal state, which includes cancel state.
-        void __cdecl _LogCancelTask();
+        _CRTIMP2 void __thiscall _LogCancelTask();
 
         // Log when task reaches terminal state. Note: the task can reach a terminal state (by cancellation or exception) without having run
-        void __cdecl _LogTaskCompleted();
+        _CRTIMP2 void __thiscall _LogTaskCompleted();
 
         // Log when task body (which includes user lambda and other scheduling code) begin to run
         void _LogTaskExecutionStarted() { }
 
         // Log when task body finish executing
-        void __cdecl _LogTaskExecutionCompleted();
+        _CRTIMP2 void __thiscall _LogTaskExecutionCompleted();
 
         // Log right before user lambda being invoked
-        void __cdecl _LogWorkItemStarted();
+        _CRTIMP2 void __thiscall _LogWorkItemStarted();
 
         // Log right after user lambda being invoked
-        void __cdecl _LogWorkItemCompleted();
+        _CRTIMP2 void __thiscall _LogWorkItemCompleted();
         
         _TaskEventLogger(_Task_impl_base *_task): _M_task(_task)
         {
@@ -1948,7 +1917,7 @@ namespace details
             return SUCCEEDED(CaptureUiThreadContext(nullptr));
         }
 #else
-        static bool __cdecl _IsNonBlockingThread();
+        _CRTIMP2 static bool __cdecl _IsNonBlockingThread();
 #endif
 
 #if defined (__cplusplus_winrt)
@@ -4566,8 +4535,9 @@ public:
     }
     progress_reporter() {}
 
-private:
+    // For validation type traits
     progress_reporter(details::_ProgressReporterCtorArgType);
+private:
 
     _PtrType _M_dispatcher;
 };
@@ -7055,335 +7025,6 @@ namespace details
 } // namespace details
 
 } // namespace Concurrency
-
-
-
-#ifdef __cplusplus_winrt
-#include <windows.h>
-#include <ctxtcall.h>
-#endif
-
-#include <crtdefs.h>
-
-namespace Concurrency
-{
-namespace details
-{
-#ifdef __cplusplus_winrt
-
-#if _PPLTASK_ASYNC_LOGGING
-
-        
-        // GUID used for identifying causality logs from PPLTask
-        const ::Platform::Guid _PPLTaskCausalityPlatformID = { 0x7A76B220, 0xA758, 0x4E6E, 0xB0, 0xE0, 0xD7, 0xC6, 0xD7, 0x4A, 0x88, 0xFE };
-        __declspec(selectany) volatile long _isCausalitySupported = 0;
-
-        inline bool _IsCausalitySupported()
-        {
-#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
-            if (_isCausalitySupported == 0)
-            {
-                long _causality = 1;
-                OSVERSIONINFOEX _osvi = {};
-                _osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-
-                // The Causality is supported on Windows version higher than Windows 8
-                _osvi.dwMajorVersion = 6;
-                _osvi.dwMinorVersion = 3;
-
-                DWORDLONG _conditionMask = 0;
-                VER_SET_CONDITION( _conditionMask, VER_MAJORVERSION, VER_GREATER_EQUAL );
-                VER_SET_CONDITION( _conditionMask, VER_MINORVERSION, VER_GREATER_EQUAL );
-
-                if ( ::VerifyVersionInfo(&_osvi, VER_MAJORVERSION | VER_MINORVERSION, _conditionMask)) 
-                {
-                    _causality = 2;
-                }
-
-                _isCausalitySupported = _causality;
-                return _causality == 2;
-            }
-
-            return _isCausalitySupported == 2 ? true : false;
-#else
-            return true;
-#endif
-        }
-
-        inline void __cdecl _TaskEventLogger::_LogScheduleTask(bool _isContinuation)
-        {
-            if (details::_IsCausalitySupported())
-            {
-                ::Windows::Foundation::Diagnostics::AsyncCausalityTracer::TraceOperationCreation(::Windows::Foundation::Diagnostics::CausalityTraceLevel::Required, ::Windows::Foundation::Diagnostics::CausalitySource::Library, 
-                    _PPLTaskCausalityPlatformID, reinterpret_cast<unsigned long long>(_M_task), 
-                    _isContinuation ? "Concurrency::PPLTask::ScheduleContinuationTask" : "Concurrency::PPLTask::ScheduleTask", 0);
-                _M_scheduled = true;
-            } 
-        }
-        inline void __cdecl _TaskEventLogger::_LogTaskCompleted()
-        {
-            if (_M_scheduled)
-            {
-                ::Windows::Foundation::AsyncStatus _State;
-                if (_M_task->_IsCompleted())
-                    _State = ::Windows::Foundation::AsyncStatus::Completed;
-                else if (_M_task->_HasUserException())
-                    _State = ::Windows::Foundation::AsyncStatus::Error;
-                else
-                    _State = ::Windows::Foundation::AsyncStatus::Canceled;
-
-                if (details::_IsCausalitySupported())
-                {
-                    ::Windows::Foundation::Diagnostics::AsyncCausalityTracer::TraceOperationCompletion(::Windows::Foundation::Diagnostics::CausalityTraceLevel::Required, ::Windows::Foundation::Diagnostics::CausalitySource::Library,
-                        _PPLTaskCausalityPlatformID, reinterpret_cast<unsigned long long>(_M_task), _State);
-                }
-            }
-        }
-
-        inline void __cdecl _TaskEventLogger::_LogCancelTask()
-        {
-            if (details::_IsCausalitySupported())
-            {
-                ::Windows::Foundation::Diagnostics::AsyncCausalityTracer::TraceOperationRelation(::Windows::Foundation::Diagnostics::CausalityTraceLevel::Important, ::Windows::Foundation::Diagnostics::CausalitySource::Library,
-                    _PPLTaskCausalityPlatformID, reinterpret_cast<unsigned long long>(_M_task), ::Windows::Foundation::Diagnostics::CausalityRelation::Cancel);
-
-            } 
-        }
-
-        inline void __cdecl _TaskEventLogger::_LogTaskExecutionCompleted()
-        {
-            if (_M_taskPostEventStarted && details::_IsCausalitySupported())
-            {
-                ::Windows::Foundation::Diagnostics::AsyncCausalityTracer::TraceSynchronousWorkCompletion(::Windows::Foundation::Diagnostics::CausalityTraceLevel::Required, ::Windows::Foundation::Diagnostics::CausalitySource::Library,
-                    ::Windows::Foundation::Diagnostics::CausalitySynchronousWork::CompletionNotification);
-            }
-        }
-
-        inline void __cdecl _TaskEventLogger::_LogWorkItemStarted()
-        {
-            if (details::_IsCausalitySupported())
-            {
-                ::Windows::Foundation::Diagnostics::AsyncCausalityTracer::TraceSynchronousWorkStart(::Windows::Foundation::Diagnostics::CausalityTraceLevel::Required, ::Windows::Foundation::Diagnostics::CausalitySource::Library,
-                    _PPLTaskCausalityPlatformID, reinterpret_cast<unsigned long long>(_M_task), ::Windows::Foundation::Diagnostics::CausalitySynchronousWork::Execution);
-            }
-        }
-
-        inline void __cdecl _TaskEventLogger::_LogWorkItemCompleted()
-        {
-            if (details::_IsCausalitySupported())
-            {
-                ::Windows::Foundation::Diagnostics::AsyncCausalityTracer::TraceSynchronousWorkCompletion(::Windows::Foundation::Diagnostics::CausalityTraceLevel::Required, ::Windows::Foundation::Diagnostics::CausalitySource::Library,
-                    ::Windows::Foundation::Diagnostics::CausalitySynchronousWork::Execution);
-
-                ::Windows::Foundation::Diagnostics::AsyncCausalityTracer::TraceSynchronousWorkStart(::Windows::Foundation::Diagnostics::CausalityTraceLevel::Required, ::Windows::Foundation::Diagnostics::CausalitySource::Library,
-                    _PPLTaskCausalityPlatformID, reinterpret_cast<unsigned long long>(_M_task), ::Windows::Foundation::Diagnostics::CausalitySynchronousWork::CompletionNotification);
-                _M_taskPostEventStarted = true;
-            }
-        }
-#endif // _PPLTASK_ASYNC_LOGGING
-
-        static HRESULT __stdcall _PPLTaskContextCallbackBridge(ComCallData *_PParam)
-        {
-            auto pFunc = static_cast<std::function<void()> *>(_PParam->pUserDefined);
-            (*pFunc)();
-            return S_OK;
-        }
-        inline void __cdecl _ContextCallback::_CallInContext(_CallbackFunction _Func) const
-        {
-            if (!_HasCapturedContext())
-            {
-                _Func();
-            }
-            else
-            {
-                ComCallData callData;
-                ZeroMemory(&callData, sizeof(callData));
-                callData.pUserDefined = reinterpret_cast<void *>(&_Func);
-
-                HRESULT hresult = static_cast<IContextCallback *>(_M_context._M_pContextCallback)->ContextCallback(&_PPLTaskContextCallbackBridge, &callData, IID_ICallbackWithNoReentrancyToApplicationSTA, 5, nullptr);
-                if (FAILED(hresult))
-                {
-                    throw std::runtime_error("Context callback failed.");
-                }
-            }
-        }
-        inline void __cdecl _ContextCallback::_Capture()
-        {
-            HRESULT _Hr = CoGetObjectContext(IID_IContextCallback, &_M_context._M_pContextCallback);
-            if (FAILED(_Hr))
-            {
-                _M_context._M_pContextCallback = nullptr;
-            }
-        }
-
-        inline void __cdecl _ContextCallback::_Reset()
-        {
-            if (_M_context._M_captureMethod != _S_captureDeferred && _M_context._M_pContextCallback != nullptr)
-            {
-                static_cast<IContextCallback *>(_M_context._M_pContextCallback)->Release();
-            }
-        }
-
-        inline void __cdecl _ContextCallback::_Assign(void *_PContextCallback)
-        {
-            _M_context._M_pContextCallback = _PContextCallback;
-            if (_M_context._M_captureMethod != _S_captureDeferred && _M_context._M_pContextCallback != nullptr)
-            {
-                static_cast<IContextCallback*>(_M_context._M_pContextCallback)->AddRef();
-            }
-        }
-
-        inline bool __cdecl _ContextCallback::_IsCurrentOriginSTA()
-        {
-            APTTYPE _AptType;
-            APTTYPEQUALIFIER _AptTypeQualifier;
-
-            HRESULT hr = CoGetApartmentType(&_AptType, &_AptTypeQualifier);
-            if (SUCCEEDED(hr))
-            {
-                // We determine the origin of a task continuation by looking at where .then is called, so we can tell whether
-                // to need to marshal the continuation back to the originating apartment. If an STA thread is in executing in
-                // a neutral aparment when it schedules a continuation, we will not marshal continuations back to the STA,
-                // since variables used within a neutral apartment are expected to be apartment neutral.
-                switch (_AptType)
-                {
-                case APTTYPE_MAINSTA:
-                case APTTYPE_STA:
-                    return true;
-                default:
-                    break;
-                }
-            }
-            return false;
-        }
-
-
-        
-        inline void __cdecl _ExceptionHolder::ReportUnhandledError()
-        {
-            if (_M_stdException)
-            {
-                try
-                {
-                    std::rethrow_exception(_M_stdException);
-                }
-                catch (Platform::Exception^ _Ptr)
-                {
-                    ::Platform::Details::ReportUnhandledError(_Ptr);
-                }
-                catch (...)
-                {
-                    // do nothing
-                }
-            }
-        }
-
-        inline bool __cdecl _Task_impl_base::_IsNonBlockingThread()
-        {
-            APTTYPE _AptType;
-            APTTYPEQUALIFIER _AptTypeQualifier;
-
-            HRESULT hr = CoGetApartmentType(&_AptType, &_AptTypeQualifier);
-            //
-            // If it failed, it's not a Windows Runtime/COM initialized thread. This is not a failure.
-            //
-            if (SUCCEEDED(hr))
-            {
-                switch (_AptType)
-                {
-                case APTTYPE_STA:
-                case APTTYPE_MAINSTA:
-                    return true;
-                    break;
-                case APTTYPE_NA:
-                    switch (_AptTypeQualifier)
-                    {
-                        // A thread executing in a neutral apartment is either STA or MTA. To find out if this thread is allowed
-                        // to wait, we check the app qualifier. If it is an STA thread executing in a neutral apartment, waiting
-                        // is illegal, because the thread is responsible for pumping messages and waiting on a task could take the
-                        // thread out of circulation for a while.
-                    case APTTYPEQUALIFIER_NA_ON_STA:
-                    case APTTYPEQUALIFIER_NA_ON_MAINSTA:
-                        return true;
-                        break;
-                    }
-                    break;
-                }
-            }
-            return false;
-        }
-#else
-
-#if _PPLTASK_ASYNC_LOGGING
-        inline void __cdecl _TaskEventLogger::_LogScheduleTask(bool)
-        {
-        }
-        inline void __cdecl _TaskEventLogger::_LogTaskCompleted()
-        {
-        }
-
-        inline void __cdecl _TaskEventLogger::_LogCancelTask()
-        {
-        }
-
-        inline void __cdecl _TaskEventLogger::_LogTaskExecutionCompleted()
-        {
-        }
-
-        inline void __cdecl _TaskEventLogger::_LogWorkItemStarted()
-        {
-        }
-
-        inline void __cdecl _TaskEventLogger::_LogWorkItemCompleted()
-        {
-        }
-#endif // _PPLTASK_ASYNC_LOGGING
-
-        inline void __cdecl _ContextCallback::_CallInContext(_CallbackFunction _Func) const
-        {
-            _Func();
-        }
-        inline void __cdecl _ContextCallback::_Capture()
-        {
-        }
-
-        inline void __cdecl _ContextCallback::_Reset()
-        {
-        }
-
-        inline void __cdecl _ContextCallback::_Assign(void *)
-        {
-        }
-
-        inline bool __cdecl _ContextCallback::_IsCurrentOriginSTA()
-        {
-            return false;
-        }
-
-
-        inline void __cdecl _ExceptionHolder::ReportUnhandledError()
-        {
-        }
-
-        inline bool __cdecl _Task_impl_base::_IsNonBlockingThread()
-        {
-            return false;
-        }
-#endif
-}
-#ifdef __cplusplus_winrt
-#pragma detect_mismatch("_PPLTASKS_WITH_WINRT", "1")
-    inline task_continuation_context::task_continuation_context() : _ContextCallback(true), _M_RunInline(false)
-    {
-    }
-#else
-#pragma detect_mismatch("_PPLTASKS_WITH_WINRT", "0")
-    inline task_continuation_context::task_continuation_context() : _ContextCallback(false), _M_RunInline(false)
-    {
-    }
-#endif
-}
-
 
 #pragma pop_macro("new")
 #pragma warning(pop)

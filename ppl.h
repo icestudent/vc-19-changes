@@ -25,7 +25,7 @@
 #include <algorithm>
 #include <malloc.h>
 
-#include <pplconcrt.h>
+#include <pplwin.h>
 
 #define _PPL_H
 
