@@ -9,18 +9,13 @@
 #define _INC_NEW
 
 #include <corecrt.h>
-#include <vcruntime_new.h>
+#include <vcruntime_new_debug.h>
 
 #ifdef __cplusplus
 
     #if !defined _MSC_EXTENSIONS && !defined _CRTBLD && !defined _CORECRT_BUILD
         #include <new>
     #endif
-
-    #pragma push_macro("new")
-    #undef  new
-
-
 
     #if defined _MSC_EXTENSIONS && !defined _CORECRT_BUILD
         #include <crtdefs.h>
@@ -43,23 +38,6 @@
         using std::new_handler;
         using std::set_new_handler;
     #endif
-
-
-
-    #ifndef __PLACEMENT_NEW_INLINE
-        #define __PLACEMENT_NEW_INLINE
-        inline void* __CRTDECL operator new(size_t, void* _Where)
-        {
-            return _Where;
-        }
-
-        inline void __CRTDECL operator delete(void*, void*)
-        {
-            return;
-        }
-    #endif
-
-    #pragma pop_macro("new")
 
 #endif // __cplusplus
 

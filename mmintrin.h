@@ -17,6 +17,10 @@
 #define _MMINTRIN_H_INCLUDED
 #ifndef __midl
 
+#if !defined _M_IX86 && !defined _M_X64
+    #error This header is specific to X86 and X64 targets
+#endif
+
 #if defined (_M_CEE_PURE)
         #error ERROR: MM intrinsics not supported in the pure mode!
 #else  /* defined (_M_CEE_PURE) */

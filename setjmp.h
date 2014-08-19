@@ -106,6 +106,35 @@ _CRT_BEGIN_C_HEADER
         unsigned long long D[8]; // D8-D15 VFP/NEON regs
     } _JUMP_BUFFER;
 
+#elif defined _M_CRT_UNSUPPORTED
+
+    #define _JBLEN  24
+    #define _JBTYPE unsigned __int64
+
+    typedef struct _JUMP_BUFFER {
+        unsigned __int64 Frame;
+        unsigned __int64 Reserved;
+        unsigned __int64 X19;   // x19 -- x28: callee saved registers
+        unsigned __int64 X20;
+        unsigned __int64 X21;
+        unsigned __int64 X22;
+        unsigned __int64 X23;
+        unsigned __int64 X24;
+        unsigned __int64 X25;
+        unsigned __int64 X26;
+        unsigned __int64 X27;
+        unsigned __int64 X28;
+        unsigned __int64 Fp;    // x29 frame pointer
+        unsigned __int64 Lr;    // x30 link register
+        unsigned __int64 Sp;    // x31 stack pointer
+        unsigned __int32 Fpcr;  // fp control register
+        unsigned __int32 Fpsr;  // fp status register
+
+        double D[8]; // D8-D15 FP regs
+    } _JUMP_BUFFER;
+
+
+
 #endif
 
 

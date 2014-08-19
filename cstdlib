@@ -37,6 +37,8 @@ using _CSTD system;
 using _CSTD atoll; using _CSTD llabs; using _CSTD lldiv;
 using _CSTD strtof; using _CSTD strtold;
 using _CSTD strtoll; using _CSTD strtoull;
+
+using _CSTD _Exit; using _CSTD at_quick_exit; using _CSTD quick_exit;
 _STD_END
  #endif /* _GLOBAL_USING */
 

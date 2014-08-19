@@ -36,21 +36,9 @@ _ACRTIMP errno_t __cdecl _get_errno(_Out_ int* _Value);
 
 // Define offsetof macro
 #ifdef __cplusplus
-
-    #ifdef _WIN64
-        #define offsetof(s,m) (size_t)( (ptrdiff_t)&reinterpret_cast<const volatile char&>((((s *)0)->m)) )
-    #else
-        #define offsetof(s,m) (size_t)&reinterpret_cast<const volatile char&>((((s *)0)->m))
-    #endif
-
+    #define offsetof(s,m) ((size_t)&reinterpret_cast<char const volatile&>((((s*)0)->m)))
 #else
-
-    #ifdef _WIN64
-        #define offsetof(s,m)   (size_t)( (ptrdiff_t)&(((s *)0)->m) )
-    #else
-        #define offsetof(s,m)   (size_t)&(((s *)0)->m)
-    #endif
-
+    #define offsetof(s,m) ((size_t)&(((s*)0)->m))
 #endif
 
 _ACRTIMP extern unsigned long  __cdecl __threadid(void);

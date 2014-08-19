@@ -603,6 +603,14 @@ inline void _Is_valid_data_length(unsigned int _Num_elems, unsigned int _Bits_pe
     }
 }
 
+template<typename _Iterator>
+struct _Is_iterator
+{
+    template<class _Uty> static auto _Fn(_Uty _Val, decltype(*_Val, ++_Val, 0)) -> std::true_type;
+    template<class _Uty> static auto _Fn(_Uty _Val, ...) -> std::false_type;
+    static constexpr bool value = decltype(_Fn(std::declval<_Iterator>(),0))::value;
+};
+
 } // namespace details
 
 
@@ -913,7 +921,9 @@ public:
     /// <param name="_Src_last">
     ///     An ending iterator into the source container.
     /// </param>
-    template<typename _Input_iterator> texture(const Concurrency::extent<_Rank>& _Ext, _Input_iterator _Src_first, _Input_iterator _Src_last) __CPU_ONLY
+    template<typename _Input_iterator,
+             typename = typename std::enable_if<details::_Is_iterator<_Input_iterator>::value>::type>
+    texture(const Concurrency::extent<_Rank>& _Ext, _Input_iterator _Src_first, _Input_iterator _Src_last) __CPU_ONLY
         : _Texture_base(_Ext)
     {
         static_assert(_Short_vector_type_traits<_Value_type>::_Format_base_type_id != _Unorm_type, "texture cannot be constructed from unorm based short vectors via this constructor.");
@@ -933,7 +943,9 @@ public:
     /// <param name="_Src_last">
     ///     An ending iterator into the source container.
     /// </param>
-    template<typename _Input_iterator> texture(int _E0, _Input_iterator _Src_first, _Input_iterator _Src_last) __CPU_ONLY
+    template<typename _Input_iterator,
+             typename = typename std::enable_if<details::_Is_iterator<_Input_iterator>::value>::type>
+    texture(int _E0, _Input_iterator _Src_first, _Input_iterator _Src_last) __CPU_ONLY
         : _Texture_base(Concurrency::extent<_Rank>(_E0))
     {
         static_assert(_Rank == 1, "texture(int, iterator, iterator) is only permissible on texture<value_type, 1>.");
@@ -957,7 +969,9 @@ public:
     /// <param name="_Src_last">
     ///     An ending iterator into the source container.
     /// </param>
-    template<typename _Input_iterator> texture(int _E0, int _E1, _Input_iterator _Src_first, _Input_iterator _Src_last) __CPU_ONLY
+    template<typename _Input_iterator,
+             typename = typename std::enable_if<details::_Is_iterator<_Input_iterator>::value>::type>
+    texture(int _E0, int _E1, _Input_iterator _Src_first, _Input_iterator _Src_last) __CPU_ONLY
         : _Texture_base(Concurrency::extent<_Rank>(_E0, _E1))
     {
         static_assert(_Rank == 2, "texture(int, int, iterator, iterator) is only permissible on texture<value_type, 2>.");
@@ -985,7 +999,9 @@ public:
     /// <param name="_Src_last">
     ///     An ending iterator into the source container.
     /// </param>
-    template<typename _Input_iterator> texture(int _E0, int _E1, int _E2, _Input_iterator _Src_first, _Input_iterator _Src_last) __CPU_ONLY
+    template<typename _Input_iterator,
+             typename = typename std::enable_if<details::_Is_iterator<_Input_iterator>::value>::type>
+    texture(int _E0, int _E1, int _E2, _Input_iterator _Src_first, _Input_iterator _Src_last) __CPU_ONLY
         : _Texture_base(Concurrency::extent<_Rank>(_E0, _E1, _E2))
     {
         static_assert(_Rank == 3, "texture(int, int, int, iterator, iterator) is only permissible on texture<value_type, 3>.");
@@ -1009,7 +1025,9 @@ public:
     /// <param name="_Av">
     ///     An accelerator_view where this texture resides.
     /// </param>
-    template<typename _Input_iterator> texture(const Concurrency::extent<_Rank>& _Ext, _Input_iterator _Src_first, _Input_iterator _Src_last, const Concurrency::accelerator_view& _Av) __CPU_ONLY
+    template<typename _Input_iterator,
+             typename = typename std::enable_if<details::_Is_iterator<_Input_iterator>::value>::type>
+    texture(const Concurrency::extent<_Rank>& _Ext, _Input_iterator _Src_first, _Input_iterator _Src_last, const Concurrency::accelerator_view& _Av) __CPU_ONLY
         : _Texture_base(_Ext)
     {
         static_assert(_Short_vector_type_traits<_Value_type>::_Format_base_type_id != _Unorm_type, "texture cannot be constructed from unorm based short vectors via this constructor.");
@@ -1038,7 +1056,9 @@ public:
     ///     An accelerator_view which specifies the preferred target location for copies
     ///     to/from the texture.
     /// </param>
-    template<typename _Input_iterator> texture(const Concurrency::extent<_Rank>& _Ext, _Input_iterator _Src_first, _Input_iterator _Src_last, const Concurrency::accelerator_view& _Av, const Concurrency::accelerator_view& _Associated_av) __CPU_ONLY
+    template<typename _Input_iterator,
+             typename = typename std::enable_if<details::_Is_iterator<_Input_iterator>::value>::type>
+    texture(const Concurrency::extent<_Rank>& _Ext, _Input_iterator _Src_first, _Input_iterator _Src_last, const Concurrency::accelerator_view& _Av, const Concurrency::accelerator_view& _Associated_av) __CPU_ONLY
         : _Texture_base(_Ext)
     {
         static_assert(_Short_vector_type_traits<_Value_type>::_Format_base_type_id != _Unorm_type, "texture cannot be constructed from unorm based short vectors via this constructor.");
@@ -1061,7 +1081,9 @@ public:
     /// <param name="_Av">
     ///     An accelerator_view where this texture resides.
     /// </param>
-    template<typename _Input_iterator> texture(int _E0, _Input_iterator _Src_first, _Input_iterator _Src_last, const Concurrency::accelerator_view& _Av) __CPU_ONLY
+    template<typename _Input_iterator,
+             typename = typename std::enable_if<details::_Is_iterator<_Input_iterator>::value>::type>
+    texture(int _E0, _Input_iterator _Src_first, _Input_iterator _Src_last, const Concurrency::accelerator_view& _Av) __CPU_ONLY
         : _Texture_base(Concurrency::extent<_Rank>(_E0))
     {
         static_assert(_Rank == 1, "texture(int, iterator, iterator, accelerator_view) is only permissible on texture<value_type, 1>.");
@@ -1091,7 +1113,9 @@ public:
     ///     An accelerator_view which specifies the preferred target location for copies
     ///     to/from the texture.
     /// </param>
-    template<typename _Input_iterator> texture(int _E0, _Input_iterator _Src_first, _Input_iterator _Src_last, const Concurrency::accelerator_view& _Av, const Concurrency::accelerator_view& _Associated_av) __CPU_ONLY
+    template<typename _Input_iterator,
+             typename = typename std::enable_if<details::_Is_iterator<_Input_iterator>::value>::type>
+    texture(int _E0, _Input_iterator _Src_first, _Input_iterator _Src_last, const Concurrency::accelerator_view& _Av, const Concurrency::accelerator_view& _Associated_av) __CPU_ONLY
         : _Texture_base(Concurrency::extent<_Rank>(_E0))
     {
         static_assert(_Rank == 1, "texture(int, iterator, iterator, accelerator_view, accelerator_view) is only permissible on texture<value_type, 1>.");
@@ -1118,7 +1142,9 @@ public:
     /// <param name="_Av">
     ///     An accelerator_view where this texture resides.
     /// </param>
-    template<typename _Input_iterator> texture(int _E0, int _E1, _Input_iterator _Src_first, _Input_iterator _Src_last, const Concurrency::accelerator_view& _Av) __CPU_ONLY
+    template<typename _Input_iterator,
+             typename = typename std::enable_if<details::_Is_iterator<_Input_iterator>::value>::type>
+    texture(int _E0, int _E1, _Input_iterator _Src_first, _Input_iterator _Src_last, const Concurrency::accelerator_view& _Av) __CPU_ONLY
         : _Texture_base(Concurrency::extent<_Rank>(_E0, _E1))
     {
         static_assert(_Rank == 2, "texture(int, int, iterator, iterator, accelerator_view) is only permissible on texture<value_type, 2>.");
@@ -1151,7 +1177,9 @@ public:
     ///     An accelerator_view which specifies the preferred target location for copies
     ///     to/from the texture.
     /// </param>
-    template<typename _Input_iterator> texture(int _E0, int _E1, _Input_iterator _Src_first, _Input_iterator _Src_last, const Concurrency::accelerator_view& _Av, const Concurrency::accelerator_view& _Associated_av) __CPU_ONLY
+    template<typename _Input_iterator,
+             typename = typename std::enable_if<details::_Is_iterator<_Input_iterator>::value>::type>
+    texture(int _E0, int _E1, _Input_iterator _Src_first, _Input_iterator _Src_last, const Concurrency::accelerator_view& _Av, const Concurrency::accelerator_view& _Associated_av) __CPU_ONLY
         : _Texture_base(Concurrency::extent<_Rank>(_E0, _E1))
     {
         static_assert(_Rank == 2, "texture(int, int, iterator, iterator, accelerator_view, accelerator_view) is only permissible on texture<value_type, 2>.");
@@ -1181,7 +1209,9 @@ public:
     /// <param name="_Av">
     ///     An accelerator_view where this texture resides.
     /// </param>
-    template<typename _Input_iterator> texture(int _E0, int _E1, int _E2, _Input_iterator _Src_first, _Input_iterator _Src_last, const Concurrency::accelerator_view& _Av) __CPU_ONLY
+    template<typename _Input_iterator,
+             typename = typename std::enable_if<details::_Is_iterator<_Input_iterator>::value>::type>
+    texture(int _E0, int _E1, int _E2, _Input_iterator _Src_first, _Input_iterator _Src_last, const Concurrency::accelerator_view& _Av) __CPU_ONLY
         : _Texture_base(Concurrency::extent<_Rank>(_E0, _E1, _E2))
     {
         static_assert(_Rank == 3, "texture(int, int, int, iterator, iterator, accelerator_view) is only permissible on texture<value_type, 3>.");
@@ -1217,7 +1247,9 @@ public:
     ///     An accelerator_view which specifies the preferred target location for copies
     ///     to/from the texture.
     /// </param>
-    template<typename _Input_iterator> texture(int _E0, int _E1, int _E2, _Input_iterator _Src_first, _Input_iterator _Src_last, const Concurrency::accelerator_view& _Av, const Concurrency::accelerator_view& _Associated_av) __CPU_ONLY
+    template<typename _Input_iterator,
+             typename = typename std::enable_if<details::_Is_iterator<_Input_iterator>::value>::type>
+    texture(int _E0, int _E1, int _E2, _Input_iterator _Src_first, _Input_iterator _Src_last, const Concurrency::accelerator_view& _Av, const Concurrency::accelerator_view& _Associated_av) __CPU_ONLY
         : _Texture_base(Concurrency::extent<_Rank>(_E0, _E1, _E2))
     {
         static_assert(_Rank == 3, "texture(int, int, int, iterator, iterator, accelerator_view, accelerator_view) is only permissible on texture<value_type, 3>.");
@@ -3736,9 +3768,9 @@ _Event _Copy_async_impl(_Input_iterator _First, _Input_iterator _Last,
 
         unsigned char *_PDest = reinterpret_cast<unsigned char*>(_Dst->_Get_host_ptr()) + _Dst_offset_in_bytes;
 
-        _Copy_data_on_host(_Dst->_Get_rank(), _First, reinterpret_cast<_Value_type*>(_PDest),
-                           _Row_size / sizeof(_Value_type), _Copy_extent[1], _Copy_extent[2],
-                           _Row_pitch, _Depth_pitch, _Row_size / sizeof(_Value_type), _Depth_slice_size / sizeof(_Value_type));
+        _Copy_data_on_host_src_iter(_Dst->_Get_rank(), _First, reinterpret_cast<_Value_type*>(_PDest),
+                                    _Row_size / sizeof(_Value_type), _Copy_extent[1], _Copy_extent[2],
+                                    _Row_pitch, _Depth_pitch, _Row_size / sizeof(_Value_type), _Depth_slice_size / sizeof(_Value_type));
 
         return _Event();
     }
@@ -3843,9 +3875,9 @@ _Event _Copy_async_impl(_Texture *_Tex, const size_t *_Tex_offset, unsigned int 
 
         unsigned char *_PTex = reinterpret_cast<unsigned char*>(_Tex->_Get_host_ptr()) + _Tex_offset_in_bytes;
 
-        _Copy_data_on_host(_Tex->_Get_rank(), reinterpret_cast<_Value_type*>(_PTex), _First,
-            _Row_size / sizeof(_Value_type), _Copy_extent[1], _Copy_extent[2],
-            _Row_pitch, _Depth_pitch, _Row_size / sizeof(_Value_type), _Depth_slice_size / sizeof(_Value_type));
+        _Copy_data_on_host_dst_iter(_Tex->_Get_rank(), reinterpret_cast<_Value_type*>(_PTex), _First,
+                                    _Row_size / sizeof(_Value_type), _Copy_extent[1], _Copy_extent[2],
+                                    _Row_pitch, _Depth_pitch, _Row_size / sizeof(_Value_type), _Depth_slice_size / sizeof(_Value_type));
 
         return _Event();
     }

@@ -20,9 +20,9 @@
 
 #include <crtdefs.h>
 
-#if !(defined (_M_X64) || defined (_M_IX86) || defined (_M_ARM))
-    #error ERROR: Concurrency Runtime is supported only on X64, X86 and ARM architectures.
-#endif  /* !(defined (_M_X64) || defined (_M_IX86) || defined (_M_ARM)) */
+#if !(defined (_M_X64) || defined (_M_IX86) || defined (_M_ARM) || defined (_M_CRT_UNSUPPORTED))
+    #error ERROR: Concurrency Runtime is supported only on X64, X86, ARM, and CRT_UNSUPPORTED architectures.
+#endif  /* !(defined (_M_X64) || defined (_M_IX86) || defined (_M_ARM) || defined (_M_CRT_UNSUPPORTED)) */
 
 #if defined (_M_CEE)
     #error ERROR: Concurrency Runtime is not supported when compiling /clr.
@@ -1321,7 +1321,7 @@ namespace Concurrency
         ///     An enumerated type that represents the operating system version.
         /// </summary>
         /**/
-        enum OSVersion
+        static enum OSVersion
         {
             /// <summary>
             /// An operating system prior to Windows XP. The Concurrency Runtime is not supported on operating 
@@ -1384,7 +1384,7 @@ namespace Concurrency
     /// </remarks>
     /// <seealso cref="IResourceManager::OSVersion Enumeration"/>
     /**/
-    _CRTIMP2 IResourceManager* __cdecl CreateResourceManager();
+    _CONCRTIMP IResourceManager* __cdecl CreateResourceManager();
 
     /// <summary>
     ///     Returns the operating system version.
@@ -1397,7 +1397,7 @@ namespace Concurrency
     /// </remarks>
     /// <seealso cref="IResourceManager::OSVersion Enumeration"/>
     /**/
-    _CRTIMP2 IResourceManager::OSVersion __cdecl GetOSVersion();
+    _CONCRTIMP IResourceManager::OSVersion __cdecl GetOSVersion();
 
     /// <summary>
     ///     Returns a unique identifier that can be assigned to a scheduler that implements the <c>IScheduler</c> interface.
@@ -1410,7 +1410,7 @@ namespace Concurrency
     ///     offered by the Resource Manager.
     /// </remarks>
     /**/
-    _CRTIMP2 unsigned int __cdecl GetSchedulerId();
+    _CONCRTIMP unsigned int __cdecl GetSchedulerId();
 
     /// <summary>
     ///     Returns a unique identifier that can be assigned to an execution context that implements the <c>IExecutionContext</c> interface.
@@ -1423,7 +1423,7 @@ namespace Concurrency
     ///     of the methods offered by the Resource Manager.
     /// </remarks>
     /**/
-    _CRTIMP2 unsigned int __cdecl GetExecutionContextId();
+    _CONCRTIMP unsigned int __cdecl GetExecutionContextId();
 
     /// <summary>
     ///     Returns the number of hardware threads on the underlying system.
@@ -1436,7 +1436,7 @@ namespace Concurrency
     /// </remarks>
     /// <seealso cref="IResourceManager::OSVersion Enumeration"/>
     /**/
-    _CRTIMP2 unsigned int __cdecl GetProcessorCount();
+    _CONCRTIMP unsigned int __cdecl GetProcessorCount();
 
     /// <summary>
     ///     Returns the number of NUMA nodes or processor packages on the underlying system.
@@ -1450,7 +1450,7 @@ namespace Concurrency
     /// </remarks>
     /// <seealso cref="IResourceManager::OSVersion Enumeration"/>
     /**/
-    _CRTIMP2 unsigned int __cdecl GetProcessorNodeCount();
+    _CONCRTIMP unsigned int __cdecl GetProcessorNodeCount();
 #endif  /* _CRT_USE_WINAPI_FAMILY_DESKTOP_APP */
 }
 

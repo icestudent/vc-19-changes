@@ -14,19 +14,11 @@
 
 #ifndef _M_CEE_SAFE
 
-#if !defined (_W64)
-#if !defined(__midl) && (defined(_X86_) || defined(_M_IX86)) && _MSC_VER >= 1300       
-#define _W64 __w64
-#else  /* !defined(__midl) && (defined(_X86_) || defined(_M_IX86)) && _MSC_VER >= 1300        */
-#define _W64
-#endif  /* !defined(__midl) && (defined(_X86_) || defined(_M_IX86)) && _MSC_VER >= 1300        */
-#endif  /* !defined (_W64) */
-
 #ifndef _SIZE_T_DEFINED
 #ifdef _WIN64
 typedef unsigned __int64    size_t;
 #else  /* _WIN64 */
-typedef _W64 unsigned int   size_t;
+typedef unsigned int        size_t;
 #endif  /* _WIN64 */
 #define _SIZE_T_DEFINED
 #endif  /* _SIZE_T_DEFINED */

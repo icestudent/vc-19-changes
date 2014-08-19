@@ -14,14 +14,16 @@
 _CRT_BEGIN_C_HEADER
 
 
-
-#ifndef _CRT_STDIO_INLINE
+#if defined _NO_CRT_STDIO_INLINE
+    #undef _CRT_STDIO_INLINE
+    #define _CRT_STDIO_INLINE
+#elif !defined _CRT_STDIO_INLINE
     #define _CRT_STDIO_INLINE __inline
 #endif
 
 #if defined _M_IX86
     #define _CRT_INTERNAL_STDIO_SYMBOL_PREFIX "_"
-#elif defined _M_AMD64 || defined _M_ARM
+#elif defined _M_AMD64 || defined _M_ARM || defined _M_CRT_UNSUPPORTED
     #define _CRT_INTERNAL_STDIO_SYMBOL_PREFIX ""
 #else
     #error Unsupported architecture
@@ -39,7 +41,7 @@ _CRT_BEGIN_C_HEADER
 #if defined _CRT_STDIO_LEGACY_WIDE_SPECIFIERS
     #if !defined _M_CEE_PURE
         #pragma comment(lib, "legacy_stdio_wide_specifiers")
-        #pragma comment(linker, "/include:" _CRT_INTERNAL_STDIO_SYMBOL_PREFIX "__scrt_stdio_legacy_wide_specifiers")
+        #pragma comment(linker, "/include:" _CRT_INTERNAL_STDIO_SYMBOL_PREFIX "__PLEASE_LINK_WITH_legacy_stdio_wide_specifiers.lib")
     #endif
 #endif
 

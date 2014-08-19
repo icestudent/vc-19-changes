@@ -15,7 +15,6 @@
 _CRT_BEGIN_C_HEADER
 
 
-
 //-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 //
 // Stream I/O Declarations Required by this Header
@@ -29,11 +28,11 @@ _CRT_BEGIN_C_HEADER
     } FILE;
 #endif
 
-_ACRTIMP FILE* __cdecl __iob_func(unsigned);
+_ACRTIMP_ALT FILE* __cdecl __acrt_iob_func(unsigned);
 
-#define stdin  (__iob_func(0))
-#define stdout (__iob_func(1))
-#define stderr (__iob_func(2))
+#define stdin  (__acrt_iob_func(0))
+#define stdout (__acrt_iob_func(1))
+#define stderr (__acrt_iob_func(2))
 
 #define WEOF ((wint_t)(0xFFFF))
 
@@ -298,9 +297,13 @@ _CRT_STDIO_INLINE int __CRTDECL _vfwprintf_l(
     _In_opt_                                _locale_t      const _Locale,
                                             va_list              _ArgList
     )
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     return __stdio_common_vfwprintf(_CRT_INTERNAL_LOCAL_PRINTF_OPTIONS, _Stream, _Format, _Locale, _ArgList);
 }
+#endif
 
 _Check_return_opt_
 _CRT_STDIO_INLINE int __CRTDECL vfwprintf(
@@ -308,9 +311,13 @@ _CRT_STDIO_INLINE int __CRTDECL vfwprintf(
     _In_z_ _Printf_format_string_ wchar_t const* const _Format,
                                   va_list              _ArgList
     )
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     return _vfwprintf_l(_Stream, _Format, NULL, _ArgList);
 }
+#endif
 
 _Check_return_opt_
 _CRT_STDIO_INLINE int __CRTDECL _vfwprintf_s_l(
@@ -319,9 +326,13 @@ _CRT_STDIO_INLINE int __CRTDECL _vfwprintf_s_l(
     _In_opt_                                _locale_t      const _Locale,
                                             va_list              _ArgList
     )
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     return __stdio_common_vfwprintf_s(_CRT_INTERNAL_LOCAL_PRINTF_OPTIONS, _Stream, _Format, _Locale, _ArgList);
 }
+#endif
 
 #if __STDC_WANT_SECURE_LIB__
 
@@ -331,9 +342,13 @@ _CRT_STDIO_INLINE int __CRTDECL _vfwprintf_s_l(
         _In_z_ _Printf_format_string_ wchar_t const* const _Format,
                                       va_list              _ArgList
         )
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
     {
         return _vfwprintf_s_l(_Stream, _Format, NULL, _ArgList);
     }
+#endif
 
 #endif
 
@@ -344,9 +359,13 @@ _CRT_STDIO_INLINE int __CRTDECL _vfwprintf_p_l(
     _In_opt_                                _locale_t      const _Locale,
                                             va_list              _ArgList
     )
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     return __stdio_common_vfwprintf_p(_CRT_INTERNAL_LOCAL_PRINTF_OPTIONS, _Stream, _Format, _Locale, _ArgList);
 }
+#endif
 
 _Check_return_opt_
 _CRT_STDIO_INLINE int __CRTDECL _vfwprintf_p(
@@ -354,9 +373,13 @@ _CRT_STDIO_INLINE int __CRTDECL _vfwprintf_p(
     _In_z_ _Printf_format_string_ wchar_t const* const _Format,
                                   va_list              _ArgList
     )
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     return _vfwprintf_p_l(_Stream, _Format, NULL, _ArgList);
 }
+#endif
 
 _Check_return_opt_
 _CRT_STDIO_INLINE int __CRTDECL _vwprintf_l(
@@ -364,18 +387,26 @@ _CRT_STDIO_INLINE int __CRTDECL _vwprintf_l(
     _In_opt_                                _locale_t      const _Locale,
                                             va_list              _ArgList
     )
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     return _vfwprintf_l(stdout, _Format, _Locale, _ArgList);
 }
+#endif
 
 _Check_return_opt_
 _CRT_STDIO_INLINE int __CRTDECL vwprintf(
     _In_z_ _Printf_format_string_ wchar_t const* const _Format,
                                   va_list              _ArgList
     )
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     return _vfwprintf_l(stdout, _Format, NULL, _ArgList);
 }
+#endif
 
 _Check_return_opt_
 _CRT_STDIO_INLINE int __CRTDECL _vwprintf_s_l(
@@ -383,9 +414,13 @@ _CRT_STDIO_INLINE int __CRTDECL _vwprintf_s_l(
     _In_opt_                                _locale_t      const _Locale,
                                             va_list              _ArgList
     )
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     return _vfwprintf_s_l(stdout, _Format, _Locale, _ArgList);
 }
+#endif
 
 #if __STDC_WANT_SECURE_LIB__
 
@@ -394,9 +429,13 @@ _CRT_STDIO_INLINE int __CRTDECL _vwprintf_s_l(
         _In_z_ _Printf_format_string_ wchar_t const* const _Format,
                                       va_list              _ArgList
         )
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
     {
         return _vfwprintf_s_l(stdout, _Format, NULL, _ArgList);
     }
+#endif
 
 #endif
 
@@ -406,18 +445,26 @@ _CRT_STDIO_INLINE int __CRTDECL _vwprintf_p_l(
     _In_opt_                                _locale_t      const _Locale,
                                             va_list              _ArgList
     )
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     return _vfwprintf_p_l(stdout, _Format, _Locale, _ArgList);
 }
+#endif
 
 _Check_return_opt_
 _CRT_STDIO_INLINE int __CRTDECL _vwprintf_p(
     _In_z_ _Printf_format_string_ wchar_t const* const _Format,
                                   va_list              _ArgList
     )
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     return _vfwprintf_p_l(stdout, _Format, NULL, _ArgList);
 }
+#endif
 
 _Check_return_opt_
 _CRT_STDIO_INLINE int __CRTDECL _fwprintf_l(
@@ -425,28 +472,36 @@ _CRT_STDIO_INLINE int __CRTDECL _fwprintf_l(
     _In_z_ _Printf_format_string_params_(0) wchar_t const* const _Format,
     _In_opt_                                _locale_t      const _Locale,
     ...)
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     int _Result;
     va_list _ArgList;
-    _crt_va_start(_ArgList, _Locale);
+    __crt_va_start(_ArgList, _Locale);
     _Result = _vfwprintf_l(_Stream, _Format, _Locale, _ArgList);
-    _crt_va_end(_ArgList);
+    __crt_va_end(_ArgList);
     return _Result;
 }
+#endif
 
 _Check_return_opt_
 _CRT_STDIO_INLINE int __CRTDECL fwprintf(
     _Inout_                       FILE*          const _Stream,
     _In_z_ _Printf_format_string_ wchar_t const* const _Format,
     ...)
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     int _Result;
     va_list _ArgList;
-    _crt_va_start(_ArgList, _Format);
+    __crt_va_start(_ArgList, _Format);
     _Result = _vfwprintf_l(_Stream, _Format, NULL, _ArgList);
-    _crt_va_end(_ArgList);
+    __crt_va_end(_ArgList);
     return _Result;
 }
+#endif
 
 _Check_return_opt_
 _CRT_STDIO_INLINE int __CRTDECL _fwprintf_s_l(
@@ -454,14 +509,18 @@ _CRT_STDIO_INLINE int __CRTDECL _fwprintf_s_l(
     _In_z_ _Printf_format_string_params_(0) wchar_t const* const _Format,
     _In_opt_                                _locale_t      const _Locale,
     ...)
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     int _Result;
     va_list _ArgList;
-    _crt_va_start(_ArgList, _Locale);
+    __crt_va_start(_ArgList, _Locale);
     _Result = _vfwprintf_s_l(_Stream, _Format, _Locale, _ArgList);
-    _crt_va_end(_ArgList);
+    __crt_va_end(_ArgList);
     return _Result;
 }
+#endif
 
 #if __STDC_WANT_SECURE_LIB__
 
@@ -470,14 +529,18 @@ _CRT_STDIO_INLINE int __CRTDECL _fwprintf_s_l(
         _Inout_                       FILE*          const _Stream,
         _In_z_ _Printf_format_string_ wchar_t const* const _Format,
         ...)
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
     {
         int _Result;
         va_list _ArgList;
-        _crt_va_start(_ArgList, _Format);
+        __crt_va_start(_ArgList, _Format);
         _Result = _vfwprintf_s_l(_Stream, _Format, NULL, _ArgList);
-        _crt_va_end(_ArgList);
+        __crt_va_end(_ArgList);
         return _Result;
     }
+#endif
 
 #endif
 
@@ -487,69 +550,89 @@ _CRT_STDIO_INLINE int __CRTDECL _fwprintf_p_l(
     _In_z_ _Printf_format_string_params_(0) wchar_t const* const _Format,
     _In_opt_                                _locale_t      const _Locale,
     ...)
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     int _Result;
     va_list _ArgList;
-    _crt_va_start(_ArgList, _Locale);
+    __crt_va_start(_ArgList, _Locale);
     _Result = _vfwprintf_p_l(_Stream, _Format, _Locale, _ArgList);
-    _crt_va_end(_ArgList);
+    __crt_va_end(_ArgList);
     return _Result;
 }
+#endif
 
 _Check_return_opt_
 _CRT_STDIO_INLINE int __CRTDECL _fwprintf_p(
     _Inout_                       FILE*          const _Stream,
     _In_z_ _Printf_format_string_ wchar_t const* const _Format,
     ...)
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     int _Result;
     va_list _ArgList;
-    _crt_va_start(_ArgList, _Format);
+    __crt_va_start(_ArgList, _Format);
     _Result = _vfwprintf_p_l(_Stream, _Format, NULL, _ArgList);
-    _crt_va_end(_ArgList);
+    __crt_va_end(_ArgList);
     return _Result;
 }
+#endif
 
 _Check_return_opt_
 _CRT_STDIO_INLINE int __CRTDECL _wprintf_l(
     _In_z_ _Printf_format_string_params_(0) wchar_t const* const _Format,
     _In_opt_                                _locale_t      const _Locale,
     ...)
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     int _Result;
     va_list _ArgList;
-    _crt_va_start(_ArgList, _Locale);
+    __crt_va_start(_ArgList, _Locale);
     _Result = _vfwprintf_l(stdout, _Format, _Locale, _ArgList);
-    _crt_va_end(_ArgList);
+    __crt_va_end(_ArgList);
     return _Result;
 }
+#endif
 
 _Check_return_opt_
 _CRT_STDIO_INLINE int __CRTDECL wprintf(
     _In_z_ _Printf_format_string_ wchar_t const* const _Format,
     ...)
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     int _Result;
     va_list _ArgList;
-    _crt_va_start(_ArgList, _Format);
+    __crt_va_start(_ArgList, _Format);
     _Result = _vfwprintf_l(stdout, _Format, NULL, _ArgList);
-    _crt_va_end(_ArgList);
+    __crt_va_end(_ArgList);
     return _Result;
 }
+#endif
 
 _Check_return_opt_
 _CRT_STDIO_INLINE int __CRTDECL _wprintf_s_l(
     _In_z_ _Printf_format_string_params_(0) wchar_t const* const _Format,
     _In_opt_                                _locale_t      const _Locale,
     ...)
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     int _Result;
     va_list _ArgList;
-    _crt_va_start(_ArgList, _Locale);
+    __crt_va_start(_ArgList, _Locale);
     _Result = _vfwprintf_s_l(stdout, _Format, _Locale, _ArgList);
-    _crt_va_end(_ArgList);
+    __crt_va_end(_ArgList);
     return _Result;
 }
+#endif
 
 #if __STDC_WANT_SECURE_LIB__
 
@@ -557,14 +640,18 @@ _CRT_STDIO_INLINE int __CRTDECL _wprintf_s_l(
     _CRT_STDIO_INLINE int __CRTDECL wprintf_s(
         _In_z_ _Printf_format_string_ wchar_t const* const _Format,
         ...)
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
     {
         int _Result;
         va_list _ArgList;
-        _crt_va_start(_ArgList, _Format);
+        __crt_va_start(_ArgList, _Format);
         _Result = _vfwprintf_s_l(stdout, _Format, NULL, _ArgList);
-        _crt_va_end(_ArgList);
+        __crt_va_end(_ArgList);
         return _Result;
     }
+#endif
 
 #endif
 
@@ -573,28 +660,35 @@ _CRT_STDIO_INLINE int __CRTDECL _wprintf_p_l(
     _In_z_ _Printf_format_string_params_(0) wchar_t const* const _Format,
     _In_opt_                                _locale_t      const _Locale,
     ...)
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     int _Result;
     va_list _ArgList;
-    _crt_va_start(_ArgList, _Locale);
+    __crt_va_start(_ArgList, _Locale);
     _Result = _vfwprintf_p_l(stdout, _Format, _Locale, _ArgList);
-    _crt_va_end(_ArgList);
+    __crt_va_end(_ArgList);
     return _Result;
 }
+#endif
 
 _Check_return_opt_
 _CRT_STDIO_INLINE int __CRTDECL _wprintf_p(
     _In_z_ _Printf_format_string_ wchar_t const* const _Format,
     ...)
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     int _Result;
     va_list _ArgList;
-    _crt_va_start(_ArgList, _Format);
+    __crt_va_start(_ArgList, _Format);
     _Result = _vfwprintf_p_l(stdout, _Format, NULL, _ArgList);
-    _crt_va_end(_ArgList);
+    __crt_va_end(_ArgList);
     return _Result;
 }
-
+#endif
 
 
 //-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -618,11 +712,15 @@ _CRT_STDIO_INLINE int __CRTDECL _vfwscanf_l(
     _In_opt_                      _locale_t      const _Locale,
                                   va_list              _ArgList
     )
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     return __stdio_common_vfwscanf(
         _CRT_INTERNAL_LOCAL_SCANF_OPTIONS,
         _Stream, _Format, _Locale, _ArgList);
 }
+#endif
 
 _Check_return_opt_
 _CRT_STDIO_INLINE int __CRTDECL vfwscanf(
@@ -630,9 +728,13 @@ _CRT_STDIO_INLINE int __CRTDECL vfwscanf(
     _In_z_ _Printf_format_string_ wchar_t const* const _Format,
                                   va_list              _ArgList
     )
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     return _vfwscanf_l(_Stream, _Format, NULL, _ArgList);
 }
+#endif
 
 _Check_return_opt_
 _CRT_STDIO_INLINE int __CRTDECL _vfwscanf_s_l(
@@ -641,11 +743,15 @@ _CRT_STDIO_INLINE int __CRTDECL _vfwscanf_s_l(
     _In_opt_                      _locale_t      const _Locale,
                                   va_list              _ArgList
     )
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     return __stdio_common_vfwscanf(
         _CRT_INTERNAL_LOCAL_SCANF_OPTIONS | _CRT_INTERNAL_SCANF_SECURECRT,
         _Stream, _Format, _Locale, _ArgList);
 }
+#endif
 
 #if __STDC_WANT_SECURE_LIB__
 
@@ -655,9 +761,13 @@ _CRT_STDIO_INLINE int __CRTDECL _vfwscanf_s_l(
         _In_z_ _Printf_format_string_ wchar_t const* const _Format,
                                       va_list              _ArgList
         )
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
     {
         return _vfwscanf_s_l(_Stream, _Format, NULL, _ArgList);
     }
+#endif
 
 #endif
 
@@ -666,18 +776,26 @@ _CRT_STDIO_INLINE int __CRTDECL _vwscanf_l(
     _In_opt_                      _locale_t      const _Locale,
                                   va_list              _ArgList
     )
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     return _vfwscanf_l(stdin, _Format, _Locale, _ArgList);
 }
+#endif
 
 _Check_return_opt_
 _CRT_STDIO_INLINE int __CRTDECL vwscanf(
     _In_z_ _Printf_format_string_ wchar_t const* const _Format,
                                   va_list              _ArgList
     )
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     return _vfwscanf_l(stdin, _Format, NULL, _ArgList);
 }
+#endif
 
 _Check_return_opt_
 _CRT_STDIO_INLINE int __CRTDECL _vwscanf_s_l(
@@ -685,9 +803,13 @@ _CRT_STDIO_INLINE int __CRTDECL _vwscanf_s_l(
     _In_opt_                      _locale_t      const _Locale,
                                   va_list              _ArgList
     )
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     return _vfwscanf_s_l(stdin, _Format, _Locale, _ArgList);
 }
+#endif
 
 #if __STDC_WANT_SECURE_LIB__
 
@@ -696,9 +818,13 @@ _CRT_STDIO_INLINE int __CRTDECL _vwscanf_s_l(
         _In_z_ _Printf_format_string_ wchar_t const* const _Format,
                                       va_list              _ArgList
         )
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
     {
         return _vfwscanf_s_l(stdin, _Format, NULL, _ArgList);
     }
+#endif
 
 #endif
 
@@ -708,28 +834,36 @@ _CRT_STDIO_INLINE int __CRTDECL _fwscanf_l(
     _In_z_ _Scanf_format_string_params_(0) wchar_t const* const _Format,
     _In_opt_                               _locale_t      const _Locale,
     ...)
+#if defined _NO_CRT_STDIO_INLINE // SCANF
+    ;
+#else
 {
     int _Result;
     va_list _ArgList;
-    _crt_va_start(_ArgList, _Locale);
+    __crt_va_start(_ArgList, _Locale);
     _Result = _vfwscanf_l(_Stream, _Format, _Locale, _ArgList);
-    _crt_va_end(_ArgList);
+    __crt_va_end(_ArgList);
     return _Result;
 }
+#endif
 
 _Check_return_ _CRT_INSECURE_DEPRECATE(fwscanf_s)
 _CRT_STDIO_INLINE int __CRTDECL fwscanf(
     _Inout_                      FILE*          const _Stream,
     _In_z_ _Scanf_format_string_ wchar_t const* const _Format,
     ...)
+#if defined _NO_CRT_STDIO_INLINE // SCANF
+    ;
+#else
 {
     int _Result;
     va_list _ArgList;
-    _crt_va_start(_ArgList, _Format);
+    __crt_va_start(_ArgList, _Format);
     _Result = _vfwscanf_l(_Stream, _Format, NULL, _ArgList);
-    _crt_va_end(_ArgList);
+    __crt_va_end(_ArgList);
     return _Result;
 }
+#endif
 
 _Check_return_opt_
 _CRT_STDIO_INLINE int __CRTDECL _fwscanf_s_l(
@@ -737,14 +871,18 @@ _CRT_STDIO_INLINE int __CRTDECL _fwscanf_s_l(
     _In_z_ _Scanf_s_format_string_params_(0) wchar_t const* const _Format,
     _In_opt_                                 _locale_t      const _Locale,
     ...)
+#if defined _NO_CRT_STDIO_INLINE // SCANF
+    ;
+#else
 {
     int _Result;
     va_list _ArgList;
-    _crt_va_start(_ArgList, _Locale);
+    __crt_va_start(_ArgList, _Locale);
     _Result = _vfwscanf_s_l(_Stream, _Format, _Locale, _ArgList);
-    _crt_va_end(_ArgList);
+    __crt_va_end(_ArgList);
     return _Result;
 }
+#endif
 
 #if __STDC_WANT_SECURE_LIB__
 
@@ -753,14 +891,18 @@ _CRT_STDIO_INLINE int __CRTDECL _fwscanf_s_l(
         _Inout_                        FILE*          const _Stream,
         _In_z_ _Scanf_s_format_string_ wchar_t const* const _Format,
         ...)
+#if defined _NO_CRT_STDIO_INLINE // SCANF
+    ;
+#else
     {
         int _Result;
         va_list _ArgList;
-        _crt_va_start(_ArgList, _Format);
+        __crt_va_start(_ArgList, _Format);
         _Result = _vfwscanf_s_l(_Stream, _Format, NULL, _ArgList);
-        _crt_va_end(_ArgList);
+        __crt_va_end(_ArgList);
         return _Result;
     }
+#endif
 
 #endif
 
@@ -769,41 +911,53 @@ _CRT_STDIO_INLINE int __CRTDECL _wscanf_l(
     _In_z_ _Scanf_format_string_params_(0) wchar_t const* const _Format,
     _In_opt_                               _locale_t      const _Locale,
     ...)
+#if defined _NO_CRT_STDIO_INLINE // SCANF
+    ;
+#else
 {
     int _Result;
     va_list _ArgList;
-    _crt_va_start(_ArgList, _Locale);
+    __crt_va_start(_ArgList, _Locale);
     _Result = _vfwscanf_l(stdin, _Format, _Locale, _ArgList);
-    _crt_va_end(_ArgList);
+    __crt_va_end(_ArgList);
     return _Result;
 }
+#endif
 
 _Check_return_ _CRT_INSECURE_DEPRECATE(wscanf_s)
 _CRT_STDIO_INLINE int __CRTDECL wscanf(
     _In_z_ _Scanf_format_string_ wchar_t const* const _Format,
     ...)
+#if defined _NO_CRT_STDIO_INLINE // SCANF
+    ;
+#else
 {
     int _Result;
     va_list _ArgList;
-    _crt_va_start(_ArgList, _Format);
+    __crt_va_start(_ArgList, _Format);
     _Result = _vfwscanf_l(stdin, _Format, NULL, _ArgList);
-    _crt_va_end(_ArgList);
+    __crt_va_end(_ArgList);
     return _Result;
 }
+#endif
 
 _Check_return_opt_
 _CRT_STDIO_INLINE int __CRTDECL _wscanf_s_l(
     _In_z_ _Scanf_s_format_string_params_(0) wchar_t const* const _Format,
     _In_opt_                                 _locale_t      const _Locale,
     ...)
+#if defined _NO_CRT_STDIO_INLINE // SCANF
+    ;
+#else
 {
     int _Result;
     va_list _ArgList;
-    _crt_va_start(_ArgList, _Locale);
+    __crt_va_start(_ArgList, _Locale);
     _Result = _vfwscanf_s_l(stdin, _Format, _Locale, _ArgList);
-    _crt_va_end(_ArgList);
+    __crt_va_end(_ArgList);
     return _Result;
 }
+#endif
 
 #if __STDC_WANT_SECURE_LIB__
 
@@ -811,14 +965,18 @@ _CRT_STDIO_INLINE int __CRTDECL _wscanf_s_l(
     _CRT_STDIO_INLINE int __CRTDECL wscanf_s(
         _In_z_ _Scanf_s_format_string_ wchar_t const* const _Format,
         ...)
+#if defined _NO_CRT_STDIO_INLINE // SCANF
+        ;
+#else
     {
         int _Result;
         va_list _ArgList;
-        _crt_va_start(_ArgList, _Format);
+        __crt_va_start(_ArgList, _Format);
         _Result = _vfwscanf_s_l(stdin, _Format, NULL, _ArgList);
-        _crt_va_end(_ArgList);
+        __crt_va_end(_ArgList);
         return _Result;
     }
+#endif
 
 #endif
 
@@ -887,6 +1045,9 @@ _CRT_STDIO_INLINE int __CRTDECL _vsnwprintf_l(
     _In_opt_                                _locale_t      const _Locale,
                                             va_list              _ArgList
     )
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     int const _Result = __stdio_common_vswprintf(
         _CRT_INTERNAL_LOCAL_PRINTF_OPTIONS | _CRT_INTERNAL_PRINTF_LEGACY_VSPRINTF_NULL_TERMINATION,
@@ -894,6 +1055,7 @@ _CRT_STDIO_INLINE int __CRTDECL _vsnwprintf_l(
 
     return _Result < 0 ? -1 : _Result;
 }
+#endif
 
 #pragma warning(push)
 #pragma warning(disable: 4793)
@@ -907,6 +1069,9 @@ _CRT_STDIO_INLINE int __CRTDECL _vsnwprintf_s_l(
     _In_opt_                                _locale_t      const _Locale,
                                             va_list              _ArgList
     )
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     int const _Result = __stdio_common_vsnwprintf_s(
         _CRT_INTERNAL_LOCAL_PRINTF_OPTIONS,
@@ -914,6 +1079,7 @@ _CRT_STDIO_INLINE int __CRTDECL _vsnwprintf_s_l(
 
     return _Result < 0 ? -1 : _Result;
 }
+#endif
 
 _Check_return_opt_
 _CRT_STDIO_INLINE int __CRTDECL _vsnwprintf_s(
@@ -923,9 +1089,13 @@ _CRT_STDIO_INLINE int __CRTDECL _vsnwprintf_s(
     _In_z_ _Printf_format_string_ wchar_t const* const _Format,
                                   va_list              _ArgList
     )
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     return _vsnwprintf_s_l(_Buffer, _BufferCount, _MaxCount, _Format, NULL, _ArgList);
 }
+#endif
 
 __DEFINE_CPP_OVERLOAD_STANDARD_NFUNC_0_2_ARGLIST_EX(
     int, __RETURN_POLICY_SAME, _CRT_STDIO_INLINE, __CRTDECL, _snwprintf, _vsnwprintf,
@@ -944,12 +1114,16 @@ _CRT_STDIO_INLINE int __CRTDECL _vsnwprintf(
     _In_z_ _Printf_format_string_            wchar_t const* _Format,
                                              va_list        _ArgList
     )
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     #pragma warning(push)
     #pragma warning(disable: 4996) // Deprecation
     return _vsnwprintf_l(_Buffer, _BufferCount, _Format, NULL, _ArgList);
     #pragma warning(pop)
 }
+#endif
 
 __DEFINE_CPP_OVERLOAD_SECURE_FUNC_0_3(
     int, _vsnwprintf_s,
@@ -967,6 +1141,9 @@ _CRT_STDIO_INLINE int __CRTDECL _vswprintf_c_l(
     _In_opt_                                _locale_t      const _Locale,
                                             va_list              _ArgList
     )
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     int const _Result = __stdio_common_vswprintf(
         _CRT_INTERNAL_LOCAL_PRINTF_OPTIONS,
@@ -974,6 +1151,7 @@ _CRT_STDIO_INLINE int __CRTDECL _vswprintf_c_l(
 
     return _Result < 0 ? -1 : _Result;
 }
+#endif
 
 _Check_return_opt_
 _CRT_STDIO_INLINE int __CRTDECL _vswprintf_c(
@@ -982,9 +1160,13 @@ _CRT_STDIO_INLINE int __CRTDECL _vswprintf_c(
     _In_z_ _Printf_format_string_ wchar_t const* const _Format,
                                   va_list              _ArgList
     )
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     return _vswprintf_c_l(_Buffer, _BufferCount, _Format, NULL, _ArgList);
 }
+#endif
 
 _Check_return_opt_
 _CRT_STDIO_INLINE int __CRTDECL _vswprintf_l(
@@ -994,12 +1176,16 @@ _CRT_STDIO_INLINE int __CRTDECL _vswprintf_l(
     _In_opt_                                _locale_t      const _Locale,
                                             va_list              _ArgList
     )
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     #pragma warning(push)
     #pragma warning(disable: 4996) // Deprecation
     return _vswprintf_c_l(_Buffer, _BufferCount, _Format, _Locale, _ArgList);
     #pragma warning(pop)
 }
+#endif
 
 _Check_return_opt_
 _CRT_STDIO_INLINE int __CRTDECL __vswprintf_l(
@@ -1008,9 +1194,13 @@ _CRT_STDIO_INLINE int __CRTDECL __vswprintf_l(
     _In_opt_                                _locale_t      const _Locale,
                                             va_list              _ArgList
     )
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     return _vswprintf_l(_Buffer, (size_t)-1, _Format, _Locale, _ArgList);
 }
+#endif
 
 _Check_return_opt_
 _CRT_STDIO_INLINE int __CRTDECL _vswprintf(
@@ -1018,9 +1208,13 @@ _CRT_STDIO_INLINE int __CRTDECL _vswprintf(
     _In_z_ _Printf_format_string_ wchar_t const* const _Format,
                                   va_list              _ArgList
     )
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     return _vswprintf_l(_Buffer, (size_t)-1, _Format, NULL, _ArgList);
 }
+#endif
 
 _Check_return_opt_
 _CRT_STDIO_INLINE int __CRTDECL vswprintf(
@@ -1029,9 +1223,13 @@ _CRT_STDIO_INLINE int __CRTDECL vswprintf(
     _In_z_ _Printf_format_string_params_(1) wchar_t const* const _Format,
                                             va_list              _ArgList
     )
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     return _vswprintf_c_l(_Buffer, _BufferCount, _Format, NULL, _ArgList);
 }
+#endif
 
 _Check_return_opt_
 _CRT_STDIO_INLINE int __CRTDECL _vswprintf_s_l(
@@ -1041,6 +1239,9 @@ _CRT_STDIO_INLINE int __CRTDECL _vswprintf_s_l(
     _In_opt_                                _locale_t      const _Locale,
                                             va_list              _ArgList
     )
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     int const _Result = __stdio_common_vswprintf_s(
         _CRT_INTERNAL_LOCAL_PRINTF_OPTIONS,
@@ -1048,6 +1249,7 @@ _CRT_STDIO_INLINE int __CRTDECL _vswprintf_s_l(
 
     return _Result < 0 ? -1 : _Result;
 }
+#endif
 
 #if __STDC_WANT_SECURE_LIB__
 
@@ -1057,9 +1259,13 @@ _CRT_STDIO_INLINE int __CRTDECL _vswprintf_s_l(
         _In_z_ _Printf_format_string_ wchar_t const* const _Format,
                                       va_list              _ArgList
         )
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
     {
         return _vswprintf_s_l(_Buffer, _BufferCount, _Format, NULL, _ArgList);
     }
+#endif
 
 #endif
 
@@ -1078,6 +1284,9 @@ _CRT_STDIO_INLINE int __CRTDECL _vswprintf_p_l(
     _In_opt_                                _locale_t      const _Locale,
                                             va_list              _ArgList
     )
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     int const _Result = __stdio_common_vswprintf_p(
         _CRT_INTERNAL_LOCAL_PRINTF_OPTIONS,
@@ -1085,6 +1294,7 @@ _CRT_STDIO_INLINE int __CRTDECL _vswprintf_p_l(
 
     return _Result < 0 ? -1 : _Result;
 }
+#endif
 
 _Check_return_opt_
 _CRT_STDIO_INLINE int __CRTDECL _vswprintf_p(
@@ -1093,9 +1303,13 @@ _CRT_STDIO_INLINE int __CRTDECL _vswprintf_p(
     _In_z_ _Printf_format_string_ wchar_t const* const _Format,
                                   va_list              _ArgList
     )
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     return _vswprintf_p_l(_Buffer, _BufferCount, _Format, NULL, _ArgList);
 }
+#endif
 
 _Check_return_
 _CRT_STDIO_INLINE int __CRTDECL _vscwprintf_l(
@@ -1103,6 +1317,9 @@ _CRT_STDIO_INLINE int __CRTDECL _vscwprintf_l(
     _In_opt_                                _locale_t      const _Locale,
                                             va_list              _ArgList
     )
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     int const _Result = __stdio_common_vswprintf(
         _CRT_INTERNAL_LOCAL_PRINTF_OPTIONS | _CRT_INTERNAL_PRINTF_STANDARD_SNPRINTF_BEHAVIOR,
@@ -1110,15 +1327,20 @@ _CRT_STDIO_INLINE int __CRTDECL _vscwprintf_l(
 
     return _Result < 0 ? -1 : _Result;
 }
+#endif
 
 _Check_return_
 _CRT_STDIO_INLINE int __CRTDECL _vscwprintf(
     _In_z_ _Printf_format_string_ wchar_t const* const _Format,
                                   va_list              _ArgList
     )
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     return _vscwprintf_l(_Format, NULL, _ArgList);
 }
+#endif
 
 _Check_return_
 _CRT_STDIO_INLINE int __CRTDECL _vscwprintf_p_l(
@@ -1126,6 +1348,9 @@ _CRT_STDIO_INLINE int __CRTDECL _vscwprintf_p_l(
     _In_opt_                                _locale_t      const _Locale,
                                             va_list              _ArgList
     )
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     int const _Result = __stdio_common_vswprintf_p(
         _CRT_INTERNAL_LOCAL_PRINTF_OPTIONS | _CRT_INTERNAL_PRINTF_STANDARD_SNPRINTF_BEHAVIOR,
@@ -1133,15 +1358,20 @@ _CRT_STDIO_INLINE int __CRTDECL _vscwprintf_p_l(
 
     return _Result < 0 ? -1 : _Result;
 }
+#endif
 
 _Check_return_
 _CRT_STDIO_INLINE int __CRTDECL _vscwprintf_p(
     _In_z_ _Printf_format_string_ wchar_t const* const _Format, 
                                   va_list              _ArgList
     )
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     return _vscwprintf_p_l(_Format, NULL, _ArgList);
 }
+#endif
 
 _Check_return_opt_
 _CRT_STDIO_INLINE int __CRTDECL __swprintf_l(
@@ -1149,14 +1379,18 @@ _CRT_STDIO_INLINE int __CRTDECL __swprintf_l(
     _In_z_ _Printf_format_string_params_(2) wchar_t const* const _Format,
     _In_opt_                                _locale_t      const _Locale,
     ...)
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     int _Result;
     va_list _ArgList;
-    _crt_va_start(_ArgList, _Locale);
+    __crt_va_start(_ArgList, _Locale);
     _Result = __vswprintf_l(_Buffer, _Format, _Locale, _ArgList);
-    _crt_va_end(_ArgList);
+    __crt_va_end(_ArgList);
     return _Result;
 }
+#endif
 
 _Check_return_opt_
 _CRT_STDIO_INLINE int __CRTDECL _swprintf_l(
@@ -1165,28 +1399,36 @@ _CRT_STDIO_INLINE int __CRTDECL _swprintf_l(
     _In_z_ _Printf_format_string_params_(0) wchar_t const* const _Format,
     _In_opt_                                _locale_t      const _Locale,
     ...)
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     int _Result;
     va_list _ArgList;
-    _crt_va_start(_ArgList, _Locale);
+    __crt_va_start(_ArgList, _Locale);
     _Result = _vswprintf_c_l(_Buffer, _BufferCount, _Format, _Locale, _ArgList);
-    _crt_va_end(_ArgList);
+    __crt_va_end(_ArgList);
     return _Result;
 }
+#endif
 
 _Check_return_opt_
 _CRT_STDIO_INLINE int __CRTDECL _swprintf(
     _Pre_notnull_ _Post_z_        wchar_t*       const _Buffer,
     _In_z_ _Printf_format_string_ wchar_t const* const _Format,
     ...)
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     int _Result;
     va_list _ArgList;
-    _crt_va_start(_ArgList, _Format);
+    __crt_va_start(_ArgList, _Format);
     _Result = __vswprintf_l(_Buffer, _Format, NULL, _ArgList);
-    _crt_va_end(_ArgList);
+    __crt_va_end(_ArgList);
     return _Result;
 }
+#endif
 
 _Check_return_opt_
 _CRT_STDIO_INLINE int __CRTDECL swprintf(
@@ -1194,14 +1436,18 @@ _CRT_STDIO_INLINE int __CRTDECL swprintf(
     _In_                          size_t         const _BufferCount,
     _In_z_ _Printf_format_string_ wchar_t const* const _Format,
     ...)
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     int _Result;
     va_list _ArgList;
-    _crt_va_start(_ArgList, _Format);
+    __crt_va_start(_ArgList, _Format);
     _Result = _vswprintf_c_l(_Buffer, _BufferCount, _Format, NULL, _ArgList);
-    _crt_va_end(_ArgList);
+    __crt_va_end(_ArgList);
     return _Result;
 }
+#endif
 
 #pragma warning(push)
 #pragma warning(disable:4141 4996 4793) // Suppress double deprecation warnings
@@ -1229,14 +1475,18 @@ _CRT_STDIO_INLINE int __CRTDECL _swprintf_s_l(
     _In_z_ _Printf_format_string_params_(0) wchar_t const* const _Format,
     _In_opt_                                _locale_t      const _Locale,
     ...)
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     int _Result;
     va_list _ArgList;
-    _crt_va_start(_ArgList, _Locale);
+    __crt_va_start(_ArgList, _Locale);
     _Result = _vswprintf_s_l(_Buffer, _BufferCount, _Format, _Locale, _ArgList);
-    _crt_va_end(_ArgList);
+    __crt_va_end(_ArgList);
     return _Result;
 }
+#endif
 
 #if __STDC_WANT_SECURE_LIB__
 
@@ -1245,14 +1495,18 @@ _CRT_STDIO_INLINE int __CRTDECL _swprintf_s_l(
         _In_                          size_t         const _BufferCount,
         _In_z_ _Printf_format_string_ wchar_t const* const _Format,
         ...)
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
     {
         int _Result;
         va_list _ArgList;
-        _crt_va_start(_ArgList, _Format);
+        __crt_va_start(_ArgList, _Format);
         _Result = _vswprintf_s_l(_Buffer, _BufferCount, _Format, NULL, _ArgList);
-        _crt_va_end(_ArgList);
+        __crt_va_end(_ArgList);
         return _Result;
     }
+#endif
 
 #endif
 
@@ -1269,14 +1523,18 @@ _CRT_STDIO_INLINE int __CRTDECL _swprintf_p_l(
     _In_z_ _Printf_format_string_params_(0) wchar_t const* const _Format,
     _In_opt_                                _locale_t      const _Locale,
     ...)
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     int _Result;
     va_list _ArgList;
-    _crt_va_start(_ArgList, _Locale);
+    __crt_va_start(_ArgList, _Locale);
     _Result = _vswprintf_p_l(_Buffer, _BufferCount, _Format, _Locale, _ArgList);
-    _crt_va_end(_ArgList);
+    __crt_va_end(_ArgList);
     return _Result;
 }
+#endif
 
 _Check_return_opt_
 _CRT_STDIO_INLINE int __CRTDECL _swprintf_p(
@@ -1284,14 +1542,18 @@ _CRT_STDIO_INLINE int __CRTDECL _swprintf_p(
     _In_                          size_t         const _BufferCount,
     _In_z_ _Printf_format_string_ wchar_t const* const _Format,
     ...)
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     int _Result;
     va_list _ArgList;
-    _crt_va_start(_ArgList, _Format);
+    __crt_va_start(_ArgList, _Format);
     _Result = _vswprintf_p_l(_Buffer, _BufferCount, _Format, NULL, _ArgList);
-    _crt_va_end(_ArgList);
+    __crt_va_end(_ArgList);
     return _Result;
 }
+#endif
 
 _Check_return_opt_
 _CRT_STDIO_INLINE int __CRTDECL _swprintf_c_l(
@@ -1300,14 +1562,18 @@ _CRT_STDIO_INLINE int __CRTDECL _swprintf_c_l(
     _In_z_ _Printf_format_string_params_(0) wchar_t const* const _Format,
     _In_opt_                                _locale_t      const _Locale,
     ...)
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     int _Result;
     va_list _ArgList;
-    _crt_va_start(_ArgList, _Locale);
+    __crt_va_start(_ArgList, _Locale);
     _Result = _vswprintf_c_l(_Buffer, _BufferCount, _Format, _Locale, _ArgList);
-    _crt_va_end(_ArgList);
+    __crt_va_end(_ArgList);
     return _Result;
 }
+#endif
 
 _Check_return_opt_
 _CRT_STDIO_INLINE int __CRTDECL _swprintf_c(
@@ -1315,14 +1581,18 @@ _CRT_STDIO_INLINE int __CRTDECL _swprintf_c(
     _In_                          size_t         const _BufferCount,
     _In_z_ _Printf_format_string_ wchar_t const* const _Format,
     ...)
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     int _Result;
     va_list _ArgList;
-    _crt_va_start(_ArgList, _Format);
+    __crt_va_start(_ArgList, _Format);
     _Result = _vswprintf_c_l(_Buffer, _BufferCount, _Format, NULL, _ArgList);
-    _crt_va_end(_ArgList);
+    __crt_va_end(_ArgList);
     return _Result;
 }
+#endif
 
 _Check_return_opt_ _CRT_INSECURE_DEPRECATE(_snwprintf_s_l)
 _CRT_STDIO_INLINE int __CRTDECL _snwprintf_l(
@@ -1331,19 +1601,23 @@ _CRT_STDIO_INLINE int __CRTDECL _snwprintf_l(
     _In_z_ _Printf_format_string_params_(0) wchar_t const* const _Format,
     _In_opt_                                _locale_t      const _Locale,
     ...)
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     int _Result;
     va_list _ArgList;
-    _crt_va_start(_ArgList, _Locale);
+    __crt_va_start(_ArgList, _Locale);
 
     #pragma warning(push)
     #pragma warning(disable: 4996) // Deprecation
     _Result = _vsnwprintf_l(_Buffer, _BufferCount, _Format, _Locale, _ArgList);
     #pragma warning(pop)
 
-    _crt_va_end(_ArgList);
+    __crt_va_end(_ArgList);
     return _Result;
 }
+#endif
 
 _Check_return_opt_
 _CRT_STDIO_INLINE int __CRTDECL _snwprintf(
@@ -1351,19 +1625,23 @@ _CRT_STDIO_INLINE int __CRTDECL _snwprintf(
     _In_                                     size_t         _BufferCount,
     _In_z_ _Printf_format_string_            wchar_t const* _Format,
     ...)
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     int _Result;
     va_list _ArgList;
-    _crt_va_start(_ArgList, _Format);
+    __crt_va_start(_ArgList, _Format);
 
     #pragma warning(push)
     #pragma warning(disable: 4996) // Deprecation
     _Result = _vsnwprintf_l(_Buffer, _BufferCount, _Format, NULL, _ArgList);
     #pragma warning(pop)
 
-    _crt_va_end(_ArgList);
+    __crt_va_end(_ArgList);
     return _Result;
 }
+#endif
 
 _Check_return_opt_
 _CRT_STDIO_INLINE int __CRTDECL _snwprintf_s_l(
@@ -1373,14 +1651,18 @@ _CRT_STDIO_INLINE int __CRTDECL _snwprintf_s_l(
     _In_z_ _Printf_format_string_params_(0) wchar_t const* const _Format,
     _In_opt_                                _locale_t      const _Locale,
     ...)
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     int _Result;
     va_list _ArgList;
-    _crt_va_start(_ArgList, _Locale);
+    __crt_va_start(_ArgList, _Locale);
     _Result = _vsnwprintf_s_l(_Buffer, _BufferCount, _MaxCount, _Format, _Locale, _ArgList);
-    _crt_va_end(_ArgList);
+    __crt_va_end(_ArgList);
     return _Result;
 }
+#endif
 
 _Check_return_opt_
 _CRT_STDIO_INLINE int __CRTDECL _snwprintf_s(
@@ -1389,14 +1671,18 @@ _CRT_STDIO_INLINE int __CRTDECL _snwprintf_s(
     _In_                          size_t         const _MaxCount,
     _In_z_ _Printf_format_string_ wchar_t const* const _Format,
     ...)
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     int _Result;
     va_list _ArgList;
-    _crt_va_start(_ArgList, _Format);
+    __crt_va_start(_ArgList, _Format);
     _Result = _vsnwprintf_s_l(_Buffer, _BufferCount, _MaxCount, _Format, NULL, _ArgList);
-    _crt_va_end(_ArgList);
+    __crt_va_end(_ArgList);
     return _Result;
 }
+#endif
 
 __DEFINE_CPP_OVERLOAD_SECURE_FUNC_0_2_ARGLIST(
     int, _snwprintf_s, _vsnwprintf_s,
@@ -1410,54 +1696,70 @@ _CRT_STDIO_INLINE int __CRTDECL _scwprintf_l(
     _In_z_ _Printf_format_string_params_(0) wchar_t const* const _Format,
     _In_opt_                                _locale_t      const _Locale,
     ...)
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     int _Result;
     va_list _ArgList;
-    _crt_va_start(_ArgList, _Locale);
+    __crt_va_start(_ArgList, _Locale);
     _Result = _vscwprintf_l(_Format, _Locale, _ArgList);
-    _crt_va_end(_ArgList);
+    __crt_va_end(_ArgList);
     return _Result;
 }
+#endif
 
 _Check_return_
 _CRT_STDIO_INLINE int __CRTDECL _scwprintf(
     _In_z_ _Printf_format_string_ wchar_t const* const _Format,
     ...)
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     int _Result;
     va_list _ArgList;
-    _crt_va_start(_ArgList, _Format);
+    __crt_va_start(_ArgList, _Format);
     _Result = _vscwprintf_l(_Format, NULL, _ArgList);
-    _crt_va_end(_ArgList);
+    __crt_va_end(_ArgList);
     return _Result;
 }
+#endif
 
 _Check_return_
 _CRT_STDIO_INLINE int __CRTDECL _scwprintf_p_l(
     _In_z_ _Printf_format_string_params_(0) wchar_t const* const _Format,
     _In_opt_                                _locale_t      const _Locale,
     ...)
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     int _Result;
     va_list _ArgList;
-    _crt_va_start(_ArgList, _Locale);
+    __crt_va_start(_ArgList, _Locale);
     _Result = _vscwprintf_p_l(_Format, _Locale, _ArgList);
-    _crt_va_end(_ArgList);
+    __crt_va_end(_ArgList);
     return _Result;
 }
+#endif
 
 _Check_return_
 _CRT_STDIO_INLINE int __CRTDECL _scwprintf_p(
     _In_z_ _Printf_format_string_ wchar_t const* const _Format,
     ...)
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     int _Result;
     va_list _ArgList;
-    _crt_va_start(_ArgList, _Format);
+    __crt_va_start(_ArgList, _Format);
     _Result = _vscwprintf_p_l(_Format, NULL, _ArgList);
-    _crt_va_end(_ArgList);
+    __crt_va_end(_ArgList);
     return _Result;
 }
+#endif
 
 
 #if !defined RC_INVOKED && !defined __midl && !defined _INC_SWPRINTF_INL_
@@ -1467,21 +1769,21 @@ _CRT_STDIO_INLINE int __CRTDECL _scwprintf_p(
     #ifdef __cplusplus
 
         extern "C++" _SWPRINTFS_DEPRECATED _CRT_INSECURE_DEPRECATE(swprintf_s)
-        _CRT_STDIO_INLINE int swprintf(
+        inline int swprintf(
             _Pre_notnull_ _Post_z_        wchar_t*       const _Buffer,
             _In_z_ _Printf_format_string_ wchar_t const* const _Format,
             ...) throw()
         {
             int _Result;
             va_list _ArgList;
-            _crt_va_start(_ArgList, _Format);
+            __crt_va_start(_ArgList, _Format);
             _Result = vswprintf(_Buffer, 2147483647, _Format, _ArgList);       
-            _crt_va_end(_ArgList);
+            __crt_va_end(_ArgList);
             return _Result;
         }
 
         extern "C++" _SWPRINTFS_DEPRECATED _CRT_INSECURE_DEPRECATE(vswprintf_s)
-        _CRT_STDIO_INLINE int __CRTDECL vswprintf(
+        inline int __CRTDECL vswprintf(
             _Pre_notnull_ _Post_z_        wchar_t*       const _Buffer,
             _In_z_ _Printf_format_string_ wchar_t const* const _Format,
                                           va_list              _ArgList
@@ -1491,7 +1793,7 @@ _CRT_STDIO_INLINE int __CRTDECL _scwprintf_p(
         }
 
         extern "C++" _SWPRINTFS_DEPRECATED _CRT_INSECURE_DEPRECATE(_swprintf_s_l)
-        _CRT_STDIO_INLINE int _swprintf_l(
+        inline int _swprintf_l(
             _Pre_notnull_ _Post_z_                  wchar_t*       const _Buffer,
             _In_z_ _Printf_format_string_params_(0) wchar_t const* const _Format,
             _In_opt_                                _locale_t      const _Locale,
@@ -1499,14 +1801,14 @@ _CRT_STDIO_INLINE int __CRTDECL _scwprintf_p(
         {
             int _Result;
             va_list _ArgList;
-            _crt_va_start(_ArgList, _Locale);
+            __crt_va_start(_ArgList, _Locale);
             _Result = _vswprintf_l(_Buffer, (size_t)-1, _Format, _Locale, _ArgList);
-            _crt_va_end(_ArgList);
+            __crt_va_end(_ArgList);
             return _Result;
         }
 
         extern "C++" _SWPRINTFS_DEPRECATED _CRT_INSECURE_DEPRECATE(_vswprintf_s_l)
-        _CRT_STDIO_INLINE int __CRTDECL _vswprintf_l(
+        inline int __CRTDECL _vswprintf_l(
             _Pre_notnull_ _Post_z_                  wchar_t*       const _Buffer,
             _In_z_ _Printf_format_string_params_(2) wchar_t const* const _Format,
             _In_opt_                                _locale_t      const _Locale,
@@ -1550,11 +1852,15 @@ _CRT_STDIO_INLINE int __CRTDECL _vswscanf_l(
     _In_opt_                      _locale_t      const _Locale,
                                   va_list              _ArgList
     )
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     return __stdio_common_vswscanf(
         _CRT_INTERNAL_LOCAL_SCANF_OPTIONS,
         _Buffer, (size_t)-1, _Format, _Locale, _ArgList);
 }
+#endif
 
 _Check_return_opt_
 _CRT_STDIO_INLINE int __CRTDECL vswscanf(
@@ -1562,9 +1868,13 @@ _CRT_STDIO_INLINE int __CRTDECL vswscanf(
     _In_z_ _Printf_format_string_ wchar_t const* _Format,
                                   va_list        _ArgList
     )
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     return _vswscanf_l(_Buffer, _Format, NULL, _ArgList);
 }
+#endif
 
 _Check_return_opt_
 _CRT_STDIO_INLINE int __CRTDECL _vswscanf_s_l(
@@ -1573,11 +1883,15 @@ _CRT_STDIO_INLINE int __CRTDECL _vswscanf_s_l(
     _In_opt_                      _locale_t      const _Locale,
                                   va_list              _ArgList
     )
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     return __stdio_common_vswscanf(
         _CRT_INTERNAL_LOCAL_SCANF_OPTIONS | _CRT_INTERNAL_SCANF_SECURECRT,
         _Buffer, (size_t)-1, _Format, _Locale, _ArgList);
 }
+#endif
 
 #if __STDC_WANT_SECURE_LIB__
 
@@ -1587,9 +1901,13 @@ _CRT_STDIO_INLINE int __CRTDECL _vswscanf_s_l(
         _In_z_ _Printf_format_string_ wchar_t const* const _Format,
                                       va_list              _ArgList
         )
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
     {
         return _vswscanf_s_l(_Buffer, _Format, NULL, _ArgList);
     }
+#endif
 
 #endif
 
@@ -1608,11 +1926,15 @@ _CRT_STDIO_INLINE int __CRTDECL _vsnwscanf_l(
     _In_opt_                               _locale_t      const _Locale,
                                            va_list              _ArgList
     )
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     return __stdio_common_vswscanf(
         _CRT_INTERNAL_LOCAL_SCANF_OPTIONS,
         _Buffer, _BufferCount, _Format, _Locale, _ArgList);
 }
+#endif
 
 _Check_return_opt_
 _CRT_STDIO_INLINE int __CRTDECL _vsnwscanf_s_l(
@@ -1622,11 +1944,15 @@ _CRT_STDIO_INLINE int __CRTDECL _vsnwscanf_s_l(
     _In_opt_                                 _locale_t      const _Locale,
                                              va_list              _ArgList
     )
+#if defined _NO_CRT_STDIO_INLINE
+;
+#else
 {
     return __stdio_common_vswscanf(
         _CRT_INTERNAL_LOCAL_SCANF_OPTIONS | _CRT_INTERNAL_SCANF_SECURECRT,
         _Buffer, _BufferCount, _Format, _Locale, _ArgList);
 }
+#endif
 
 _Check_return_opt_ _CRT_INSECURE_DEPRECATE(_swscanf_s_l)
 _CRT_STDIO_INLINE int __CRTDECL _swscanf_l(
@@ -1634,28 +1960,36 @@ _CRT_STDIO_INLINE int __CRTDECL _swscanf_l(
     _In_z_ _Scanf_format_string_params_(0) wchar_t const* const _Format,
     _In_opt_                               _locale_t            _Locale,
     ...)
+#if defined _NO_CRT_STDIO_INLINE // SCANF
+    ;
+#else
 {
     int _Result;
     va_list _ArgList;
-    _crt_va_start(_ArgList, _Locale);
+    __crt_va_start(_ArgList, _Locale);
     _Result = _vswscanf_l(_Buffer, _Format, _Locale, _ArgList);
-    _crt_va_end(_ArgList);
+    __crt_va_end(_ArgList);
     return _Result;
 }
+#endif
 
 _Check_return_ _CRT_INSECURE_DEPRECATE(swscanf_s)
 _CRT_STDIO_INLINE int __CRTDECL swscanf(
     _In_z_                       wchar_t const* const _Buffer,
     _In_z_ _Scanf_format_string_ wchar_t const* const _Format,
     ...)
+#if defined _NO_CRT_STDIO_INLINE // SCANF
+    ;
+#else
 {
     int _Result;
     va_list _ArgList;
-    _crt_va_start(_ArgList, _Format);
+    __crt_va_start(_ArgList, _Format);
     _Result = _vswscanf_l(_Buffer, _Format, NULL, _ArgList);
-    _crt_va_end(_ArgList);
+    __crt_va_end(_ArgList);
     return _Result;
 }
+#endif
 
 _Check_return_opt_
 _CRT_STDIO_INLINE int __CRTDECL _swscanf_s_l(
@@ -1663,14 +1997,18 @@ _CRT_STDIO_INLINE int __CRTDECL _swscanf_s_l(
     _In_z_ _Scanf_s_format_string_params_(0) wchar_t const* const _Format,
     _In_opt_                                 _locale_t      const _Locale,
     ...)
+#if defined _NO_CRT_STDIO_INLINE // SCANF
+    ;
+#else
 {
     int _Result;
     va_list _ArgList;
-    _crt_va_start(_ArgList, _Locale);
+    __crt_va_start(_ArgList, _Locale);
     _Result = _vswscanf_s_l(_Buffer, _Format, _Locale, _ArgList);
-    _crt_va_end(_ArgList);
+    __crt_va_end(_ArgList);
     return _Result;
 }
+#endif
 
 #if __STDC_WANT_SECURE_LIB__
 
@@ -1679,14 +2017,18 @@ _CRT_STDIO_INLINE int __CRTDECL _swscanf_s_l(
         _In_z_                         wchar_t const* const _Buffer,
         _In_z_ _Scanf_s_format_string_ wchar_t const* const _Format,
         ...)
+#if defined _NO_CRT_STDIO_INLINE // SCANF
+    ;
+#else
     {
         int _Result;
         va_list _ArgList;
-        _crt_va_start(_ArgList, _Format);
+        __crt_va_start(_ArgList, _Format);
         _Result = _vswscanf_s_l(_Buffer, _Format, NULL, _ArgList);  
-        _crt_va_end(_ArgList);
+        __crt_va_end(_ArgList);
         return _Result;
     }
+#endif
 
 #endif
 
@@ -1697,19 +2039,23 @@ _CRT_STDIO_INLINE int __CRTDECL _snwscanf_l(
     _In_z_ _Scanf_format_string_params_(0) wchar_t const* const _Format,
     _In_opt_                               _locale_t      const _Locale,
     ...)
+#if defined _NO_CRT_STDIO_INLINE // SCANF
+    ;
+#else
 {
     int _Result;
     va_list _ArgList;
-    _crt_va_start(_ArgList, _Locale);
+    __crt_va_start(_ArgList, _Locale);
 
     #pragma warning(push)
     #pragma warning(disable: 4996) // Deprecation
     _Result = _vsnwscanf_l(_Buffer, _BufferCount, _Format, _Locale, _ArgList);
     #pragma warning(pop)
 
-    _crt_va_end(_ArgList);
+    __crt_va_end(_ArgList);
     return _Result;
 }
+#endif
 
 _Check_return_opt_ _CRT_INSECURE_DEPRECATE(_snwscanf_s)
 _CRT_STDIO_INLINE int __CRTDECL _snwscanf(
@@ -1717,19 +2063,23 @@ _CRT_STDIO_INLINE int __CRTDECL _snwscanf(
     _In_                             size_t         const _BufferCount,
     _In_z_ _Scanf_format_string_     wchar_t const* const _Format,
     ...)
+#if defined _NO_CRT_STDIO_INLINE // SCANF
+    ;
+#else
 {
     int _Result;
     va_list _ArgList;
-    _crt_va_start(_ArgList, _Format);
+    __crt_va_start(_ArgList, _Format);
 
     #pragma warning(push)
     #pragma warning(disable: 4996) // Deprecation
     _Result = _vsnwscanf_l(_Buffer, _BufferCount, _Format, NULL, _ArgList);
     #pragma warning(pop)
 
-    _crt_va_end(_ArgList);
+    __crt_va_end(_ArgList);
     return _Result;
 }
+#endif
 
 _Check_return_opt_
 _CRT_STDIO_INLINE int __CRTDECL _snwscanf_s_l(
@@ -1738,14 +2088,18 @@ _CRT_STDIO_INLINE int __CRTDECL _snwscanf_s_l(
     _In_z_ _Scanf_s_format_string_params_(0) wchar_t const* const _Format,
     _In_opt_                                 _locale_t      const _Locale,
     ...)
+#if defined _NO_CRT_STDIO_INLINE // SCANF
+    ;
+#else
 {
     int _Result;
     va_list _ArgList;
-    _crt_va_start(_ArgList, _Locale);
+    __crt_va_start(_ArgList, _Locale);
     _Result = _vsnwscanf_s_l(_Buffer, _BufferCount, _Format, _Locale, _ArgList);
-    _crt_va_end(_ArgList);
+    __crt_va_end(_ArgList);
     return _Result;
 }
+#endif
 
 _Check_return_opt_
 _CRT_STDIO_INLINE int __CRTDECL _snwscanf_s(
@@ -1753,15 +2107,18 @@ _CRT_STDIO_INLINE int __CRTDECL _snwscanf_s(
     _In_                              size_t         const _BufferCount,
     _In_z_ _Scanf_s_format_string_    wchar_t const* const _Format,
     ...)
+#if defined _NO_CRT_STDIO_INLINE // SCANF
+    ;
+#else
 {
     int _Result;
     va_list _ArgList;
-    _crt_va_start(_ArgList, _Format);
+    __crt_va_start(_ArgList, _Format);
     _Result = _vsnwscanf_s_l(_Buffer, _BufferCount, _Format, NULL, _ArgList);
-    _crt_va_end(_ArgList);
+    __crt_va_end(_ArgList);
     return _Result;
 }
-
+#endif
 
 #ifdef _M_CEE_MIXED
     #pragma managed(pop)

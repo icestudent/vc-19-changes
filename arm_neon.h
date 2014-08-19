@@ -116,32 +116,38 @@ typedef unsigned __int16 poly16_t;
 
 typedef float float32_t;
 
+#if !defined(_ARM_USE_NEW_NEON_INTRINSICS)
+// Once a version is determined, this should default based on _MSC_FULL_VER
+#define _ARM_USE_DEPRECATED_NEON_INTRINSICS
+#endif
+
+#if defined(_ARM_USE_DEPRECATED_NEON_INTRINSICS)
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-__inline _Post_equal_to_(p) __n64 *__int8ToN64(_In_ int8_t *p)       { return (__n64 *)p; }
-__inline _Post_equal_to_(p) __n64 *__int16ToN64(_In_ int16_t *p)     { return (__n64 *)p; }
-__inline _Post_equal_to_(p) __n64 *__int32ToN64(_In_ int32_t *p)     { return (__n64 *)p; }
-__inline _Post_equal_to_(p) __n64 *__int64ToN64(_In_ int64_t *p)     { return (__n64 *)p; }
-__inline _Post_equal_to_(p) __n64 *__uint8ToN64(_In_ uint8_t *p)     { return (__n64 *)p; }
-__inline _Post_equal_to_(p) __n64 *__uint16ToN64(_In_ uint16_t *p)   { return (__n64 *)p; }
-__inline _Post_equal_to_(p) __n64 *__uint32ToN64(_In_ uint32_t *p)   { return (__n64 *)p; }
-__inline _Post_equal_to_(p) __n64 *__uint64ToN64(_In_ uint64_t *p)   { return (__n64 *)p; }
-__inline _Post_equal_to_(p) __n64 *__poly8ToN64(_In_ poly8_t *p)     { return (__n64 *)p; }
-__inline _Post_equal_to_(p) __n64 *__poly16ToN64(_In_ poly16_t *p)   { return (__n64 *)p; }
-__inline _Post_equal_to_(p) __n64 *__float32ToN64(_In_ float32_t *p) { return (__n64 *)p; }
+__inline _Post_equal_to_(p) __n64 *__int8ToN64(_Pre_notnull_ _Const_ int8_t *p)       { return (__n64 *)p; }
+__inline _Post_equal_to_(p) __n64 *__int16ToN64(_Pre_notnull_ _Const_ int16_t *p)     { return (__n64 *)p; }
+__inline _Post_equal_to_(p) __n64 *__int32ToN64(_Pre_notnull_ _Const_ int32_t *p)     { return (__n64 *)p; }
+__inline _Post_equal_to_(p) __n64 *__int64ToN64(_Pre_notnull_ _Const_ int64_t *p)     { return (__n64 *)p; }
+__inline _Post_equal_to_(p) __n64 *__uint8ToN64(_Pre_notnull_ _Const_ uint8_t *p)     { return (__n64 *)p; }
+__inline _Post_equal_to_(p) __n64 *__uint16ToN64(_Pre_notnull_ _Const_ uint16_t *p)   { return (__n64 *)p; }
+__inline _Post_equal_to_(p) __n64 *__uint32ToN64(_Pre_notnull_ _Const_ uint32_t *p)   { return (__n64 *)p; }
+__inline _Post_equal_to_(p) __n64 *__uint64ToN64(_Pre_notnull_ _Const_ uint64_t *p)   { return (__n64 *)p; }
+__inline _Post_equal_to_(p) __n64 *__poly8ToN64(_Pre_notnull_ _Const_ poly8_t *p)     { return (__n64 *)p; }
+__inline _Post_equal_to_(p) __n64 *__poly16ToN64(_Pre_notnull_ _Const_ poly16_t *p)   { return (__n64 *)p; }
+__inline _Post_equal_to_(p) __n64 *__float32ToN64(_Pre_notnull_ _Const_ float32_t *p) { return (__n64 *)p; }
 
-__inline _Post_equal_to_(p) const __n64 *__int8ToN64_c(_In_ const int8_t *p)       { return (const __n64 *)p; }
-__inline _Post_equal_to_(p) const __n64 *__int16ToN64_c(_In_ const int16_t *p)     { return (const __n64 *)p; }
-__inline _Post_equal_to_(p) const __n64 *__int32ToN64_c(_In_ const int32_t *p)     { return (const __n64 *)p; }
-__inline _Post_equal_to_(p) const __n64 *__int64ToN64_c(_In_ const int64_t *p)     { return (const __n64 *)p; }
-__inline _Post_equal_to_(p) const __n64 *__uint8ToN64_c(_In_ const uint8_t *p)     { return (const __n64 *)p; }
-__inline _Post_equal_to_(p) const __n64 *__uint16ToN64_c(_In_ const uint16_t *p)   { return (const __n64 *)p; }
-__inline _Post_equal_to_(p) const __n64 *__uint32ToN64_c(_In_ const uint32_t *p)   { return (const __n64 *)p; }
-__inline _Post_equal_to_(p) const __n64 *__uint64ToN64_c(_In_ const uint64_t *p)   { return (const __n64 *)p; }
-__inline _Post_equal_to_(p) const __n64 *__poly8ToN64_c(_In_ const poly8_t *p)     { return (const __n64 *)p; }
-__inline _Post_equal_to_(p) const __n64 *__poly16ToN64_c(_In_ const poly16_t *p)   { return (const __n64 *)p; }
-__inline _Post_equal_to_(p) const __n64 *__float32ToN64_c(_In_ const float32_t *p) { return (const __n64 *)p; }
+__inline _Post_equal_to_(p) const __n64 *__int8ToN64_c(_Pre_notnull_ _Const_ const int8_t *p)       { return (const __n64 *)p; }
+__inline _Post_equal_to_(p) const __n64 *__int16ToN64_c(_Pre_notnull_ _Const_ const int16_t *p)     { return (const __n64 *)p; }
+__inline _Post_equal_to_(p) const __n64 *__int32ToN64_c(_Pre_notnull_ _Const_ const int32_t *p)     { return (const __n64 *)p; }
+__inline _Post_equal_to_(p) const __n64 *__int64ToN64_c(_Pre_notnull_ _Const_ const int64_t *p)     { return (const __n64 *)p; }
+__inline _Post_equal_to_(p) const __n64 *__uint8ToN64_c(_Pre_notnull_ _Const_ const uint8_t *p)     { return (const __n64 *)p; }
+__inline _Post_equal_to_(p) const __n64 *__uint16ToN64_c(_Pre_notnull_ _Const_ const uint16_t *p)   { return (const __n64 *)p; }
+__inline _Post_equal_to_(p) const __n64 *__uint32ToN64_c(_Pre_notnull_ _Const_ const uint32_t *p)   { return (const __n64 *)p; }
+__inline _Post_equal_to_(p) const __n64 *__uint64ToN64_c(_Pre_notnull_ _Const_ const uint64_t *p)   { return (const __n64 *)p; }
+__inline _Post_equal_to_(p) const __n64 *__poly8ToN64_c(_Pre_notnull_ _Const_ const poly8_t *p)     { return (const __n64 *)p; }
+__inline _Post_equal_to_(p) const __n64 *__poly16ToN64_c(_Pre_notnull_ _Const_ const poly16_t *p)   { return (const __n64 *)p; }
+__inline _Post_equal_to_(p) const __n64 *__float32ToN64_c(_Pre_notnull_ _Const_ const float32_t *p) { return (const __n64 *)p; }
 
 __inline int32_t __int8ToInt32(int8_t i)      { return (int32_t)i; }
 __inline int32_t __int16ToInt32(int16_t i)    { return (int32_t)i; }
@@ -164,6 +170,8 @@ __inline int32_t __poly16ToInt32(poly16_t i)  { return (int32_t)i; }
 #define vshll_n_u8(Dm, shift_amount)           ( __static_assert((shift_amount) >= 0 && (shift_amount) <= 8,  "invalid shift amount"), ((shift_amount) == 8)  ? __internal_vshll_n_t2_u8((Dm))  : __internal_vshll_n_t1_u8((Dm),  (shift_amount)) )
 #define vshll_n_u16(Dm, shift_amount)          ( __static_assert((shift_amount) >= 0 && (shift_amount) <= 16, "invalid shift amount"), ((shift_amount) == 16) ? __internal_vshll_n_t2_u16((Dm)) : __internal_vshll_n_t1_u16((Dm), (shift_amount)) )
 #define vshll_n_u32(Dm, shift_amount)          ( __static_assert((shift_amount) >= 0 && (shift_amount) <= 32, "invalid shift amount"), ((shift_amount) == 32) ? __internal_vshll_n_t2_u32((Dm)) : __internal_vshll_n_t1_u32((Dm), (shift_amount)) )
+
+#endif
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -261,6 +269,7 @@ typedef __n128x4 uint64x2x4_t;
 
 // } +++ auto-generated code ends (explicit types)
 
+#if defined(_ARM_USE_DEPRECATED_NEON_INTRINSICS)
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -353,11 +362,13 @@ void __neon_AdrQx4x(unsigned int _Enc, _Out_writes_bytes_(_Inexpressible_(_Enc))
 
 // } +++ auto-generated code ends (prototypes)
 
+#endif
 
 #if defined (__cplusplus)
 }
 #endif  /* defined (__cplusplus) */
 
+#if defined(_ARM_USE_DEPRECATED_NEON_INTRINSICS)
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -3014,11 +3025,4657 @@ void __neon_AdrQx4x(unsigned int _Enc, _Out_writes_bytes_(_Inexpressible_(_Enc))
 #define vqdmlsl_n_s32(Vd, Vn, Rt)      vqdmlsl_lane_s32((Vd), (Vn), vmov_n_s32(Rt), 0)
 
 //  VDUP.64 (scalar)
-#define vdup_lane_s64(Dn, lane)        ( __static_assert(lane == 0, "invalid lane index"), (Dn) )
-#define vdup_lane_u64(Dn, lane)        ( __static_assert(lane == 0, "invalid lane index"), (Dn) )
+#define vdup_lane_s64(Dn, lane)        (__static_assert((lane) == 0, "invalid lane index"), (Dn))
+#define vdup_lane_u64(Dn, lane)        (__static_assert((lane) == 0, "invalid lane index"), (Dn))
 
 //  VDUP.W.64 (scalar)
-#define vdupq_lane_s64(Dn, lane)       ( __static_assert(lane == 0, "invalid lane index"), vcombine_s64((Dn), (Dn)) )
-#define vdupq_lane_u64(Dn, lane)       ( __static_assert(lane == 0, "invalid lane index"), vcombine_u64((Dn), (Dn)) )
+#define vdupq_lane_s64(Dn, lane)       (__static_assert((lane) == 0, "invalid lane index"), vcombine_s64((Dn), (Dn)))
+#define vdupq_lane_u64(Dn, lane)       (__static_assert((lane) == 0, "invalid lane index"), vcombine_u64((Dn), (Dn)))
 
 // } +++ auto-generated code ends (Pseudo intrinsics)
+
+#else // defined(_ARM_USE_DEPRECATED_NEON_INTRINSICS)
+
+#if defined (__cplusplus)
+extern "C" {
+#endif  /* defined (__cplusplus) */
+
+__n128 __aesd_p8(__n128 _Qm);
+__n128 __aesd_s8(__n128 _Qm);
+__n128 __aesd_u8(__n128 _Qm);
+__n128 __aese_p8(__n128 _Qm);
+__n128 __aese_s8(__n128 _Qm);
+__n128 __aese_u8(__n128 _Qm);
+__n128 __aesimc_p8(__n128 _Qm);
+__n128 __aesimc_s8(__n128 _Qm);
+__n128 __aesimc_u8(__n128 _Qm);
+__n128 __aesmc_p8(__n128 _Qm);
+__n128 __aesmc_s8(__n128 _Qm);
+__n128 __aesmc_u8(__n128 _Qm);
+__n128 __sha1h_f32(__n128 _Qm);
+__n128 __sha1h_s32(__n128 _Qm);
+__n128 __sha1h_u32(__n128 _Qm);
+__n128 __sha1su1_f32(__n128 _Qm);
+__n128 __sha1su1_s32(__n128 _Qm);
+__n128 __sha1su1_u32(__n128 _Qm);
+__n128 __sha256su0_f32(__n128 _Qm);
+__n128 __sha256su0_s32(__n128 _Qm);
+__n128 __sha256su0_u32(__n128 _Qm);
+__n128 __sha1c_f32(__n128 _Qn, __n128 _Qm);
+__n128 __sha1c_s32(__n128 _Qn, __n128 _Qm);
+__n128 __sha1c_u32(__n128 _Qn, __n128 _Qm);
+__n128 __sha1m_f32(__n128 _Qn, __n128 _Qm);
+__n128 __sha1m_s32(__n128 _Qn, __n128 _Qm);
+__n128 __sha1m_u32(__n128 _Qn, __n128 _Qm);
+__n128 __sha1p_f32(__n128 _Qn, __n128 _Qm);
+__n128 __sha1p_s32(__n128 _Qn, __n128 _Qm);
+__n128 __sha1p_u32(__n128 _Qn, __n128 _Qm);
+__n128 __sha1su0_f32(__n128 _Qn, __n128 _Qm);
+__n128 __sha1su0_s32(__n128 _Qn, __n128 _Qm);
+__n128 __sha1su0_u32(__n128 _Qn, __n128 _Qm);
+__n128 __sha256h_f32(__n128 _Qn, __n128 _Qm);
+__n128 __sha256h_s32(__n128 _Qn, __n128 _Qm);
+__n128 __sha256h_u32(__n128 _Qn, __n128 _Qm);
+__n128 __sha256h2_f32(__n128 _Qn, __n128 _Qm);
+__n128 __sha256h2_s32(__n128 _Qn, __n128 _Qm);
+__n128 __sha256h2_u32(__n128 _Qn, __n128 _Qm);
+__n128 __sha256su1_f32(__n128 _Qn, __n128 _Qm);
+__n128 __sha256su1_s32(__n128 _Qn, __n128 _Qm);
+__n128 __sha256su1_u32(__n128 _Qn, __n128 _Qm);
+__n64 __vaba_s16(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vaba_s32(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vaba_s8(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vaba_u16(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vaba_u32(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vaba_u8(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n128 __vabal_s16(__n128 _Qd, __n64 _Dn, __n64 _Dm);
+__n128 __vabal_s32(__n128 _Qd, __n64 _Dn, __n64 _Dm);
+__n128 __vabal_s8(__n128 _Qd, __n64 _Dn, __n64 _Dm);
+__n128 __vabal_u16(__n128 _Qd, __n64 _Dn, __n64 _Dm);
+__n128 __vabal_u32(__n128 _Qd, __n64 _Dn, __n64 _Dm);
+__n128 __vabal_u8(__n128 _Qd, __n64 _Dn, __n64 _Dm);
+__n128 __vabaq_s16(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vabaq_s32(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vabaq_s8(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vabaq_u16(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vabaq_u32(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vabaq_u8(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n64 __vabd_f32(__n64 _Dn, __n64 _Dm);
+__n128 __vabdq_f32(__n128 _Qn, __n128 _Qm);
+__n64 __vabd_s16(__n64 _Dn, __n64 _Dm);
+__n64 __vabd_s32(__n64 _Dn, __n64 _Dm);
+__n64 __vabd_s8(__n64 _Dn, __n64 _Dm);
+__n64 __vabd_u16(__n64 _Dn, __n64 _Dm);
+__n64 __vabd_u32(__n64 _Dn, __n64 _Dm);
+__n64 __vabd_u8(__n64 _Dn, __n64 _Dm);
+__n128 __vabdl_s16(__n64 _Dn, __n64 _Dm);
+__n128 __vabdl_s32(__n64 _Dn, __n64 _Dm);
+__n128 __vabdl_s8(__n64 _Dn, __n64 _Dm);
+__n128 __vabdl_u16(__n64 _Dn, __n64 _Dm);
+__n128 __vabdl_u32(__n64 _Dn, __n64 _Dm);
+__n128 __vabdl_u8(__n64 _Dn, __n64 _Dm);
+__n128 __vabdq_s16(__n128 _Qn, __n128 _Qm);
+__n128 __vabdq_s32(__n128 _Qn, __n128 _Qm);
+__n128 __vabdq_s8(__n128 _Qn, __n128 _Qm);
+__n128 __vabdq_u16(__n128 _Qn, __n128 _Qm);
+__n128 __vabdq_u32(__n128 _Qn, __n128 _Qm);
+__n128 __vabdq_u8(__n128 _Qn, __n128 _Qm);
+__n64 __vabs_f32(__n64 _Dm);
+__n64 __vabs_s16(__n64 _Dm);
+__n64 __vabs_s32(__n64 _Dm);
+__n64 __vabs_s8(__n64 _Dm);
+__n64 __vneg_f32(__n64 _Dm);
+__n64 __vneg_s16(__n64 _Dm);
+__n64 __vneg_s32(__n64 _Dm);
+__n64 __vneg_s8(__n64 _Dm);
+__n128 __vabsq_f32(__n128 _Qm);
+__n128 __vabsq_s16(__n128 _Qm);
+__n128 __vabsq_s32(__n128 _Qm);
+__n128 __vabsq_s8(__n128 _Qm);
+__n128 __vnegq_f32(__n128 _Qm);
+__n128 __vnegq_s16(__n128 _Qm);
+__n128 __vnegq_s32(__n128 _Qm);
+__n128 __vnegq_s8(__n128 _Qm);
+__n64 __vacge_f32(__n64 _Dn, __n64 _Dm);
+__n64 __vacgt_f32(__n64 _Dn, __n64 _Dm);
+__n64 __vacle_f32(__n64 _Dn, __n64 _Dm);
+__n64 __vaclt_f32(__n64 _Dn, __n64 _Dm);
+__n128 __vacgeq_f32(__n128 _Qn, __n128 _Qm);
+__n128 __vacgtq_f32(__n128 _Qn, __n128 _Qm);
+__n128 __vacleq_f32(__n128 _Qn, __n128 _Qm);
+__n128 __vacltq_f32(__n128 _Qn, __n128 _Qm);
+__n64 __vadd_f32(__n64 _Dn, __n64 _Dm);
+__n64 __vadd_s16(__n64 _Dn, __n64 _Dm);
+__n64 __vadd_s32(__n64 _Dn, __n64 _Dm);
+__n64 __vadd_s64(__n64 _Dn, __n64 _Dm);
+__n64 __vadd_s8(__n64 _Dn, __n64 _Dm);
+__n64 __vadd_u16(__n64 _Dn, __n64 _Dm);
+__n64 __vadd_u32(__n64 _Dn, __n64 _Dm);
+__n64 __vadd_u64(__n64 _Dn, __n64 _Dm);
+__n64 __vadd_u8(__n64 _Dn, __n64 _Dm);
+__n128 __vaddq_f32(__n128 _Qn, __n128 _Qm);
+__n128 __vaddq_s16(__n128 _Qn, __n128 _Qm);
+__n128 __vaddq_s32(__n128 _Qn, __n128 _Qm);
+__n128 __vaddq_s64(__n128 _Qn, __n128 _Qm);
+__n128 __vaddq_s8(__n128 _Qn, __n128 _Qm);
+__n128 __vaddq_u16(__n128 _Qn, __n128 _Qm);
+__n128 __vaddq_u32(__n128 _Qn, __n128 _Qm);
+__n128 __vaddq_u64(__n128 _Qn, __n128 _Qm);
+__n128 __vaddq_u8(__n128 _Qn, __n128 _Qm);
+__n64 __vaddhn_s16(__n128 _Qn, __n128 _Qm);
+__n64 __vaddhn_s32(__n128 _Qn, __n128 _Qm);
+__n64 __vaddhn_s64(__n128 _Qn, __n128 _Qm);
+__n64 __vaddhn_u16(__n128 _Qn, __n128 _Qm);
+__n64 __vaddhn_u32(__n128 _Qn, __n128 _Qm);
+__n64 __vaddhn_u64(__n128 _Qn, __n128 _Qm);
+__n64 __vraddhn_s16(__n128 _Qn, __n128 _Qm);
+__n64 __vraddhn_s32(__n128 _Qn, __n128 _Qm);
+__n64 __vraddhn_s64(__n128 _Qn, __n128 _Qm);
+__n64 __vraddhn_u16(__n128 _Qn, __n128 _Qm);
+__n64 __vraddhn_u32(__n128 _Qn, __n128 _Qm);
+__n64 __vraddhn_u64(__n128 _Qn, __n128 _Qm);
+__n128 __vaddl_s16(__n64 _Dn, __n64 _Dm);
+__n128 __vaddl_s32(__n64 _Dn, __n64 _Dm);
+__n128 __vaddl_s8(__n64 _Dn, __n64 _Dm);
+__n128 __vaddl_u16(__n64 _Dn, __n64 _Dm);
+__n128 __vaddl_u32(__n64 _Dn, __n64 _Dm);
+__n128 __vaddl_u8(__n64 _Dn, __n64 _Dm);
+__n128 __vaddw_s16(__n128 _Qn, __n64 _Dm);
+__n128 __vaddw_s32(__n128 _Qn, __n64 _Dm);
+__n128 __vaddw_s8(__n128 _Qn, __n64 _Dm);
+__n128 __vaddw_u16(__n128 _Qn, __n64 _Dm);
+__n128 __vaddw_u32(__n128 _Qn, __n64 _Dm);
+__n128 __vaddw_u8(__n128 _Qn, __n64 _Dm);
+__n64 __vand_s16(__n64 _Dn, __n64 _Dm);
+__n64 __vand_s32(__n64 _Dn, __n64 _Dm);
+__n64 __vand_s64(__n64 _Dn, __n64 _Dm);
+__n64 __vand_s8(__n64 _Dn, __n64 _Dm);
+__n64 __vand_u16(__n64 _Dn, __n64 _Dm);
+__n64 __vand_u32(__n64 _Dn, __n64 _Dm);
+__n64 __vand_u64(__n64 _Dn, __n64 _Dm);
+__n64 __vand_u8(__n64 _Dn, __n64 _Dm);
+__n64 __vorr_s16(__n64 _Dn, __n64 _Dm);
+__n64 __vorr_s32(__n64 _Dn, __n64 _Dm);
+__n64 __vorr_s64(__n64 _Dn, __n64 _Dm);
+__n64 __vorr_s8(__n64 _Dn, __n64 _Dm);
+__n64 __vorr_u16(__n64 _Dn, __n64 _Dm);
+__n64 __vorr_u32(__n64 _Dn, __n64 _Dm);
+__n64 __vorr_u64(__n64 _Dn, __n64 _Dm);
+__n64 __vorr_u8(__n64 _Dn, __n64 _Dm);
+__n128 __vandq_s16(__n128 _Qn, __n128 _Qm);
+__n128 __vandq_s32(__n128 _Qn, __n128 _Qm);
+__n128 __vandq_s64(__n128 _Qn, __n128 _Qm);
+__n128 __vandq_s8(__n128 _Qn, __n128 _Qm);
+__n128 __vandq_u16(__n128 _Qn, __n128 _Qm);
+__n128 __vandq_u32(__n128 _Qn, __n128 _Qm);
+__n128 __vandq_u64(__n128 _Qn, __n128 _Qm);
+__n128 __vandq_u8(__n128 _Qn, __n128 _Qm);
+__n128 __vorrq_s16(__n128 _Qn, __n128 _Qm);
+__n128 __vorrq_s32(__n128 _Qn, __n128 _Qm);
+__n128 __vorrq_s64(__n128 _Qn, __n128 _Qm);
+__n128 __vorrq_s8(__n128 _Qn, __n128 _Qm);
+__n128 __vorrq_u16(__n128 _Qn, __n128 _Qm);
+__n128 __vorrq_u32(__n128 _Qn, __n128 _Qm);
+__n128 __vorrq_u64(__n128 _Qn, __n128 _Qm);
+__n128 __vorrq_u8(__n128 _Qn, __n128 _Qm);
+__n64 __vbif_f32(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vbif_p16(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vbif_p8(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vbif_s16(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vbif_s32(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vbif_s64(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vbif_s8(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vbif_u16(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vbif_u32(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vbif_u64(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vbif_u8(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vbit_f32(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vbit_p16(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vbit_p8(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vbit_s16(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vbit_s32(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vbit_s64(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vbit_s8(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vbit_u16(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vbit_u32(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vbit_u64(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vbit_u8(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vbsl_f32(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vbsl_p16(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vbsl_p8(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vbsl_s16(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vbsl_s32(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vbsl_s64(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vbsl_s8(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vbsl_u16(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vbsl_u32(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vbsl_u64(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vbsl_u8(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n128 __vbifq_f32(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vbifq_p16(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vbifq_p8(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vbifq_s16(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vbifq_s32(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vbifq_s64(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vbifq_s8(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vbifq_u16(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vbifq_u32(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vbifq_u64(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vbifq_u8(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vbitq_f32(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vbitq_p16(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vbitq_p8(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vbitq_s16(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vbitq_s32(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vbitq_s64(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vbitq_s8(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vbitq_u16(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vbitq_u32(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vbitq_u64(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vbitq_u8(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vbslq_f32(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vbslq_p16(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vbslq_p8(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vbslq_s16(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vbslq_s32(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vbslq_s64(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vbslq_s8(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vbslq_u16(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vbslq_u32(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vbslq_u64(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vbslq_u8(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n64 __vceq_z_f32_ex(__n64 _Dm);
+__n64 __vceq_z_s16_ex(__n64 _Dm);
+__n64 __vceq_z_s32_ex(__n64 _Dm);
+__n64 __vceq_z_s8_ex(__n64 _Dm);
+__n64 __vceq_z_u16_ex(__n64 _Dm);
+__n64 __vceq_z_u32_ex(__n64 _Dm);
+__n64 __vceq_z_u8_ex(__n64 _Dm);
+__n128 __vceqq_z_f32_ex(__n128 _Qm);
+__n128 __vceqq_z_s16_ex(__n128 _Qm);
+__n128 __vceqq_z_s32_ex(__n128 _Qm);
+__n128 __vceqq_z_s8_ex(__n128 _Qm);
+__n128 __vceqq_z_u16_ex(__n128 _Qm);
+__n128 __vceqq_z_u32_ex(__n128 _Qm);
+__n128 __vceqq_z_u8_ex(__n128 _Qm);
+__n64 __vceq_f32(__n64 _Dn, __n64 _Dm);
+__n64 __vceq_p8(__n64 _Dn, __n64 _Dm);
+__n64 __vceq_s16(__n64 _Dn, __n64 _Dm);
+__n64 __vceq_s32(__n64 _Dn, __n64 _Dm);
+__n64 __vceq_s8(__n64 _Dn, __n64 _Dm);
+__n64 __vceq_u16(__n64 _Dn, __n64 _Dm);
+__n64 __vceq_u32(__n64 _Dn, __n64 _Dm);
+__n64 __vceq_u8(__n64 _Dn, __n64 _Dm);
+__n128 __vceqq_f32(__n128 _Qn, __n128 _Qm);
+__n128 __vceqq_p8(__n128 _Qn, __n128 _Qm);
+__n128 __vceqq_s16(__n128 _Qn, __n128 _Qm);
+__n128 __vceqq_s32(__n128 _Qn, __n128 _Qm);
+__n128 __vceqq_s8(__n128 _Qn, __n128 _Qm);
+__n128 __vceqq_u16(__n128 _Qn, __n128 _Qm);
+__n128 __vceqq_u32(__n128 _Qn, __n128 _Qm);
+__n128 __vceqq_u8(__n128 _Qn, __n128 _Qm);
+__n64 __vcge_z_f32_ex(__n64 _Dm);
+__n64 __vcge_z_s16_ex(__n64 _Dm);
+__n64 __vcge_z_s32_ex(__n64 _Dm);
+__n64 __vcge_z_s8_ex(__n64 _Dm);
+__n128 __vcgeq_z_f32_ex(__n128 _Qm);
+__n128 __vcgeq_z_s16_ex(__n128 _Qm);
+__n128 __vcgeq_z_s32_ex(__n128 _Qm);
+__n128 __vcgeq_z_s8_ex(__n128 _Qm);
+__n64 __vcge_f32(__n64 _Dn, __n64 _Dm);
+__n64 __vcge_s16(__n64 _Dn, __n64 _Dm);
+__n64 __vcge_s32(__n64 _Dn, __n64 _Dm);
+__n64 __vcge_s8(__n64 _Dn, __n64 _Dm);
+__n64 __vcge_u16(__n64 _Dn, __n64 _Dm);
+__n64 __vcge_u32(__n64 _Dn, __n64 _Dm);
+__n64 __vcge_u8(__n64 _Dn, __n64 _Dm);
+__n64 __vcle_f32(__n64 _Dn, __n64 _Dm);
+__n64 __vcle_s16(__n64 _Dn, __n64 _Dm);
+__n64 __vcle_s32(__n64 _Dn, __n64 _Dm);
+__n64 __vcle_s8(__n64 _Dn, __n64 _Dm);
+__n64 __vcle_u16(__n64 _Dn, __n64 _Dm);
+__n64 __vcle_u32(__n64 _Dn, __n64 _Dm);
+__n64 __vcle_u8(__n64 _Dn, __n64 _Dm);
+__n128 __vcgeq_f32(__n128 _Qn, __n128 _Qm);
+__n128 __vcgeq_s16(__n128 _Qn, __n128 _Qm);
+__n128 __vcgeq_s32(__n128 _Qn, __n128 _Qm);
+__n128 __vcgeq_s8(__n128 _Qn, __n128 _Qm);
+__n128 __vcgeq_u16(__n128 _Qn, __n128 _Qm);
+__n128 __vcgeq_u32(__n128 _Qn, __n128 _Qm);
+__n128 __vcgeq_u8(__n128 _Qn, __n128 _Qm);
+__n128 __vcleq_f32(__n128 _Qn, __n128 _Qm);
+__n128 __vcleq_s16(__n128 _Qn, __n128 _Qm);
+__n128 __vcleq_s32(__n128 _Qn, __n128 _Qm);
+__n128 __vcleq_s8(__n128 _Qn, __n128 _Qm);
+__n128 __vcleq_u16(__n128 _Qn, __n128 _Qm);
+__n128 __vcleq_u32(__n128 _Qn, __n128 _Qm);
+__n128 __vcleq_u8(__n128 _Qn, __n128 _Qm);
+__n64 __vcgt_z_f32_ex(__n64 _Dm);
+__n64 __vcgt_z_s16_ex(__n64 _Dm);
+__n64 __vcgt_z_s32_ex(__n64 _Dm);
+__n64 __vcgt_z_s8_ex(__n64 _Dm);
+__n128 __vcgtq_z_f32_ex(__n128 _Qm);
+__n128 __vcgtq_z_s16_ex(__n128 _Qm);
+__n128 __vcgtq_z_s32_ex(__n128 _Qm);
+__n128 __vcgtq_z_s8_ex(__n128 _Qm);
+__n64 __vcgt_f32(__n64 _Dn, __n64 _Dm);
+__n64 __vcgt_s16(__n64 _Dn, __n64 _Dm);
+__n64 __vcgt_s32(__n64 _Dn, __n64 _Dm);
+__n64 __vcgt_s8(__n64 _Dn, __n64 _Dm);
+__n64 __vcgt_u16(__n64 _Dn, __n64 _Dm);
+__n64 __vcgt_u32(__n64 _Dn, __n64 _Dm);
+__n64 __vcgt_u8(__n64 _Dn, __n64 _Dm);
+__n64 __vclt_f32(__n64 _Dn, __n64 _Dm);
+__n64 __vclt_s16(__n64 _Dn, __n64 _Dm);
+__n64 __vclt_s32(__n64 _Dn, __n64 _Dm);
+__n64 __vclt_s8(__n64 _Dn, __n64 _Dm);
+__n64 __vclt_u16(__n64 _Dn, __n64 _Dm);
+__n64 __vclt_u32(__n64 _Dn, __n64 _Dm);
+__n64 __vclt_u8(__n64 _Dn, __n64 _Dm);
+__n128 __vcgtq_f32(__n128 _Qn, __n128 _Qm);
+__n128 __vcgtq_s16(__n128 _Qn, __n128 _Qm);
+__n128 __vcgtq_s32(__n128 _Qn, __n128 _Qm);
+__n128 __vcgtq_s8(__n128 _Qn, __n128 _Qm);
+__n128 __vcgtq_u16(__n128 _Qn, __n128 _Qm);
+__n128 __vcgtq_u32(__n128 _Qn, __n128 _Qm);
+__n128 __vcgtq_u8(__n128 _Qn, __n128 _Qm);
+__n128 __vcltq_f32(__n128 _Qn, __n128 _Qm);
+__n128 __vcltq_s16(__n128 _Qn, __n128 _Qm);
+__n128 __vcltq_s32(__n128 _Qn, __n128 _Qm);
+__n128 __vcltq_s8(__n128 _Qn, __n128 _Qm);
+__n128 __vcltq_u16(__n128 _Qn, __n128 _Qm);
+__n128 __vcltq_u32(__n128 _Qn, __n128 _Qm);
+__n128 __vcltq_u8(__n128 _Qn, __n128 _Qm);
+__n64 __vcle_z_f32_ex(__n64 _Dm);
+__n64 __vcle_z_s16_ex(__n64 _Dm);
+__n64 __vcle_z_s32_ex(__n64 _Dm);
+__n64 __vcle_z_s8_ex(__n64 _Dm);
+__n128 __vcleq_z_f32_ex(__n128 _Qm);
+__n128 __vcleq_z_s16_ex(__n128 _Qm);
+__n128 __vcleq_z_s32_ex(__n128 _Qm);
+__n128 __vcleq_z_s8_ex(__n128 _Qm);
+__n64 __vcls_s16(__n64 _Dm);
+__n64 __vcls_s32(__n64 _Dm);
+__n64 __vcls_s8(__n64 _Dm);
+__n64 __vclz_s16(__n64 _Dm);
+__n64 __vclz_s32(__n64 _Dm);
+__n64 __vclz_s8(__n64 _Dm);
+__n64 __vclz_u16(__n64 _Dm);
+__n64 __vclz_u32(__n64 _Dm);
+__n64 __vclz_u8(__n64 _Dm);
+__n128 __vclsq_s16(__n128 _Qm);
+__n128 __vclsq_s32(__n128 _Qm);
+__n128 __vclsq_s8(__n128 _Qm);
+__n128 __vclzq_s16(__n128 _Qm);
+__n128 __vclzq_s32(__n128 _Qm);
+__n128 __vclzq_s8(__n128 _Qm);
+__n128 __vclzq_u16(__n128 _Qm);
+__n128 __vclzq_u32(__n128 _Qm);
+__n128 __vclzq_u8(__n128 _Qm);
+__n64 __vclt_z_f32_ex(__n64 _Dm);
+__n64 __vclt_z_s16_ex(__n64 _Dm);
+__n64 __vclt_z_s32_ex(__n64 _Dm);
+__n64 __vclt_z_s8_ex(__n64 _Dm);
+__n128 __vcltq_z_f32_ex(__n128 _Qm);
+__n128 __vcltq_z_s16_ex(__n128 _Qm);
+__n128 __vcltq_z_s32_ex(__n128 _Qm);
+__n128 __vcltq_z_s8_ex(__n128 _Qm);
+__n64 __vcnt_p8(__n64 _Dm);
+__n64 __vcnt_s8(__n64 _Dm);
+__n64 __vcnt_u8(__n64 _Dm);
+__n128 __vcntq_p8(__n128 _Qm);
+__n128 __vcntq_s8(__n128 _Qm);
+__n128 __vcntq_u8(__n128 _Qm);
+__n128 __vcombine_f32(__n64 _Dn, __n64 _Dm);
+__n128 __vcombine_p16(__n64 _Dn, __n64 _Dm);
+__n128 __vcombine_p8(__n64 _Dn, __n64 _Dm);
+__n128 __vcombine_s16(__n64 _Dn, __n64 _Dm);
+__n128 __vcombine_s32(__n64 _Dn, __n64 _Dm);
+__n128 __vcombine_s64(__n64 _Dn, __n64 _Dm);
+__n128 __vcombine_s8(__n64 _Dn, __n64 _Dm);
+__n128 __vcombine_u16(__n64 _Dn, __n64 _Dm);
+__n128 __vcombine_u32(__n64 _Dn, __n64 _Dm);
+__n128 __vcombine_u64(__n64 _Dn, __n64 _Dm);
+__n128 __vcombine_u8(__n64 _Dn, __n64 _Dm);
+__n64 __vcreate_f32(uint64_t _R64t);
+__n64 __vcreate_p16(uint64_t _R64t);
+__n64 __vcreate_p8(uint64_t _R64t);
+__n64 __vcreate_s16(uint64_t _R64t);
+__n64 __vcreate_s32(uint64_t _R64t);
+__n64 __vcreate_s64(uint64_t _R64t);
+__n64 __vcreate_s8(uint64_t _R64t);
+__n64 __vcreate_u16(uint64_t _R64t);
+__n64 __vcreate_u32(uint64_t _R64t);
+__n64 __vcreate_u64(uint64_t _R64t);
+__n64 __vcreate_u8(uint64_t _R64t);
+__n64 __vcvt_n_f32_s32(__n64 _Dm, const int _Fbits);
+__n64 __vcvt_n_f32_u32(__n64 _Dm, const int _Fbits);
+__n64 __vcvt_n_s32_f32(__n64 _Dm, const int _Fbits);
+__n64 __vcvt_n_u32_f32(__n64 _Dm, const int _Fbits);
+__n128 __vcvtq_n_f32_s32(__n128 _Qm, const int _Fbits);
+__n128 __vcvtq_n_f32_u32(__n128 _Qm, const int _Fbits);
+__n128 __vcvtq_n_s32_f32(__n128 _Qm, const int _Fbits);
+__n128 __vcvtq_n_u32_f32(__n128 _Qm, const int _Fbits);
+__n64 __vcvta_s32_f32(__n64 _Dm);
+__n64 __vcvta_u32_f32(__n64 _Dm);
+__n64 __vcvtm_s32_f32(__n64 _Dm);
+__n64 __vcvtm_u32_f32(__n64 _Dm);
+__n64 __vcvtn_s32_f32(__n64 _Dm);
+__n64 __vcvtn_u32_f32(__n64 _Dm);
+__n64 __vcvtp_s32_f32(__n64 _Dm);
+__n64 __vcvtp_u32_f32(__n64 _Dm);
+__n128 __vcvtaq_s32_f32(__n128 _Qm);
+__n128 __vcvtaq_u32_f32(__n128 _Qm);
+__n128 __vcvtmq_s32_f32(__n128 _Qm);
+__n128 __vcvtmq_u32_f32(__n128 _Qm);
+__n128 __vcvtnq_s32_f32(__n128 _Qm);
+__n128 __vcvtnq_u32_f32(__n128 _Qm);
+__n128 __vcvtpq_s32_f32(__n128 _Qm);
+__n128 __vcvtpq_u32_f32(__n128 _Qm);
+__n64 __vcvt_f32_s32(__n64 _Dm);
+__n64 __vcvt_f32_u32(__n64 _Dm);
+__n64 __vcvt_s32_f32(__n64 _Dm);
+__n64 __vcvt_u32_f32(__n64 _Dm);
+__n128 __vcvtq_f32_s32(__n128 _Qm);
+__n128 __vcvtq_f32_u32(__n128 _Qm);
+__n128 __vcvtq_s32_f32(__n128 _Qm);
+__n128 __vcvtq_u32_f32(__n128 _Qm);
+__n64 __vdup_lane_f32(__n64 _Dm, const int _Lane);
+__n64 __vdup_lane_p16(__n64 _Dm, const int _Lane);
+__n64 __vdup_lane_p8(__n64 _Dm, const int _Lane);
+__n64 __vdup_lane_s16(__n64 _Dm, const int _Lane);
+__n64 __vdup_lane_s32(__n64 _Dm, const int _Lane);
+__n64 __vdup_lane_s8(__n64 _Dm, const int _Lane);
+__n64 __vdup_lane_u16(__n64 _Dm, const int _Lane);
+__n64 __vdup_lane_u32(__n64 _Dm, const int _Lane);
+__n64 __vdup_lane_u8(__n64 _Dm, const int _Lane);
+__n128 __vdupq_lane_f32(__n64 _Dm, const int _Lane);
+__n128 __vdupq_lane_p16(__n64 _Dm, const int _Lane);
+__n128 __vdupq_lane_p8(__n64 _Dm, const int _Lane);
+__n128 __vdupq_lane_s16(__n64 _Dm, const int _Lane);
+__n128 __vdupq_lane_s32(__n64 _Dm, const int _Lane);
+__n128 __vdupq_lane_s8(__n64 _Dm, const int _Lane);
+__n128 __vdupq_lane_u16(__n64 _Dm, const int _Lane);
+__n128 __vdupq_lane_u32(__n64 _Dm, const int _Lane);
+__n128 __vdupq_lane_u8(__n64 _Dm, const int _Lane);
+__n64 __vdup_n_f32(float32_t _Ft);
+__n64 __vmov_n_f32(float32_t _Ft);
+__n64 __vdup_n_p16(poly16_t _Rt);
+__n64 __vdup_n_p8(poly8_t _Rt);
+__n64 __vdup_n_s16(int16_t _Rt);
+__n64 __vdup_n_s32(int32_t _Rt);
+__n64 __vdup_n_s8(int8_t _Rt);
+__n64 __vdup_n_u16(uint16_t _Rt);
+__n64 __vdup_n_u32(uint32_t _Rt);
+__n64 __vdup_n_u8(uint8_t _Rt);
+__n64 __vmov_n_p16(poly16_t _Rt);
+__n64 __vmov_n_p8(poly8_t _Rt);
+__n64 __vmov_n_s16(int16_t _Rt);
+__n64 __vmov_n_s32(int32_t _Rt);
+__n64 __vmov_n_s8(int8_t _Rt);
+__n64 __vmov_n_u16(uint16_t _Rt);
+__n64 __vmov_n_u32(uint32_t _Rt);
+__n64 __vmov_n_u8(uint8_t _Rt);
+__n128 __vdupq_n_f32(float32_t _Ft);
+__n128 __vmovq_n_f32(float32_t _Ft);
+__n128 __vdupq_n_p16(poly16_t _Rt);
+__n128 __vdupq_n_p8(poly8_t _Rt);
+__n128 __vdupq_n_s16(int16_t _Rt);
+__n128 __vdupq_n_s32(int32_t _Rt);
+__n128 __vdupq_n_s8(int8_t _Rt);
+__n128 __vdupq_n_u16(uint16_t _Rt);
+__n128 __vdupq_n_u32(uint32_t _Rt);
+__n128 __vdupq_n_u8(uint8_t _Rt);
+__n128 __vmovq_n_p16(poly16_t _Rt);
+__n128 __vmovq_n_p8(poly8_t _Rt);
+__n128 __vmovq_n_s16(int16_t _Rt);
+__n128 __vmovq_n_s32(int32_t _Rt);
+__n128 __vmovq_n_s8(int8_t _Rt);
+__n128 __vmovq_n_u16(uint16_t _Rt);
+__n128 __vmovq_n_u32(uint32_t _Rt);
+__n128 __vmovq_n_u8(uint8_t _Rt);
+__n64 __vdup_n_s64(int64_t _R64t);
+__n64 __vdup_n_u64(uint64_t _R64t);
+__n64 __vmov_n_s64(int64_t _R64t);
+__n64 __vmov_n_u64(uint64_t _R64t);
+__n128 __vdupq_n_s64(int64_t _R64t);
+__n128 __vdupq_n_u64(uint64_t _R64t);
+__n128 __vmovq_n_s64(int64_t _R64t);
+__n128 __vmovq_n_u64(uint64_t _R64t);
+__n64 __vbic_s16(__n64 _Dn, __n64 _Dm);
+__n64 __vbic_s32(__n64 _Dn, __n64 _Dm);
+__n64 __vbic_s64(__n64 _Dn, __n64 _Dm);
+__n64 __vbic_s8(__n64 _Dn, __n64 _Dm);
+__n64 __vbic_u16(__n64 _Dn, __n64 _Dm);
+__n64 __vbic_u32(__n64 _Dn, __n64 _Dm);
+__n64 __vbic_u64(__n64 _Dn, __n64 _Dm);
+__n64 __vbic_u8(__n64 _Dn, __n64 _Dm);
+__n64 __veor_s16(__n64 _Dn, __n64 _Dm);
+__n64 __veor_s32(__n64 _Dn, __n64 _Dm);
+__n64 __veor_s64(__n64 _Dn, __n64 _Dm);
+__n64 __veor_s8(__n64 _Dn, __n64 _Dm);
+__n64 __veor_u16(__n64 _Dn, __n64 _Dm);
+__n64 __veor_u32(__n64 _Dn, __n64 _Dm);
+__n64 __veor_u64(__n64 _Dn, __n64 _Dm);
+__n64 __veor_u8(__n64 _Dn, __n64 _Dm);
+__n64 __vorn_s16(__n64 _Dn, __n64 _Dm);
+__n64 __vorn_s32(__n64 _Dn, __n64 _Dm);
+__n64 __vorn_s64(__n64 _Dn, __n64 _Dm);
+__n64 __vorn_s8(__n64 _Dn, __n64 _Dm);
+__n64 __vorn_u16(__n64 _Dn, __n64 _Dm);
+__n64 __vorn_u32(__n64 _Dn, __n64 _Dm);
+__n64 __vorn_u64(__n64 _Dn, __n64 _Dm);
+__n64 __vorn_u8(__n64 _Dn, __n64 _Dm);
+__n128 __vbicq_s16(__n128 _Qn, __n128 _Qm);
+__n128 __vbicq_s32(__n128 _Qn, __n128 _Qm);
+__n128 __vbicq_s64(__n128 _Qn, __n128 _Qm);
+__n128 __vbicq_s8(__n128 _Qn, __n128 _Qm);
+__n128 __vbicq_u16(__n128 _Qn, __n128 _Qm);
+__n128 __vbicq_u32(__n128 _Qn, __n128 _Qm);
+__n128 __vbicq_u64(__n128 _Qn, __n128 _Qm);
+__n128 __vbicq_u8(__n128 _Qn, __n128 _Qm);
+__n128 __veorq_s16(__n128 _Qn, __n128 _Qm);
+__n128 __veorq_s32(__n128 _Qn, __n128 _Qm);
+__n128 __veorq_s64(__n128 _Qn, __n128 _Qm);
+__n128 __veorq_s8(__n128 _Qn, __n128 _Qm);
+__n128 __veorq_u16(__n128 _Qn, __n128 _Qm);
+__n128 __veorq_u32(__n128 _Qn, __n128 _Qm);
+__n128 __veorq_u64(__n128 _Qn, __n128 _Qm);
+__n128 __veorq_u8(__n128 _Qn, __n128 _Qm);
+__n128 __vornq_s16(__n128 _Qn, __n128 _Qm);
+__n128 __vornq_s32(__n128 _Qn, __n128 _Qm);
+__n128 __vornq_s64(__n128 _Qn, __n128 _Qm);
+__n128 __vornq_s8(__n128 _Qn, __n128 _Qm);
+__n128 __vornq_u16(__n128 _Qn, __n128 _Qm);
+__n128 __vornq_u32(__n128 _Qn, __n128 _Qm);
+__n128 __vornq_u64(__n128 _Qn, __n128 _Qm);
+__n128 __vornq_u8(__n128 _Qn, __n128 _Qm);
+__n64 __vext_f32(__n64 _Dn, __n64 _Dm, const int _Pos);
+__n64 __vext_p16(__n64 _Dn, __n64 _Dm, const int _Pos);
+__n64 __vext_p8(__n64 _Dn, __n64 _Dm, const int _Pos);
+__n64 __vext_s16(__n64 _Dn, __n64 _Dm, const int _Pos);
+__n64 __vext_s32(__n64 _Dn, __n64 _Dm, const int _Pos);
+__n64 __vext_s64(__n64 _Dn, __n64 _Dm, const int _Pos);
+__n64 __vext_s8(__n64 _Dn, __n64 _Dm, const int _Pos);
+__n64 __vext_u16(__n64 _Dn, __n64 _Dm, const int _Pos);
+__n64 __vext_u32(__n64 _Dn, __n64 _Dm, const int _Pos);
+__n64 __vext_u64(__n64 _Dn, __n64 _Dm, const int _Pos);
+__n64 __vext_u8(__n64 _Dn, __n64 _Dm, const int _Pos);
+__n128 __vextq_f32(__n128 _Qn, __n128 _Qm, const int _Pos);
+__n128 __vextq_p16(__n128 _Qn, __n128 _Qm, const int _Pos);
+__n128 __vextq_p8(__n128 _Qn, __n128 _Qm, const int _Pos);
+__n128 __vextq_s16(__n128 _Qn, __n128 _Qm, const int _Pos);
+__n128 __vextq_s32(__n128 _Qn, __n128 _Qm, const int _Pos);
+__n128 __vextq_s64(__n128 _Qn, __n128 _Qm, const int _Pos);
+__n128 __vextq_s8(__n128 _Qn, __n128 _Qm, const int _Pos);
+__n128 __vextq_u16(__n128 _Qn, __n128 _Qm, const int _Pos);
+__n128 __vextq_u32(__n128 _Qn, __n128 _Qm, const int _Pos);
+__n128 __vextq_u64(__n128 _Qn, __n128 _Qm, const int _Pos);
+__n128 __vextq_u8(__n128 _Qn, __n128 _Qm, const int _Pos);
+__n64 __vget_high_f32(__n128 _Qm);
+__n64 __vget_high_p16(__n128 _Qm);
+__n64 __vget_high_p8(__n128 _Qm);
+__n64 __vget_high_s16(__n128 _Qm);
+__n64 __vget_high_s32(__n128 _Qm);
+__n64 __vget_high_s64(__n128 _Qm);
+__n64 __vget_high_s8(__n128 _Qm);
+__n64 __vget_high_u16(__n128 _Qm);
+__n64 __vget_high_u32(__n128 _Qm);
+__n64 __vget_high_u64(__n128 _Qm);
+__n64 __vget_high_u8(__n128 _Qm);
+__n64 __vget_low_f32(__n128 _Qm);
+__n64 __vget_low_p16(__n128 _Qm);
+__n64 __vget_low_p8(__n128 _Qm);
+__n64 __vget_low_s16(__n128 _Qm);
+__n64 __vget_low_s32(__n128 _Qm);
+__n64 __vget_low_s64(__n128 _Qm);
+__n64 __vget_low_s8(__n128 _Qm);
+__n64 __vget_low_u16(__n128 _Qm);
+__n64 __vget_low_u32(__n128 _Qm);
+__n64 __vget_low_u64(__n128 _Qm);
+__n64 __vget_low_u8(__n128 _Qm);
+__n64 __vhadd_s16(__n64 _Dn, __n64 _Dm);
+__n64 __vhadd_s32(__n64 _Dn, __n64 _Dm);
+__n64 __vhadd_s8(__n64 _Dn, __n64 _Dm);
+__n64 __vhadd_u16(__n64 _Dn, __n64 _Dm);
+__n64 __vhadd_u32(__n64 _Dn, __n64 _Dm);
+__n64 __vhadd_u8(__n64 _Dn, __n64 _Dm);
+__n64 __vhsub_s16(__n64 _Dn, __n64 _Dm);
+__n64 __vhsub_s32(__n64 _Dn, __n64 _Dm);
+__n64 __vhsub_s8(__n64 _Dn, __n64 _Dm);
+__n64 __vhsub_u16(__n64 _Dn, __n64 _Dm);
+__n64 __vhsub_u32(__n64 _Dn, __n64 _Dm);
+__n64 __vhsub_u8(__n64 _Dn, __n64 _Dm);
+__n64 __vrhadd_s16(__n64 _Dn, __n64 _Dm);
+__n64 __vrhadd_s32(__n64 _Dn, __n64 _Dm);
+__n64 __vrhadd_s8(__n64 _Dn, __n64 _Dm);
+__n64 __vrhadd_u16(__n64 _Dn, __n64 _Dm);
+__n64 __vrhadd_u32(__n64 _Dn, __n64 _Dm);
+__n64 __vrhadd_u8(__n64 _Dn, __n64 _Dm);
+__n128 __vhaddq_s16(__n128 _Qn, __n128 _Qm);
+__n128 __vhaddq_s32(__n128 _Qn, __n128 _Qm);
+__n128 __vhaddq_s8(__n128 _Qn, __n128 _Qm);
+__n128 __vhaddq_u16(__n128 _Qn, __n128 _Qm);
+__n128 __vhaddq_u32(__n128 _Qn, __n128 _Qm);
+__n128 __vhaddq_u8(__n128 _Qn, __n128 _Qm);
+__n128 __vhsubq_s16(__n128 _Qn, __n128 _Qm);
+__n128 __vhsubq_s32(__n128 _Qn, __n128 _Qm);
+__n128 __vhsubq_s8(__n128 _Qn, __n128 _Qm);
+__n128 __vhsubq_u16(__n128 _Qn, __n128 _Qm);
+__n128 __vhsubq_u32(__n128 _Qn, __n128 _Qm);
+__n128 __vhsubq_u8(__n128 _Qn, __n128 _Qm);
+__n128 __vrhaddq_s16(__n128 _Qn, __n128 _Qm);
+__n128 __vrhaddq_s32(__n128 _Qn, __n128 _Qm);
+__n128 __vrhaddq_s8(__n128 _Qn, __n128 _Qm);
+__n128 __vrhaddq_u16(__n128 _Qn, __n128 _Qm);
+__n128 __vrhaddq_u32(__n128 _Qn, __n128 _Qm);
+__n128 __vrhaddq_u8(__n128 _Qn, __n128 _Qm);
+__n64 __vld1_f32(_In_reads_(2) const float32_t * _PcD);
+__n64 __vld1_p16(_In_reads_(4) const poly16_t * _PcD);
+__n64 __vld1_p8(_In_reads_(8) const poly8_t * _PcD);
+__n64 __vld1_s16(_In_reads_(4) const int16_t * _PcD);
+__n64 __vld1_s32(_In_reads_(2) const int32_t * _PcD);
+__n64 __vld1_s64(_In_reads_(1) const int64_t * _PcD);
+__n64 __vld1_s8(_In_reads_(8) const int8_t * _PcD);
+__n64 __vld1_u16(_In_reads_(4) const uint16_t * _PcD);
+__n64 __vld1_u32(_In_reads_(2) const uint32_t * _PcD);
+__n64 __vld1_u64(_In_reads_(1) const uint64_t * _PcD);
+__n64 __vld1_u8(_In_reads_(8) const uint8_t * _PcD);
+__n64 __vld1_f32_ex(_In_reads_(2) const float32_t * _PcD, const int _Align);
+__n64 __vld1_p16_ex(_In_reads_(4) const poly16_t * _PcD, const int _Align);
+__n64 __vld1_p8_ex(_In_reads_(8) const poly8_t * _PcD, const int _Align);
+__n64 __vld1_s16_ex(_In_reads_(4) const int16_t * _PcD, const int _Align);
+__n64 __vld1_s32_ex(_In_reads_(2) const int32_t * _PcD, const int _Align);
+__n64 __vld1_s64_ex(_In_reads_(1) const int64_t * _PcD, const int _Align);
+__n64 __vld1_s8_ex(_In_reads_(8) const int8_t * _PcD, const int _Align);
+__n64 __vld1_u16_ex(_In_reads_(4) const uint16_t * _PcD, const int _Align);
+__n64 __vld1_u32_ex(_In_reads_(2) const uint32_t * _PcD, const int _Align);
+__n64 __vld1_u64_ex(_In_reads_(1) const uint64_t * _PcD, const int _Align);
+__n64 __vld1_u8_ex(_In_reads_(8) const uint8_t * _PcD, const int _Align);
+__n128 __vld1q_f32(_In_reads_(4) const float32_t * _PcD);
+__n128 __vld1q_p16(_In_reads_(8) const poly16_t * _PcD);
+__n128 __vld1q_p8(_In_reads_(16) const poly8_t * _PcD);
+__n128 __vld1q_s16(_In_reads_(8) const int16_t * _PcD);
+__n128 __vld1q_s32(_In_reads_(4) const int32_t * _PcD);
+__n128 __vld1q_s64(_In_reads_(2) const int64_t * _PcD);
+__n128 __vld1q_s8(_In_reads_(16) const int8_t * _PcD);
+__n128 __vld1q_u16(_In_reads_(8) const uint16_t * _PcD);
+__n128 __vld1q_u32(_In_reads_(4) const uint32_t * _PcD);
+__n128 __vld1q_u64(_In_reads_(2) const uint64_t * _PcD);
+__n128 __vld1q_u8(_In_reads_(16) const uint8_t * _PcD);
+__n128 __vld1q_f32_ex(_In_reads_(4) const float32_t * _PcD, const int _Align);
+__n128 __vld1q_p16_ex(_In_reads_(8) const poly16_t * _PcD, const int _Align);
+__n128 __vld1q_p8_ex(_In_reads_(16) const poly8_t * _PcD, const int _Align);
+__n128 __vld1q_s16_ex(_In_reads_(8) const int16_t * _PcD, const int _Align);
+__n128 __vld1q_s32_ex(_In_reads_(4) const int32_t * _PcD, const int _Align);
+__n128 __vld1q_s64_ex(_In_reads_(2) const int64_t * _PcD, const int _Align);
+__n128 __vld1q_s8_ex(_In_reads_(16) const int8_t * _PcD, const int _Align);
+__n128 __vld1q_u16_ex(_In_reads_(8) const uint16_t * _PcD, const int _Align);
+__n128 __vld1q_u32_ex(_In_reads_(4) const uint32_t * _PcD, const int _Align);
+__n128 __vld1q_u64_ex(_In_reads_(2) const uint64_t * _PcD, const int _Align);
+__n128 __vld1q_u8_ex(_In_reads_(16) const uint8_t * _PcD, const int _Align);
+__n64 __vld1_dup_f32(_In_reads_(1) const float32_t * _PcD);
+__n64 __vld1_dup_p16(_In_reads_(1) const poly16_t * _PcD);
+__n64 __vld1_dup_p8(_In_reads_(1) const poly8_t * _PcD);
+__n64 __vld1_dup_s16(_In_reads_(1) const int16_t * _PcD);
+__n64 __vld1_dup_s32(_In_reads_(1) const int32_t * _PcD);
+__n64 __vld1_dup_s8(_In_reads_(1) const int8_t * _PcD);
+__n64 __vld1_dup_u16(_In_reads_(1) const uint16_t * _PcD);
+__n64 __vld1_dup_u32(_In_reads_(1) const uint32_t * _PcD);
+__n64 __vld1_dup_u8(_In_reads_(1) const uint8_t * _PcD);
+__n128 __vld1q_dup_f32(_In_reads_(1) const float32_t * _PcD);
+__n128 __vld1q_dup_p16(_In_reads_(1) const poly16_t * _PcD);
+__n128 __vld1q_dup_p8(_In_reads_(1) const poly8_t * _PcD);
+__n128 __vld1q_dup_s16(_In_reads_(1) const int16_t * _PcD);
+__n128 __vld1q_dup_s32(_In_reads_(1) const int32_t * _PcD);
+__n128 __vld1q_dup_s8(_In_reads_(1) const int8_t * _PcD);
+__n128 __vld1q_dup_u16(_In_reads_(1) const uint16_t * _PcD);
+__n128 __vld1q_dup_u32(_In_reads_(1) const uint32_t * _PcD);
+__n128 __vld1q_dup_u8(_In_reads_(1) const uint8_t * _PcD);
+__n64 __vld1_dup_f32_ex(_In_reads_(1) const float32_t * _PcD, const int _Align);
+__n64 __vld1_dup_p16_ex(_In_reads_(1) const poly16_t * _PcD, const int _Align);
+__n64 __vld1_dup_s16_ex(_In_reads_(1) const int16_t * _PcD, const int _Align);
+__n64 __vld1_dup_s32_ex(_In_reads_(1) const int32_t * _PcD, const int _Align);
+__n64 __vld1_dup_u16_ex(_In_reads_(1) const uint16_t * _PcD, const int _Align);
+__n64 __vld1_dup_u32_ex(_In_reads_(1) const uint32_t * _PcD, const int _Align);
+__n128 __vld1q_dup_f32_ex(_In_reads_(1) const float32_t * _PcD, const int _Align);
+__n128 __vld1q_dup_p16_ex(_In_reads_(1) const poly16_t * _PcD, const int _Align);
+__n128 __vld1q_dup_s16_ex(_In_reads_(1) const int16_t * _PcD, const int _Align);
+__n128 __vld1q_dup_s32_ex(_In_reads_(1) const int32_t * _PcD, const int _Align);
+__n128 __vld1q_dup_u16_ex(_In_reads_(1) const uint16_t * _PcD, const int _Align);
+__n128 __vld1q_dup_u32_ex(_In_reads_(1) const uint32_t * _PcD, const int _Align);
+__n64 __vld1_lane_f32(_In_reads_(1) const float32_t * _PcD, __n64 _Dd, const int _Lane);
+__n64 __vld1_lane_p16(_In_reads_(1) const poly16_t * _PcD, __n64 _Dd, const int _Lane);
+__n64 __vld1_lane_p8(_In_reads_(1) const poly8_t * _PcD, __n64 _Dd, const int _Lane);
+__n64 __vld1_lane_s16(_In_reads_(1) const int16_t * _PcD, __n64 _Dd, const int _Lane);
+__n64 __vld1_lane_s32(_In_reads_(1) const int32_t * _PcD, __n64 _Dd, const int _Lane);
+__n64 __vld1_lane_s8(_In_reads_(1) const int8_t * _PcD, __n64 _Dd, const int _Lane);
+__n64 __vld1_lane_u16(_In_reads_(1) const uint16_t * _PcD, __n64 _Dd, const int _Lane);
+__n64 __vld1_lane_u32(_In_reads_(1) const uint32_t * _PcD, __n64 _Dd, const int _Lane);
+__n64 __vld1_lane_u8(_In_reads_(1) const uint8_t * _PcD, __n64 _Dd, const int _Lane);
+__n128 __vld1q_lane_f32(_In_reads_(1) const float32_t * _PcD, __n128 _Qd, const int _Lane);
+__n128 __vld1q_lane_p16(_In_reads_(1) const poly16_t * _PcD, __n128 _Qd, const int _Lane);
+__n128 __vld1q_lane_p8(_In_reads_(1) const poly8_t * _PcD, __n128 _Qd, const int _Lane);
+__n128 __vld1q_lane_s16(_In_reads_(1) const int16_t * _PcD, __n128 _Qd, const int _Lane);
+__n128 __vld1q_lane_s32(_In_reads_(1) const int32_t * _PcD, __n128 _Qd, const int _Lane);
+__n128 __vld1q_lane_s8(_In_reads_(1) const int8_t * _PcD, __n128 _Qd, const int _Lane);
+__n128 __vld1q_lane_u16(_In_reads_(1) const uint16_t * _PcD, __n128 _Qd, const int _Lane);
+__n128 __vld1q_lane_u32(_In_reads_(1) const uint32_t * _PcD, __n128 _Qd, const int _Lane);
+__n128 __vld1q_lane_u8(_In_reads_(1) const uint8_t * _PcD, __n128 _Qd, const int _Lane);
+__n64 __vld1_lane_f32_ex(_In_reads_(1) const float32_t * _PcD, __n64 _Dd, const int _Lane, const int _Align);
+__n64 __vld1_lane_p16_ex(_In_reads_(1) const poly16_t * _PcD, __n64 _Dd, const int _Lane, const int _Align);
+__n64 __vld1_lane_s16_ex(_In_reads_(1) const int16_t * _PcD, __n64 _Dd, const int _Lane, const int _Align);
+__n64 __vld1_lane_s32_ex(_In_reads_(1) const int32_t * _PcD, __n64 _Dd, const int _Lane, const int _Align);
+__n64 __vld1_lane_u16_ex(_In_reads_(1) const uint16_t * _PcD, __n64 _Dd, const int _Lane, const int _Align);
+__n64 __vld1_lane_u32_ex(_In_reads_(1) const uint32_t * _PcD, __n64 _Dd, const int _Lane, const int _Align);
+__n128 __vld1q_lane_f32_ex(_In_reads_(1) const float32_t * _PcD, __n128 _Qd, const int _Lane, const int _Align);
+__n128 __vld1q_lane_p16_ex(_In_reads_(1) const poly16_t * _PcD, __n128 _Qd, const int _Lane, const int _Align);
+__n128 __vld1q_lane_s16_ex(_In_reads_(1) const int16_t * _PcD, __n128 _Qd, const int _Lane, const int _Align);
+__n128 __vld1q_lane_s32_ex(_In_reads_(1) const int32_t * _PcD, __n128 _Qd, const int _Lane, const int _Align);
+__n128 __vld1q_lane_u16_ex(_In_reads_(1) const uint16_t * _PcD, __n128 _Qd, const int _Lane, const int _Align);
+__n128 __vld1q_lane_u32_ex(_In_reads_(1) const uint32_t * _PcD, __n128 _Qd, const int _Lane, const int _Align);
+__n64x2 __vld2_f32(_In_reads_(4) const float32_t * _PcD);
+__n64x2 __vld2_p16(_In_reads_(8) const poly16_t * _PcD);
+__n64x2 __vld2_p8(_In_reads_(16) const poly8_t * _PcD);
+__n64x2 __vld2_s16(_In_reads_(8) const int16_t * _PcD);
+__n64x2 __vld2_s32(_In_reads_(4) const int32_t * _PcD);
+__n64x2 __vld2_s8(_In_reads_(16) const int8_t * _PcD);
+__n64x2 __vld2_u16(_In_reads_(8) const uint16_t * _PcD);
+__n64x2 __vld2_u32(_In_reads_(4) const uint32_t * _PcD);
+__n64x2 __vld2_u8(_In_reads_(16) const uint8_t * _PcD);
+__n64x2 __vld2_s64(_In_reads_(2) const int64_t * _PcD);
+__n64x2 __vld2_u64(_In_reads_(2) const uint64_t * _PcD);
+__n64x2 __vld2_s64_ex(_In_reads_(2) const int64_t * _PcD, const int _Align);
+__n64x2 __vld2_u64_ex(_In_reads_(2) const uint64_t * _PcD, const int _Align);
+__n64x2 __vld2_f32_ex(_In_reads_(4) const float32_t * _PcD, const int _Align);
+__n64x2 __vld2_p16_ex(_In_reads_(8) const poly16_t * _PcD, const int _Align);
+__n64x2 __vld2_p8_ex(_In_reads_(16) const poly8_t * _PcD, const int _Align);
+__n64x2 __vld2_s16_ex(_In_reads_(8) const int16_t * _PcD, const int _Align);
+__n64x2 __vld2_s32_ex(_In_reads_(4) const int32_t * _PcD, const int _Align);
+__n64x2 __vld2_s8_ex(_In_reads_(16) const int8_t * _PcD, const int _Align);
+__n64x2 __vld2_u16_ex(_In_reads_(8) const uint16_t * _PcD, const int _Align);
+__n64x2 __vld2_u32_ex(_In_reads_(4) const uint32_t * _PcD, const int _Align);
+__n64x2 __vld2_u8_ex(_In_reads_(16) const uint8_t * _PcD, const int _Align);
+__n128x2 __vld2q_f32(_In_reads_(8) const float32_t * _PcD);
+__n128x2 __vld2q_p16(_In_reads_(16) const poly16_t * _PcD);
+__n128x2 __vld2q_p8(_In_reads_(32) const poly8_t * _PcD);
+__n128x2 __vld2q_s16(_In_reads_(16) const int16_t * _PcD);
+__n128x2 __vld2q_s32(_In_reads_(8) const int32_t * _PcD);
+__n128x2 __vld2q_s8(_In_reads_(32) const int8_t * _PcD);
+__n128x2 __vld2q_u16(_In_reads_(16) const uint16_t * _PcD);
+__n128x2 __vld2q_u32(_In_reads_(8) const uint32_t * _PcD);
+__n128x2 __vld2q_u8(_In_reads_(32) const uint8_t * _PcD);
+__n128x2 __vld2q_f32_ex(_In_reads_(8) const float32_t * _PcD, const int _Align);
+__n128x2 __vld2q_p16_ex(_In_reads_(16) const poly16_t * _PcD, const int _Align);
+__n128x2 __vld2q_p8_ex(_In_reads_(32) const poly8_t * _PcD, const int _Align);
+__n128x2 __vld2q_s16_ex(_In_reads_(16) const int16_t * _PcD, const int _Align);
+__n128x2 __vld2q_s32_ex(_In_reads_(8) const int32_t * _PcD, const int _Align);
+__n128x2 __vld2q_s8_ex(_In_reads_(32) const int8_t * _PcD, const int _Align);
+__n128x2 __vld2q_u16_ex(_In_reads_(16) const uint16_t * _PcD, const int _Align);
+__n128x2 __vld2q_u32_ex(_In_reads_(8) const uint32_t * _PcD, const int _Align);
+__n128x2 __vld2q_u8_ex(_In_reads_(32) const uint8_t * _PcD, const int _Align);
+__n64x2 __vld2_dup_f32(_In_reads_(2) const float32_t * _PcD);
+__n64x2 __vld2_dup_p16(_In_reads_(2) const poly16_t * _PcD);
+__n64x2 __vld2_dup_p8(_In_reads_(2) const poly8_t * _PcD);
+__n64x2 __vld2_dup_s16(_In_reads_(2) const int16_t * _PcD);
+__n64x2 __vld2_dup_s32(_In_reads_(2) const int32_t * _PcD);
+__n64x2 __vld2_dup_s8(_In_reads_(2) const int8_t * _PcD);
+__n64x2 __vld2_dup_u16(_In_reads_(2) const uint16_t * _PcD);
+__n64x2 __vld2_dup_u32(_In_reads_(2) const uint32_t * _PcD);
+__n64x2 __vld2_dup_u8(_In_reads_(2) const uint8_t * _PcD);
+__n64x2 __vld2_dup_s64(_In_reads_(2) const int64_t * _PcD);
+__n64x2 __vld2_dup_u64(_In_reads_(2) const uint64_t * _PcD);
+__n64x2 __vld2_dup_s64_ex(_In_reads_(2) const int64_t * _PcD, const int _Align);
+__n64x2 __vld2_dup_u64_ex(_In_reads_(2) const uint64_t * _PcD, const int _Align);
+__n64x2 __vld2_dup_f32_ex(_In_reads_(2) const float32_t * _PcD, const int _Align);
+__n64x2 __vld2_dup_p16_ex(_In_reads_(2) const poly16_t * _PcD, const int _Align);
+__n64x2 __vld2_dup_p8_ex(_In_reads_(2) const poly8_t * _PcD, const int _Align);
+__n64x2 __vld2_dup_s16_ex(_In_reads_(2) const int16_t * _PcD, const int _Align);
+__n64x2 __vld2_dup_s32_ex(_In_reads_(2) const int32_t * _PcD, const int _Align);
+__n64x2 __vld2_dup_s8_ex(_In_reads_(2) const int8_t * _PcD, const int _Align);
+__n64x2 __vld2_dup_u16_ex(_In_reads_(2) const uint16_t * _PcD, const int _Align);
+__n64x2 __vld2_dup_u32_ex(_In_reads_(2) const uint32_t * _PcD, const int _Align);
+__n64x2 __vld2_dup_u8_ex(_In_reads_(2) const uint8_t * _PcD, const int _Align);
+__n64x2 __vld2_lane_f32(_In_reads_(2) const float32_t * _PcD, __n64x2 _D2, const int _Lane);
+__n64x2 __vld2_lane_p16(_In_reads_(2) const poly16_t * _PcD, __n64x2 _D2, const int _Lane);
+__n64x2 __vld2_lane_p8(_In_reads_(2) const poly8_t * _PcD, __n64x2 _D2, const int _Lane);
+__n64x2 __vld2_lane_s16(_In_reads_(2) const int16_t * _PcD, __n64x2 _D2, const int _Lane);
+__n64x2 __vld2_lane_s32(_In_reads_(2) const int32_t * _PcD, __n64x2 _D2, const int _Lane);
+__n64x2 __vld2_lane_s8(_In_reads_(2) const int8_t * _PcD, __n64x2 _D2, const int _Lane);
+__n64x2 __vld2_lane_u16(_In_reads_(2) const uint16_t * _PcD, __n64x2 _D2, const int _Lane);
+__n64x2 __vld2_lane_u32(_In_reads_(2) const uint32_t * _PcD, __n64x2 _D2, const int _Lane);
+__n64x2 __vld2_lane_u8(_In_reads_(2) const uint8_t * _PcD, __n64x2 _D2, const int _Lane);
+__n128x2 __vld2q_lane_f32(_In_reads_(2) const float32_t * _PcD, __n128x2 _Q2, const int _Lane);
+__n128x2 __vld2q_lane_p16(_In_reads_(2) const poly16_t * _PcD, __n128x2 _Q2, const int _Lane);
+__n128x2 __vld2q_lane_s16(_In_reads_(2) const int16_t * _PcD, __n128x2 _Q2, const int _Lane);
+__n128x2 __vld2q_lane_s32(_In_reads_(2) const int32_t * _PcD, __n128x2 _Q2, const int _Lane);
+__n128x2 __vld2q_lane_u16(_In_reads_(2) const uint16_t * _PcD, __n128x2 _Q2, const int _Lane);
+__n128x2 __vld2q_lane_u32(_In_reads_(2) const uint32_t * _PcD, __n128x2 _Q2, const int _Lane);
+__n64x2 __vld2_lane_f32_ex(_In_reads_(2) const float32_t * _PcD, __n64x2 _D2, const int _Lane, const int _Align);
+__n64x2 __vld2_lane_p16_ex(_In_reads_(2) const poly16_t * _PcD, __n64x2 _D2, const int _Lane, const int _Align);
+__n64x2 __vld2_lane_p8_ex(_In_reads_(2) const poly8_t * _PcD, __n64x2 _D2, const int _Lane, const int _Align);
+__n64x2 __vld2_lane_s16_ex(_In_reads_(2) const int16_t * _PcD, __n64x2 _D2, const int _Lane, const int _Align);
+__n64x2 __vld2_lane_s32_ex(_In_reads_(2) const int32_t * _PcD, __n64x2 _D2, const int _Lane, const int _Align);
+__n64x2 __vld2_lane_s8_ex(_In_reads_(2) const int8_t * _PcD, __n64x2 _D2, const int _Lane, const int _Align);
+__n64x2 __vld2_lane_u16_ex(_In_reads_(2) const uint16_t * _PcD, __n64x2 _D2, const int _Lane, const int _Align);
+__n64x2 __vld2_lane_u32_ex(_In_reads_(2) const uint32_t * _PcD, __n64x2 _D2, const int _Lane, const int _Align);
+__n64x2 __vld2_lane_u8_ex(_In_reads_(2) const uint8_t * _PcD, __n64x2 _D2, const int _Lane, const int _Align);
+__n128x2 __vld2q_lane_f32_ex(_In_reads_(2) const float32_t * _PcD, __n128x2 _Q2, const int _Lane, const int _Align);
+__n128x2 __vld2q_lane_p16_ex(_In_reads_(2) const poly16_t * _PcD, __n128x2 _Q2, const int _Lane, const int _Align);
+__n128x2 __vld2q_lane_s16_ex(_In_reads_(2) const int16_t * _PcD, __n128x2 _Q2, const int _Lane, const int _Align);
+__n128x2 __vld2q_lane_s32_ex(_In_reads_(2) const int32_t * _PcD, __n128x2 _Q2, const int _Lane, const int _Align);
+__n128x2 __vld2q_lane_u16_ex(_In_reads_(2) const uint16_t * _PcD, __n128x2 _Q2, const int _Lane, const int _Align);
+__n128x2 __vld2q_lane_u32_ex(_In_reads_(2) const uint32_t * _PcD, __n128x2 _Q2, const int _Lane, const int _Align);
+__n64x3 __vld3_f32(_In_reads_(6) const float32_t * _PcD);
+__n64x3 __vld3_p16(_In_reads_(12) const poly16_t * _PcD);
+__n64x3 __vld3_p8(_In_reads_(24) const poly8_t * _PcD);
+__n64x3 __vld3_s16(_In_reads_(12) const int16_t * _PcD);
+__n64x3 __vld3_s32(_In_reads_(6) const int32_t * _PcD);
+__n64x3 __vld3_s8(_In_reads_(24) const int8_t * _PcD);
+__n64x3 __vld3_u16(_In_reads_(12) const uint16_t * _PcD);
+__n64x3 __vld3_u32(_In_reads_(6) const uint32_t * _PcD);
+__n64x3 __vld3_u8(_In_reads_(24) const uint8_t * _PcD);
+__n64x3 __vld3_s64(_In_reads_(3) const int64_t * _PcD);
+__n64x3 __vld3_u64(_In_reads_(3) const uint64_t * _PcD);
+__n64x3 __vld3_s64_ex(_In_reads_(3) const int64_t * _PcD, const int _Align);
+__n64x3 __vld3_u64_ex(_In_reads_(3) const uint64_t * _PcD, const int _Align);
+__n64x3 __vld3_f32_ex(_In_reads_(6) const float32_t * _PcD, const int _Align);
+__n64x3 __vld3_p16_ex(_In_reads_(12) const poly16_t * _PcD, const int _Align);
+__n64x3 __vld3_p8_ex(_In_reads_(24) const poly8_t * _PcD, const int _Align);
+__n64x3 __vld3_s16_ex(_In_reads_(12) const int16_t * _PcD, const int _Align);
+__n64x3 __vld3_s32_ex(_In_reads_(6) const int32_t * _PcD, const int _Align);
+__n64x3 __vld3_s8_ex(_In_reads_(24) const int8_t * _PcD, const int _Align);
+__n64x3 __vld3_u16_ex(_In_reads_(12) const uint16_t * _PcD, const int _Align);
+__n64x3 __vld3_u32_ex(_In_reads_(6) const uint32_t * _PcD, const int _Align);
+__n64x3 __vld3_u8_ex(_In_reads_(24) const uint8_t * _PcD, const int _Align);
+__n128x3 __vld3q_f32(_In_reads_(12) const float32_t * _PcD);
+__n128x3 __vld3q_p16(_In_reads_(24) const poly16_t * _PcD);
+__n128x3 __vld3q_p8(_In_reads_(48) const poly8_t * _PcD);
+__n128x3 __vld3q_s16(_In_reads_(24) const int16_t * _PcD);
+__n128x3 __vld3q_s32(_In_reads_(12) const int32_t * _PcD);
+__n128x3 __vld3q_s8(_In_reads_(48) const int8_t * _PcD);
+__n128x3 __vld3q_u16(_In_reads_(24) const uint16_t * _PcD);
+__n128x3 __vld3q_u32(_In_reads_(12) const uint32_t * _PcD);
+__n128x3 __vld3q_u8(_In_reads_(48) const uint8_t * _PcD);
+__n128x3 __vld3q_f32_ex(_In_reads_(12) const float32_t * _PcD, const int _Align);
+__n128x3 __vld3q_p16_ex(_In_reads_(24) const poly16_t * _PcD, const int _Align);
+__n128x3 __vld3q_p8_ex(_In_reads_(48) const poly8_t * _PcD, const int _Align);
+__n128x3 __vld3q_s16_ex(_In_reads_(24) const int16_t * _PcD, const int _Align);
+__n128x3 __vld3q_s32_ex(_In_reads_(12) const int32_t * _PcD, const int _Align);
+__n128x3 __vld3q_s8_ex(_In_reads_(48) const int8_t * _PcD, const int _Align);
+__n128x3 __vld3q_u16_ex(_In_reads_(24) const uint16_t * _PcD, const int _Align);
+__n128x3 __vld3q_u32_ex(_In_reads_(12) const uint32_t * _PcD, const int _Align);
+__n128x3 __vld3q_u8_ex(_In_reads_(48) const uint8_t * _PcD, const int _Align);
+__n64x3 __vld3_dup_f32(_In_reads_(3) const float32_t * _PcD);
+__n64x3 __vld3_dup_p16(_In_reads_(3) const poly16_t * _PcD);
+__n64x3 __vld3_dup_p8(_In_reads_(3) const poly8_t * _PcD);
+__n64x3 __vld3_dup_s16(_In_reads_(3) const int16_t * _PcD);
+__n64x3 __vld3_dup_s32(_In_reads_(3) const int32_t * _PcD);
+__n64x3 __vld3_dup_s8(_In_reads_(3) const int8_t * _PcD);
+__n64x3 __vld3_dup_u16(_In_reads_(3) const uint16_t * _PcD);
+__n64x3 __vld3_dup_u32(_In_reads_(3) const uint32_t * _PcD);
+__n64x3 __vld3_dup_u8(_In_reads_(3) const uint8_t * _PcD);
+__n64x3 __vld3_dup_s64(_In_reads_(3) const int64_t * _PcD);
+__n64x3 __vld3_dup_u64(_In_reads_(3) const uint64_t * _PcD);
+__n64x3 __vld3_lane_f32(_In_reads_(3) const float32_t * _PcD, __n64x3 _D3, const int _Lane);
+__n64x3 __vld3_lane_p16(_In_reads_(3) const poly16_t * _PcD, __n64x3 _D3, const int _Lane);
+__n64x3 __vld3_lane_p8(_In_reads_(3) const poly8_t * _PcD, __n64x3 _D3, const int _Lane);
+__n64x3 __vld3_lane_s16(_In_reads_(3) const int16_t * _PcD, __n64x3 _D3, const int _Lane);
+__n64x3 __vld3_lane_s32(_In_reads_(3) const int32_t * _PcD, __n64x3 _D3, const int _Lane);
+__n64x3 __vld3_lane_s8(_In_reads_(3) const int8_t * _PcD, __n64x3 _D3, const int _Lane);
+__n64x3 __vld3_lane_u16(_In_reads_(3) const uint16_t * _PcD, __n64x3 _D3, const int _Lane);
+__n64x3 __vld3_lane_u32(_In_reads_(3) const uint32_t * _PcD, __n64x3 _D3, const int _Lane);
+__n64x3 __vld3_lane_u8(_In_reads_(3) const uint8_t * _PcD, __n64x3 _D3, const int _Lane);
+__n128x3 __vld3q_lane_f32(_In_reads_(3) const float32_t * _PcD, __n128x3 _Q3, const int _Lane);
+__n128x3 __vld3q_lane_p16(_In_reads_(3) const poly16_t * _PcD, __n128x3 _Q3, const int _Lane);
+__n128x3 __vld3q_lane_s16(_In_reads_(3) const int16_t * _PcD, __n128x3 _Q3, const int _Lane);
+__n128x3 __vld3q_lane_s32(_In_reads_(3) const int32_t * _PcD, __n128x3 _Q3, const int _Lane);
+__n128x3 __vld3q_lane_u16(_In_reads_(3) const uint16_t * _PcD, __n128x3 _Q3, const int _Lane);
+__n128x3 __vld3q_lane_u32(_In_reads_(3) const uint32_t * _PcD, __n128x3 _Q3, const int _Lane);
+__n64x4 __vld4_f32(_In_reads_(8) const float32_t * _PcD);
+__n64x4 __vld4_p16(_In_reads_(16) const poly16_t * _PcD);
+__n64x4 __vld4_p8(_In_reads_(32) const poly8_t * _PcD);
+__n64x4 __vld4_s16(_In_reads_(16) const int16_t * _PcD);
+__n64x4 __vld4_s32(_In_reads_(8) const int32_t * _PcD);
+__n64x4 __vld4_s8(_In_reads_(32) const int8_t * _PcD);
+__n64x4 __vld4_u16(_In_reads_(16) const uint16_t * _PcD);
+__n64x4 __vld4_u32(_In_reads_(8) const uint32_t * _PcD);
+__n64x4 __vld4_u8(_In_reads_(32) const uint8_t * _PcD);
+__n64x4 __vld4_s64(_In_reads_(4) const int64_t * _PcD);
+__n64x4 __vld4_u64(_In_reads_(4) const uint64_t * _PcD);
+__n64x4 __vld4_s64_ex(_In_reads_(4) const int64_t * _PcD, const int _Align);
+__n64x4 __vld4_u64_ex(_In_reads_(4) const uint64_t * _PcD, const int _Align);
+__n64x4 __vld4_f32_ex(_In_reads_(8) const float32_t * _PcD, const int _Align);
+__n64x4 __vld4_p16_ex(_In_reads_(16) const poly16_t * _PcD, const int _Align);
+__n64x4 __vld4_p8_ex(_In_reads_(32) const poly8_t * _PcD, const int _Align);
+__n64x4 __vld4_s16_ex(_In_reads_(16) const int16_t * _PcD, const int _Align);
+__n64x4 __vld4_s32_ex(_In_reads_(8) const int32_t * _PcD, const int _Align);
+__n64x4 __vld4_s8_ex(_In_reads_(32) const int8_t * _PcD, const int _Align);
+__n64x4 __vld4_u16_ex(_In_reads_(16) const uint16_t * _PcD, const int _Align);
+__n64x4 __vld4_u32_ex(_In_reads_(8) const uint32_t * _PcD, const int _Align);
+__n64x4 __vld4_u8_ex(_In_reads_(32) const uint8_t * _PcD, const int _Align);
+__n128x4 __vld4q_f32(_In_reads_(16) const float32_t * _PcD);
+__n128x4 __vld4q_p16(_In_reads_(32) const poly16_t * _PcD);
+__n128x4 __vld4q_p8(_In_reads_(64) const poly8_t * _PcD);
+__n128x4 __vld4q_s16(_In_reads_(32) const int16_t * _PcD);
+__n128x4 __vld4q_s32(_In_reads_(16) const int32_t * _PcD);
+__n128x4 __vld4q_s8(_In_reads_(64) const int8_t * _PcD);
+__n128x4 __vld4q_u16(_In_reads_(32) const uint16_t * _PcD);
+__n128x4 __vld4q_u32(_In_reads_(16) const uint32_t * _PcD);
+__n128x4 __vld4q_u8(_In_reads_(64) const uint8_t * _PcD);
+__n128x4 __vld4q_f32_ex(_In_reads_(16) const float32_t * _PcD, const int _Align);
+__n128x4 __vld4q_p16_ex(_In_reads_(32) const poly16_t * _PcD, const int _Align);
+__n128x4 __vld4q_p8_ex(_In_reads_(64) const poly8_t * _PcD, const int _Align);
+__n128x4 __vld4q_s16_ex(_In_reads_(32) const int16_t * _PcD, const int _Align);
+__n128x4 __vld4q_s32_ex(_In_reads_(16) const int32_t * _PcD, const int _Align);
+__n128x4 __vld4q_s8_ex(_In_reads_(64) const int8_t * _PcD, const int _Align);
+__n128x4 __vld4q_u16_ex(_In_reads_(32) const uint16_t * _PcD, const int _Align);
+__n128x4 __vld4q_u32_ex(_In_reads_(16) const uint32_t * _PcD, const int _Align);
+__n128x4 __vld4q_u8_ex(_In_reads_(64) const uint8_t * _PcD, const int _Align);
+__n64x4 __vld4_dup_f32(_In_reads_(4) const float32_t * _PcD);
+__n64x4 __vld4_dup_p16(_In_reads_(4) const poly16_t * _PcD);
+__n64x4 __vld4_dup_p8(_In_reads_(4) const poly8_t * _PcD);
+__n64x4 __vld4_dup_s16(_In_reads_(4) const int16_t * _PcD);
+__n64x4 __vld4_dup_s32(_In_reads_(4) const int32_t * _PcD);
+__n64x4 __vld4_dup_s8(_In_reads_(4) const int8_t * _PcD);
+__n64x4 __vld4_dup_u16(_In_reads_(4) const uint16_t * _PcD);
+__n64x4 __vld4_dup_u32(_In_reads_(4) const uint32_t * _PcD);
+__n64x4 __vld4_dup_u8(_In_reads_(4) const uint8_t * _PcD);
+__n64x4 __vld4_dup_s64(_In_reads_(4) const int64_t * _PcD);
+__n64x4 __vld4_dup_u64(_In_reads_(4) const uint64_t * _PcD);
+__n64x4 __vld4_dup_f32_ex(_In_reads_(4) const float32_t * _PcD, const int _Align);
+__n64x4 __vld4_dup_p16_ex(_In_reads_(4) const poly16_t * _PcD, const int _Align);
+__n64x4 __vld4_dup_p8_ex(_In_reads_(4) const poly8_t * _PcD, const int _Align);
+__n64x4 __vld4_dup_s16_ex(_In_reads_(4) const int16_t * _PcD, const int _Align);
+__n64x4 __vld4_dup_s32_ex(_In_reads_(4) const int32_t * _PcD, const int _Align);
+__n64x4 __vld4_dup_s8_ex(_In_reads_(4) const int8_t * _PcD, const int _Align);
+__n64x4 __vld4_dup_u16_ex(_In_reads_(4) const uint16_t * _PcD, const int _Align);
+__n64x4 __vld4_dup_u32_ex(_In_reads_(4) const uint32_t * _PcD, const int _Align);
+__n64x4 __vld4_dup_u8_ex(_In_reads_(4) const uint8_t * _PcD, const int _Align);
+__n64x4 __vld4_lane_f32(_In_reads_(4) const float32_t * _PcD, __n64x4 _D4, const int _Lane);
+__n64x4 __vld4_lane_p16(_In_reads_(4) const poly16_t * _PcD, __n64x4 _D4, const int _Lane);
+__n64x4 __vld4_lane_p8(_In_reads_(4) const poly8_t * _PcD, __n64x4 _D4, const int _Lane);
+__n64x4 __vld4_lane_s16(_In_reads_(4) const int16_t * _PcD, __n64x4 _D4, const int _Lane);
+__n64x4 __vld4_lane_s32(_In_reads_(4) const int32_t * _PcD, __n64x4 _D4, const int _Lane);
+__n64x4 __vld4_lane_s8(_In_reads_(4) const int8_t * _PcD, __n64x4 _D4, const int _Lane);
+__n64x4 __vld4_lane_u16(_In_reads_(4) const uint16_t * _PcD, __n64x4 _D4, const int _Lane);
+__n64x4 __vld4_lane_u32(_In_reads_(4) const uint32_t * _PcD, __n64x4 _D4, const int _Lane);
+__n64x4 __vld4_lane_u8(_In_reads_(4) const uint8_t * _PcD, __n64x4 _D4, const int _Lane);
+__n128x4 __vld4q_lane_f32(_In_reads_(4) const float32_t * _PcD, __n128x4 _Q4, const int _Lane);
+__n128x4 __vld4q_lane_p16(_In_reads_(4) const poly16_t * _PcD, __n128x4 _Q4, const int _Lane);
+__n128x4 __vld4q_lane_s16(_In_reads_(4) const int16_t * _PcD, __n128x4 _Q4, const int _Lane);
+__n128x4 __vld4q_lane_s32(_In_reads_(4) const int32_t * _PcD, __n128x4 _Q4, const int _Lane);
+__n128x4 __vld4q_lane_u16(_In_reads_(4) const uint16_t * _PcD, __n128x4 _Q4, const int _Lane);
+__n128x4 __vld4q_lane_u32(_In_reads_(4) const uint32_t * _PcD, __n128x4 _Q4, const int _Lane);
+__n64x4 __vld4_lane_f32_ex(_In_reads_(4) const float32_t * _PcD, __n64x4 _D4, const int _Lane, const int _Align);
+__n64x4 __vld4_lane_p16_ex(_In_reads_(4) const poly16_t * _PcD, __n64x4 _D4, const int _Lane, const int _Align);
+__n64x4 __vld4_lane_p8_ex(_In_reads_(4) const poly8_t * _PcD, __n64x4 _D4, const int _Lane, const int _Align);
+__n64x4 __vld4_lane_s16_ex(_In_reads_(4) const int16_t * _PcD, __n64x4 _D4, const int _Lane, const int _Align);
+__n64x4 __vld4_lane_s32_ex(_In_reads_(4) const int32_t * _PcD, __n64x4 _D4, const int _Lane, const int _Align);
+__n64x4 __vld4_lane_s8_ex(_In_reads_(4) const int8_t * _PcD, __n64x4 _D4, const int _Lane, const int _Align);
+__n64x4 __vld4_lane_u16_ex(_In_reads_(4) const uint16_t * _PcD, __n64x4 _D4, const int _Lane, const int _Align);
+__n64x4 __vld4_lane_u32_ex(_In_reads_(4) const uint32_t * _PcD, __n64x4 _D4, const int _Lane, const int _Align);
+__n64x4 __vld4_lane_u8_ex(_In_reads_(4) const uint8_t * _PcD, __n64x4 _D4, const int _Lane, const int _Align);
+__n128x4 __vld4q_lane_f32_ex(_In_reads_(4) const float32_t * _PcD, __n128x4 _Q4, const int _Lane, const int _Align);
+__n128x4 __vld4q_lane_p16_ex(_In_reads_(4) const poly16_t * _PcD, __n128x4 _Q4, const int _Lane, const int _Align);
+__n128x4 __vld4q_lane_s16_ex(_In_reads_(4) const int16_t * _PcD, __n128x4 _Q4, const int _Lane, const int _Align);
+__n128x4 __vld4q_lane_s32_ex(_In_reads_(4) const int32_t * _PcD, __n128x4 _Q4, const int _Lane, const int _Align);
+__n128x4 __vld4q_lane_u16_ex(_In_reads_(4) const uint16_t * _PcD, __n128x4 _Q4, const int _Lane, const int _Align);
+__n128x4 __vld4q_lane_u32_ex(_In_reads_(4) const uint32_t * _PcD, __n128x4 _Q4, const int _Lane, const int _Align);
+__n64 __vmax_f32(__n64 _Dn, __n64 _Dm);
+__n64 __vmaxnm_f32(__n64 _Dn, __n64 _Dm);
+__n64 __vmin_f32(__n64 _Dn, __n64 _Dm);
+__n64 __vminnm_f32(__n64 _Dn, __n64 _Dm);
+__n128 __vmaxq_f32(__n128 _Qn, __n128 _Qm);
+__n128 __vmaxnmq_f32(__n128 _Qn, __n128 _Qm);
+__n128 __vminq_f32(__n128 _Qn, __n128 _Qm);
+__n128 __vminnmq_f32(__n128 _Qn, __n128 _Qm);
+__n64 __vmax_s16(__n64 _Dn, __n64 _Dm);
+__n64 __vmax_s32(__n64 _Dn, __n64 _Dm);
+__n64 __vmax_s8(__n64 _Dn, __n64 _Dm);
+__n64 __vmax_u16(__n64 _Dn, __n64 _Dm);
+__n64 __vmax_u32(__n64 _Dn, __n64 _Dm);
+__n64 __vmax_u8(__n64 _Dn, __n64 _Dm);
+__n64 __vmin_s16(__n64 _Dn, __n64 _Dm);
+__n64 __vmin_s32(__n64 _Dn, __n64 _Dm);
+__n64 __vmin_s8(__n64 _Dn, __n64 _Dm);
+__n64 __vmin_u16(__n64 _Dn, __n64 _Dm);
+__n64 __vmin_u32(__n64 _Dn, __n64 _Dm);
+__n64 __vmin_u8(__n64 _Dn, __n64 _Dm);
+__n128 __vmaxq_s16(__n128 _Qn, __n128 _Qm);
+__n128 __vmaxq_s32(__n128 _Qn, __n128 _Qm);
+__n128 __vmaxq_s8(__n128 _Qn, __n128 _Qm);
+__n128 __vmaxq_u16(__n128 _Qn, __n128 _Qm);
+__n128 __vmaxq_u32(__n128 _Qn, __n128 _Qm);
+__n128 __vmaxq_u8(__n128 _Qn, __n128 _Qm);
+__n128 __vminq_s16(__n128 _Qn, __n128 _Qm);
+__n128 __vminq_s32(__n128 _Qn, __n128 _Qm);
+__n128 __vminq_s8(__n128 _Qn, __n128 _Qm);
+__n128 __vminq_u16(__n128 _Qn, __n128 _Qm);
+__n128 __vminq_u32(__n128 _Qn, __n128 _Qm);
+__n128 __vminq_u8(__n128 _Qn, __n128 _Qm);
+__n64 __vmla_lane_f32(__n64 _Dd, __n64 _Dn, __n64 _Dm, const int _Lane);
+__n64 __vmla_lane_s16(__n64 _Dd, __n64 _Dn, __n64 _Dm, const int _Lane);
+__n64 __vmla_lane_s32(__n64 _Dd, __n64 _Dn, __n64 _Dm, const int _Lane);
+__n64 __vmla_lane_u16(__n64 _Dd, __n64 _Dn, __n64 _Dm, const int _Lane);
+__n64 __vmla_lane_u32(__n64 _Dd, __n64 _Dn, __n64 _Dm, const int _Lane);
+__n64 __vmls_lane_f32(__n64 _Dd, __n64 _Dn, __n64 _Dm, const int _Lane);
+__n64 __vmls_lane_s16(__n64 _Dd, __n64 _Dn, __n64 _Dm, const int _Lane);
+__n64 __vmls_lane_s32(__n64 _Dd, __n64 _Dn, __n64 _Dm, const int _Lane);
+__n64 __vmls_lane_u16(__n64 _Dd, __n64 _Dn, __n64 _Dm, const int _Lane);
+__n64 __vmls_lane_u32(__n64 _Dd, __n64 _Dn, __n64 _Dm, const int _Lane);
+__n128 __vmlaq_lane_f32(__n128 _Qd, __n128 _Qn, __n64 _Dm, const int _Lane);
+__n128 __vmlaq_lane_s16(__n128 _Qd, __n128 _Qn, __n64 _Dm, const int _Lane);
+__n128 __vmlaq_lane_s32(__n128 _Qd, __n128 _Qn, __n64 _Dm, const int _Lane);
+__n128 __vmlaq_lane_u16(__n128 _Qd, __n128 _Qn, __n64 _Dm, const int _Lane);
+__n128 __vmlaq_lane_u32(__n128 _Qd, __n128 _Qn, __n64 _Dm, const int _Lane);
+__n128 __vmlsq_lane_f32(__n128 _Qd, __n128 _Qn, __n64 _Dm, const int _Lane);
+__n128 __vmlsq_lane_s16(__n128 _Qd, __n128 _Qn, __n64 _Dm, const int _Lane);
+__n128 __vmlsq_lane_s32(__n128 _Qd, __n128 _Qn, __n64 _Dm, const int _Lane);
+__n128 __vmlsq_lane_u16(__n128 _Qd, __n128 _Qn, __n64 _Dm, const int _Lane);
+__n128 __vmlsq_lane_u32(__n128 _Qd, __n128 _Qn, __n64 _Dm, const int _Lane);
+__n64 __vmla_n_f32(__n64 _Dd, __n64 _Dn, float32_t _Ft);
+__n64 __vmls_n_f32(__n64 _Dd, __n64 _Dn, float32_t _Ft);
+__n128 __vmlaq_n_f32(__n128 _Qd, __n128 _Qn, float32_t _Ft);
+__n128 __vmlsq_n_f32(__n128 _Qd, __n128 _Qn, float32_t _Ft);
+__n64 __vmla_f32(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vmls_f32(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n128 __vmlaq_f32(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vmlsq_f32(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n64 __vmla_s16(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vmla_s32(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vmla_s8(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vmla_u16(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vmla_u32(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vmla_u8(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vmls_s16(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vmls_s32(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vmls_s8(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vmls_u16(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vmls_u32(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vmls_u8(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n128 __vmlaq_s16(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vmlaq_s32(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vmlaq_s8(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vmlaq_u16(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vmlaq_u32(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vmlaq_u8(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vmlsq_s16(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vmlsq_s32(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vmlsq_s8(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vmlsq_u16(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vmlsq_u32(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vmlsq_u8(__n128 _Qd, __n128 _Qn, __n128 _Qm);
+__n128 __vmlal_s16(__n128 _Qd, __n64 _Dn, __n64 _Dm);
+__n128 __vmlal_s32(__n128 _Qd, __n64 _Dn, __n64 _Dm);
+__n128 __vmlal_s8(__n128 _Qd, __n64 _Dn, __n64 _Dm);
+__n128 __vmlal_u16(__n128 _Qd, __n64 _Dn, __n64 _Dm);
+__n128 __vmlal_u32(__n128 _Qd, __n64 _Dn, __n64 _Dm);
+__n128 __vmlal_u8(__n128 _Qd, __n64 _Dn, __n64 _Dm);
+__n128 __vmlsl_s16(__n128 _Qd, __n64 _Dn, __n64 _Dm);
+__n128 __vmlsl_s32(__n128 _Qd, __n64 _Dn, __n64 _Dm);
+__n128 __vmlsl_s8(__n128 _Qd, __n64 _Dn, __n64 _Dm);
+__n128 __vmlsl_u16(__n128 _Qd, __n64 _Dn, __n64 _Dm);
+__n128 __vmlsl_u32(__n128 _Qd, __n64 _Dn, __n64 _Dm);
+__n128 __vmlsl_u8(__n128 _Qd, __n64 _Dn, __n64 _Dm);
+__n128 __vmlal_lane_s16(__n128 _Qd, __n64 _Dn, __n64 _Dm, const int _Lane);
+__n128 __vmlal_lane_s32(__n128 _Qd, __n64 _Dn, __n64 _Dm, const int _Lane);
+__n128 __vmlal_lane_u16(__n128 _Qd, __n64 _Dn, __n64 _Dm, const int _Lane);
+__n128 __vmlal_lane_u32(__n128 _Qd, __n64 _Dn, __n64 _Dm, const int _Lane);
+__n128 __vmlsl_lane_s16(__n128 _Qd, __n64 _Dn, __n64 _Dm, const int _Lane);
+__n128 __vmlsl_lane_s32(__n128 _Qd, __n64 _Dn, __n64 _Dm, const int _Lane);
+__n128 __vmlsl_lane_u16(__n128 _Qd, __n64 _Dn, __n64 _Dm, const int _Lane);
+__n128 __vmlsl_lane_u32(__n128 _Qd, __n64 _Dn, __n64 _Dm, const int _Lane);
+__n64 __vset_lane_f32(float32_t _Ft, __n64 _Dd, const int _Lane);
+__n64 __vset_lane_p16(poly16_t _Rt, __n64 _Dd, const int _Lane);
+__n64 __vset_lane_p8(poly8_t _Rt, __n64 _Dd, const int _Lane);
+__n64 __vset_lane_s16(int16_t _Rt, __n64 _Dd, const int _Lane);
+__n64 __vset_lane_s32(int32_t _Rt, __n64 _Dd, const int _Lane);
+__n64 __vset_lane_s8(int8_t _Rt, __n64 _Dd, const int _Lane);
+__n64 __vset_lane_u16(uint16_t _Rt, __n64 _Dd, const int _Lane);
+__n64 __vset_lane_u32(uint32_t _Rt, __n64 _Dd, const int _Lane);
+__n64 __vset_lane_u8(uint8_t _Rt, __n64 _Dd, const int _Lane);
+float32_t __vget_lane_f32(__n64 _Dm, const int _Lane);
+poly16_t __vget_lane_p16(__n64 _Dm, const int _Lane);
+poly8_t __vget_lane_p8(__n64 _Dm, const int _Lane);
+int16_t __vget_lane_s16(__n64 _Dm, const int _Lane);
+int8_t __vget_lane_s8(__n64 _Dm, const int _Lane);
+int32_t __vget_lane_s32(__n64 _Dm, const int _Lane);
+uint16_t __vget_lane_u16(__n64 _Dm, const int _Lane);
+uint8_t __vget_lane_u8(__n64 _Dm, const int _Lane);
+uint32_t __vget_lane_u32(__n64 _Dm, const int _Lane);
+__n64 __vset_lane_s64(int64_t _R64t, __n64 _Dd, const int _Lane);
+__n64 __vset_lane_u64(uint64_t _R64t, __n64 _Dd, const int _Lane);
+__n128 __vsetq_lane_s64(int64_t _R64t, __n128 _Qd, const int _Lane);
+__n128 __vsetq_lane_u64(uint64_t _R64t, __n128 _Qd, const int _Lane);
+int64_t __vget_lane_s64(__n64 _Dm, const int _Lane);
+uint64_t __vget_lane_u64(__n64 _Dm, const int _Lane);
+int64_t __vgetq_lane_s64(__n128 _Qm, const int _Lane);
+uint64_t __vgetq_lane_u64(__n128 _Qm, const int _Lane);
+__n128 __vsetq_lane_f32(float32_t _Ft, __n128 _Qd, const int _Lane);
+__n128 __vsetq_lane_p16(poly16_t _Rt, __n128 _Qd, const int _Lane);
+__n128 __vsetq_lane_p8(poly8_t _Rt, __n128 _Qd, const int _Lane);
+__n128 __vsetq_lane_s16(int16_t _Rt, __n128 _Qd, const int _Lane);
+__n128 __vsetq_lane_s32(int32_t _Rt, __n128 _Qd, const int _Lane);
+__n128 __vsetq_lane_s8(int8_t _Rt, __n128 _Qd, const int _Lane);
+__n128 __vsetq_lane_u16(uint16_t _Rt, __n128 _Qd, const int _Lane);
+__n128 __vsetq_lane_u32(uint32_t _Rt, __n128 _Qd, const int _Lane);
+__n128 __vsetq_lane_u8(uint8_t _Rt, __n128 _Qd, const int _Lane);
+float32_t __vgetq_lane_f32(__n128 _Qm, const int _Lane);
+poly16_t __vgetq_lane_p16(__n128 _Qm, const int _Lane);
+poly8_t __vgetq_lane_p8(__n128 _Qm, const int _Lane);
+int16_t __vgetq_lane_s16(__n128 _Qm, const int _Lane);
+int8_t __vgetq_lane_s8(__n128 _Qm, const int _Lane);
+int32_t __vgetq_lane_s32(__n128 _Qm, const int _Lane);
+uint16_t __vgetq_lane_u16(__n128 _Qm, const int _Lane);
+uint8_t __vgetq_lane_u8(__n128 _Qm, const int _Lane);
+uint32_t __vgetq_lane_u32(__n128 _Qm, const int _Lane);
+__n128 __vmovl_s16(__n64 _Dm);
+__n128 __vmovl_s32(__n64 _Dm);
+__n128 __vmovl_s8(__n64 _Dm);
+__n128 __vmovl_u16(__n64 _Dm);
+__n128 __vmovl_u32(__n64 _Dm);
+__n128 __vmovl_u8(__n64 _Dm);
+__n64 __vmovn_s16(__n128 _Qm);
+__n64 __vmovn_s32(__n128 _Qm);
+__n64 __vmovn_s64(__n128 _Qm);
+__n64 __vmovn_u16(__n128 _Qm);
+__n64 __vmovn_u32(__n128 _Qm);
+__n64 __vmovn_u64(__n128 _Qm);
+__n64 __vmul_f32(__n64 _Dn, __n64 _Dm);
+__n64 __vmul_p8(__n64 _Dn, __n64 _Dm);
+__n64 __vmul_s16(__n64 _Dn, __n64 _Dm);
+__n64 __vmul_s32(__n64 _Dn, __n64 _Dm);
+__n64 __vmul_s8(__n64 _Dn, __n64 _Dm);
+__n64 __vmul_u16(__n64 _Dn, __n64 _Dm);
+__n64 __vmul_u32(__n64 _Dn, __n64 _Dm);
+__n64 __vmul_u8(__n64 _Dn, __n64 _Dm);
+__n128 __vmulq_f32(__n128 _Qn, __n128 _Qm);
+__n128 __vmulq_p8(__n128 _Qn, __n128 _Qm);
+__n128 __vmulq_s16(__n128 _Qn, __n128 _Qm);
+__n128 __vmulq_s32(__n128 _Qn, __n128 _Qm);
+__n128 __vmulq_s8(__n128 _Qn, __n128 _Qm);
+__n128 __vmulq_u16(__n128 _Qn, __n128 _Qm);
+__n128 __vmulq_u32(__n128 _Qn, __n128 _Qm);
+__n128 __vmulq_u8(__n128 _Qn, __n128 _Qm);
+__n64 __vmul_n_f32(__n64 _Dn, float32_t _Ft);
+__n128 __vmulq_n_f32(__n128 _Qn, float32_t _Ft);
+__n64 __vmul_lane_f32(__n64 _Dn, __n64 _Dm, const int _Lane);
+__n64 __vmul_lane_s16(__n64 _Dn, __n64 _Dm, const int _Lane);
+__n64 __vmul_lane_s32(__n64 _Dn, __n64 _Dm, const int _Lane);
+__n64 __vmul_lane_u16(__n64 _Dn, __n64 _Dm, const int _Lane);
+__n64 __vmul_lane_u32(__n64 _Dn, __n64 _Dm, const int _Lane);
+__n128 __vmulq_lane_f32(__n128 _Qn, __n64 _Dm, const int _Lane);
+__n128 __vmulq_lane_s16(__n128 _Qn, __n64 _Dm, const int _Lane);
+__n128 __vmulq_lane_s32(__n128 _Qn, __n64 _Dm, const int _Lane);
+__n128 __vmulq_lane_u16(__n128 _Qn, __n64 _Dm, const int _Lane);
+__n128 __vmulq_lane_u32(__n128 _Qn, __n64 _Dm, const int _Lane);
+__n128 __vmull_p64(__n64 _Dn, __n64 _Dm);
+__n128 __vmull_p8(__n64 _Dn, __n64 _Dm);
+__n128 __vmull_s16(__n64 _Dn, __n64 _Dm);
+__n128 __vmull_s32(__n64 _Dn, __n64 _Dm);
+__n128 __vmull_s8(__n64 _Dn, __n64 _Dm);
+__n128 __vmull_u16(__n64 _Dn, __n64 _Dm);
+__n128 __vmull_u32(__n64 _Dn, __n64 _Dm);
+__n128 __vmull_u8(__n64 _Dn, __n64 _Dm);
+__n128 __vmull_lane_s16(__n64 _Dn, __n64 _Dm, const int _Lane);
+__n128 __vmull_lane_s32(__n64 _Dn, __n64 _Dm, const int _Lane);
+__n128 __vmull_lane_u16(__n64 _Dn, __n64 _Dm, const int _Lane);
+__n128 __vmull_lane_u32(__n64 _Dn, __n64 _Dm, const int _Lane);
+__n64 __vmvn_p16(__n64 _Dm);
+__n64 __vmvn_p8(__n64 _Dm);
+__n64 __vmvn_s16(__n64 _Dm);
+__n64 __vmvn_s32(__n64 _Dm);
+__n64 __vmvn_s8(__n64 _Dm);
+__n64 __vmvn_u16(__n64 _Dm);
+__n64 __vmvn_u32(__n64 _Dm);
+__n64 __vmvn_u8(__n64 _Dm);
+__n128 __vmvnq_p16(__n128 _Qm);
+__n128 __vmvnq_p8(__n128 _Qm);
+__n128 __vmvnq_s16(__n128 _Qm);
+__n128 __vmvnq_s32(__n128 _Qm);
+__n128 __vmvnq_s8(__n128 _Qm);
+__n128 __vmvnq_u16(__n128 _Qm);
+__n128 __vmvnq_u32(__n128 _Qm);
+__n128 __vmvnq_u8(__n128 _Qm);
+__n64 __vpadal_s16(__n64 _Dd, __n64 _Dm);
+__n64 __vpadal_s32(__n64 _Dd, __n64 _Dm);
+__n64 __vpadal_s8(__n64 _Dd, __n64 _Dm);
+__n64 __vpadal_u16(__n64 _Dd, __n64 _Dm);
+__n64 __vpadal_u32(__n64 _Dd, __n64 _Dm);
+__n64 __vpadal_u8(__n64 _Dd, __n64 _Dm);
+__n128 __vpadalq_s16(__n128 _Qd, __n128 _Qm);
+__n128 __vpadalq_s32(__n128 _Qd, __n128 _Qm);
+__n128 __vpadalq_s8(__n128 _Qd, __n128 _Qm);
+__n128 __vpadalq_u16(__n128 _Qd, __n128 _Qm);
+__n128 __vpadalq_u32(__n128 _Qd, __n128 _Qm);
+__n128 __vpadalq_u8(__n128 _Qd, __n128 _Qm);
+__n64 __vpadd_f32(__n64 _Dn, __n64 _Dm);
+__n64 __vpadd_s16(__n64 _Dn, __n64 _Dm);
+__n64 __vpadd_s32(__n64 _Dn, __n64 _Dm);
+__n64 __vpadd_s8(__n64 _Dn, __n64 _Dm);
+__n64 __vpadd_u16(__n64 _Dn, __n64 _Dm);
+__n64 __vpadd_u32(__n64 _Dn, __n64 _Dm);
+__n64 __vpadd_u8(__n64 _Dn, __n64 _Dm);
+__n64 __vpaddl_s16(__n64 _Dm);
+__n64 __vpaddl_s32(__n64 _Dm);
+__n64 __vpaddl_s8(__n64 _Dm);
+__n64 __vpaddl_u16(__n64 _Dm);
+__n64 __vpaddl_u32(__n64 _Dm);
+__n64 __vpaddl_u8(__n64 _Dm);
+__n128 __vpaddlq_s16(__n128 _Qm);
+__n128 __vpaddlq_s32(__n128 _Qm);
+__n128 __vpaddlq_s8(__n128 _Qm);
+__n128 __vpaddlq_u16(__n128 _Qm);
+__n128 __vpaddlq_u32(__n128 _Qm);
+__n128 __vpaddlq_u8(__n128 _Qm);
+__n64 __vpmax_f32(__n64 _Dn, __n64 _Dm);
+__n64 __vpmin_f32(__n64 _Dn, __n64 _Dm);
+__n64 __vpmax_s16(__n64 _Dn, __n64 _Dm);
+__n64 __vpmax_s32(__n64 _Dn, __n64 _Dm);
+__n64 __vpmax_s8(__n64 _Dn, __n64 _Dm);
+__n64 __vpmax_u16(__n64 _Dn, __n64 _Dm);
+__n64 __vpmax_u32(__n64 _Dn, __n64 _Dm);
+__n64 __vpmax_u8(__n64 _Dn, __n64 _Dm);
+__n64 __vpmin_s16(__n64 _Dn, __n64 _Dm);
+__n64 __vpmin_s32(__n64 _Dn, __n64 _Dm);
+__n64 __vpmin_s8(__n64 _Dn, __n64 _Dm);
+__n64 __vpmin_u16(__n64 _Dn, __n64 _Dm);
+__n64 __vpmin_u32(__n64 _Dn, __n64 _Dm);
+__n64 __vpmin_u8(__n64 _Dn, __n64 _Dm);
+__n64 __vqabs_s16(__n64 _Dm);
+__n64 __vqabs_s32(__n64 _Dm);
+__n64 __vqabs_s8(__n64 _Dm);
+__n64 __vqneg_s16(__n64 _Dm);
+__n64 __vqneg_s32(__n64 _Dm);
+__n64 __vqneg_s8(__n64 _Dm);
+__n128 __vqabsq_s16(__n128 _Qm);
+__n128 __vqabsq_s32(__n128 _Qm);
+__n128 __vqabsq_s8(__n128 _Qm);
+__n128 __vqnegq_s16(__n128 _Qm);
+__n128 __vqnegq_s32(__n128 _Qm);
+__n128 __vqnegq_s8(__n128 _Qm);
+__n64 __vqadd_s16(__n64 _Dn, __n64 _Dm);
+__n64 __vqadd_s32(__n64 _Dn, __n64 _Dm);
+__n64 __vqadd_s64(__n64 _Dn, __n64 _Dm);
+__n64 __vqadd_s8(__n64 _Dn, __n64 _Dm);
+__n64 __vqadd_u16(__n64 _Dn, __n64 _Dm);
+__n64 __vqadd_u32(__n64 _Dn, __n64 _Dm);
+__n64 __vqadd_u64(__n64 _Dn, __n64 _Dm);
+__n64 __vqadd_u8(__n64 _Dn, __n64 _Dm);
+__n128 __vqaddq_s16(__n128 _Qn, __n128 _Qm);
+__n128 __vqaddq_s32(__n128 _Qn, __n128 _Qm);
+__n128 __vqaddq_s64(__n128 _Qn, __n128 _Qm);
+__n128 __vqaddq_s8(__n128 _Qn, __n128 _Qm);
+__n128 __vqaddq_u16(__n128 _Qn, __n128 _Qm);
+__n128 __vqaddq_u32(__n128 _Qn, __n128 _Qm);
+__n128 __vqaddq_u64(__n128 _Qn, __n128 _Qm);
+__n128 __vqaddq_u8(__n128 _Qn, __n128 _Qm);
+__n128 __vqdmlal_s16(__n128 _Qd, __n64 _Dn, __n64 _Dm);
+__n128 __vqdmlal_s32(__n128 _Qd, __n64 _Dn, __n64 _Dm);
+__n128 __vqdmlsl_s16(__n128 _Qd, __n64 _Dn, __n64 _Dm);
+__n128 __vqdmlsl_s32(__n128 _Qd, __n64 _Dn, __n64 _Dm);
+__n128 __vqdmlal_lane_s16(__n128 _Qd, __n64 _Dn, __n64 _Dm, const int _Lane);
+__n128 __vqdmlal_lane_s32(__n128 _Qd, __n64 _Dn, __n64 _Dm, const int _Lane);
+__n128 __vqdmlsl_lane_s16(__n128 _Qd, __n64 _Dn, __n64 _Dm, const int _Lane);
+__n128 __vqdmlsl_lane_s32(__n128 _Qd, __n64 _Dn, __n64 _Dm, const int _Lane);
+__n64 __vqdmulh_lane_s16(__n64 _Dn, __n64 _Dm, const int _Lane);
+__n64 __vqdmulh_lane_s32(__n64 _Dn, __n64 _Dm, const int _Lane);
+__n64 __vqrdmulh_lane_s16(__n64 _Dn, __n64 _Dm, const int _Lane);
+__n64 __vqrdmulh_lane_s32(__n64 _Dn, __n64 _Dm, const int _Lane);
+__n128 __vqdmulhq_lane_s16(__n128 _Qn, __n64 _Dm, const int _Lane);
+__n128 __vqdmulhq_lane_s32(__n128 _Qn, __n64 _Dm, const int _Lane);
+__n128 __vqrdmulhq_lane_s16(__n128 _Qn, __n64 _Dm, const int _Lane);
+__n128 __vqrdmulhq_lane_s32(__n128 _Qn, __n64 _Dm, const int _Lane);
+__n64 __vqdmulh_s16(__n64 _Dn, __n64 _Dm);
+__n64 __vqdmulh_s32(__n64 _Dn, __n64 _Dm);
+__n64 __vqrdmulh_s16(__n64 _Dn, __n64 _Dm);
+__n64 __vqrdmulh_s32(__n64 _Dn, __n64 _Dm);
+__n128 __vqdmulhq_s16(__n128 _Qn, __n128 _Qm);
+__n128 __vqdmulhq_s32(__n128 _Qn, __n128 _Qm);
+__n128 __vqrdmulhq_s16(__n128 _Qn, __n128 _Qm);
+__n128 __vqrdmulhq_s32(__n128 _Qn, __n128 _Qm);
+__n128 __vqdmull_s16(__n64 _Dn, __n64 _Dm);
+__n128 __vqdmull_s32(__n64 _Dn, __n64 _Dm);
+__n128 __vqdmull_lane_s16(__n64 _Dn, __n64 _Dm, const int _Lane);
+__n128 __vqdmull_lane_s32(__n64 _Dn, __n64 _Dm, const int _Lane);
+__n64 __vqmovn_s16(__n128 _Qm);
+__n64 __vqmovn_s32(__n128 _Qm);
+__n64 __vqmovn_s64(__n128 _Qm);
+__n64 __vqmovn_u16(__n128 _Qm);
+__n64 __vqmovn_u32(__n128 _Qm);
+__n64 __vqmovn_u64(__n128 _Qm);
+__n64 __vqmovun_s16(__n128 _Qm);
+__n64 __vqmovun_s32(__n128 _Qm);
+__n64 __vqmovun_s64(__n128 _Qm);
+__n64 __vqshl_n_s16(__n64 _Dm, const int _Shift_amount);
+__n64 __vqshl_n_s32(__n64 _Dm, const int _Shift_amount);
+__n64 __vqshl_n_s64(__n64 _Dm, const int _Shift_amount);
+__n64 __vqshl_n_s8(__n64 _Dm, const int _Shift_amount);
+__n64 __vqshl_n_u16(__n64 _Dm, const int _Shift_amount);
+__n64 __vqshl_n_u32(__n64 _Dm, const int _Shift_amount);
+__n64 __vqshl_n_u64(__n64 _Dm, const int _Shift_amount);
+__n64 __vqshl_n_u8(__n64 _Dm, const int _Shift_amount);
+__n64 __vqshlu_n_s16(__n64 _Dm, const int _Shift_amount);
+__n64 __vqshlu_n_s32(__n64 _Dm, const int _Shift_amount);
+__n64 __vqshlu_n_s64(__n64 _Dm, const int _Shift_amount);
+__n64 __vqshlu_n_s8(__n64 _Dm, const int _Shift_amount);
+__n128 __vqshlq_n_s16(__n128 _Qm, const int _Shift_amount);
+__n128 __vqshlq_n_s32(__n128 _Qm, const int _Shift_amount);
+__n128 __vqshlq_n_s64(__n128 _Qm, const int _Shift_amount);
+__n128 __vqshlq_n_s8(__n128 _Qm, const int _Shift_amount);
+__n128 __vqshlq_n_u16(__n128 _Qm, const int _Shift_amount);
+__n128 __vqshlq_n_u32(__n128 _Qm, const int _Shift_amount);
+__n128 __vqshlq_n_u64(__n128 _Qm, const int _Shift_amount);
+__n128 __vqshlq_n_u8(__n128 _Qm, const int _Shift_amount);
+__n128 __vqshluq_n_s16(__n128 _Qm, const int _Shift_amount);
+__n128 __vqshluq_n_s32(__n128 _Qm, const int _Shift_amount);
+__n128 __vqshluq_n_s64(__n128 _Qm, const int _Shift_amount);
+__n128 __vqshluq_n_s8(__n128 _Qm, const int _Shift_amount);
+__n64 __vqrshrn_n_s16(__n128 _Qm, const int _Shift_amount);
+__n64 __vqrshrn_n_s32(__n128 _Qm, const int _Shift_amount);
+__n64 __vqrshrn_n_s64(__n128 _Qm, const int _Shift_amount);
+__n64 __vqrshrn_n_u16(__n128 _Qm, const int _Shift_amount);
+__n64 __vqrshrn_n_u32(__n128 _Qm, const int _Shift_amount);
+__n64 __vqrshrn_n_u64(__n128 _Qm, const int _Shift_amount);
+__n64 __vqrshrun_n_s16(__n128 _Qm, const int _Shift_amount);
+__n64 __vqrshrun_n_s32(__n128 _Qm, const int _Shift_amount);
+__n64 __vqrshrun_n_s64(__n128 _Qm, const int _Shift_amount);
+__n64 __vqshrn_n_s16(__n128 _Qm, const int _Shift_amount);
+__n64 __vqshrn_n_s32(__n128 _Qm, const int _Shift_amount);
+__n64 __vqshrn_n_s64(__n128 _Qm, const int _Shift_amount);
+__n64 __vqshrn_n_u16(__n128 _Qm, const int _Shift_amount);
+__n64 __vqshrn_n_u32(__n128 _Qm, const int _Shift_amount);
+__n64 __vqshrn_n_u64(__n128 _Qm, const int _Shift_amount);
+__n64 __vqshrun_n_s16(__n128 _Qm, const int _Shift_amount);
+__n64 __vqshrun_n_s32(__n128 _Qm, const int _Shift_amount);
+__n64 __vqshrun_n_s64(__n128 _Qm, const int _Shift_amount);
+__n64 __vqsub_s16(__n64 _Dn, __n64 _Dm);
+__n64 __vqsub_s32(__n64 _Dn, __n64 _Dm);
+__n64 __vqsub_s64(__n64 _Dn, __n64 _Dm);
+__n64 __vqsub_s8(__n64 _Dn, __n64 _Dm);
+__n64 __vqsub_u16(__n64 _Dn, __n64 _Dm);
+__n64 __vqsub_u32(__n64 _Dn, __n64 _Dm);
+__n64 __vqsub_u64(__n64 _Dn, __n64 _Dm);
+__n64 __vqsub_u8(__n64 _Dn, __n64 _Dm);
+__n128 __vqsubq_s16(__n128 _Qn, __n128 _Qm);
+__n128 __vqsubq_s32(__n128 _Qn, __n128 _Qm);
+__n128 __vqsubq_s64(__n128 _Qn, __n128 _Qm);
+__n128 __vqsubq_s8(__n128 _Qn, __n128 _Qm);
+__n128 __vqsubq_u16(__n128 _Qn, __n128 _Qm);
+__n128 __vqsubq_u32(__n128 _Qn, __n128 _Qm);
+__n128 __vqsubq_u64(__n128 _Qn, __n128 _Qm);
+__n128 __vqsubq_u8(__n128 _Qn, __n128 _Qm);
+__n64 __vrecpe_f32(__n64 _Dm);
+__n64 __vrecpe_u32(__n64 _Dm);
+__n64 __vrsqrte_f32(__n64 _Dm);
+__n64 __vrsqrte_u32(__n64 _Dm);
+__n128 __vrecpeq_f32(__n128 _Qm);
+__n128 __vrecpeq_u32(__n128 _Qm);
+__n128 __vrsqrteq_f32(__n128 _Qm);
+__n128 __vrsqrteq_u32(__n128 _Qm);
+__n64 __vrecps_f32(__n64 _Dn, __n64 _Dm);
+__n128 __vrecpsq_f32(__n128 _Qn, __n128 _Qm);
+__n64 __vrev16_p8(__n64 _Dm);
+__n64 __vrev16_s8(__n64 _Dm);
+__n64 __vrev16_u8(__n64 _Dm);
+__n64 __vrev32_p16(__n64 _Dm);
+__n64 __vrev32_p8(__n64 _Dm);
+__n64 __vrev32_s16(__n64 _Dm);
+__n64 __vrev32_s8(__n64 _Dm);
+__n64 __vrev32_u16(__n64 _Dm);
+__n64 __vrev32_u8(__n64 _Dm);
+__n64 __vrev64_f32(__n64 _Dm);
+__n64 __vrev64_p16(__n64 _Dm);
+__n64 __vrev64_p8(__n64 _Dm);
+__n64 __vrev64_s16(__n64 _Dm);
+__n64 __vrev64_s32(__n64 _Dm);
+__n64 __vrev64_s8(__n64 _Dm);
+__n64 __vrev64_u16(__n64 _Dm);
+__n64 __vrev64_u32(__n64 _Dm);
+__n64 __vrev64_u8(__n64 _Dm);
+__n128 __vrev16q_p8(__n128 _Qm);
+__n128 __vrev16q_s8(__n128 _Qm);
+__n128 __vrev16q_u8(__n128 _Qm);
+__n128 __vrev32q_p16(__n128 _Qm);
+__n128 __vrev32q_p8(__n128 _Qm);
+__n128 __vrev32q_s16(__n128 _Qm);
+__n128 __vrev32q_s8(__n128 _Qm);
+__n128 __vrev32q_u16(__n128 _Qm);
+__n128 __vrev32q_u8(__n128 _Qm);
+__n128 __vrev64q_f32(__n128 _Qm);
+__n128 __vrev64q_p16(__n128 _Qm);
+__n128 __vrev64q_p8(__n128 _Qm);
+__n128 __vrev64q_s16(__n128 _Qm);
+__n128 __vrev64q_s32(__n128 _Qm);
+__n128 __vrev64q_s8(__n128 _Qm);
+__n128 __vrev64q_u16(__n128 _Qm);
+__n128 __vrev64q_u32(__n128 _Qm);
+__n128 __vrev64q_u8(__n128 _Qm);
+__n64 __vrnd_f32(__n64 _Dm);
+__n64 __vrnda_f32(__n64 _Dm);
+__n64 __vrndm_f32(__n64 _Dm);
+__n64 __vrndn_f32(__n64 _Dm);
+__n64 __vrndp_f32(__n64 _Dm);
+__n64 __vrndx_f32(__n64 _Dm);
+__n128 __vrndq_f32(__n128 _Qm);
+__n128 __vrndaq_f32(__n128 _Qm);
+__n128 __vrndmq_f32(__n128 _Qm);
+__n128 __vrndnq_f32(__n128 _Qm);
+__n128 __vrndpq_f32(__n128 _Qm);
+__n128 __vrndxq_f32(__n128 _Qm);
+__n64 __vrsqrts_f32(__n64 _Dn, __n64 _Dm);
+__n128 __vrsqrtsq_f32(__n128 _Qn, __n128 _Qm);
+__n64 __vshl_n_s16(__n64 _Dm, const int _Shift_amount);
+__n64 __vshl_n_s32(__n64 _Dm, const int _Shift_amount);
+__n64 __vshl_n_s64(__n64 _Dm, const int _Shift_amount);
+__n64 __vshl_n_s8(__n64 _Dm, const int _Shift_amount);
+__n64 __vshl_n_u16(__n64 _Dm, const int _Shift_amount);
+__n64 __vshl_n_u32(__n64 _Dm, const int _Shift_amount);
+__n64 __vshl_n_u64(__n64 _Dm, const int _Shift_amount);
+__n64 __vshl_n_u8(__n64 _Dm, const int _Shift_amount);
+__n128 __vshlq_n_s16(__n128 _Qm, const int _Shift_amount);
+__n128 __vshlq_n_s32(__n128 _Qm, const int _Shift_amount);
+__n128 __vshlq_n_s64(__n128 _Qm, const int _Shift_amount);
+__n128 __vshlq_n_s8(__n128 _Qm, const int _Shift_amount);
+__n128 __vshlq_n_u16(__n128 _Qm, const int _Shift_amount);
+__n128 __vshlq_n_u32(__n128 _Qm, const int _Shift_amount);
+__n128 __vshlq_n_u64(__n128 _Qm, const int _Shift_amount);
+__n128 __vshlq_n_u8(__n128 _Qm, const int _Shift_amount);
+__n64 __vqrshl_s16(__n64 _Dn, __n64 _Dm);
+__n64 __vqrshl_s32(__n64 _Dn, __n64 _Dm);
+__n64 __vqrshl_s64(__n64 _Dn, __n64 _Dm);
+__n64 __vqrshl_s8(__n64 _Dn, __n64 _Dm);
+__n64 __vqrshl_u16(__n64 _Dn, __n64 _Dm);
+__n64 __vqrshl_u32(__n64 _Dn, __n64 _Dm);
+__n64 __vqrshl_u64(__n64 _Dn, __n64 _Dm);
+__n64 __vqrshl_u8(__n64 _Dn, __n64 _Dm);
+__n64 __vqshl_s16(__n64 _Dn, __n64 _Dm);
+__n64 __vqshl_s32(__n64 _Dn, __n64 _Dm);
+__n64 __vqshl_s64(__n64 _Dn, __n64 _Dm);
+__n64 __vqshl_s8(__n64 _Dn, __n64 _Dm);
+__n64 __vqshl_u16(__n64 _Dn, __n64 _Dm);
+__n64 __vqshl_u32(__n64 _Dn, __n64 _Dm);
+__n64 __vqshl_u64(__n64 _Dn, __n64 _Dm);
+__n64 __vqshl_u8(__n64 _Dn, __n64 _Dm);
+__n64 __vrshl_s16(__n64 _Dn, __n64 _Dm);
+__n64 __vrshl_s32(__n64 _Dn, __n64 _Dm);
+__n64 __vrshl_s64(__n64 _Dn, __n64 _Dm);
+__n64 __vrshl_s8(__n64 _Dn, __n64 _Dm);
+__n64 __vrshl_u16(__n64 _Dn, __n64 _Dm);
+__n64 __vrshl_u32(__n64 _Dn, __n64 _Dm);
+__n64 __vrshl_u64(__n64 _Dn, __n64 _Dm);
+__n64 __vrshl_u8(__n64 _Dn, __n64 _Dm);
+__n64 __vshl_s16(__n64 _Dn, __n64 _Dm);
+__n64 __vshl_s32(__n64 _Dn, __n64 _Dm);
+__n64 __vshl_s64(__n64 _Dn, __n64 _Dm);
+__n64 __vshl_s8(__n64 _Dn, __n64 _Dm);
+__n64 __vshl_u16(__n64 _Dn, __n64 _Dm);
+__n64 __vshl_u32(__n64 _Dn, __n64 _Dm);
+__n64 __vshl_u64(__n64 _Dn, __n64 _Dm);
+__n64 __vshl_u8(__n64 _Dn, __n64 _Dm);
+__n128 __vqrshlq_s16(__n128 _Qn, __n128 _Qm);
+__n128 __vqrshlq_s32(__n128 _Qn, __n128 _Qm);
+__n128 __vqrshlq_s64(__n128 _Qn, __n128 _Qm);
+__n128 __vqrshlq_s8(__n128 _Qn, __n128 _Qm);
+__n128 __vqrshlq_u16(__n128 _Qn, __n128 _Qm);
+__n128 __vqrshlq_u32(__n128 _Qn, __n128 _Qm);
+__n128 __vqrshlq_u64(__n128 _Qn, __n128 _Qm);
+__n128 __vqrshlq_u8(__n128 _Qn, __n128 _Qm);
+__n128 __vqshlq_s16(__n128 _Qn, __n128 _Qm);
+__n128 __vqshlq_s32(__n128 _Qn, __n128 _Qm);
+__n128 __vqshlq_s64(__n128 _Qn, __n128 _Qm);
+__n128 __vqshlq_s8(__n128 _Qn, __n128 _Qm);
+__n128 __vqshlq_u16(__n128 _Qn, __n128 _Qm);
+__n128 __vqshlq_u32(__n128 _Qn, __n128 _Qm);
+__n128 __vqshlq_u64(__n128 _Qn, __n128 _Qm);
+__n128 __vqshlq_u8(__n128 _Qn, __n128 _Qm);
+__n128 __vrshlq_s16(__n128 _Qn, __n128 _Qm);
+__n128 __vrshlq_s32(__n128 _Qn, __n128 _Qm);
+__n128 __vrshlq_s64(__n128 _Qn, __n128 _Qm);
+__n128 __vrshlq_s8(__n128 _Qn, __n128 _Qm);
+__n128 __vrshlq_u16(__n128 _Qn, __n128 _Qm);
+__n128 __vrshlq_u32(__n128 _Qn, __n128 _Qm);
+__n128 __vrshlq_u64(__n128 _Qn, __n128 _Qm);
+__n128 __vrshlq_u8(__n128 _Qn, __n128 _Qm);
+__n128 __vshlq_s16(__n128 _Qn, __n128 _Qm);
+__n128 __vshlq_s32(__n128 _Qn, __n128 _Qm);
+__n128 __vshlq_s64(__n128 _Qn, __n128 _Qm);
+__n128 __vshlq_s8(__n128 _Qn, __n128 _Qm);
+__n128 __vshlq_u16(__n128 _Qn, __n128 _Qm);
+__n128 __vshlq_u32(__n128 _Qn, __n128 _Qm);
+__n128 __vshlq_u64(__n128 _Qn, __n128 _Qm);
+__n128 __vshlq_u8(__n128 _Qn, __n128 _Qm);
+__n128 __vshll_n_s16(__n64 _Dm, const int _Shift_amount);
+__n128 __vshll_n_s32(__n64 _Dm, const int _Shift_amount);
+__n128 __vshll_n_s8(__n64 _Dm, const int _Shift_amount);
+__n128 __vshll_n_u16(__n64 _Dm, const int _Shift_amount);
+__n128 __vshll_n_u32(__n64 _Dm, const int _Shift_amount);
+__n128 __vshll_n_u8(__n64 _Dm, const int _Shift_amount);
+__n64 __vrshr_n_s16(__n64 _Dm, const int _Shift_amount);
+__n64 __vrshr_n_s32(__n64 _Dm, const int _Shift_amount);
+__n64 __vrshr_n_s64(__n64 _Dm, const int _Shift_amount);
+__n64 __vrshr_n_s8(__n64 _Dm, const int _Shift_amount);
+__n64 __vrshr_n_u16(__n64 _Dm, const int _Shift_amount);
+__n64 __vrshr_n_u32(__n64 _Dm, const int _Shift_amount);
+__n64 __vrshr_n_u64(__n64 _Dm, const int _Shift_amount);
+__n64 __vrshr_n_u8(__n64 _Dm, const int _Shift_amount);
+__n64 __vshr_n_s16(__n64 _Dm, const int _Shift_amount);
+__n64 __vshr_n_s32(__n64 _Dm, const int _Shift_amount);
+__n64 __vshr_n_s64(__n64 _Dm, const int _Shift_amount);
+__n64 __vshr_n_s8(__n64 _Dm, const int _Shift_amount);
+__n64 __vshr_n_u16(__n64 _Dm, const int _Shift_amount);
+__n64 __vshr_n_u32(__n64 _Dm, const int _Shift_amount);
+__n64 __vshr_n_u64(__n64 _Dm, const int _Shift_amount);
+__n64 __vshr_n_u8(__n64 _Dm, const int _Shift_amount);
+__n128 __vrshrq_n_s16(__n128 _Qm, const int _Shift_amount);
+__n128 __vrshrq_n_s32(__n128 _Qm, const int _Shift_amount);
+__n128 __vrshrq_n_s64(__n128 _Qm, const int _Shift_amount);
+__n128 __vrshrq_n_s8(__n128 _Qm, const int _Shift_amount);
+__n128 __vrshrq_n_u16(__n128 _Qm, const int _Shift_amount);
+__n128 __vrshrq_n_u32(__n128 _Qm, const int _Shift_amount);
+__n128 __vrshrq_n_u64(__n128 _Qm, const int _Shift_amount);
+__n128 __vrshrq_n_u8(__n128 _Qm, const int _Shift_amount);
+__n128 __vshrq_n_s16(__n128 _Qm, const int _Shift_amount);
+__n128 __vshrq_n_s32(__n128 _Qm, const int _Shift_amount);
+__n128 __vshrq_n_s64(__n128 _Qm, const int _Shift_amount);
+__n128 __vshrq_n_s8(__n128 _Qm, const int _Shift_amount);
+__n128 __vshrq_n_u16(__n128 _Qm, const int _Shift_amount);
+__n128 __vshrq_n_u32(__n128 _Qm, const int _Shift_amount);
+__n128 __vshrq_n_u64(__n128 _Qm, const int _Shift_amount);
+__n128 __vshrq_n_u8(__n128 _Qm, const int _Shift_amount);
+__n64 __vrshrn_n_s16(__n128 _Qm, const int _Shift_amount);
+__n64 __vrshrn_n_s32(__n128 _Qm, const int _Shift_amount);
+__n64 __vrshrn_n_s64(__n128 _Qm, const int _Shift_amount);
+__n64 __vrshrn_n_u16(__n128 _Qm, const int _Shift_amount);
+__n64 __vrshrn_n_u32(__n128 _Qm, const int _Shift_amount);
+__n64 __vrshrn_n_u64(__n128 _Qm, const int _Shift_amount);
+__n64 __vshrn_n_s16(__n128 _Qm, const int _Shift_amount);
+__n64 __vshrn_n_s32(__n128 _Qm, const int _Shift_amount);
+__n64 __vshrn_n_s64(__n128 _Qm, const int _Shift_amount);
+__n64 __vshrn_n_u16(__n128 _Qm, const int _Shift_amount);
+__n64 __vshrn_n_u32(__n128 _Qm, const int _Shift_amount);
+__n64 __vshrn_n_u64(__n128 _Qm, const int _Shift_amount);
+__n64 __vsli_n_p16(__n64 _Dd, __n64 _Dm, const int _Shift_amount);
+__n64 __vsli_n_p8(__n64 _Dd, __n64 _Dm, const int _Shift_amount);
+__n64 __vsli_n_s16(__n64 _Dd, __n64 _Dm, const int _Shift_amount);
+__n64 __vsli_n_s32(__n64 _Dd, __n64 _Dm, const int _Shift_amount);
+__n64 __vsli_n_s64(__n64 _Dd, __n64 _Dm, const int _Shift_amount);
+__n64 __vsli_n_s8(__n64 _Dd, __n64 _Dm, const int _Shift_amount);
+__n64 __vsli_n_u16(__n64 _Dd, __n64 _Dm, const int _Shift_amount);
+__n64 __vsli_n_u32(__n64 _Dd, __n64 _Dm, const int _Shift_amount);
+__n64 __vsli_n_u64(__n64 _Dd, __n64 _Dm, const int _Shift_amount);
+__n64 __vsli_n_u8(__n64 _Dd, __n64 _Dm, const int _Shift_amount);
+__n128 __vsliq_n_p16(__n128 _Qd, __n128 _Qm, const int _Shift_amount);
+__n128 __vsliq_n_p8(__n128 _Qd, __n128 _Qm, const int _Shift_amount);
+__n128 __vsliq_n_s16(__n128 _Qd, __n128 _Qm, const int _Shift_amount);
+__n128 __vsliq_n_s32(__n128 _Qd, __n128 _Qm, const int _Shift_amount);
+__n128 __vsliq_n_s64(__n128 _Qd, __n128 _Qm, const int _Shift_amount);
+__n128 __vsliq_n_s8(__n128 _Qd, __n128 _Qm, const int _Shift_amount);
+__n128 __vsliq_n_u16(__n128 _Qd, __n128 _Qm, const int _Shift_amount);
+__n128 __vsliq_n_u32(__n128 _Qd, __n128 _Qm, const int _Shift_amount);
+__n128 __vsliq_n_u64(__n128 _Qd, __n128 _Qm, const int _Shift_amount);
+__n128 __vsliq_n_u8(__n128 _Qd, __n128 _Qm, const int _Shift_amount);
+__n64 __vrsra_n_s16(__n64 _Dd, __n64 _Dm, const int _Shift_amount);
+__n64 __vrsra_n_s32(__n64 _Dd, __n64 _Dm, const int _Shift_amount);
+__n64 __vrsra_n_s64(__n64 _Dd, __n64 _Dm, const int _Shift_amount);
+__n64 __vrsra_n_s8(__n64 _Dd, __n64 _Dm, const int _Shift_amount);
+__n64 __vrsra_n_u16(__n64 _Dd, __n64 _Dm, const int _Shift_amount);
+__n64 __vrsra_n_u32(__n64 _Dd, __n64 _Dm, const int _Shift_amount);
+__n64 __vrsra_n_u64(__n64 _Dd, __n64 _Dm, const int _Shift_amount);
+__n64 __vrsra_n_u8(__n64 _Dd, __n64 _Dm, const int _Shift_amount);
+__n64 __vsra_n_s16(__n64 _Dd, __n64 _Dm, const int _Shift_amount);
+__n64 __vsra_n_s32(__n64 _Dd, __n64 _Dm, const int _Shift_amount);
+__n64 __vsra_n_s64(__n64 _Dd, __n64 _Dm, const int _Shift_amount);
+__n64 __vsra_n_s8(__n64 _Dd, __n64 _Dm, const int _Shift_amount);
+__n64 __vsra_n_u16(__n64 _Dd, __n64 _Dm, const int _Shift_amount);
+__n64 __vsra_n_u32(__n64 _Dd, __n64 _Dm, const int _Shift_amount);
+__n64 __vsra_n_u64(__n64 _Dd, __n64 _Dm, const int _Shift_amount);
+__n64 __vsra_n_u8(__n64 _Dd, __n64 _Dm, const int _Shift_amount);
+__n128 __vrsraq_n_s16(__n128 _Qd, __n128 _Qm, const int _Shift_amount);
+__n128 __vrsraq_n_s32(__n128 _Qd, __n128 _Qm, const int _Shift_amount);
+__n128 __vrsraq_n_s64(__n128 _Qd, __n128 _Qm, const int _Shift_amount);
+__n128 __vrsraq_n_s8(__n128 _Qd, __n128 _Qm, const int _Shift_amount);
+__n128 __vrsraq_n_u16(__n128 _Qd, __n128 _Qm, const int _Shift_amount);
+__n128 __vrsraq_n_u32(__n128 _Qd, __n128 _Qm, const int _Shift_amount);
+__n128 __vrsraq_n_u64(__n128 _Qd, __n128 _Qm, const int _Shift_amount);
+__n128 __vrsraq_n_u8(__n128 _Qd, __n128 _Qm, const int _Shift_amount);
+__n128 __vsraq_n_s16(__n128 _Qd, __n128 _Qm, const int _Shift_amount);
+__n128 __vsraq_n_s32(__n128 _Qd, __n128 _Qm, const int _Shift_amount);
+__n128 __vsraq_n_s64(__n128 _Qd, __n128 _Qm, const int _Shift_amount);
+__n128 __vsraq_n_s8(__n128 _Qd, __n128 _Qm, const int _Shift_amount);
+__n128 __vsraq_n_u16(__n128 _Qd, __n128 _Qm, const int _Shift_amount);
+__n128 __vsraq_n_u32(__n128 _Qd, __n128 _Qm, const int _Shift_amount);
+__n128 __vsraq_n_u64(__n128 _Qd, __n128 _Qm, const int _Shift_amount);
+__n128 __vsraq_n_u8(__n128 _Qd, __n128 _Qm, const int _Shift_amount);
+__n64 __vsri_n_p16(__n64 _Dd, __n64 _Dm, const int _Shift_amount);
+__n64 __vsri_n_p8(__n64 _Dd, __n64 _Dm, const int _Shift_amount);
+__n64 __vsri_n_s16(__n64 _Dd, __n64 _Dm, const int _Shift_amount);
+__n64 __vsri_n_s32(__n64 _Dd, __n64 _Dm, const int _Shift_amount);
+__n64 __vsri_n_s64(__n64 _Dd, __n64 _Dm, const int _Shift_amount);
+__n64 __vsri_n_s8(__n64 _Dd, __n64 _Dm, const int _Shift_amount);
+__n64 __vsri_n_u16(__n64 _Dd, __n64 _Dm, const int _Shift_amount);
+__n64 __vsri_n_u32(__n64 _Dd, __n64 _Dm, const int _Shift_amount);
+__n64 __vsri_n_u64(__n64 _Dd, __n64 _Dm, const int _Shift_amount);
+__n64 __vsri_n_u8(__n64 _Dd, __n64 _Dm, const int _Shift_amount);
+__n128 __vsriq_n_p16(__n128 _Qd, __n128 _Qm, const int _Shift_amount);
+__n128 __vsriq_n_p8(__n128 _Qd, __n128 _Qm, const int _Shift_amount);
+__n128 __vsriq_n_s16(__n128 _Qd, __n128 _Qm, const int _Shift_amount);
+__n128 __vsriq_n_s32(__n128 _Qd, __n128 _Qm, const int _Shift_amount);
+__n128 __vsriq_n_s64(__n128 _Qd, __n128 _Qm, const int _Shift_amount);
+__n128 __vsriq_n_s8(__n128 _Qd, __n128 _Qm, const int _Shift_amount);
+__n128 __vsriq_n_u16(__n128 _Qd, __n128 _Qm, const int _Shift_amount);
+__n128 __vsriq_n_u32(__n128 _Qd, __n128 _Qm, const int _Shift_amount);
+__n128 __vsriq_n_u64(__n128 _Qd, __n128 _Qm, const int _Shift_amount);
+__n128 __vsriq_n_u8(__n128 _Qd, __n128 _Qm, const int _Shift_amount);
+void __vst1_f32(_Out_writes_(2) float32_t * _PD, __n64 _D);
+void __vst1_p16(_Out_writes_(4) poly16_t * _PD, __n64 _D);
+void __vst1_p8(_Out_writes_(8) poly8_t * _PD, __n64 _D);
+void __vst1_s16(_Out_writes_(4) int16_t * _PD, __n64 _D);
+void __vst1_s32(_Out_writes_(2) int32_t * _PD, __n64 _D);
+void __vst1_s64(_Out_writes_(1) int64_t * _PD, __n64 _D);
+void __vst1_s8(_Out_writes_(8) int8_t * _PD, __n64 _D);
+void __vst1_u16(_Out_writes_(4) uint16_t * _PD, __n64 _D);
+void __vst1_u32(_Out_writes_(2) uint32_t * _PD, __n64 _D);
+void __vst1_u64(_Out_writes_(1) uint64_t * _PD, __n64 _D);
+void __vst1_u8(_Out_writes_(8) uint8_t * _PD, __n64 _D);
+void __vst1_f32_ex(_Out_writes_(2) float32_t * _PD, __n64 _D, const int _Align);
+void __vst1_p16_ex(_Out_writes_(4) poly16_t * _PD, __n64 _D, const int _Align);
+void __vst1_p8_ex(_Out_writes_(8) poly8_t * _PD, __n64 _D, const int _Align);
+void __vst1_s16_ex(_Out_writes_(4) int16_t * _PD, __n64 _D, const int _Align);
+void __vst1_s32_ex(_Out_writes_(2) int32_t * _PD, __n64 _D, const int _Align);
+void __vst1_s64_ex(_Out_writes_(1) int64_t * _PD, __n64 _D, const int _Align);
+void __vst1_s8_ex(_Out_writes_(8) int8_t * _PD, __n64 _D, const int _Align);
+void __vst1_u16_ex(_Out_writes_(4) uint16_t * _PD, __n64 _D, const int _Align);
+void __vst1_u32_ex(_Out_writes_(2) uint32_t * _PD, __n64 _D, const int _Align);
+void __vst1_u64_ex(_Out_writes_(1) uint64_t * _PD, __n64 _D, const int _Align);
+void __vst1_u8_ex(_Out_writes_(8) uint8_t * _PD, __n64 _D, const int _Align);
+void __vst1q_f32(_Out_writes_(4) float32_t * _PD, __n128 _Q);
+void __vst1q_p16(_Out_writes_(8) poly16_t * _PD, __n128 _Q);
+void __vst1q_p8(_Out_writes_(16) poly8_t * _PD, __n128 _Q);
+void __vst1q_s16(_Out_writes_(8) int16_t * _PD, __n128 _Q);
+void __vst1q_s32(_Out_writes_(4) int32_t * _PD, __n128 _Q);
+void __vst1q_s64(_Out_writes_(2) int64_t * _PD, __n128 _Q);
+void __vst1q_s8(_Out_writes_(16) int8_t * _PD, __n128 _Q);
+void __vst1q_u16(_Out_writes_(8) uint16_t * _PD, __n128 _Q);
+void __vst1q_u32(_Out_writes_(4) uint32_t * _PD, __n128 _Q);
+void __vst1q_u64(_Out_writes_(2) uint64_t * _PD, __n128 _Q);
+void __vst1q_u8(_Out_writes_(16) uint8_t * _PD, __n128 _Q);
+void __vst1q_f32_ex(_Out_writes_(4) float32_t * _PD, __n128 _Q, const int _Align);
+void __vst1q_p16_ex(_Out_writes_(8) poly16_t * _PD, __n128 _Q, const int _Align);
+void __vst1q_p8_ex(_Out_writes_(16) poly8_t * _PD, __n128 _Q, const int _Align);
+void __vst1q_s16_ex(_Out_writes_(8) int16_t * _PD, __n128 _Q, const int _Align);
+void __vst1q_s32_ex(_Out_writes_(4) int32_t * _PD, __n128 _Q, const int _Align);
+void __vst1q_s64_ex(_Out_writes_(2) int64_t * _PD, __n128 _Q, const int _Align);
+void __vst1q_s8_ex(_Out_writes_(16) int8_t * _PD, __n128 _Q, const int _Align);
+void __vst1q_u16_ex(_Out_writes_(8) uint16_t * _PD, __n128 _Q, const int _Align);
+void __vst1q_u32_ex(_Out_writes_(4) uint32_t * _PD, __n128 _Q, const int _Align);
+void __vst1q_u64_ex(_Out_writes_(2) uint64_t * _PD, __n128 _Q, const int _Align);
+void __vst1q_u8_ex(_Out_writes_(16) uint8_t * _PD, __n128 _Q, const int _Align);
+void __vst1_lane_f32(_Out_writes_(1) float32_t * _PD, __n64 _D, const int _Lane);
+void __vst1_lane_p16(_Out_writes_(1) poly16_t * _PD, __n64 _D, const int _Lane);
+void __vst1_lane_p8(_Out_writes_(1) poly8_t * _PD, __n64 _D, const int _Lane);
+void __vst1_lane_s16(_Out_writes_(1) int16_t * _PD, __n64 _D, const int _Lane);
+void __vst1_lane_s32(_Out_writes_(1) int32_t * _PD, __n64 _D, const int _Lane);
+void __vst1_lane_s8(_Out_writes_(1) int8_t * _PD, __n64 _D, const int _Lane);
+void __vst1_lane_u16(_Out_writes_(1) uint16_t * _PD, __n64 _D, const int _Lane);
+void __vst1_lane_u32(_Out_writes_(1) uint32_t * _PD, __n64 _D, const int _Lane);
+void __vst1_lane_u8(_Out_writes_(1) uint8_t * _PD, __n64 _D, const int _Lane);
+void __vst1q_lane_f32(_Out_writes_(1) float32_t * _PD, __n128 _Q, const int _Lane);
+void __vst1q_lane_p16(_Out_writes_(1) poly16_t * _PD, __n128 _Q, const int _Lane);
+void __vst1q_lane_p8(_Out_writes_(1) poly8_t * _PD, __n128 _Q, const int _Lane);
+void __vst1q_lane_s16(_Out_writes_(1) int16_t * _PD, __n128 _Q, const int _Lane);
+void __vst1q_lane_s32(_Out_writes_(1) int32_t * _PD, __n128 _Q, const int _Lane);
+void __vst1q_lane_s8(_Out_writes_(1) int8_t * _PD, __n128 _Q, const int _Lane);
+void __vst1q_lane_u16(_Out_writes_(1) uint16_t * _PD, __n128 _Q, const int _Lane);
+void __vst1q_lane_u32(_Out_writes_(1) uint32_t * _PD, __n128 _Q, const int _Lane);
+void __vst1q_lane_u8(_Out_writes_(1) uint8_t * _PD, __n128 _Q, const int _Lane);
+void __vst1_lane_f32_ex(_Out_writes_(1) float32_t * _PD, __n64 _D, const int _Lane, const int _Align);
+void __vst1_lane_p16_ex(_Out_writes_(1) poly16_t * _PD, __n64 _D, const int _Lane, const int _Align);
+void __vst1_lane_s16_ex(_Out_writes_(1) int16_t * _PD, __n64 _D, const int _Lane, const int _Align);
+void __vst1_lane_s32_ex(_Out_writes_(1) int32_t * _PD, __n64 _D, const int _Lane, const int _Align);
+void __vst1_lane_u16_ex(_Out_writes_(1) uint16_t * _PD, __n64 _D, const int _Lane, const int _Align);
+void __vst1_lane_u32_ex(_Out_writes_(1) uint32_t * _PD, __n64 _D, const int _Lane, const int _Align);
+void __vst1q_lane_f32_ex(_Out_writes_(1) float32_t * _PD, __n128 _Q, const int _Lane, const int _Align);
+void __vst1q_lane_p16_ex(_Out_writes_(1) poly16_t * _PD, __n128 _Q, const int _Lane, const int _Align);
+void __vst1q_lane_s16_ex(_Out_writes_(1) int16_t * _PD, __n128 _Q, const int _Lane, const int _Align);
+void __vst1q_lane_s32_ex(_Out_writes_(1) int32_t * _PD, __n128 _Q, const int _Lane, const int _Align);
+void __vst1q_lane_u16_ex(_Out_writes_(1) uint16_t * _PD, __n128 _Q, const int _Lane, const int _Align);
+void __vst1q_lane_u32_ex(_Out_writes_(1) uint32_t * _PD, __n128 _Q, const int _Lane, const int _Align);
+void __vst2_f32(_Out_writes_(4) float32_t * _PD, __n64x2 _D2);
+void __vst2_p16(_Out_writes_(8) poly16_t * _PD, __n64x2 _D2);
+void __vst2_p8(_Out_writes_(16) poly8_t * _PD, __n64x2 _D2);
+void __vst2_s16(_Out_writes_(8) int16_t * _PD, __n64x2 _D2);
+void __vst2_s32(_Out_writes_(4) int32_t * _PD, __n64x2 _D2);
+void __vst2_s8(_Out_writes_(16) int8_t * _PD, __n64x2 _D2);
+void __vst2_u16(_Out_writes_(8) uint16_t * _PD, __n64x2 _D2);
+void __vst2_u32(_Out_writes_(4) uint32_t * _PD, __n64x2 _D2);
+void __vst2_u8(_Out_writes_(16) uint8_t * _PD, __n64x2 _D2);
+void __vst2_s64(_Out_writes_(2) int64_t * _PD, __n64x2 _D2);
+void __vst2_u64(_Out_writes_(2) uint64_t * _PD, __n64x2 _D2);
+void __vst2_s64_ex(_Out_writes_(2) int64_t * _PD, __n64x2 _D2, const int _Align);
+void __vst2_u64_ex(_Out_writes_(2) uint64_t * _PD, __n64x2 _D2, const int _Align);
+void __vst2_f32_ex(_Out_writes_(4) float32_t * _PD, __n64x2 _D2, const int _Align);
+void __vst2_p16_ex(_Out_writes_(8) poly16_t * _PD, __n64x2 _D2, const int _Align);
+void __vst2_p8_ex(_Out_writes_(16) poly8_t * _PD, __n64x2 _D2, const int _Align);
+void __vst2_s16_ex(_Out_writes_(8) int16_t * _PD, __n64x2 _D2, const int _Align);
+void __vst2_s32_ex(_Out_writes_(4) int32_t * _PD, __n64x2 _D2, const int _Align);
+void __vst2_s8_ex(_Out_writes_(16) int8_t * _PD, __n64x2 _D2, const int _Align);
+void __vst2_u16_ex(_Out_writes_(8) uint16_t * _PD, __n64x2 _D2, const int _Align);
+void __vst2_u32_ex(_Out_writes_(4) uint32_t * _PD, __n64x2 _D2, const int _Align);
+void __vst2_u8_ex(_Out_writes_(16) uint8_t * _PD, __n64x2 _D2, const int _Align);
+void __vst2q_f32(_Out_writes_(8) float32_t * _PD, __n128x2 _Q2);
+void __vst2q_p16(_Out_writes_(16) poly16_t * _PD, __n128x2 _Q2);
+void __vst2q_p8(_Out_writes_(32) poly8_t * _PD, __n128x2 _Q2);
+void __vst2q_s16(_Out_writes_(16) int16_t * _PD, __n128x2 _Q2);
+void __vst2q_s32(_Out_writes_(8) int32_t * _PD, __n128x2 _Q2);
+void __vst2q_s8(_Out_writes_(32) int8_t * _PD, __n128x2 _Q2);
+void __vst2q_u16(_Out_writes_(16) uint16_t * _PD, __n128x2 _Q2);
+void __vst2q_u32(_Out_writes_(8) uint32_t * _PD, __n128x2 _Q2);
+void __vst2q_u8(_Out_writes_(32) uint8_t * _PD, __n128x2 _Q2);
+void __vst2q_f32_ex(_Out_writes_(8) float32_t * _PD, __n128x2 _Q2, const int _Align);
+void __vst2q_p16_ex(_Out_writes_(16) poly16_t * _PD, __n128x2 _Q2, const int _Align);
+void __vst2q_p8_ex(_Out_writes_(32) poly8_t * _PD, __n128x2 _Q2, const int _Align);
+void __vst2q_s16_ex(_Out_writes_(16) int16_t * _PD, __n128x2 _Q2, const int _Align);
+void __vst2q_s32_ex(_Out_writes_(8) int32_t * _PD, __n128x2 _Q2, const int _Align);
+void __vst2q_s8_ex(_Out_writes_(32) int8_t * _PD, __n128x2 _Q2, const int _Align);
+void __vst2q_u16_ex(_Out_writes_(16) uint16_t * _PD, __n128x2 _Q2, const int _Align);
+void __vst2q_u32_ex(_Out_writes_(8) uint32_t * _PD, __n128x2 _Q2, const int _Align);
+void __vst2q_u8_ex(_Out_writes_(32) uint8_t * _PD, __n128x2 _Q2, const int _Align);
+void __vst2_lane_f32(_Out_writes_(2) float32_t * _PD, __n64x2 _D2, const int _Lane);
+void __vst2_lane_p16(_Out_writes_(2) poly16_t * _PD, __n64x2 _D2, const int _Lane);
+void __vst2_lane_p8(_Out_writes_(2) poly8_t * _PD, __n64x2 _D2, const int _Lane);
+void __vst2_lane_s16(_Out_writes_(2) int16_t * _PD, __n64x2 _D2, const int _Lane);
+void __vst2_lane_s32(_Out_writes_(2) int32_t * _PD, __n64x2 _D2, const int _Lane);
+void __vst2_lane_s8(_Out_writes_(2) int8_t * _PD, __n64x2 _D2, const int _Lane);
+void __vst2_lane_u16(_Out_writes_(2) uint16_t * _PD, __n64x2 _D2, const int _Lane);
+void __vst2_lane_u32(_Out_writes_(2) uint32_t * _PD, __n64x2 _D2, const int _Lane);
+void __vst2_lane_u8(_Out_writes_(2) uint8_t * _PD, __n64x2 _D2, const int _Lane);
+void __vst2q_lane_f32(_Out_writes_(2) float32_t * _PD, __n128x2 _Q2, const int _Lane);
+void __vst2q_lane_p16(_Out_writes_(2) poly16_t * _PD, __n128x2 _Q2, const int _Lane);
+void __vst2q_lane_s16(_Out_writes_(2) int16_t * _PD, __n128x2 _Q2, const int _Lane);
+void __vst2q_lane_s32(_Out_writes_(2) int32_t * _PD, __n128x2 _Q2, const int _Lane);
+void __vst2q_lane_u16(_Out_writes_(2) uint16_t * _PD, __n128x2 _Q2, const int _Lane);
+void __vst2q_lane_u32(_Out_writes_(2) uint32_t * _PD, __n128x2 _Q2, const int _Lane);
+void __vst2_lane_f32_ex(_Out_writes_(2) float32_t * _PD, __n64x2 _D2, const int _Lane, const int _Align);
+void __vst2_lane_p16_ex(_Out_writes_(2) poly16_t * _PD, __n64x2 _D2, const int _Lane, const int _Align);
+void __vst2_lane_p8_ex(_Out_writes_(2) poly8_t * _PD, __n64x2 _D2, const int _Lane, const int _Align);
+void __vst2_lane_s16_ex(_Out_writes_(2) int16_t * _PD, __n64x2 _D2, const int _Lane, const int _Align);
+void __vst2_lane_s32_ex(_Out_writes_(2) int32_t * _PD, __n64x2 _D2, const int _Lane, const int _Align);
+void __vst2_lane_s8_ex(_Out_writes_(2) int8_t * _PD, __n64x2 _D2, const int _Lane, const int _Align);
+void __vst2_lane_u16_ex(_Out_writes_(2) uint16_t * _PD, __n64x2 _D2, const int _Lane, const int _Align);
+void __vst2_lane_u32_ex(_Out_writes_(2) uint32_t * _PD, __n64x2 _D2, const int _Lane, const int _Align);
+void __vst2_lane_u8_ex(_Out_writes_(2) uint8_t * _PD, __n64x2 _D2, const int _Lane, const int _Align);
+void __vst2q_lane_f32_ex(_Out_writes_(2) float32_t * _PD, __n128x2 _Q2, const int _Lane, const int _Align);
+void __vst2q_lane_p16_ex(_Out_writes_(2) poly16_t * _PD, __n128x2 _Q2, const int _Lane, const int _Align);
+void __vst2q_lane_s16_ex(_Out_writes_(2) int16_t * _PD, __n128x2 _Q2, const int _Lane, const int _Align);
+void __vst2q_lane_s32_ex(_Out_writes_(2) int32_t * _PD, __n128x2 _Q2, const int _Lane, const int _Align);
+void __vst2q_lane_u16_ex(_Out_writes_(2) uint16_t * _PD, __n128x2 _Q2, const int _Lane, const int _Align);
+void __vst2q_lane_u32_ex(_Out_writes_(2) uint32_t * _PD, __n128x2 _Q2, const int _Lane, const int _Align);
+void __vst3_f32(_Out_writes_(6) float32_t * _PD, __n64x3 _D3);
+void __vst3_p16(_Out_writes_(12) poly16_t * _PD, __n64x3 _D3);
+void __vst3_p8(_Out_writes_(24) poly8_t * _PD, __n64x3 _D3);
+void __vst3_s16(_Out_writes_(12) int16_t * _PD, __n64x3 _D3);
+void __vst3_s32(_Out_writes_(6) int32_t * _PD, __n64x3 _D3);
+void __vst3_s8(_Out_writes_(24) int8_t * _PD, __n64x3 _D3);
+void __vst3_u16(_Out_writes_(12) uint16_t * _PD, __n64x3 _D3);
+void __vst3_u32(_Out_writes_(6) uint32_t * _PD, __n64x3 _D3);
+void __vst3_u8(_Out_writes_(24) uint8_t * _PD, __n64x3 _D3);
+void __vst3_s64(_Out_writes_(3) int64_t * _PD, __n64x3 _D3);
+void __vst3_u64(_Out_writes_(3) uint64_t * _PD, __n64x3 _D3);
+void __vst3_s64_ex(_Out_writes_(3) int64_t * _PD, __n64x3 _D3, const int _Align);
+void __vst3_u64_ex(_Out_writes_(3) uint64_t * _PD, __n64x3 _D3, const int _Align);
+void __vst3_f32_ex(_Out_writes_(6) float32_t * _PD, __n64x3 _D3, const int _Align);
+void __vst3_p16_ex(_Out_writes_(12) poly16_t * _PD, __n64x3 _D3, const int _Align);
+void __vst3_p8_ex(_Out_writes_(24) poly8_t * _PD, __n64x3 _D3, const int _Align);
+void __vst3_s16_ex(_Out_writes_(12) int16_t * _PD, __n64x3 _D3, const int _Align);
+void __vst3_s32_ex(_Out_writes_(6) int32_t * _PD, __n64x3 _D3, const int _Align);
+void __vst3_s8_ex(_Out_writes_(24) int8_t * _PD, __n64x3 _D3, const int _Align);
+void __vst3_u16_ex(_Out_writes_(12) uint16_t * _PD, __n64x3 _D3, const int _Align);
+void __vst3_u32_ex(_Out_writes_(6) uint32_t * _PD, __n64x3 _D3, const int _Align);
+void __vst3_u8_ex(_Out_writes_(24) uint8_t * _PD, __n64x3 _D3, const int _Align);
+void __vst3q_f32(_Out_writes_(12) float32_t * _PD, __n128x3 _Q3);
+void __vst3q_p16(_Out_writes_(24) poly16_t * _PD, __n128x3 _Q3);
+void __vst3q_p8(_Out_writes_(48) poly8_t * _PD, __n128x3 _Q3);
+void __vst3q_s16(_Out_writes_(24) int16_t * _PD, __n128x3 _Q3);
+void __vst3q_s32(_Out_writes_(12) int32_t * _PD, __n128x3 _Q3);
+void __vst3q_s8(_Out_writes_(48) int8_t * _PD, __n128x3 _Q3);
+void __vst3q_u16(_Out_writes_(24) uint16_t * _PD, __n128x3 _Q3);
+void __vst3q_u32(_Out_writes_(12) uint32_t * _PD, __n128x3 _Q3);
+void __vst3q_u8(_Out_writes_(48) uint8_t * _PD, __n128x3 _Q3);
+void __vst3q_f32_ex(_Out_writes_(12) float32_t * _PD, __n128x3 _Q3, const int _Align);
+void __vst3q_p16_ex(_Out_writes_(24) poly16_t * _PD, __n128x3 _Q3, const int _Align);
+void __vst3q_p8_ex(_Out_writes_(48) poly8_t * _PD, __n128x3 _Q3, const int _Align);
+void __vst3q_s16_ex(_Out_writes_(24) int16_t * _PD, __n128x3 _Q3, const int _Align);
+void __vst3q_s32_ex(_Out_writes_(12) int32_t * _PD, __n128x3 _Q3, const int _Align);
+void __vst3q_s8_ex(_Out_writes_(48) int8_t * _PD, __n128x3 _Q3, const int _Align);
+void __vst3q_u16_ex(_Out_writes_(24) uint16_t * _PD, __n128x3 _Q3, const int _Align);
+void __vst3q_u32_ex(_Out_writes_(12) uint32_t * _PD, __n128x3 _Q3, const int _Align);
+void __vst3q_u8_ex(_Out_writes_(48) uint8_t * _PD, __n128x3 _Q3, const int _Align);
+void __vst3_lane_f32(_Out_writes_(3) float32_t * _PD, __n64x3 _D3, const int _Lane);
+void __vst3_lane_p16(_Out_writes_(3) poly16_t * _PD, __n64x3 _D3, const int _Lane);
+void __vst3_lane_p8(_Out_writes_(3) poly8_t * _PD, __n64x3 _D3, const int _Lane);
+void __vst3_lane_s16(_Out_writes_(3) int16_t * _PD, __n64x3 _D3, const int _Lane);
+void __vst3_lane_s32(_Out_writes_(3) int32_t * _PD, __n64x3 _D3, const int _Lane);
+void __vst3_lane_s8(_Out_writes_(3) int8_t * _PD, __n64x3 _D3, const int _Lane);
+void __vst3_lane_u16(_Out_writes_(3) uint16_t * _PD, __n64x3 _D3, const int _Lane);
+void __vst3_lane_u32(_Out_writes_(3) uint32_t * _PD, __n64x3 _D3, const int _Lane);
+void __vst3_lane_u8(_Out_writes_(3) uint8_t * _PD, __n64x3 _D3, const int _Lane);
+void __vst3q_lane_f32(_Out_writes_(3) float32_t * _PD, __n128x3 _Q3, const int _Lane);
+void __vst3q_lane_p16(_Out_writes_(3) poly16_t * _PD, __n128x3 _Q3, const int _Lane);
+void __vst3q_lane_s16(_Out_writes_(3) int16_t * _PD, __n128x3 _Q3, const int _Lane);
+void __vst3q_lane_s32(_Out_writes_(3) int32_t * _PD, __n128x3 _Q3, const int _Lane);
+void __vst3q_lane_u16(_Out_writes_(3) uint16_t * _PD, __n128x3 _Q3, const int _Lane);
+void __vst3q_lane_u32(_Out_writes_(3) uint32_t * _PD, __n128x3 _Q3, const int _Lane);
+void __vst4_f32(_Out_writes_(8) float32_t * _PD, __n64x4 _D4);
+void __vst4_p16(_Out_writes_(16) poly16_t * _PD, __n64x4 _D4);
+void __vst4_p8(_Out_writes_(32) poly8_t * _PD, __n64x4 _D4);
+void __vst4_s16(_Out_writes_(16) int16_t * _PD, __n64x4 _D4);
+void __vst4_s32(_Out_writes_(8) int32_t * _PD, __n64x4 _D4);
+void __vst4_s8(_Out_writes_(32) int8_t * _PD, __n64x4 _D4);
+void __vst4_u16(_Out_writes_(16) uint16_t * _PD, __n64x4 _D4);
+void __vst4_u32(_Out_writes_(8) uint32_t * _PD, __n64x4 _D4);
+void __vst4_u8(_Out_writes_(32) uint8_t * _PD, __n64x4 _D4);
+void __vst4_s64(_Out_writes_(4) int64_t * _PD, __n64x4 _D4);
+void __vst4_u64(_Out_writes_(4) uint64_t * _PD, __n64x4 _D4);
+void __vst4_s64_ex(_Out_writes_(4) int64_t * _PD, __n64x4 _D4, const int _Align);
+void __vst4_u64_ex(_Out_writes_(4) uint64_t * _PD, __n64x4 _D4, const int _Align);
+void __vst4_f32_ex(_Out_writes_(8) float32_t * _PD, __n64x4 _D4, const int _Align);
+void __vst4_p16_ex(_Out_writes_(16) poly16_t * _PD, __n64x4 _D4, const int _Align);
+void __vst4_p8_ex(_Out_writes_(32) poly8_t * _PD, __n64x4 _D4, const int _Align);
+void __vst4_s16_ex(_Out_writes_(16) int16_t * _PD, __n64x4 _D4, const int _Align);
+void __vst4_s32_ex(_Out_writes_(8) int32_t * _PD, __n64x4 _D4, const int _Align);
+void __vst4_s8_ex(_Out_writes_(32) int8_t * _PD, __n64x4 _D4, const int _Align);
+void __vst4_u16_ex(_Out_writes_(16) uint16_t * _PD, __n64x4 _D4, const int _Align);
+void __vst4_u32_ex(_Out_writes_(8) uint32_t * _PD, __n64x4 _D4, const int _Align);
+void __vst4_u8_ex(_Out_writes_(32) uint8_t * _PD, __n64x4 _D4, const int _Align);
+void __vst4q_f32(_Out_writes_(16) float32_t * _PD, __n128x4 _Q4);
+void __vst4q_p16(_Out_writes_(32) poly16_t * _PD, __n128x4 _Q4);
+void __vst4q_p8(_Out_writes_(64) poly8_t * _PD, __n128x4 _Q4);
+void __vst4q_s16(_Out_writes_(32) int16_t * _PD, __n128x4 _Q4);
+void __vst4q_s32(_Out_writes_(16) int32_t * _PD, __n128x4 _Q4);
+void __vst4q_s8(_Out_writes_(64) int8_t * _PD, __n128x4 _Q4);
+void __vst4q_u16(_Out_writes_(32) uint16_t * _PD, __n128x4 _Q4);
+void __vst4q_u32(_Out_writes_(16) uint32_t * _PD, __n128x4 _Q4);
+void __vst4q_u8(_Out_writes_(64) uint8_t * _PD, __n128x4 _Q4);
+void __vst4q_f32_ex(_Out_writes_(16) float32_t * _PD, __n128x4 _Q4, const int _Align);
+void __vst4q_p16_ex(_Out_writes_(32) poly16_t * _PD, __n128x4 _Q4, const int _Align);
+void __vst4q_p8_ex(_Out_writes_(64) poly8_t * _PD, __n128x4 _Q4, const int _Align);
+void __vst4q_s16_ex(_Out_writes_(32) int16_t * _PD, __n128x4 _Q4, const int _Align);
+void __vst4q_s32_ex(_Out_writes_(16) int32_t * _PD, __n128x4 _Q4, const int _Align);
+void __vst4q_s8_ex(_Out_writes_(64) int8_t * _PD, __n128x4 _Q4, const int _Align);
+void __vst4q_u16_ex(_Out_writes_(32) uint16_t * _PD, __n128x4 _Q4, const int _Align);
+void __vst4q_u32_ex(_Out_writes_(16) uint32_t * _PD, __n128x4 _Q4, const int _Align);
+void __vst4q_u8_ex(_Out_writes_(64) uint8_t * _PD, __n128x4 _Q4, const int _Align);
+void __vst4_lane_f32(_Out_writes_(4) float32_t * _PD, __n64x4 _D4, const int _Lane);
+void __vst4_lane_p16(_Out_writes_(4) poly16_t * _PD, __n64x4 _D4, const int _Lane);
+void __vst4_lane_p8(_Out_writes_(4) poly8_t * _PD, __n64x4 _D4, const int _Lane);
+void __vst4_lane_s16(_Out_writes_(4) int16_t * _PD, __n64x4 _D4, const int _Lane);
+void __vst4_lane_s32(_Out_writes_(4) int32_t * _PD, __n64x4 _D4, const int _Lane);
+void __vst4_lane_s8(_Out_writes_(4) int8_t * _PD, __n64x4 _D4, const int _Lane);
+void __vst4_lane_u16(_Out_writes_(4) uint16_t * _PD, __n64x4 _D4, const int _Lane);
+void __vst4_lane_u32(_Out_writes_(4) uint32_t * _PD, __n64x4 _D4, const int _Lane);
+void __vst4_lane_u8(_Out_writes_(4) uint8_t * _PD, __n64x4 _D4, const int _Lane);
+void __vst4q_lane_f32(_Out_writes_(4) float32_t * _PD, __n128x4 _Q4, const int _Lane);
+void __vst4q_lane_p16(_Out_writes_(4) poly16_t * _PD, __n128x4 _Q4, const int _Lane);
+void __vst4q_lane_s16(_Out_writes_(4) int16_t * _PD, __n128x4 _Q4, const int _Lane);
+void __vst4q_lane_s32(_Out_writes_(4) int32_t * _PD, __n128x4 _Q4, const int _Lane);
+void __vst4q_lane_u16(_Out_writes_(4) uint16_t * _PD, __n128x4 _Q4, const int _Lane);
+void __vst4q_lane_u32(_Out_writes_(4) uint32_t * _PD, __n128x4 _Q4, const int _Lane);
+void __vst4_lane_f32_ex(_Out_writes_(4) float32_t * _PD, __n64x4 _D4, const int _Lane, const int _Align);
+void __vst4_lane_p16_ex(_Out_writes_(4) poly16_t * _PD, __n64x4 _D4, const int _Lane, const int _Align);
+void __vst4_lane_p8_ex(_Out_writes_(4) poly8_t * _PD, __n64x4 _D4, const int _Lane, const int _Align);
+void __vst4_lane_s16_ex(_Out_writes_(4) int16_t * _PD, __n64x4 _D4, const int _Lane, const int _Align);
+void __vst4_lane_s32_ex(_Out_writes_(4) int32_t * _PD, __n64x4 _D4, const int _Lane, const int _Align);
+void __vst4_lane_s8_ex(_Out_writes_(4) int8_t * _PD, __n64x4 _D4, const int _Lane, const int _Align);
+void __vst4_lane_u16_ex(_Out_writes_(4) uint16_t * _PD, __n64x4 _D4, const int _Lane, const int _Align);
+void __vst4_lane_u32_ex(_Out_writes_(4) uint32_t * _PD, __n64x4 _D4, const int _Lane, const int _Align);
+void __vst4_lane_u8_ex(_Out_writes_(4) uint8_t * _PD, __n64x4 _D4, const int _Lane, const int _Align);
+void __vst4q_lane_f32_ex(_Out_writes_(4) float32_t * _PD, __n128x4 _Q4, const int _Lane, const int _Align);
+void __vst4q_lane_p16_ex(_Out_writes_(4) poly16_t * _PD, __n128x4 _Q4, const int _Lane, const int _Align);
+void __vst4q_lane_s16_ex(_Out_writes_(4) int16_t * _PD, __n128x4 _Q4, const int _Lane, const int _Align);
+void __vst4q_lane_s32_ex(_Out_writes_(4) int32_t * _PD, __n128x4 _Q4, const int _Lane, const int _Align);
+void __vst4q_lane_u16_ex(_Out_writes_(4) uint16_t * _PD, __n128x4 _Q4, const int _Lane, const int _Align);
+void __vst4q_lane_u32_ex(_Out_writes_(4) uint32_t * _PD, __n128x4 _Q4, const int _Lane, const int _Align);
+__n64 __vsub_f32(__n64 _Dn, __n64 _Dm);
+__n64 __vsub_s16(__n64 _Dn, __n64 _Dm);
+__n64 __vsub_s32(__n64 _Dn, __n64 _Dm);
+__n64 __vsub_s64(__n64 _Dn, __n64 _Dm);
+__n64 __vsub_s8(__n64 _Dn, __n64 _Dm);
+__n64 __vsub_u16(__n64 _Dn, __n64 _Dm);
+__n64 __vsub_u32(__n64 _Dn, __n64 _Dm);
+__n64 __vsub_u64(__n64 _Dn, __n64 _Dm);
+__n64 __vsub_u8(__n64 _Dn, __n64 _Dm);
+__n128 __vsubq_f32(__n128 _Qn, __n128 _Qm);
+__n128 __vsubq_s16(__n128 _Qn, __n128 _Qm);
+__n128 __vsubq_s32(__n128 _Qn, __n128 _Qm);
+__n128 __vsubq_s64(__n128 _Qn, __n128 _Qm);
+__n128 __vsubq_s8(__n128 _Qn, __n128 _Qm);
+__n128 __vsubq_u16(__n128 _Qn, __n128 _Qm);
+__n128 __vsubq_u32(__n128 _Qn, __n128 _Qm);
+__n128 __vsubq_u64(__n128 _Qn, __n128 _Qm);
+__n128 __vsubq_u8(__n128 _Qn, __n128 _Qm);
+__n64 __vrsubhn_s16(__n128 _Qn, __n128 _Qm);
+__n64 __vrsubhn_s32(__n128 _Qn, __n128 _Qm);
+__n64 __vrsubhn_s64(__n128 _Qn, __n128 _Qm);
+__n64 __vrsubhn_u16(__n128 _Qn, __n128 _Qm);
+__n64 __vrsubhn_u32(__n128 _Qn, __n128 _Qm);
+__n64 __vrsubhn_u64(__n128 _Qn, __n128 _Qm);
+__n64 __vsubhn_s16(__n128 _Qn, __n128 _Qm);
+__n64 __vsubhn_s32(__n128 _Qn, __n128 _Qm);
+__n64 __vsubhn_s64(__n128 _Qn, __n128 _Qm);
+__n64 __vsubhn_u16(__n128 _Qn, __n128 _Qm);
+__n64 __vsubhn_u32(__n128 _Qn, __n128 _Qm);
+__n64 __vsubhn_u64(__n128 _Qn, __n128 _Qm);
+__n128 __vsubl_s16(__n64 _Dn, __n64 _Dm);
+__n128 __vsubl_s32(__n64 _Dn, __n64 _Dm);
+__n128 __vsubl_s8(__n64 _Dn, __n64 _Dm);
+__n128 __vsubl_u16(__n64 _Dn, __n64 _Dm);
+__n128 __vsubl_u32(__n64 _Dn, __n64 _Dm);
+__n128 __vsubl_u8(__n64 _Dn, __n64 _Dm);
+__n128 __vsubw_s16(__n128 _Qn, __n64 _Dm);
+__n128 __vsubw_s32(__n128 _Qn, __n64 _Dm);
+__n128 __vsubw_s8(__n128 _Qn, __n64 _Dm);
+__n128 __vsubw_u16(__n128 _Qn, __n64 _Dm);
+__n128 __vsubw_u32(__n128 _Qn, __n64 _Dm);
+__n128 __vsubw_u8(__n128 _Qn, __n64 _Dm);
+__n64 __vtbl2_p8(__n64x2 _D2, __n64 _Dm);
+__n64 __vtbl2_s8(__n64x2 _D2, __n64 _Dm);
+__n64 __vtbl2_u8(__n64x2 _D2, __n64 _Dm);
+__n64 __vtbx2_p8(__n64 _Dd, __n64x2 _D2, __n64 _Dm);
+__n64 __vtbx2_s8(__n64 _Dd, __n64x2 _D2, __n64 _Dm);
+__n64 __vtbx2_u8(__n64 _Dd, __n64x2 _D2, __n64 _Dm);
+__n64 __vtbl3_p8(__n64x3 _D3, __n64 _Dm);
+__n64 __vtbl3_s8(__n64x3 _D3, __n64 _Dm);
+__n64 __vtbl3_u8(__n64x3 _D3, __n64 _Dm);
+__n64 __vtbx3_p8(__n64 _Dd, __n64x3 _D3, __n64 _Dm);
+__n64 __vtbx3_s8(__n64 _Dd, __n64x3 _D3, __n64 _Dm);
+__n64 __vtbx3_u8(__n64 _Dd, __n64x3 _D3, __n64 _Dm);
+__n64 __vtbl4_p8(__n64x4 _D4, __n64 _Dm);
+__n64 __vtbl4_s8(__n64x4 _D4, __n64 _Dm);
+__n64 __vtbl4_u8(__n64x4 _D4, __n64 _Dm);
+__n64 __vtbx4_p8(__n64 _Dd, __n64x4 _D4, __n64 _Dm);
+__n64 __vtbx4_s8(__n64 _Dd, __n64x4 _D4, __n64 _Dm);
+__n64 __vtbx4_u8(__n64 _Dd, __n64x4 _D4, __n64 _Dm);
+__n64 __vtbl1_p8(__n64 _Dn, __n64 _Dm);
+__n64 __vtbl1_s8(__n64 _Dn, __n64 _Dm);
+__n64 __vtbl1_u8(__n64 _Dn, __n64 _Dm);
+__n64 __vtbx1_p8(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vtbx1_s8(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64 __vtbx1_u8(__n64 _Dd, __n64 _Dn, __n64 _Dm);
+__n64x2 __vtrn_f32(__n64 _Dd, __n64 _Dm);
+__n64x2 __vtrn_p16(__n64 _Dd, __n64 _Dm);
+__n64x2 __vtrn_p8(__n64 _Dd, __n64 _Dm);
+__n64x2 __vtrn_s16(__n64 _Dd, __n64 _Dm);
+__n64x2 __vtrn_s32(__n64 _Dd, __n64 _Dm);
+__n64x2 __vtrn_s8(__n64 _Dd, __n64 _Dm);
+__n64x2 __vtrn_u16(__n64 _Dd, __n64 _Dm);
+__n64x2 __vtrn_u32(__n64 _Dd, __n64 _Dm);
+__n64x2 __vtrn_u8(__n64 _Dd, __n64 _Dm);
+__n128x2 __vtrnq_f32(__n128 _Qd, __n128 _Qm);
+__n128x2 __vtrnq_p16(__n128 _Qd, __n128 _Qm);
+__n128x2 __vtrnq_p8(__n128 _Qd, __n128 _Qm);
+__n128x2 __vtrnq_s16(__n128 _Qd, __n128 _Qm);
+__n128x2 __vtrnq_s32(__n128 _Qd, __n128 _Qm);
+__n128x2 __vtrnq_s8(__n128 _Qd, __n128 _Qm);
+__n128x2 __vtrnq_u16(__n128 _Qd, __n128 _Qm);
+__n128x2 __vtrnq_u32(__n128 _Qd, __n128 _Qm);
+__n128x2 __vtrnq_u8(__n128 _Qd, __n128 _Qm);
+__n128x2 __vtrnq_s64(__n128 _Qd, __n128 _Qm);
+__n128x2 __vtrnq_u64(__n128 _Qd, __n128 _Qm);
+__n64 __vtst_p8(__n64 _Dn, __n64 _Dm);
+__n64 __vtst_s16(__n64 _Dn, __n64 _Dm);
+__n64 __vtst_s32(__n64 _Dn, __n64 _Dm);
+__n64 __vtst_s8(__n64 _Dn, __n64 _Dm);
+__n64 __vtst_u16(__n64 _Dn, __n64 _Dm);
+__n64 __vtst_u32(__n64 _Dn, __n64 _Dm);
+__n64 __vtst_u8(__n64 _Dn, __n64 _Dm);
+__n128 __vtstq_p8(__n128 _Qn, __n128 _Qm);
+__n128 __vtstq_s16(__n128 _Qn, __n128 _Qm);
+__n128 __vtstq_s32(__n128 _Qn, __n128 _Qm);
+__n128 __vtstq_s8(__n128 _Qn, __n128 _Qm);
+__n128 __vtstq_u16(__n128 _Qn, __n128 _Qm);
+__n128 __vtstq_u32(__n128 _Qn, __n128 _Qm);
+__n128 __vtstq_u8(__n128 _Qn, __n128 _Qm);
+__n64x2 __vuzp_p16(__n64 _Dd, __n64 _Dm);
+__n64x2 __vuzp_p8(__n64 _Dd, __n64 _Dm);
+__n64x2 __vuzp_s16(__n64 _Dd, __n64 _Dm);
+__n64x2 __vuzp_s8(__n64 _Dd, __n64 _Dm);
+__n64x2 __vuzp_u16(__n64 _Dd, __n64 _Dm);
+__n64x2 __vuzp_u8(__n64 _Dd, __n64 _Dm);
+__n64x2 __vuzp_f32(__n64 _Dd, __n64 _Dm);
+__n64x2 __vuzp_s32(__n64 _Dd, __n64 _Dm);
+__n64x2 __vuzp_u32(__n64 _Dd, __n64 _Dm);
+__n128x2 __vuzpq_f32(__n128 _Qd, __n128 _Qm);
+__n128x2 __vuzpq_p16(__n128 _Qd, __n128 _Qm);
+__n128x2 __vuzpq_p8(__n128 _Qd, __n128 _Qm);
+__n128x2 __vuzpq_s16(__n128 _Qd, __n128 _Qm);
+__n128x2 __vuzpq_s32(__n128 _Qd, __n128 _Qm);
+__n128x2 __vuzpq_s8(__n128 _Qd, __n128 _Qm);
+__n128x2 __vuzpq_u16(__n128 _Qd, __n128 _Qm);
+__n128x2 __vuzpq_u32(__n128 _Qd, __n128 _Qm);
+__n128x2 __vuzpq_u8(__n128 _Qd, __n128 _Qm);
+__n64x2 __vzip_p16(__n64 _Dd, __n64 _Dm);
+__n64x2 __vzip_p8(__n64 _Dd, __n64 _Dm);
+__n64x2 __vzip_s16(__n64 _Dd, __n64 _Dm);
+__n64x2 __vzip_s8(__n64 _Dd, __n64 _Dm);
+__n64x2 __vzip_u16(__n64 _Dd, __n64 _Dm);
+__n64x2 __vzip_u8(__n64 _Dd, __n64 _Dm);
+__n64x2 __vzip_f32(__n64 _Dd, __n64 _Dm);
+__n64x2 __vzip_s32(__n64 _Dd, __n64 _Dm);
+__n64x2 __vzip_u32(__n64 _Dd, __n64 _Dm);
+__n128x2 __vzipq_f32(__n128 _Qd, __n128 _Qm);
+__n128x2 __vzipq_p16(__n128 _Qd, __n128 _Qm);
+__n128x2 __vzipq_p8(__n128 _Qd, __n128 _Qm);
+__n128x2 __vzipq_s16(__n128 _Qd, __n128 _Qm);
+__n128x2 __vzipq_s32(__n128 _Qd, __n128 _Qm);
+__n128x2 __vzipq_s8(__n128 _Qd, __n128 _Qm);
+__n128x2 __vzipq_u16(__n128 _Qd, __n128 _Qm);
+__n128x2 __vzipq_u32(__n128 _Qd, __n128 _Qm);
+__n128x2 __vzipq_u8(__n128 _Qd, __n128 _Qm);
+
+// Type reinterpretation no-ops
+#define __vreinterpret_f32_s8(a)    (a)
+#define __vreinterpret_f32_s16(a)   (a)
+#define __vreinterpret_f32_s32(a)   (a)
+#define __vreinterpret_f32_s64(a)   (a)
+#define __vreinterpret_f32_p8(a)    (a)
+#define __vreinterpret_f32_p16(a)   (a)
+#define __vreinterpret_f32_u8(a)    (a)
+#define __vreinterpret_f32_u16(a)   (a)
+#define __vreinterpret_f32_u32(a)   (a)
+#define __vreinterpret_f32_u64(a)   (a)
+#define __vreinterpret_s8_f32(a)    (a)
+#define __vreinterpret_s8_s16(a)    (a)
+#define __vreinterpret_s8_s32(a)    (a)
+#define __vreinterpret_s8_s64(a)    (a)
+#define __vreinterpret_s8_p8(a)     (a)
+#define __vreinterpret_s8_p16(a)    (a)
+#define __vreinterpret_s8_u8(a)     (a)
+#define __vreinterpret_s8_u16(a)    (a)
+#define __vreinterpret_s8_u32(a)    (a)
+#define __vreinterpret_s8_u64(a)    (a)
+#define __vreinterpret_s16_f32(a)   (a)
+#define __vreinterpret_s16_s8(a)    (a)
+#define __vreinterpret_s16_s32(a)   (a)
+#define __vreinterpret_s16_s64(a)   (a)
+#define __vreinterpret_s16_p8(a)    (a)
+#define __vreinterpret_s16_p16(a)   (a)
+#define __vreinterpret_s16_u8(a)    (a)
+#define __vreinterpret_s16_u16(a)   (a)
+#define __vreinterpret_s16_u32(a)   (a)
+#define __vreinterpret_s16_u64(a)   (a)
+#define __vreinterpret_s32_f32(a)   (a)
+#define __vreinterpret_s32_s8(a)    (a)
+#define __vreinterpret_s32_s16(a)   (a)
+#define __vreinterpret_s32_s64(a)   (a)
+#define __vreinterpret_s32_p8(a)    (a)
+#define __vreinterpret_s32_p16(a)   (a)
+#define __vreinterpret_s32_u8(a)    (a)
+#define __vreinterpret_s32_u16(a)   (a)
+#define __vreinterpret_s32_u32(a)   (a)
+#define __vreinterpret_s32_u64(a)   (a)
+#define __vreinterpret_s64_f32(a)   (a)
+#define __vreinterpret_s64_s8(a)    (a)
+#define __vreinterpret_s64_s16(a)   (a)
+#define __vreinterpret_s64_s32(a)   (a)
+#define __vreinterpret_s64_p8(a)    (a)
+#define __vreinterpret_s64_p16(a)   (a)
+#define __vreinterpret_s64_u8(a)    (a)
+#define __vreinterpret_s64_u16(a)   (a)
+#define __vreinterpret_s64_u32(a)   (a)
+#define __vreinterpret_s64_u64(a)   (a)
+#define __vreinterpret_p8_f32(a)    (a)
+#define __vreinterpret_p8_s8(a)     (a)
+#define __vreinterpret_p8_s16(a)    (a)
+#define __vreinterpret_p8_s32(a)    (a)
+#define __vreinterpret_p8_s64(a)    (a)
+#define __vreinterpret_p8_p16(a)    (a)
+#define __vreinterpret_p8_u8(a)     (a)
+#define __vreinterpret_p8_u16(a)    (a)
+#define __vreinterpret_p8_u32(a)    (a)
+#define __vreinterpret_p8_u64(a)    (a)
+#define __vreinterpret_p16_f32(a)   (a)
+#define __vreinterpret_p16_s8(a)    (a)
+#define __vreinterpret_p16_s16(a)   (a)
+#define __vreinterpret_p16_s32(a)   (a)
+#define __vreinterpret_p16_s64(a)   (a)
+#define __vreinterpret_p16_p8(a)    (a)
+#define __vreinterpret_p16_u8(a)    (a)
+#define __vreinterpret_p16_u16(a)   (a)
+#define __vreinterpret_p16_u32(a)   (a)
+#define __vreinterpret_p16_u64(a)   (a)
+#define __vreinterpret_u8_f32(a)    (a)
+#define __vreinterpret_u8_s8(a)     (a)
+#define __vreinterpret_u8_s16(a)    (a)
+#define __vreinterpret_u8_s32(a)    (a)
+#define __vreinterpret_u8_s64(a)    (a)
+#define __vreinterpret_u8_p8(a)     (a)
+#define __vreinterpret_u8_p16(a)    (a)
+#define __vreinterpret_u8_u16(a)    (a)
+#define __vreinterpret_u8_u32(a)    (a)
+#define __vreinterpret_u8_u64(a)    (a)
+#define __vreinterpret_u16_f32(a)   (a)
+#define __vreinterpret_u16_s8(a)    (a)
+#define __vreinterpret_u16_s16(a)   (a)
+#define __vreinterpret_u16_s32(a)   (a)
+#define __vreinterpret_u16_s64(a)   (a)
+#define __vreinterpret_u16_p8(a)    (a)
+#define __vreinterpret_u16_p16(a)   (a)
+#define __vreinterpret_u16_u8(a)    (a)
+#define __vreinterpret_u16_u32(a)   (a)
+#define __vreinterpret_u16_u64(a)   (a)
+#define __vreinterpret_u32_f32(a)   (a)
+#define __vreinterpret_u32_s8(a)    (a)
+#define __vreinterpret_u32_s16(a)   (a)
+#define __vreinterpret_u32_s32(a)   (a)
+#define __vreinterpret_u32_s64(a)   (a)
+#define __vreinterpret_u32_p8(a)    (a)
+#define __vreinterpret_u32_p16(a)   (a)
+#define __vreinterpret_u32_u8(a)    (a)
+#define __vreinterpret_u32_u16(a)   (a)
+#define __vreinterpret_u32_u64(a)   (a)
+#define __vreinterpret_u64_f32(a)   (a)
+#define __vreinterpret_u64_s8(a)    (a)
+#define __vreinterpret_u64_s16(a)   (a)
+#define __vreinterpret_u64_s32(a)   (a)
+#define __vreinterpret_u64_s64(a)   (a)
+#define __vreinterpret_u64_p8(a)    (a)
+#define __vreinterpret_u64_p16(a)   (a)
+#define __vreinterpret_u64_u8(a)    (a)
+#define __vreinterpret_u64_u16(a)   (a)
+#define __vreinterpret_u64_u32(a)   (a)
+#define __vreinterpretq_f32_s8(a)   (a)
+#define __vreinterpretq_f32_s16(a)  (a)
+#define __vreinterpretq_f32_s32(a)  (a)
+#define __vreinterpretq_f32_s64(a)  (a)
+#define __vreinterpretq_f32_p8(a)   (a)
+#define __vreinterpretq_f32_p16(a)  (a)
+#define __vreinterpretq_f32_u8(a)   (a)
+#define __vreinterpretq_f32_u16(a)  (a)
+#define __vreinterpretq_f32_u32(a)  (a)
+#define __vreinterpretq_f32_u64(a)  (a)
+#define __vreinterpretq_s8_f32(a)   (a)
+#define __vreinterpretq_s8_s16(a)   (a)
+#define __vreinterpretq_s8_s32(a)   (a)
+#define __vreinterpretq_s8_s64(a)   (a)
+#define __vreinterpretq_s8_p8(a)    (a)
+#define __vreinterpretq_s8_p16(a)   (a)
+#define __vreinterpretq_s8_u8(a)    (a)
+#define __vreinterpretq_s8_u16(a)   (a)
+#define __vreinterpretq_s8_u32(a)   (a)
+#define __vreinterpretq_s8_u64(a)   (a)
+#define __vreinterpretq_s16_f32(a)  (a)
+#define __vreinterpretq_s16_s8(a)   (a)
+#define __vreinterpretq_s16_s32(a)  (a)
+#define __vreinterpretq_s16_s64(a)  (a)
+#define __vreinterpretq_s16_p8(a)   (a)
+#define __vreinterpretq_s16_p16(a)  (a)
+#define __vreinterpretq_s16_u8(a)   (a)
+#define __vreinterpretq_s16_u16(a)  (a)
+#define __vreinterpretq_s16_u32(a)  (a)
+#define __vreinterpretq_s16_u64(a)  (a)
+#define __vreinterpretq_s32_f32(a)  (a)
+#define __vreinterpretq_s32_s8(a)   (a)
+#define __vreinterpretq_s32_s16(a)  (a)
+#define __vreinterpretq_s32_s64(a)  (a)
+#define __vreinterpretq_s32_p8(a)   (a)
+#define __vreinterpretq_s32_p16(a)  (a)
+#define __vreinterpretq_s32_u8(a)   (a)
+#define __vreinterpretq_s32_u16(a)  (a)
+#define __vreinterpretq_s32_u32(a)  (a)
+#define __vreinterpretq_s32_u64(a)  (a)
+#define __vreinterpretq_s64_f32(a)  (a)
+#define __vreinterpretq_s64_s8(a)   (a)
+#define __vreinterpretq_s64_s16(a)  (a)
+#define __vreinterpretq_s64_s32(a)  (a)
+#define __vreinterpretq_s64_p8(a)   (a)
+#define __vreinterpretq_s64_p16(a)  (a)
+#define __vreinterpretq_s64_u8(a)   (a)
+#define __vreinterpretq_s64_u16(a)  (a)
+#define __vreinterpretq_s64_u32(a)  (a)
+#define __vreinterpretq_s64_u64(a)  (a)
+#define __vreinterpretq_p8_f32(a)   (a)
+#define __vreinterpretq_p8_s8(a)    (a)
+#define __vreinterpretq_p8_s16(a)   (a)
+#define __vreinterpretq_p8_s32(a)   (a)
+#define __vreinterpretq_p8_s64(a)   (a)
+#define __vreinterpretq_p8_p16(a)   (a)
+#define __vreinterpretq_p8_u8(a)    (a)
+#define __vreinterpretq_p8_u16(a)   (a)
+#define __vreinterpretq_p8_u32(a)   (a)
+#define __vreinterpretq_p8_u64(a)   (a)
+#define __vreinterpretq_p16_f32(a)  (a)
+#define __vreinterpretq_p16_s8(a)   (a)
+#define __vreinterpretq_p16_s16(a)  (a)
+#define __vreinterpretq_p16_s32(a)  (a)
+#define __vreinterpretq_p16_s64(a)  (a)
+#define __vreinterpretq_p16_p8(a)   (a)
+#define __vreinterpretq_p16_u8(a)   (a)
+#define __vreinterpretq_p16_u16(a)  (a)
+#define __vreinterpretq_p16_u32(a)  (a)
+#define __vreinterpretq_p16_u64(a)  (a)
+#define __vreinterpretq_u8_f32(a)   (a)
+#define __vreinterpretq_u8_s8(a)    (a)
+#define __vreinterpretq_u8_s16(a)   (a)
+#define __vreinterpretq_u8_s32(a)   (a)
+#define __vreinterpretq_u8_s64(a)   (a)
+#define __vreinterpretq_u8_p8(a)    (a)
+#define __vreinterpretq_u8_p16(a)   (a)
+#define __vreinterpretq_u8_u16(a)   (a)
+#define __vreinterpretq_u8_u32(a)   (a)
+#define __vreinterpretq_u8_u64(a)   (a)
+#define __vreinterpretq_u16_f32(a)  (a)
+#define __vreinterpretq_u16_s8(a)   (a)
+#define __vreinterpretq_u16_s16(a)  (a)
+#define __vreinterpretq_u16_s32(a)  (a)
+#define __vreinterpretq_u16_s64(a)  (a)
+#define __vreinterpretq_u16_p8(a)   (a)
+#define __vreinterpretq_u16_p16(a)  (a)
+#define __vreinterpretq_u16_u8(a)   (a)
+#define __vreinterpretq_u16_u32(a)  (a)
+#define __vreinterpretq_u16_u64(a)  (a)
+#define __vreinterpretq_u32_f32(a)  (a)
+#define __vreinterpretq_u32_s8(a)   (a)
+#define __vreinterpretq_u32_s16(a)  (a)
+#define __vreinterpretq_u32_s32(a)  (a)
+#define __vreinterpretq_u32_s64(a)  (a)
+#define __vreinterpretq_u32_p8(a)   (a)
+#define __vreinterpretq_u32_p16(a)  (a)
+#define __vreinterpretq_u32_u8(a)   (a)
+#define __vreinterpretq_u32_u16(a)  (a)
+#define __vreinterpretq_u32_u64(a)  (a)
+#define __vreinterpretq_u64_f32(a)  (a)
+#define __vreinterpretq_u64_s8(a)   (a)
+#define __vreinterpretq_u64_s16(a)  (a)
+#define __vreinterpretq_u64_s32(a)  (a)
+#define __vreinterpretq_u64_s64(a)  (a)
+#define __vreinterpretq_u64_p8(a)   (a)
+#define __vreinterpretq_u64_p16(a)  (a)
+#define __vreinterpretq_u64_u8(a)   (a)
+#define __vreinterpretq_u64_u16(a)  (a)
+#define __vreinterpretq_u64_u32(a)  (a)
+
+//  Multiply by scalar
+#define __vmul_n_s16(Vd, Rt)        __vmul_lane_s16((Vd), __vmov_n_s16(Rt), 0)
+#define __vmul_n_s32(Vd, Rt)        __vmul_lane_s32((Vd), __vmov_n_s32(Rt), 0)
+#define __vmul_n_u16(Vd, Rt)        __vmul_lane_u16((Vd), __vmov_n_u16(Rt), 0)
+#define __vmul_n_u32(Vd, Rt)        __vmul_lane_u32((Vd), __vmov_n_u32(Rt), 0)
+#define __vmulq_n_s16(Vd, Rt)       __vmulq_lane_s16((Vd), __vmov_n_s16(Rt), 0)
+#define __vmulq_n_s32(Vd, Rt)       __vmulq_lane_s32((Vd), __vmov_n_s32(Rt), 0)
+#define __vmulq_n_u16(Vd, Rt)       __vmulq_lane_u16((Vd), __vmov_n_u16(Rt), 0)
+#define __vmulq_n_u32(Vd, Rt)       __vmulq_lane_u32((Vd), __vmov_n_u32(Rt), 0)
+#define __vmull_n_s16(Vd, Rt)       __vmull_lane_s16((Vd), __vmov_n_s16(Rt), 0)
+#define __vmull_n_s32(Vd, Rt)       __vmull_lane_s32((Vd), __vmov_n_s32(Rt), 0)
+#define __vmull_n_u16(Vd, Rt)       __vmull_lane_u16((Vd), __vmov_n_u16(Rt), 0)
+#define __vmull_n_u32(Vd, Rt)       __vmull_lane_u32((Vd), __vmov_n_u32(Rt), 0)
+#define __vqdmulh_n_s16(Vd, Rt)     __vqdmulh_lane_s16((Vd), __vmov_n_s16(Rt), 0)
+#define __vqdmulh_n_s32(Vd, Rt)     __vqdmulh_lane_s32((Vd), __vmov_n_s32(Rt), 0)
+#define __vqdmulhq_n_s16(Vd, Rt)    __vqdmulhq_lane_s16((Vd), __vmov_n_s16(Rt), 0)
+#define __vqdmulhq_n_s32(Vd, Rt)    __vqdmulhq_lane_s32((Vd), __vmov_n_s32(Rt), 0)
+#define __vqdmull_n_s16(Vd, Rt)     __vqdmull_lane_s16((Vd), __vmov_n_s16(Rt), 0)
+#define __vqdmull_n_s32(Vd, Rt)     __vqdmull_lane_s32((Vd), __vmov_n_s32(Rt), 0)
+#define __vqrdmulh_n_s16(Vd, Rt)    __vqrdmulh_lane_s16((Vd), __vmov_n_s16(Rt), 0)
+#define __vqrdmulh_n_s32(Vd, Rt)    __vqrdmulh_lane_s32((Vd), __vmov_n_s32(Rt), 0)
+#define __vqrdmulhq_n_s16(Vd, Rt)   __vqrdmulhq_lane_s16((Vd), __vmov_n_s16(Rt), 0)
+#define __vqrdmulhq_n_s32(Vd, Rt)   __vqrdmulhq_lane_s32((Vd), __vmov_n_s32(Rt), 0)
+
+//  Multiply by scalar with accumulate
+#define __vmla_n_s16(Vd, Vn, Rt)    __vmla_lane_s16((Vd), (Vn), __vmov_n_s16(Rt), 0)
+#define __vmla_n_s32(Vd, Vn, Rt)    __vmla_lane_s32((Vd), (Vn), __vmov_n_s32(Rt), 0)
+#define __vmla_n_u16(Vd, Vn, Rt)    __vmla_lane_u16((Vd), (Vn), __vmov_n_u16(Rt), 0)
+#define __vmla_n_u32(Vd, Vn, Rt)    __vmla_lane_u32((Vd), (Vn), __vmov_n_u32(Rt), 0)
+#define __vmlaq_n_s16(Vd, Vn, Rt)   __vmlaq_lane_s16((Vd), (Vn), __vmov_n_s16(Rt), 0)
+#define __vmlaq_n_s32(Vd, Vn, Rt)   __vmlaq_lane_s32((Vd), (Vn), __vmov_n_s32(Rt), 0)
+#define __vmlaq_n_u16(Vd, Vn, Rt)   __vmlaq_lane_u16((Vd), (Vn), __vmov_n_u16(Rt), 0)
+#define __vmlaq_n_u32(Vd, Vn, Rt)   __vmlaq_lane_u32((Vd), (Vn), __vmov_n_u32(Rt), 0)
+#define __vmlal_n_s16(Vd, Vn, Rt)   __vmlal_lane_s16((Vd), (Vn), __vmov_n_s16(Rt), 0)
+#define __vmlal_n_s32(Vd, Vn, Rt)   __vmlal_lane_s32((Vd), (Vn), __vmov_n_s32(Rt), 0)
+#define __vmlal_n_u16(Vd, Vn, Rt)   __vmlal_lane_u16((Vd), (Vn), __vmov_n_u16(Rt), 0)
+#define __vmlal_n_u32(Vd, Vn, Rt)   __vmlal_lane_u32((Vd), (Vn), __vmov_n_u32(Rt), 0)
+#define __vmls_n_s16(Vd, Vn, Rt)    __vmls_lane_s16((Vd), (Vn), __vmov_n_s16(Rt), 0)
+#define __vmls_n_s32(Vd, Vn, Rt)    __vmls_lane_s32((Vd), (Vn), __vmov_n_s32(Rt), 0)
+#define __vmls_n_u16(Vd, Vn, Rt)    __vmls_lane_u16((Vd), (Vn), __vmov_n_u16(Rt), 0)
+#define __vmls_n_u32(Vd, Vn, Rt)    __vmls_lane_u32((Vd), (Vn), __vmov_n_u32(Rt), 0)
+#define __vmlsq_n_s16(Vd, Vn, Rt)   __vmlsq_lane_s16((Vd), (Vn), __vmov_n_s16(Rt), 0)
+#define __vmlsq_n_s32(Vd, Vn, Rt)   __vmlsq_lane_s32((Vd), (Vn), __vmov_n_s32(Rt), 0)
+#define __vmlsq_n_u16(Vd, Vn, Rt)   __vmlsq_lane_u16((Vd), (Vn), __vmov_n_u16(Rt), 0)
+#define __vmlsq_n_u32(Vd, Vn, Rt)   __vmlsq_lane_u32((Vd), (Vn), __vmov_n_u32(Rt), 0)
+#define __vmlsl_n_s16(Vd, Vn, Rt)   __vmlsl_lane_s16((Vd), (Vn), __vmov_n_s16(Rt), 0)
+#define __vmlsl_n_s32(Vd, Vn, Rt)   __vmlsl_lane_s32((Vd), (Vn), __vmov_n_s32(Rt), 0)
+#define __vmlsl_n_u16(Vd, Vn, Rt)   __vmlsl_lane_u16((Vd), (Vn), __vmov_n_u16(Rt), 0)
+#define __vmlsl_n_u32(Vd, Vn, Rt)   __vmlsl_lane_u32((Vd), (Vn), __vmov_n_u32(Rt), 0)
+#define __vqdmlal_n_s16(Vd, Vn, Rt) __vqdmlal_lane_s16((Vd), (Vn), __vmov_n_s16(Rt), 0)
+#define __vqdmlal_n_s32(Vd, Vn, Rt) __vqdmlal_lane_s32((Vd), (Vn), __vmov_n_s32(Rt), 0)
+#define __vqdmlsl_n_s16(Vd, Vn, Rt) __vqdmlsl_lane_s16((Vd), (Vn), __vmov_n_s16(Rt), 0)
+#define __vqdmlsl_n_s32(Vd, Vn, Rt) __vqdmlsl_lane_s32((Vd), (Vn), __vmov_n_s32(Rt), 0)
+
+//  VDUP.64 (scalar)
+#define __vdup_lane_s64(Dn, lane)   (__static_assert((lane) == 0, "invalid lane index"), (Dn))
+#define __vdup_lane_u64(Dn, lane)   (__static_assert((lane) == 0, "invalid lane index"), (Dn))
+
+//  VDUP.W.64 (scalar)
+#define __vdupq_lane_s64(Dn, lane)  (__static_assert((lane) == 0, "invalid lane index"), vcombine_s64((Dn), (Dn)))
+#define __vdupq_lane_u64(Dn, lane)  (__static_assert((lane) == 0, "invalid lane index"), vcombine_u64((Dn), (Dn)))
+
+#if !defined(_ARM_ISO_COMPATIBLE_INTRINSIC_NAMES)
+
+#define aesd_p8                     __aesd_p8
+#define aesd_s8                     __aesd_s8
+#define aesd_u8                     __aesd_u8
+#define aese_p8                     __aese_p8
+#define aese_s8                     __aese_s8
+#define aese_u8                     __aese_u8
+#define aesimc_p8                   __aesimc_p8
+#define aesimc_s8                   __aesimc_s8
+#define aesimc_u8                   __aesimc_u8
+#define aesmc_p8                    __aesmc_p8
+#define aesmc_s8                    __aesmc_s8
+#define aesmc_u8                    __aesmc_u8
+#define sha1h_f32                   __sha1h_f32
+#define sha1h_s32                   __sha1h_s32
+#define sha1h_u32                   __sha1h_u32
+#define sha1su1_f32                 __sha1su1_f32
+#define sha1su1_s32                 __sha1su1_s32
+#define sha1su1_u32                 __sha1su1_u32
+#define sha256su0_f32               __sha256su0_f32
+#define sha256su0_s32               __sha256su0_s32
+#define sha256su0_u32               __sha256su0_u32
+#define sha1c_f32                   __sha1c_f32
+#define sha1c_s32                   __sha1c_s32
+#define sha1c_u32                   __sha1c_u32
+#define sha1m_f32                   __sha1m_f32
+#define sha1m_s32                   __sha1m_s32
+#define sha1m_u32                   __sha1m_u32
+#define sha1p_f32                   __sha1p_f32
+#define sha1p_s32                   __sha1p_s32
+#define sha1p_u32                   __sha1p_u32
+#define sha1su0_f32                 __sha1su0_f32
+#define sha1su0_s32                 __sha1su0_s32
+#define sha1su0_u32                 __sha1su0_u32
+#define sha256h_f32                 __sha256h_f32
+#define sha256h_s32                 __sha256h_s32
+#define sha256h_u32                 __sha256h_u32
+#define sha256h2_f32                __sha256h2_f32
+#define sha256h2_s32                __sha256h2_s32
+#define sha256h2_u32                __sha256h2_u32
+#define sha256su1_f32               __sha256su1_f32
+#define sha256su1_s32               __sha256su1_s32
+#define sha256su1_u32               __sha256su1_u32
+#define vaba_s16                    __vaba_s16
+#define vaba_s32                    __vaba_s32
+#define vaba_s8                     __vaba_s8
+#define vaba_u16                    __vaba_u16
+#define vaba_u32                    __vaba_u32
+#define vaba_u8                     __vaba_u8
+#define vabal_s16                   __vabal_s16
+#define vabal_s32                   __vabal_s32
+#define vabal_s8                    __vabal_s8
+#define vabal_u16                   __vabal_u16
+#define vabal_u32                   __vabal_u32
+#define vabal_u8                    __vabal_u8
+#define vabaq_s16                   __vabaq_s16
+#define vabaq_s32                   __vabaq_s32
+#define vabaq_s8                    __vabaq_s8
+#define vabaq_u16                   __vabaq_u16
+#define vabaq_u32                   __vabaq_u32
+#define vabaq_u8                    __vabaq_u8
+#define vabd_f32                    __vabd_f32
+#define vabdq_f32                   __vabdq_f32
+#define vabd_s16                    __vabd_s16
+#define vabd_s32                    __vabd_s32
+#define vabd_s8                     __vabd_s8
+#define vabd_u16                    __vabd_u16
+#define vabd_u32                    __vabd_u32
+#define vabd_u8                     __vabd_u8
+#define vabdl_s16                   __vabdl_s16
+#define vabdl_s32                   __vabdl_s32
+#define vabdl_s8                    __vabdl_s8
+#define vabdl_u16                   __vabdl_u16
+#define vabdl_u32                   __vabdl_u32
+#define vabdl_u8                    __vabdl_u8
+#define vabdq_s16                   __vabdq_s16
+#define vabdq_s32                   __vabdq_s32
+#define vabdq_s8                    __vabdq_s8
+#define vabdq_u16                   __vabdq_u16
+#define vabdq_u32                   __vabdq_u32
+#define vabdq_u8                    __vabdq_u8
+#define vabs_f32                    __vabs_f32
+#define vabs_s16                    __vabs_s16
+#define vabs_s32                    __vabs_s32
+#define vabs_s8                     __vabs_s8
+#define vneg_f32                    __vneg_f32
+#define vneg_s16                    __vneg_s16
+#define vneg_s32                    __vneg_s32
+#define vneg_s8                     __vneg_s8
+#define vabsq_f32                   __vabsq_f32
+#define vabsq_s16                   __vabsq_s16
+#define vabsq_s32                   __vabsq_s32
+#define vabsq_s8                    __vabsq_s8
+#define vnegq_f32                   __vnegq_f32
+#define vnegq_s16                   __vnegq_s16
+#define vnegq_s32                   __vnegq_s32
+#define vnegq_s8                    __vnegq_s8
+#define vacge_f32                   __vacge_f32
+#define vacgt_f32                   __vacgt_f32
+#define vacle_f32                   __vacle_f32
+#define vaclt_f32                   __vaclt_f32
+#define vacgeq_f32                  __vacgeq_f32
+#define vacgtq_f32                  __vacgtq_f32
+#define vacleq_f32                  __vacleq_f32
+#define vacltq_f32                  __vacltq_f32
+#define vadd_f32                    __vadd_f32
+#define vadd_s16                    __vadd_s16
+#define vadd_s32                    __vadd_s32
+#define vadd_s64                    __vadd_s64
+#define vadd_s8                     __vadd_s8
+#define vadd_u16                    __vadd_u16
+#define vadd_u32                    __vadd_u32
+#define vadd_u64                    __vadd_u64
+#define vadd_u8                     __vadd_u8
+#define vaddq_f32                   __vaddq_f32
+#define vaddq_s16                   __vaddq_s16
+#define vaddq_s32                   __vaddq_s32
+#define vaddq_s64                   __vaddq_s64
+#define vaddq_s8                    __vaddq_s8
+#define vaddq_u16                   __vaddq_u16
+#define vaddq_u32                   __vaddq_u32
+#define vaddq_u64                   __vaddq_u64
+#define vaddq_u8                    __vaddq_u8
+#define vaddhn_s16                  __vaddhn_s16
+#define vaddhn_s32                  __vaddhn_s32
+#define vaddhn_s64                  __vaddhn_s64
+#define vaddhn_u16                  __vaddhn_u16
+#define vaddhn_u32                  __vaddhn_u32
+#define vaddhn_u64                  __vaddhn_u64
+#define vraddhn_s16                 __vraddhn_s16
+#define vraddhn_s32                 __vraddhn_s32
+#define vraddhn_s64                 __vraddhn_s64
+#define vraddhn_u16                 __vraddhn_u16
+#define vraddhn_u32                 __vraddhn_u32
+#define vraddhn_u64                 __vraddhn_u64
+#define vaddl_s16                   __vaddl_s16
+#define vaddl_s32                   __vaddl_s32
+#define vaddl_s8                    __vaddl_s8
+#define vaddl_u16                   __vaddl_u16
+#define vaddl_u32                   __vaddl_u32
+#define vaddl_u8                    __vaddl_u8
+#define vaddw_s16                   __vaddw_s16
+#define vaddw_s32                   __vaddw_s32
+#define vaddw_s8                    __vaddw_s8
+#define vaddw_u16                   __vaddw_u16
+#define vaddw_u32                   __vaddw_u32
+#define vaddw_u8                    __vaddw_u8
+#define vand_s16                    __vand_s16
+#define vand_s32                    __vand_s32
+#define vand_s64                    __vand_s64
+#define vand_s8                     __vand_s8
+#define vand_u16                    __vand_u16
+#define vand_u32                    __vand_u32
+#define vand_u64                    __vand_u64
+#define vand_u8                     __vand_u8
+#define vorr_s16                    __vorr_s16
+#define vorr_s32                    __vorr_s32
+#define vorr_s64                    __vorr_s64
+#define vorr_s8                     __vorr_s8
+#define vorr_u16                    __vorr_u16
+#define vorr_u32                    __vorr_u32
+#define vorr_u64                    __vorr_u64
+#define vorr_u8                     __vorr_u8
+#define vandq_s16                   __vandq_s16
+#define vandq_s32                   __vandq_s32
+#define vandq_s64                   __vandq_s64
+#define vandq_s8                    __vandq_s8
+#define vandq_u16                   __vandq_u16
+#define vandq_u32                   __vandq_u32
+#define vandq_u64                   __vandq_u64
+#define vandq_u8                    __vandq_u8
+#define vorrq_s16                   __vorrq_s16
+#define vorrq_s32                   __vorrq_s32
+#define vorrq_s64                   __vorrq_s64
+#define vorrq_s8                    __vorrq_s8
+#define vorrq_u16                   __vorrq_u16
+#define vorrq_u32                   __vorrq_u32
+#define vorrq_u64                   __vorrq_u64
+#define vorrq_u8                    __vorrq_u8
+#define vbif_f32                    __vbif_f32
+#define vbif_p16                    __vbif_p16
+#define vbif_p8                     __vbif_p8
+#define vbif_s16                    __vbif_s16
+#define vbif_s32                    __vbif_s32
+#define vbif_s64                    __vbif_s64
+#define vbif_s8                     __vbif_s8
+#define vbif_u16                    __vbif_u16
+#define vbif_u32                    __vbif_u32
+#define vbif_u64                    __vbif_u64
+#define vbif_u8                     __vbif_u8
+#define vbit_f32                    __vbit_f32
+#define vbit_p16                    __vbit_p16
+#define vbit_p8                     __vbit_p8
+#define vbit_s16                    __vbit_s16
+#define vbit_s32                    __vbit_s32
+#define vbit_s64                    __vbit_s64
+#define vbit_s8                     __vbit_s8
+#define vbit_u16                    __vbit_u16
+#define vbit_u32                    __vbit_u32
+#define vbit_u64                    __vbit_u64
+#define vbit_u8                     __vbit_u8
+#define vbsl_f32                    __vbsl_f32
+#define vbsl_p16                    __vbsl_p16
+#define vbsl_p8                     __vbsl_p8
+#define vbsl_s16                    __vbsl_s16
+#define vbsl_s32                    __vbsl_s32
+#define vbsl_s64                    __vbsl_s64
+#define vbsl_s8                     __vbsl_s8
+#define vbsl_u16                    __vbsl_u16
+#define vbsl_u32                    __vbsl_u32
+#define vbsl_u64                    __vbsl_u64
+#define vbsl_u8                     __vbsl_u8
+#define vbifq_f32                   __vbifq_f32
+#define vbifq_p16                   __vbifq_p16
+#define vbifq_p8                    __vbifq_p8
+#define vbifq_s16                   __vbifq_s16
+#define vbifq_s32                   __vbifq_s32
+#define vbifq_s64                   __vbifq_s64
+#define vbifq_s8                    __vbifq_s8
+#define vbifq_u16                   __vbifq_u16
+#define vbifq_u32                   __vbifq_u32
+#define vbifq_u64                   __vbifq_u64
+#define vbifq_u8                    __vbifq_u8
+#define vbitq_f32                   __vbitq_f32
+#define vbitq_p16                   __vbitq_p16
+#define vbitq_p8                    __vbitq_p8
+#define vbitq_s16                   __vbitq_s16
+#define vbitq_s32                   __vbitq_s32
+#define vbitq_s64                   __vbitq_s64
+#define vbitq_s8                    __vbitq_s8
+#define vbitq_u16                   __vbitq_u16
+#define vbitq_u32                   __vbitq_u32
+#define vbitq_u64                   __vbitq_u64
+#define vbitq_u8                    __vbitq_u8
+#define vbslq_f32                   __vbslq_f32
+#define vbslq_p16                   __vbslq_p16
+#define vbslq_p8                    __vbslq_p8
+#define vbslq_s16                   __vbslq_s16
+#define vbslq_s32                   __vbslq_s32
+#define vbslq_s64                   __vbslq_s64
+#define vbslq_s8                    __vbslq_s8
+#define vbslq_u16                   __vbslq_u16
+#define vbslq_u32                   __vbslq_u32
+#define vbslq_u64                   __vbslq_u64
+#define vbslq_u8                    __vbslq_u8
+#define vceq_z_f32_ex               __vceq_z_f32_ex
+#define vceq_z_s16_ex               __vceq_z_s16_ex
+#define vceq_z_s32_ex               __vceq_z_s32_ex
+#define vceq_z_s8_ex                __vceq_z_s8_ex
+#define vceq_z_u16_ex               __vceq_z_u16_ex
+#define vceq_z_u32_ex               __vceq_z_u32_ex
+#define vceq_z_u8_ex                __vceq_z_u8_ex
+#define vceqq_z_f32_ex              __vceqq_z_f32_ex
+#define vceqq_z_s16_ex              __vceqq_z_s16_ex
+#define vceqq_z_s32_ex              __vceqq_z_s32_ex
+#define vceqq_z_s8_ex               __vceqq_z_s8_ex
+#define vceqq_z_u16_ex              __vceqq_z_u16_ex
+#define vceqq_z_u32_ex              __vceqq_z_u32_ex
+#define vceqq_z_u8_ex               __vceqq_z_u8_ex
+#define vceq_f32                    __vceq_f32
+#define vceq_p8                     __vceq_p8
+#define vceq_s16                    __vceq_s16
+#define vceq_s32                    __vceq_s32
+#define vceq_s8                     __vceq_s8
+#define vceq_u16                    __vceq_u16
+#define vceq_u32                    __vceq_u32
+#define vceq_u8                     __vceq_u8
+#define vceqq_f32                   __vceqq_f32
+#define vceqq_p8                    __vceqq_p8
+#define vceqq_s16                   __vceqq_s16
+#define vceqq_s32                   __vceqq_s32
+#define vceqq_s8                    __vceqq_s8
+#define vceqq_u16                   __vceqq_u16
+#define vceqq_u32                   __vceqq_u32
+#define vceqq_u8                    __vceqq_u8
+#define vcge_z_f32_ex               __vcge_z_f32_ex
+#define vcge_z_s16_ex               __vcge_z_s16_ex
+#define vcge_z_s32_ex               __vcge_z_s32_ex
+#define vcge_z_s8_ex                __vcge_z_s8_ex
+#define vcgeq_z_f32_ex              __vcgeq_z_f32_ex
+#define vcgeq_z_s16_ex              __vcgeq_z_s16_ex
+#define vcgeq_z_s32_ex              __vcgeq_z_s32_ex
+#define vcgeq_z_s8_ex               __vcgeq_z_s8_ex
+#define vcge_f32                    __vcge_f32
+#define vcge_s16                    __vcge_s16
+#define vcge_s32                    __vcge_s32
+#define vcge_s8                     __vcge_s8
+#define vcge_u16                    __vcge_u16
+#define vcge_u32                    __vcge_u32
+#define vcge_u8                     __vcge_u8
+#define vcle_f32                    __vcle_f32
+#define vcle_s16                    __vcle_s16
+#define vcle_s32                    __vcle_s32
+#define vcle_s8                     __vcle_s8
+#define vcle_u16                    __vcle_u16
+#define vcle_u32                    __vcle_u32
+#define vcle_u8                     __vcle_u8
+#define vcgeq_f32                   __vcgeq_f32
+#define vcgeq_s16                   __vcgeq_s16
+#define vcgeq_s32                   __vcgeq_s32
+#define vcgeq_s8                    __vcgeq_s8
+#define vcgeq_u16                   __vcgeq_u16
+#define vcgeq_u32                   __vcgeq_u32
+#define vcgeq_u8                    __vcgeq_u8
+#define vcleq_f32                   __vcleq_f32
+#define vcleq_s16                   __vcleq_s16
+#define vcleq_s32                   __vcleq_s32
+#define vcleq_s8                    __vcleq_s8
+#define vcleq_u16                   __vcleq_u16
+#define vcleq_u32                   __vcleq_u32
+#define vcleq_u8                    __vcleq_u8
+#define vcgt_z_f32_ex               __vcgt_z_f32_ex
+#define vcgt_z_s16_ex               __vcgt_z_s16_ex
+#define vcgt_z_s32_ex               __vcgt_z_s32_ex
+#define vcgt_z_s8_ex                __vcgt_z_s8_ex
+#define vcgtq_z_f32_ex              __vcgtq_z_f32_ex
+#define vcgtq_z_s16_ex              __vcgtq_z_s16_ex
+#define vcgtq_z_s32_ex              __vcgtq_z_s32_ex
+#define vcgtq_z_s8_ex               __vcgtq_z_s8_ex
+#define vcgt_f32                    __vcgt_f32
+#define vcgt_s16                    __vcgt_s16
+#define vcgt_s32                    __vcgt_s32
+#define vcgt_s8                     __vcgt_s8
+#define vcgt_u16                    __vcgt_u16
+#define vcgt_u32                    __vcgt_u32
+#define vcgt_u8                     __vcgt_u8
+#define vclt_f32                    __vclt_f32
+#define vclt_s16                    __vclt_s16
+#define vclt_s32                    __vclt_s32
+#define vclt_s8                     __vclt_s8
+#define vclt_u16                    __vclt_u16
+#define vclt_u32                    __vclt_u32
+#define vclt_u8                     __vclt_u8
+#define vcgtq_f32                   __vcgtq_f32
+#define vcgtq_s16                   __vcgtq_s16
+#define vcgtq_s32                   __vcgtq_s32
+#define vcgtq_s8                    __vcgtq_s8
+#define vcgtq_u16                   __vcgtq_u16
+#define vcgtq_u32                   __vcgtq_u32
+#define vcgtq_u8                    __vcgtq_u8
+#define vcltq_f32                   __vcltq_f32
+#define vcltq_s16                   __vcltq_s16
+#define vcltq_s32                   __vcltq_s32
+#define vcltq_s8                    __vcltq_s8
+#define vcltq_u16                   __vcltq_u16
+#define vcltq_u32                   __vcltq_u32
+#define vcltq_u8                    __vcltq_u8
+#define vcle_z_f32_ex               __vcle_z_f32_ex
+#define vcle_z_s16_ex               __vcle_z_s16_ex
+#define vcle_z_s32_ex               __vcle_z_s32_ex
+#define vcle_z_s8_ex                __vcle_z_s8_ex
+#define vcleq_z_f32_ex              __vcleq_z_f32_ex
+#define vcleq_z_s16_ex              __vcleq_z_s16_ex
+#define vcleq_z_s32_ex              __vcleq_z_s32_ex
+#define vcleq_z_s8_ex               __vcleq_z_s8_ex
+#define vcls_s16                    __vcls_s16
+#define vcls_s32                    __vcls_s32
+#define vcls_s8                     __vcls_s8
+#define vclz_s16                    __vclz_s16
+#define vclz_s32                    __vclz_s32
+#define vclz_s8                     __vclz_s8
+#define vclz_u16                    __vclz_u16
+#define vclz_u32                    __vclz_u32
+#define vclz_u8                     __vclz_u8
+#define vclsq_s16                   __vclsq_s16
+#define vclsq_s32                   __vclsq_s32
+#define vclsq_s8                    __vclsq_s8
+#define vclzq_s16                   __vclzq_s16
+#define vclzq_s32                   __vclzq_s32
+#define vclzq_s8                    __vclzq_s8
+#define vclzq_u16                   __vclzq_u16
+#define vclzq_u32                   __vclzq_u32
+#define vclzq_u8                    __vclzq_u8
+#define vclt_z_f32_ex               __vclt_z_f32_ex
+#define vclt_z_s16_ex               __vclt_z_s16_ex
+#define vclt_z_s32_ex               __vclt_z_s32_ex
+#define vclt_z_s8_ex                __vclt_z_s8_ex
+#define vcltq_z_f32_ex              __vcltq_z_f32_ex
+#define vcltq_z_s16_ex              __vcltq_z_s16_ex
+#define vcltq_z_s32_ex              __vcltq_z_s32_ex
+#define vcltq_z_s8_ex               __vcltq_z_s8_ex
+#define vcnt_p8                     __vcnt_p8
+#define vcnt_s8                     __vcnt_s8
+#define vcnt_u8                     __vcnt_u8
+#define vcntq_p8                    __vcntq_p8
+#define vcntq_s8                    __vcntq_s8
+#define vcntq_u8                    __vcntq_u8
+#define vcombine_f32                __vcombine_f32
+#define vcombine_p16                __vcombine_p16
+#define vcombine_p8                 __vcombine_p8
+#define vcombine_s16                __vcombine_s16
+#define vcombine_s32                __vcombine_s32
+#define vcombine_s64                __vcombine_s64
+#define vcombine_s8                 __vcombine_s8
+#define vcombine_u16                __vcombine_u16
+#define vcombine_u32                __vcombine_u32
+#define vcombine_u64                __vcombine_u64
+#define vcombine_u8                 __vcombine_u8
+#define vcreate_f32                 __vcreate_f32
+#define vcreate_p16                 __vcreate_p16
+#define vcreate_p8                  __vcreate_p8
+#define vcreate_s16                 __vcreate_s16
+#define vcreate_s32                 __vcreate_s32
+#define vcreate_s64                 __vcreate_s64
+#define vcreate_s8                  __vcreate_s8
+#define vcreate_u16                 __vcreate_u16
+#define vcreate_u32                 __vcreate_u32
+#define vcreate_u64                 __vcreate_u64
+#define vcreate_u8                  __vcreate_u8
+#define vcvt_n_f32_s32              __vcvt_n_f32_s32
+#define vcvt_n_f32_u32              __vcvt_n_f32_u32
+#define vcvt_n_s32_f32              __vcvt_n_s32_f32
+#define vcvt_n_u32_f32              __vcvt_n_u32_f32
+#define vcvtq_n_f32_s32             __vcvtq_n_f32_s32
+#define vcvtq_n_f32_u32             __vcvtq_n_f32_u32
+#define vcvtq_n_s32_f32             __vcvtq_n_s32_f32
+#define vcvtq_n_u32_f32             __vcvtq_n_u32_f32
+#define vcvta_s32_f32               __vcvta_s32_f32
+#define vcvta_u32_f32               __vcvta_u32_f32
+#define vcvtm_s32_f32               __vcvtm_s32_f32
+#define vcvtm_u32_f32               __vcvtm_u32_f32
+#define vcvtn_s32_f32               __vcvtn_s32_f32
+#define vcvtn_u32_f32               __vcvtn_u32_f32
+#define vcvtp_s32_f32               __vcvtp_s32_f32
+#define vcvtp_u32_f32               __vcvtp_u32_f32
+#define vcvtaq_s32_f32              __vcvtaq_s32_f32
+#define vcvtaq_u32_f32              __vcvtaq_u32_f32
+#define vcvtmq_s32_f32              __vcvtmq_s32_f32
+#define vcvtmq_u32_f32              __vcvtmq_u32_f32
+#define vcvtnq_s32_f32              __vcvtnq_s32_f32
+#define vcvtnq_u32_f32              __vcvtnq_u32_f32
+#define vcvtpq_s32_f32              __vcvtpq_s32_f32
+#define vcvtpq_u32_f32              __vcvtpq_u32_f32
+#define vcvt_f32_s32                __vcvt_f32_s32
+#define vcvt_f32_u32                __vcvt_f32_u32
+#define vcvt_s32_f32                __vcvt_s32_f32
+#define vcvt_u32_f32                __vcvt_u32_f32
+#define vcvtq_f32_s32               __vcvtq_f32_s32
+#define vcvtq_f32_u32               __vcvtq_f32_u32
+#define vcvtq_s32_f32               __vcvtq_s32_f32
+#define vcvtq_u32_f32               __vcvtq_u32_f32
+#define vdup_lane_f32               __vdup_lane_f32
+#define vdup_lane_p16               __vdup_lane_p16
+#define vdup_lane_p8                __vdup_lane_p8
+#define vdup_lane_s16               __vdup_lane_s16
+#define vdup_lane_s32               __vdup_lane_s32
+#define vdup_lane_s8                __vdup_lane_s8
+#define vdup_lane_u16               __vdup_lane_u16
+#define vdup_lane_u32               __vdup_lane_u32
+#define vdup_lane_u8                __vdup_lane_u8
+#define vdupq_lane_f32              __vdupq_lane_f32
+#define vdupq_lane_p16              __vdupq_lane_p16
+#define vdupq_lane_p8               __vdupq_lane_p8
+#define vdupq_lane_s16              __vdupq_lane_s16
+#define vdupq_lane_s32              __vdupq_lane_s32
+#define vdupq_lane_s8               __vdupq_lane_s8
+#define vdupq_lane_u16              __vdupq_lane_u16
+#define vdupq_lane_u32              __vdupq_lane_u32
+#define vdupq_lane_u8               __vdupq_lane_u8
+#define vdup_n_f32                  __vdup_n_f32
+#define vmov_n_f32                  __vmov_n_f32
+#define vdup_n_p16                  __vdup_n_p16
+#define vdup_n_p8                   __vdup_n_p8
+#define vdup_n_s16                  __vdup_n_s16
+#define vdup_n_s32                  __vdup_n_s32
+#define vdup_n_s8                   __vdup_n_s8
+#define vdup_n_u16                  __vdup_n_u16
+#define vdup_n_u32                  __vdup_n_u32
+#define vdup_n_u8                   __vdup_n_u8
+#define vmov_n_p16                  __vmov_n_p16
+#define vmov_n_p8                   __vmov_n_p8
+#define vmov_n_s16                  __vmov_n_s16
+#define vmov_n_s32                  __vmov_n_s32
+#define vmov_n_s8                   __vmov_n_s8
+#define vmov_n_u16                  __vmov_n_u16
+#define vmov_n_u32                  __vmov_n_u32
+#define vmov_n_u8                   __vmov_n_u8
+#define vdupq_n_f32                 __vdupq_n_f32
+#define vmovq_n_f32                 __vmovq_n_f32
+#define vdupq_n_p16                 __vdupq_n_p16
+#define vdupq_n_p8                  __vdupq_n_p8
+#define vdupq_n_s16                 __vdupq_n_s16
+#define vdupq_n_s32                 __vdupq_n_s32
+#define vdupq_n_s8                  __vdupq_n_s8
+#define vdupq_n_u16                 __vdupq_n_u16
+#define vdupq_n_u32                 __vdupq_n_u32
+#define vdupq_n_u8                  __vdupq_n_u8
+#define vmovq_n_p16                 __vmovq_n_p16
+#define vmovq_n_p8                  __vmovq_n_p8
+#define vmovq_n_s16                 __vmovq_n_s16
+#define vmovq_n_s32                 __vmovq_n_s32
+#define vmovq_n_s8                  __vmovq_n_s8
+#define vmovq_n_u16                 __vmovq_n_u16
+#define vmovq_n_u32                 __vmovq_n_u32
+#define vmovq_n_u8                  __vmovq_n_u8
+#define vdup_n_s64                  __vdup_n_s64
+#define vdup_n_u64                  __vdup_n_u64
+#define vmov_n_s64                  __vmov_n_s64
+#define vmov_n_u64                  __vmov_n_u64
+#define vdupq_n_s64                 __vdupq_n_s64
+#define vdupq_n_u64                 __vdupq_n_u64
+#define vmovq_n_s64                 __vmovq_n_s64
+#define vmovq_n_u64                 __vmovq_n_u64
+#define vbic_s16                    __vbic_s16
+#define vbic_s32                    __vbic_s32
+#define vbic_s64                    __vbic_s64
+#define vbic_s8                     __vbic_s8
+#define vbic_u16                    __vbic_u16
+#define vbic_u32                    __vbic_u32
+#define vbic_u64                    __vbic_u64
+#define vbic_u8                     __vbic_u8
+#define veor_s16                    __veor_s16
+#define veor_s32                    __veor_s32
+#define veor_s64                    __veor_s64
+#define veor_s8                     __veor_s8
+#define veor_u16                    __veor_u16
+#define veor_u32                    __veor_u32
+#define veor_u64                    __veor_u64
+#define veor_u8                     __veor_u8
+#define vorn_s16                    __vorn_s16
+#define vorn_s32                    __vorn_s32
+#define vorn_s64                    __vorn_s64
+#define vorn_s8                     __vorn_s8
+#define vorn_u16                    __vorn_u16
+#define vorn_u32                    __vorn_u32
+#define vorn_u64                    __vorn_u64
+#define vorn_u8                     __vorn_u8
+#define vbicq_s16                   __vbicq_s16
+#define vbicq_s32                   __vbicq_s32
+#define vbicq_s64                   __vbicq_s64
+#define vbicq_s8                    __vbicq_s8
+#define vbicq_u16                   __vbicq_u16
+#define vbicq_u32                   __vbicq_u32
+#define vbicq_u64                   __vbicq_u64
+#define vbicq_u8                    __vbicq_u8
+#define veorq_s16                   __veorq_s16
+#define veorq_s32                   __veorq_s32
+#define veorq_s64                   __veorq_s64
+#define veorq_s8                    __veorq_s8
+#define veorq_u16                   __veorq_u16
+#define veorq_u32                   __veorq_u32
+#define veorq_u64                   __veorq_u64
+#define veorq_u8                    __veorq_u8
+#define vornq_s16                   __vornq_s16
+#define vornq_s32                   __vornq_s32
+#define vornq_s64                   __vornq_s64
+#define vornq_s8                    __vornq_s8
+#define vornq_u16                   __vornq_u16
+#define vornq_u32                   __vornq_u32
+#define vornq_u64                   __vornq_u64
+#define vornq_u8                    __vornq_u8
+#define vext_f32                    __vext_f32
+#define vext_p16                    __vext_p16
+#define vext_p8                     __vext_p8
+#define vext_s16                    __vext_s16
+#define vext_s32                    __vext_s32
+#define vext_s64                    __vext_s64
+#define vext_s8                     __vext_s8
+#define vext_u16                    __vext_u16
+#define vext_u32                    __vext_u32
+#define vext_u64                    __vext_u64
+#define vext_u8                     __vext_u8
+#define vextq_f32                   __vextq_f32
+#define vextq_p16                   __vextq_p16
+#define vextq_p8                    __vextq_p8
+#define vextq_s16                   __vextq_s16
+#define vextq_s32                   __vextq_s32
+#define vextq_s64                   __vextq_s64
+#define vextq_s8                    __vextq_s8
+#define vextq_u16                   __vextq_u16
+#define vextq_u32                   __vextq_u32
+#define vextq_u64                   __vextq_u64
+#define vextq_u8                    __vextq_u8
+#define vget_high_f32               __vget_high_f32
+#define vget_high_p16               __vget_high_p16
+#define vget_high_p8                __vget_high_p8
+#define vget_high_s16               __vget_high_s16
+#define vget_high_s32               __vget_high_s32
+#define vget_high_s64               __vget_high_s64
+#define vget_high_s8                __vget_high_s8
+#define vget_high_u16               __vget_high_u16
+#define vget_high_u32               __vget_high_u32
+#define vget_high_u64               __vget_high_u64
+#define vget_high_u8                __vget_high_u8
+#define vget_low_f32                __vget_low_f32
+#define vget_low_p16                __vget_low_p16
+#define vget_low_p8                 __vget_low_p8
+#define vget_low_s16                __vget_low_s16
+#define vget_low_s32                __vget_low_s32
+#define vget_low_s64                __vget_low_s64
+#define vget_low_s8                 __vget_low_s8
+#define vget_low_u16                __vget_low_u16
+#define vget_low_u32                __vget_low_u32
+#define vget_low_u64                __vget_low_u64
+#define vget_low_u8                 __vget_low_u8
+#define vhadd_s16                   __vhadd_s16
+#define vhadd_s32                   __vhadd_s32
+#define vhadd_s8                    __vhadd_s8
+#define vhadd_u16                   __vhadd_u16
+#define vhadd_u32                   __vhadd_u32
+#define vhadd_u8                    __vhadd_u8
+#define vhsub_s16                   __vhsub_s16
+#define vhsub_s32                   __vhsub_s32
+#define vhsub_s8                    __vhsub_s8
+#define vhsub_u16                   __vhsub_u16
+#define vhsub_u32                   __vhsub_u32
+#define vhsub_u8                    __vhsub_u8
+#define vrhadd_s16                  __vrhadd_s16
+#define vrhadd_s32                  __vrhadd_s32
+#define vrhadd_s8                   __vrhadd_s8
+#define vrhadd_u16                  __vrhadd_u16
+#define vrhadd_u32                  __vrhadd_u32
+#define vrhadd_u8                   __vrhadd_u8
+#define vhaddq_s16                  __vhaddq_s16
+#define vhaddq_s32                  __vhaddq_s32
+#define vhaddq_s8                   __vhaddq_s8
+#define vhaddq_u16                  __vhaddq_u16
+#define vhaddq_u32                  __vhaddq_u32
+#define vhaddq_u8                   __vhaddq_u8
+#define vhsubq_s16                  __vhsubq_s16
+#define vhsubq_s32                  __vhsubq_s32
+#define vhsubq_s8                   __vhsubq_s8
+#define vhsubq_u16                  __vhsubq_u16
+#define vhsubq_u32                  __vhsubq_u32
+#define vhsubq_u8                   __vhsubq_u8
+#define vrhaddq_s16                 __vrhaddq_s16
+#define vrhaddq_s32                 __vrhaddq_s32
+#define vrhaddq_s8                  __vrhaddq_s8
+#define vrhaddq_u16                 __vrhaddq_u16
+#define vrhaddq_u32                 __vrhaddq_u32
+#define vrhaddq_u8                  __vrhaddq_u8
+#define vld1_f32                    __vld1_f32
+#define vld1_p16                    __vld1_p16
+#define vld1_p8                     __vld1_p8
+#define vld1_s16                    __vld1_s16
+#define vld1_s32                    __vld1_s32
+#define vld1_s64                    __vld1_s64
+#define vld1_s8                     __vld1_s8
+#define vld1_u16                    __vld1_u16
+#define vld1_u32                    __vld1_u32
+#define vld1_u64                    __vld1_u64
+#define vld1_u8                     __vld1_u8
+#define vld1_f32_ex                 __vld1_f32_ex
+#define vld1_p16_ex                 __vld1_p16_ex
+#define vld1_p8_ex                  __vld1_p8_ex
+#define vld1_s16_ex                 __vld1_s16_ex
+#define vld1_s32_ex                 __vld1_s32_ex
+#define vld1_s64_ex                 __vld1_s64_ex
+#define vld1_s8_ex                  __vld1_s8_ex
+#define vld1_u16_ex                 __vld1_u16_ex
+#define vld1_u32_ex                 __vld1_u32_ex
+#define vld1_u64_ex                 __vld1_u64_ex
+#define vld1_u8_ex                  __vld1_u8_ex
+#define vld1q_f32                   __vld1q_f32
+#define vld1q_p16                   __vld1q_p16
+#define vld1q_p8                    __vld1q_p8
+#define vld1q_s16                   __vld1q_s16
+#define vld1q_s32                   __vld1q_s32
+#define vld1q_s64                   __vld1q_s64
+#define vld1q_s8                    __vld1q_s8
+#define vld1q_u16                   __vld1q_u16
+#define vld1q_u32                   __vld1q_u32
+#define vld1q_u64                   __vld1q_u64
+#define vld1q_u8                    __vld1q_u8
+#define vld1q_f32_ex                __vld1q_f32_ex
+#define vld1q_p16_ex                __vld1q_p16_ex
+#define vld1q_p8_ex                 __vld1q_p8_ex
+#define vld1q_s16_ex                __vld1q_s16_ex
+#define vld1q_s32_ex                __vld1q_s32_ex
+#define vld1q_s64_ex                __vld1q_s64_ex
+#define vld1q_s8_ex                 __vld1q_s8_ex
+#define vld1q_u16_ex                __vld1q_u16_ex
+#define vld1q_u32_ex                __vld1q_u32_ex
+#define vld1q_u64_ex                __vld1q_u64_ex
+#define vld1q_u8_ex                 __vld1q_u8_ex
+#define vld1_dup_f32                __vld1_dup_f32
+#define vld1_dup_p16                __vld1_dup_p16
+#define vld1_dup_p8                 __vld1_dup_p8
+#define vld1_dup_s16                __vld1_dup_s16
+#define vld1_dup_s32                __vld1_dup_s32
+#define vld1_dup_s8                 __vld1_dup_s8
+#define vld1_dup_u16                __vld1_dup_u16
+#define vld1_dup_u32                __vld1_dup_u32
+#define vld1_dup_u8                 __vld1_dup_u8
+#define vld1q_dup_f32               __vld1q_dup_f32
+#define vld1q_dup_p16               __vld1q_dup_p16
+#define vld1q_dup_p8                __vld1q_dup_p8
+#define vld1q_dup_s16               __vld1q_dup_s16
+#define vld1q_dup_s32               __vld1q_dup_s32
+#define vld1q_dup_s8                __vld1q_dup_s8
+#define vld1q_dup_u16               __vld1q_dup_u16
+#define vld1q_dup_u32               __vld1q_dup_u32
+#define vld1q_dup_u8                __vld1q_dup_u8
+#define vld1_dup_f32_ex             __vld1_dup_f32_ex
+#define vld1_dup_p16_ex             __vld1_dup_p16_ex
+#define vld1_dup_s16_ex             __vld1_dup_s16_ex
+#define vld1_dup_s32_ex             __vld1_dup_s32_ex
+#define vld1_dup_u16_ex             __vld1_dup_u16_ex
+#define vld1_dup_u32_ex             __vld1_dup_u32_ex
+#define vld1q_dup_f32_ex            __vld1q_dup_f32_ex
+#define vld1q_dup_p16_ex            __vld1q_dup_p16_ex
+#define vld1q_dup_s16_ex            __vld1q_dup_s16_ex
+#define vld1q_dup_s32_ex            __vld1q_dup_s32_ex
+#define vld1q_dup_u16_ex            __vld1q_dup_u16_ex
+#define vld1q_dup_u32_ex            __vld1q_dup_u32_ex
+#define vld1_lane_f32               __vld1_lane_f32
+#define vld1_lane_p16               __vld1_lane_p16
+#define vld1_lane_p8                __vld1_lane_p8
+#define vld1_lane_s16               __vld1_lane_s16
+#define vld1_lane_s32               __vld1_lane_s32
+#define vld1_lane_s8                __vld1_lane_s8
+#define vld1_lane_u16               __vld1_lane_u16
+#define vld1_lane_u32               __vld1_lane_u32
+#define vld1_lane_u8                __vld1_lane_u8
+#define vld1q_lane_f32              __vld1q_lane_f32
+#define vld1q_lane_p16              __vld1q_lane_p16
+#define vld1q_lane_p8               __vld1q_lane_p8
+#define vld1q_lane_s16              __vld1q_lane_s16
+#define vld1q_lane_s32              __vld1q_lane_s32
+#define vld1q_lane_s8               __vld1q_lane_s8
+#define vld1q_lane_u16              __vld1q_lane_u16
+#define vld1q_lane_u32              __vld1q_lane_u32
+#define vld1q_lane_u8               __vld1q_lane_u8
+#define vld1_lane_f32_ex            __vld1_lane_f32_ex
+#define vld1_lane_p16_ex            __vld1_lane_p16_ex
+#define vld1_lane_s16_ex            __vld1_lane_s16_ex
+#define vld1_lane_s32_ex            __vld1_lane_s32_ex
+#define vld1_lane_u16_ex            __vld1_lane_u16_ex
+#define vld1_lane_u32_ex            __vld1_lane_u32_ex
+#define vld1q_lane_f32_ex           __vld1q_lane_f32_ex
+#define vld1q_lane_p16_ex           __vld1q_lane_p16_ex
+#define vld1q_lane_s16_ex           __vld1q_lane_s16_ex
+#define vld1q_lane_s32_ex           __vld1q_lane_s32_ex
+#define vld1q_lane_u16_ex           __vld1q_lane_u16_ex
+#define vld1q_lane_u32_ex           __vld1q_lane_u32_ex
+#define vld2_f32                    __vld2_f32
+#define vld2_p16                    __vld2_p16
+#define vld2_p8                     __vld2_p8
+#define vld2_s16                    __vld2_s16
+#define vld2_s32                    __vld2_s32
+#define vld2_s8                     __vld2_s8
+#define vld2_u16                    __vld2_u16
+#define vld2_u32                    __vld2_u32
+#define vld2_u8                     __vld2_u8
+#define vld2_s64                    __vld2_s64
+#define vld2_u64                    __vld2_u64
+#define vld2_s64_ex                 __vld2_s64_ex
+#define vld2_u64_ex                 __vld2_u64_ex
+#define vld2_f32_ex                 __vld2_f32_ex
+#define vld2_p16_ex                 __vld2_p16_ex
+#define vld2_p8_ex                  __vld2_p8_ex
+#define vld2_s16_ex                 __vld2_s16_ex
+#define vld2_s32_ex                 __vld2_s32_ex
+#define vld2_s8_ex                  __vld2_s8_ex
+#define vld2_u16_ex                 __vld2_u16_ex
+#define vld2_u32_ex                 __vld2_u32_ex
+#define vld2_u8_ex                  __vld2_u8_ex
+#define vld2q_f32                   __vld2q_f32
+#define vld2q_p16                   __vld2q_p16
+#define vld2q_p8                    __vld2q_p8
+#define vld2q_s16                   __vld2q_s16
+#define vld2q_s32                   __vld2q_s32
+#define vld2q_s8                    __vld2q_s8
+#define vld2q_u16                   __vld2q_u16
+#define vld2q_u32                   __vld2q_u32
+#define vld2q_u8                    __vld2q_u8
+#define vld2q_f32_ex                __vld2q_f32_ex
+#define vld2q_p16_ex                __vld2q_p16_ex
+#define vld2q_p8_ex                 __vld2q_p8_ex
+#define vld2q_s16_ex                __vld2q_s16_ex
+#define vld2q_s32_ex                __vld2q_s32_ex
+#define vld2q_s8_ex                 __vld2q_s8_ex
+#define vld2q_u16_ex                __vld2q_u16_ex
+#define vld2q_u32_ex                __vld2q_u32_ex
+#define vld2q_u8_ex                 __vld2q_u8_ex
+#define vld2_dup_f32                __vld2_dup_f32
+#define vld2_dup_p16                __vld2_dup_p16
+#define vld2_dup_p8                 __vld2_dup_p8
+#define vld2_dup_s16                __vld2_dup_s16
+#define vld2_dup_s32                __vld2_dup_s32
+#define vld2_dup_s8                 __vld2_dup_s8
+#define vld2_dup_u16                __vld2_dup_u16
+#define vld2_dup_u32                __vld2_dup_u32
+#define vld2_dup_u8                 __vld2_dup_u8
+#define vld2_dup_s64                __vld2_dup_s64
+#define vld2_dup_u64                __vld2_dup_u64
+#define vld2_dup_s64_ex             __vld2_dup_s64_ex
+#define vld2_dup_u64_ex             __vld2_dup_u64_ex
+#define vld2_dup_f32_ex             __vld2_dup_f32_ex
+#define vld2_dup_p16_ex             __vld2_dup_p16_ex
+#define vld2_dup_p8_ex              __vld2_dup_p8_ex
+#define vld2_dup_s16_ex             __vld2_dup_s16_ex
+#define vld2_dup_s32_ex             __vld2_dup_s32_ex
+#define vld2_dup_s8_ex              __vld2_dup_s8_ex
+#define vld2_dup_u16_ex             __vld2_dup_u16_ex
+#define vld2_dup_u32_ex             __vld2_dup_u32_ex
+#define vld2_dup_u8_ex              __vld2_dup_u8_ex
+#define vld2_lane_f32               __vld2_lane_f32
+#define vld2_lane_p16               __vld2_lane_p16
+#define vld2_lane_p8                __vld2_lane_p8
+#define vld2_lane_s16               __vld2_lane_s16
+#define vld2_lane_s32               __vld2_lane_s32
+#define vld2_lane_s8                __vld2_lane_s8
+#define vld2_lane_u16               __vld2_lane_u16
+#define vld2_lane_u32               __vld2_lane_u32
+#define vld2_lane_u8                __vld2_lane_u8
+#define vld2q_lane_f32              __vld2q_lane_f32
+#define vld2q_lane_p16              __vld2q_lane_p16
+#define vld2q_lane_s16              __vld2q_lane_s16
+#define vld2q_lane_s32              __vld2q_lane_s32
+#define vld2q_lane_u16              __vld2q_lane_u16
+#define vld2q_lane_u32              __vld2q_lane_u32
+#define vld2_lane_f32_ex            __vld2_lane_f32_ex
+#define vld2_lane_p16_ex            __vld2_lane_p16_ex
+#define vld2_lane_p8_ex             __vld2_lane_p8_ex
+#define vld2_lane_s16_ex            __vld2_lane_s16_ex
+#define vld2_lane_s32_ex            __vld2_lane_s32_ex
+#define vld2_lane_s8_ex             __vld2_lane_s8_ex
+#define vld2_lane_u16_ex            __vld2_lane_u16_ex
+#define vld2_lane_u32_ex            __vld2_lane_u32_ex
+#define vld2_lane_u8_ex             __vld2_lane_u8_ex
+#define vld2q_lane_f32_ex           __vld2q_lane_f32_ex
+#define vld2q_lane_p16_ex           __vld2q_lane_p16_ex
+#define vld2q_lane_s16_ex           __vld2q_lane_s16_ex
+#define vld2q_lane_s32_ex           __vld2q_lane_s32_ex
+#define vld2q_lane_u16_ex           __vld2q_lane_u16_ex
+#define vld2q_lane_u32_ex           __vld2q_lane_u32_ex
+#define vld3_f32                    __vld3_f32
+#define vld3_p16                    __vld3_p16
+#define vld3_p8                     __vld3_p8
+#define vld3_s16                    __vld3_s16
+#define vld3_s32                    __vld3_s32
+#define vld3_s8                     __vld3_s8
+#define vld3_u16                    __vld3_u16
+#define vld3_u32                    __vld3_u32
+#define vld3_u8                     __vld3_u8
+#define vld3_s64                    __vld3_s64
+#define vld3_u64                    __vld3_u64
+#define vld3_s64_ex                 __vld3_s64_ex
+#define vld3_u64_ex                 __vld3_u64_ex
+#define vld3_f32_ex                 __vld3_f32_ex
+#define vld3_p16_ex                 __vld3_p16_ex
+#define vld3_p8_ex                  __vld3_p8_ex
+#define vld3_s16_ex                 __vld3_s16_ex
+#define vld3_s32_ex                 __vld3_s32_ex
+#define vld3_s8_ex                  __vld3_s8_ex
+#define vld3_u16_ex                 __vld3_u16_ex
+#define vld3_u32_ex                 __vld3_u32_ex
+#define vld3_u8_ex                  __vld3_u8_ex
+#define vld3q_f32                   __vld3q_f32
+#define vld3q_p16                   __vld3q_p16
+#define vld3q_p8                    __vld3q_p8
+#define vld3q_s16                   __vld3q_s16
+#define vld3q_s32                   __vld3q_s32
+#define vld3q_s8                    __vld3q_s8
+#define vld3q_u16                   __vld3q_u16
+#define vld3q_u32                   __vld3q_u32
+#define vld3q_u8                    __vld3q_u8
+#define vld3q_f32_ex                __vld3q_f32_ex
+#define vld3q_p16_ex                __vld3q_p16_ex
+#define vld3q_p8_ex                 __vld3q_p8_ex
+#define vld3q_s16_ex                __vld3q_s16_ex
+#define vld3q_s32_ex                __vld3q_s32_ex
+#define vld3q_s8_ex                 __vld3q_s8_ex
+#define vld3q_u16_ex                __vld3q_u16_ex
+#define vld3q_u32_ex                __vld3q_u32_ex
+#define vld3q_u8_ex                 __vld3q_u8_ex
+#define vld3_dup_f32                __vld3_dup_f32
+#define vld3_dup_p16                __vld3_dup_p16
+#define vld3_dup_p8                 __vld3_dup_p8
+#define vld3_dup_s16                __vld3_dup_s16
+#define vld3_dup_s32                __vld3_dup_s32
+#define vld3_dup_s8                 __vld3_dup_s8
+#define vld3_dup_u16                __vld3_dup_u16
+#define vld3_dup_u32                __vld3_dup_u32
+#define vld3_dup_u8                 __vld3_dup_u8
+#define vld3_dup_s64                __vld3_dup_s64
+#define vld3_dup_u64                __vld3_dup_u64
+#define vld3_lane_f32               __vld3_lane_f32
+#define vld3_lane_p16               __vld3_lane_p16
+#define vld3_lane_p8                __vld3_lane_p8
+#define vld3_lane_s16               __vld3_lane_s16
+#define vld3_lane_s32               __vld3_lane_s32
+#define vld3_lane_s8                __vld3_lane_s8
+#define vld3_lane_u16               __vld3_lane_u16
+#define vld3_lane_u32               __vld3_lane_u32
+#define vld3_lane_u8                __vld3_lane_u8
+#define vld3q_lane_f32              __vld3q_lane_f32
+#define vld3q_lane_p16              __vld3q_lane_p16
+#define vld3q_lane_s16              __vld3q_lane_s16
+#define vld3q_lane_s32              __vld3q_lane_s32
+#define vld3q_lane_u16              __vld3q_lane_u16
+#define vld3q_lane_u32              __vld3q_lane_u32
+#define vld4_f32                    __vld4_f32
+#define vld4_p16                    __vld4_p16
+#define vld4_p8                     __vld4_p8
+#define vld4_s16                    __vld4_s16
+#define vld4_s32                    __vld4_s32
+#define vld4_s8                     __vld4_s8
+#define vld4_u16                    __vld4_u16
+#define vld4_u32                    __vld4_u32
+#define vld4_u8                     __vld4_u8
+#define vld4_s64                    __vld4_s64
+#define vld4_u64                    __vld4_u64
+#define vld4_s64_ex                 __vld4_s64_ex
+#define vld4_u64_ex                 __vld4_u64_ex
+#define vld4_f32_ex                 __vld4_f32_ex
+#define vld4_p16_ex                 __vld4_p16_ex
+#define vld4_p8_ex                  __vld4_p8_ex
+#define vld4_s16_ex                 __vld4_s16_ex
+#define vld4_s32_ex                 __vld4_s32_ex
+#define vld4_s8_ex                  __vld4_s8_ex
+#define vld4_u16_ex                 __vld4_u16_ex
+#define vld4_u32_ex                 __vld4_u32_ex
+#define vld4_u8_ex                  __vld4_u8_ex
+#define vld4q_f32                   __vld4q_f32
+#define vld4q_p16                   __vld4q_p16
+#define vld4q_p8                    __vld4q_p8
+#define vld4q_s16                   __vld4q_s16
+#define vld4q_s32                   __vld4q_s32
+#define vld4q_s8                    __vld4q_s8
+#define vld4q_u16                   __vld4q_u16
+#define vld4q_u32                   __vld4q_u32
+#define vld4q_u8                    __vld4q_u8
+#define vld4q_f32_ex                __vld4q_f32_ex
+#define vld4q_p16_ex                __vld4q_p16_ex
+#define vld4q_p8_ex                 __vld4q_p8_ex
+#define vld4q_s16_ex                __vld4q_s16_ex
+#define vld4q_s32_ex                __vld4q_s32_ex
+#define vld4q_s8_ex                 __vld4q_s8_ex
+#define vld4q_u16_ex                __vld4q_u16_ex
+#define vld4q_u32_ex                __vld4q_u32_ex
+#define vld4q_u8_ex                 __vld4q_u8_ex
+#define vld4_dup_f32                __vld4_dup_f32
+#define vld4_dup_p16                __vld4_dup_p16
+#define vld4_dup_p8                 __vld4_dup_p8
+#define vld4_dup_s16                __vld4_dup_s16
+#define vld4_dup_s32                __vld4_dup_s32
+#define vld4_dup_s8                 __vld4_dup_s8
+#define vld4_dup_u16                __vld4_dup_u16
+#define vld4_dup_u32                __vld4_dup_u32
+#define vld4_dup_u8                 __vld4_dup_u8
+#define vld4_dup_s64                __vld4_dup_s64
+#define vld4_dup_u64                __vld4_dup_u64
+#define vld4_dup_f32_ex             __vld4_dup_f32_ex
+#define vld4_dup_p16_ex             __vld4_dup_p16_ex
+#define vld4_dup_p8_ex              __vld4_dup_p8_ex
+#define vld4_dup_s16_ex             __vld4_dup_s16_ex
+#define vld4_dup_s32_ex             __vld4_dup_s32_ex
+#define vld4_dup_s8_ex              __vld4_dup_s8_ex
+#define vld4_dup_u16_ex             __vld4_dup_u16_ex
+#define vld4_dup_u32_ex             __vld4_dup_u32_ex
+#define vld4_dup_u8_ex              __vld4_dup_u8_ex
+#define vld4_lane_f32               __vld4_lane_f32
+#define vld4_lane_p16               __vld4_lane_p16
+#define vld4_lane_p8                __vld4_lane_p8
+#define vld4_lane_s16               __vld4_lane_s16
+#define vld4_lane_s32               __vld4_lane_s32
+#define vld4_lane_s8                __vld4_lane_s8
+#define vld4_lane_u16               __vld4_lane_u16
+#define vld4_lane_u32               __vld4_lane_u32
+#define vld4_lane_u8                __vld4_lane_u8
+#define vld4q_lane_f32              __vld4q_lane_f32
+#define vld4q_lane_p16              __vld4q_lane_p16
+#define vld4q_lane_s16              __vld4q_lane_s16
+#define vld4q_lane_s32              __vld4q_lane_s32
+#define vld4q_lane_u16              __vld4q_lane_u16
+#define vld4q_lane_u32              __vld4q_lane_u32
+#define vld4_lane_f32_ex            __vld4_lane_f32_ex
+#define vld4_lane_p16_ex            __vld4_lane_p16_ex
+#define vld4_lane_p8_ex             __vld4_lane_p8_ex
+#define vld4_lane_s16_ex            __vld4_lane_s16_ex
+#define vld4_lane_s32_ex            __vld4_lane_s32_ex
+#define vld4_lane_s8_ex             __vld4_lane_s8_ex
+#define vld4_lane_u16_ex            __vld4_lane_u16_ex
+#define vld4_lane_u32_ex            __vld4_lane_u32_ex
+#define vld4_lane_u8_ex             __vld4_lane_u8_ex
+#define vld4q_lane_f32_ex           __vld4q_lane_f32_ex
+#define vld4q_lane_p16_ex           __vld4q_lane_p16_ex
+#define vld4q_lane_s16_ex           __vld4q_lane_s16_ex
+#define vld4q_lane_s32_ex           __vld4q_lane_s32_ex
+#define vld4q_lane_u16_ex           __vld4q_lane_u16_ex
+#define vld4q_lane_u32_ex           __vld4q_lane_u32_ex
+#define vmax_f32                    __vmax_f32
+#define vmaxnm_f32                  __vmaxnm_f32
+#define vmin_f32                    __vmin_f32
+#define vminnm_f32                  __vminnm_f32
+#define vmaxq_f32                   __vmaxq_f32
+#define vmaxnmq_f32                 __vmaxnmq_f32
+#define vminq_f32                   __vminq_f32
+#define vminnmq_f32                 __vminnmq_f32
+#define vmax_s16                    __vmax_s16
+#define vmax_s32                    __vmax_s32
+#define vmax_s8                     __vmax_s8
+#define vmax_u16                    __vmax_u16
+#define vmax_u32                    __vmax_u32
+#define vmax_u8                     __vmax_u8
+#define vmin_s16                    __vmin_s16
+#define vmin_s32                    __vmin_s32
+#define vmin_s8                     __vmin_s8
+#define vmin_u16                    __vmin_u16
+#define vmin_u32                    __vmin_u32
+#define vmin_u8                     __vmin_u8
+#define vmaxq_s16                   __vmaxq_s16
+#define vmaxq_s32                   __vmaxq_s32
+#define vmaxq_s8                    __vmaxq_s8
+#define vmaxq_u16                   __vmaxq_u16
+#define vmaxq_u32                   __vmaxq_u32
+#define vmaxq_u8                    __vmaxq_u8
+#define vminq_s16                   __vminq_s16
+#define vminq_s32                   __vminq_s32
+#define vminq_s8                    __vminq_s8
+#define vminq_u16                   __vminq_u16
+#define vminq_u32                   __vminq_u32
+#define vminq_u8                    __vminq_u8
+#define vmla_lane_f32               __vmla_lane_f32
+#define vmla_lane_s16               __vmla_lane_s16
+#define vmla_lane_s32               __vmla_lane_s32
+#define vmla_lane_u16               __vmla_lane_u16
+#define vmla_lane_u32               __vmla_lane_u32
+#define vmls_lane_f32               __vmls_lane_f32
+#define vmls_lane_s16               __vmls_lane_s16
+#define vmls_lane_s32               __vmls_lane_s32
+#define vmls_lane_u16               __vmls_lane_u16
+#define vmls_lane_u32               __vmls_lane_u32
+#define vmlaq_lane_f32              __vmlaq_lane_f32
+#define vmlaq_lane_s16              __vmlaq_lane_s16
+#define vmlaq_lane_s32              __vmlaq_lane_s32
+#define vmlaq_lane_u16              __vmlaq_lane_u16
+#define vmlaq_lane_u32              __vmlaq_lane_u32
+#define vmlsq_lane_f32              __vmlsq_lane_f32
+#define vmlsq_lane_s16              __vmlsq_lane_s16
+#define vmlsq_lane_s32              __vmlsq_lane_s32
+#define vmlsq_lane_u16              __vmlsq_lane_u16
+#define vmlsq_lane_u32              __vmlsq_lane_u32
+#define vmla_n_f32                  __vmla_n_f32
+#define vmls_n_f32                  __vmls_n_f32
+#define vmlaq_n_f32                 __vmlaq_n_f32
+#define vmlsq_n_f32                 __vmlsq_n_f32
+#define vmla_f32                    __vmla_f32
+#define vmls_f32                    __vmls_f32
+#define vmlaq_f32                   __vmlaq_f32
+#define vmlsq_f32                   __vmlsq_f32
+#define vmla_s16                    __vmla_s16
+#define vmla_s32                    __vmla_s32
+#define vmla_s8                     __vmla_s8
+#define vmla_u16                    __vmla_u16
+#define vmla_u32                    __vmla_u32
+#define vmla_u8                     __vmla_u8
+#define vmls_s16                    __vmls_s16
+#define vmls_s32                    __vmls_s32
+#define vmls_s8                     __vmls_s8
+#define vmls_u16                    __vmls_u16
+#define vmls_u32                    __vmls_u32
+#define vmls_u8                     __vmls_u8
+#define vmlaq_s16                   __vmlaq_s16
+#define vmlaq_s32                   __vmlaq_s32
+#define vmlaq_s8                    __vmlaq_s8
+#define vmlaq_u16                   __vmlaq_u16
+#define vmlaq_u32                   __vmlaq_u32
+#define vmlaq_u8                    __vmlaq_u8
+#define vmlsq_s16                   __vmlsq_s16
+#define vmlsq_s32                   __vmlsq_s32
+#define vmlsq_s8                    __vmlsq_s8
+#define vmlsq_u16                   __vmlsq_u16
+#define vmlsq_u32                   __vmlsq_u32
+#define vmlsq_u8                    __vmlsq_u8
+#define vmlal_s16                   __vmlal_s16
+#define vmlal_s32                   __vmlal_s32
+#define vmlal_s8                    __vmlal_s8
+#define vmlal_u16                   __vmlal_u16
+#define vmlal_u32                   __vmlal_u32
+#define vmlal_u8                    __vmlal_u8
+#define vmlsl_s16                   __vmlsl_s16
+#define vmlsl_s32                   __vmlsl_s32
+#define vmlsl_s8                    __vmlsl_s8
+#define vmlsl_u16                   __vmlsl_u16
+#define vmlsl_u32                   __vmlsl_u32
+#define vmlsl_u8                    __vmlsl_u8
+#define vmlal_lane_s16              __vmlal_lane_s16
+#define vmlal_lane_s32              __vmlal_lane_s32
+#define vmlal_lane_u16              __vmlal_lane_u16
+#define vmlal_lane_u32              __vmlal_lane_u32
+#define vmlsl_lane_s16              __vmlsl_lane_s16
+#define vmlsl_lane_s32              __vmlsl_lane_s32
+#define vmlsl_lane_u16              __vmlsl_lane_u16
+#define vmlsl_lane_u32              __vmlsl_lane_u32
+#define vset_lane_f32               __vset_lane_f32
+#define vset_lane_p16               __vset_lane_p16
+#define vset_lane_p8                __vset_lane_p8
+#define vset_lane_s16               __vset_lane_s16
+#define vset_lane_s32               __vset_lane_s32
+#define vset_lane_s8                __vset_lane_s8
+#define vset_lane_u16               __vset_lane_u16
+#define vset_lane_u32               __vset_lane_u32
+#define vset_lane_u8                __vset_lane_u8
+#define vget_lane_f32               __vget_lane_f32
+#define vget_lane_p16               __vget_lane_p16
+#define vget_lane_p8                __vget_lane_p8
+#define vget_lane_s16               __vget_lane_s16
+#define vget_lane_s8                __vget_lane_s8
+#define vget_lane_s32               __vget_lane_s32
+#define vget_lane_u16               __vget_lane_u16
+#define vget_lane_u8                __vget_lane_u8
+#define vget_lane_u32               __vget_lane_u32
+#define vset_lane_s64               __vset_lane_s64
+#define vset_lane_u64               __vset_lane_u64
+#define vsetq_lane_s64              __vsetq_lane_s64
+#define vsetq_lane_u64              __vsetq_lane_u64
+#define vget_lane_s64               __vget_lane_s64
+#define vget_lane_u64               __vget_lane_u64
+#define vgetq_lane_s64              __vgetq_lane_s64
+#define vgetq_lane_u64              __vgetq_lane_u64
+#define vsetq_lane_f32              __vsetq_lane_f32
+#define vsetq_lane_p16              __vsetq_lane_p16
+#define vsetq_lane_p8               __vsetq_lane_p8
+#define vsetq_lane_s16              __vsetq_lane_s16
+#define vsetq_lane_s32              __vsetq_lane_s32
+#define vsetq_lane_s8               __vsetq_lane_s8
+#define vsetq_lane_u16              __vsetq_lane_u16
+#define vsetq_lane_u32              __vsetq_lane_u32
+#define vsetq_lane_u8               __vsetq_lane_u8
+#define vgetq_lane_f32              __vgetq_lane_f32
+#define vgetq_lane_p16              __vgetq_lane_p16
+#define vgetq_lane_p8               __vgetq_lane_p8
+#define vgetq_lane_s16              __vgetq_lane_s16
+#define vgetq_lane_s8               __vgetq_lane_s8
+#define vgetq_lane_s32              __vgetq_lane_s32
+#define vgetq_lane_u16              __vgetq_lane_u16
+#define vgetq_lane_u8               __vgetq_lane_u8
+#define vgetq_lane_u32              __vgetq_lane_u32
+#define vmovl_s16                   __vmovl_s16
+#define vmovl_s32                   __vmovl_s32
+#define vmovl_s8                    __vmovl_s8
+#define vmovl_u16                   __vmovl_u16
+#define vmovl_u32                   __vmovl_u32
+#define vmovl_u8                    __vmovl_u8
+#define vmovn_s16                   __vmovn_s16
+#define vmovn_s32                   __vmovn_s32
+#define vmovn_s64                   __vmovn_s64
+#define vmovn_u16                   __vmovn_u16
+#define vmovn_u32                   __vmovn_u32
+#define vmovn_u64                   __vmovn_u64
+#define vmul_f32                    __vmul_f32
+#define vmul_p8                     __vmul_p8
+#define vmul_s16                    __vmul_s16
+#define vmul_s32                    __vmul_s32
+#define vmul_s8                     __vmul_s8
+#define vmul_u16                    __vmul_u16
+#define vmul_u32                    __vmul_u32
+#define vmul_u8                     __vmul_u8
+#define vmulq_f32                   __vmulq_f32
+#define vmulq_p8                    __vmulq_p8
+#define vmulq_s16                   __vmulq_s16
+#define vmulq_s32                   __vmulq_s32
+#define vmulq_s8                    __vmulq_s8
+#define vmulq_u16                   __vmulq_u16
+#define vmulq_u32                   __vmulq_u32
+#define vmulq_u8                    __vmulq_u8
+#define vmul_n_f32                  __vmul_n_f32
+#define vmulq_n_f32                 __vmulq_n_f32
+#define vmul_lane_f32               __vmul_lane_f32
+#define vmul_lane_s16               __vmul_lane_s16
+#define vmul_lane_s32               __vmul_lane_s32
+#define vmul_lane_u16               __vmul_lane_u16
+#define vmul_lane_u32               __vmul_lane_u32
+#define vmulq_lane_f32              __vmulq_lane_f32
+#define vmulq_lane_s16              __vmulq_lane_s16
+#define vmulq_lane_s32              __vmulq_lane_s32
+#define vmulq_lane_u16              __vmulq_lane_u16
+#define vmulq_lane_u32              __vmulq_lane_u32
+#define vmull_p64                   __vmull_p64
+#define vmull_p8                    __vmull_p8
+#define vmull_s16                   __vmull_s16
+#define vmull_s32                   __vmull_s32
+#define vmull_s8                    __vmull_s8
+#define vmull_u16                   __vmull_u16
+#define vmull_u32                   __vmull_u32
+#define vmull_u8                    __vmull_u8
+#define vmull_lane_s16              __vmull_lane_s16
+#define vmull_lane_s32              __vmull_lane_s32
+#define vmull_lane_u16              __vmull_lane_u16
+#define vmull_lane_u32              __vmull_lane_u32
+#define vmvn_p16                    __vmvn_p16
+#define vmvn_p8                     __vmvn_p8
+#define vmvn_s16                    __vmvn_s16
+#define vmvn_s32                    __vmvn_s32
+#define vmvn_s8                     __vmvn_s8
+#define vmvn_u16                    __vmvn_u16
+#define vmvn_u32                    __vmvn_u32
+#define vmvn_u8                     __vmvn_u8
+#define vmvnq_p16                   __vmvnq_p16
+#define vmvnq_p8                    __vmvnq_p8
+#define vmvnq_s16                   __vmvnq_s16
+#define vmvnq_s32                   __vmvnq_s32
+#define vmvnq_s8                    __vmvnq_s8
+#define vmvnq_u16                   __vmvnq_u16
+#define vmvnq_u32                   __vmvnq_u32
+#define vmvnq_u8                    __vmvnq_u8
+#define vpadal_s16                  __vpadal_s16
+#define vpadal_s32                  __vpadal_s32
+#define vpadal_s8                   __vpadal_s8
+#define vpadal_u16                  __vpadal_u16
+#define vpadal_u32                  __vpadal_u32
+#define vpadal_u8                   __vpadal_u8
+#define vpadalq_s16                 __vpadalq_s16
+#define vpadalq_s32                 __vpadalq_s32
+#define vpadalq_s8                  __vpadalq_s8
+#define vpadalq_u16                 __vpadalq_u16
+#define vpadalq_u32                 __vpadalq_u32
+#define vpadalq_u8                  __vpadalq_u8
+#define vpadd_f32                   __vpadd_f32
+#define vpadd_s16                   __vpadd_s16
+#define vpadd_s32                   __vpadd_s32
+#define vpadd_s8                    __vpadd_s8
+#define vpadd_u16                   __vpadd_u16
+#define vpadd_u32                   __vpadd_u32
+#define vpadd_u8                    __vpadd_u8
+#define vpaddl_s16                  __vpaddl_s16
+#define vpaddl_s32                  __vpaddl_s32
+#define vpaddl_s8                   __vpaddl_s8
+#define vpaddl_u16                  __vpaddl_u16
+#define vpaddl_u32                  __vpaddl_u32
+#define vpaddl_u8                   __vpaddl_u8
+#define vpaddlq_s16                 __vpaddlq_s16
+#define vpaddlq_s32                 __vpaddlq_s32
+#define vpaddlq_s8                  __vpaddlq_s8
+#define vpaddlq_u16                 __vpaddlq_u16
+#define vpaddlq_u32                 __vpaddlq_u32
+#define vpaddlq_u8                  __vpaddlq_u8
+#define vpmax_f32                   __vpmax_f32
+#define vpmin_f32                   __vpmin_f32
+#define vpmax_s16                   __vpmax_s16
+#define vpmax_s32                   __vpmax_s32
+#define vpmax_s8                    __vpmax_s8
+#define vpmax_u16                   __vpmax_u16
+#define vpmax_u32                   __vpmax_u32
+#define vpmax_u8                    __vpmax_u8
+#define vpmin_s16                   __vpmin_s16
+#define vpmin_s32                   __vpmin_s32
+#define vpmin_s8                    __vpmin_s8
+#define vpmin_u16                   __vpmin_u16
+#define vpmin_u32                   __vpmin_u32
+#define vpmin_u8                    __vpmin_u8
+#define vqabs_s16                   __vqabs_s16
+#define vqabs_s32                   __vqabs_s32
+#define vqabs_s8                    __vqabs_s8
+#define vqneg_s16                   __vqneg_s16
+#define vqneg_s32                   __vqneg_s32
+#define vqneg_s8                    __vqneg_s8
+#define vqabsq_s16                  __vqabsq_s16
+#define vqabsq_s32                  __vqabsq_s32
+#define vqabsq_s8                   __vqabsq_s8
+#define vqnegq_s16                  __vqnegq_s16
+#define vqnegq_s32                  __vqnegq_s32
+#define vqnegq_s8                   __vqnegq_s8
+#define vqadd_s16                   __vqadd_s16
+#define vqadd_s32                   __vqadd_s32
+#define vqadd_s64                   __vqadd_s64
+#define vqadd_s8                    __vqadd_s8
+#define vqadd_u16                   __vqadd_u16
+#define vqadd_u32                   __vqadd_u32
+#define vqadd_u64                   __vqadd_u64
+#define vqadd_u8                    __vqadd_u8
+#define vqaddq_s16                  __vqaddq_s16
+#define vqaddq_s32                  __vqaddq_s32
+#define vqaddq_s64                  __vqaddq_s64
+#define vqaddq_s8                   __vqaddq_s8
+#define vqaddq_u16                  __vqaddq_u16
+#define vqaddq_u32                  __vqaddq_u32
+#define vqaddq_u64                  __vqaddq_u64
+#define vqaddq_u8                   __vqaddq_u8
+#define vqdmlal_s16                 __vqdmlal_s16
+#define vqdmlal_s32                 __vqdmlal_s32
+#define vqdmlsl_s16                 __vqdmlsl_s16
+#define vqdmlsl_s32                 __vqdmlsl_s32
+#define vqdmlal_lane_s16            __vqdmlal_lane_s16
+#define vqdmlal_lane_s32            __vqdmlal_lane_s32
+#define vqdmlsl_lane_s16            __vqdmlsl_lane_s16
+#define vqdmlsl_lane_s32            __vqdmlsl_lane_s32
+#define vqdmulh_lane_s16            __vqdmulh_lane_s16
+#define vqdmulh_lane_s32            __vqdmulh_lane_s32
+#define vqrdmulh_lane_s16           __vqrdmulh_lane_s16
+#define vqrdmulh_lane_s32           __vqrdmulh_lane_s32
+#define vqdmulhq_lane_s16           __vqdmulhq_lane_s16
+#define vqdmulhq_lane_s32           __vqdmulhq_lane_s32
+#define vqrdmulhq_lane_s16          __vqrdmulhq_lane_s16
+#define vqrdmulhq_lane_s32          __vqrdmulhq_lane_s32
+#define vqdmulh_s16                 __vqdmulh_s16
+#define vqdmulh_s32                 __vqdmulh_s32
+#define vqrdmulh_s16                __vqrdmulh_s16
+#define vqrdmulh_s32                __vqrdmulh_s32
+#define vqdmulhq_s16                __vqdmulhq_s16
+#define vqdmulhq_s32                __vqdmulhq_s32
+#define vqrdmulhq_s16               __vqrdmulhq_s16
+#define vqrdmulhq_s32               __vqrdmulhq_s32
+#define vqdmull_s16                 __vqdmull_s16
+#define vqdmull_s32                 __vqdmull_s32
+#define vqdmull_lane_s16            __vqdmull_lane_s16
+#define vqdmull_lane_s32            __vqdmull_lane_s32
+#define vqmovn_s16                  __vqmovn_s16
+#define vqmovn_s32                  __vqmovn_s32
+#define vqmovn_s64                  __vqmovn_s64
+#define vqmovn_u16                  __vqmovn_u16
+#define vqmovn_u32                  __vqmovn_u32
+#define vqmovn_u64                  __vqmovn_u64
+#define vqmovun_s16                 __vqmovun_s16
+#define vqmovun_s32                 __vqmovun_s32
+#define vqmovun_s64                 __vqmovun_s64
+#define vqshl_n_s16                 __vqshl_n_s16
+#define vqshl_n_s32                 __vqshl_n_s32
+#define vqshl_n_s64                 __vqshl_n_s64
+#define vqshl_n_s8                  __vqshl_n_s8
+#define vqshl_n_u16                 __vqshl_n_u16
+#define vqshl_n_u32                 __vqshl_n_u32
+#define vqshl_n_u64                 __vqshl_n_u64
+#define vqshl_n_u8                  __vqshl_n_u8
+#define vqshlu_n_s16                __vqshlu_n_s16
+#define vqshlu_n_s32                __vqshlu_n_s32
+#define vqshlu_n_s64                __vqshlu_n_s64
+#define vqshlu_n_s8                 __vqshlu_n_s8
+#define vqshlq_n_s16                __vqshlq_n_s16
+#define vqshlq_n_s32                __vqshlq_n_s32
+#define vqshlq_n_s64                __vqshlq_n_s64
+#define vqshlq_n_s8                 __vqshlq_n_s8
+#define vqshlq_n_u16                __vqshlq_n_u16
+#define vqshlq_n_u32                __vqshlq_n_u32
+#define vqshlq_n_u64                __vqshlq_n_u64
+#define vqshlq_n_u8                 __vqshlq_n_u8
+#define vqshluq_n_s16               __vqshluq_n_s16
+#define vqshluq_n_s32               __vqshluq_n_s32
+#define vqshluq_n_s64               __vqshluq_n_s64
+#define vqshluq_n_s8                __vqshluq_n_s8
+#define vqrshrn_n_s16               __vqrshrn_n_s16
+#define vqrshrn_n_s32               __vqrshrn_n_s32
+#define vqrshrn_n_s64               __vqrshrn_n_s64
+#define vqrshrn_n_u16               __vqrshrn_n_u16
+#define vqrshrn_n_u32               __vqrshrn_n_u32
+#define vqrshrn_n_u64               __vqrshrn_n_u64
+#define vqrshrun_n_s16              __vqrshrun_n_s16
+#define vqrshrun_n_s32              __vqrshrun_n_s32
+#define vqrshrun_n_s64              __vqrshrun_n_s64
+#define vqshrn_n_s16                __vqshrn_n_s16
+#define vqshrn_n_s32                __vqshrn_n_s32
+#define vqshrn_n_s64                __vqshrn_n_s64
+#define vqshrn_n_u16                __vqshrn_n_u16
+#define vqshrn_n_u32                __vqshrn_n_u32
+#define vqshrn_n_u64                __vqshrn_n_u64
+#define vqshrun_n_s16               __vqshrun_n_s16
+#define vqshrun_n_s32               __vqshrun_n_s32
+#define vqshrun_n_s64               __vqshrun_n_s64
+#define vqsub_s16                   __vqsub_s16
+#define vqsub_s32                   __vqsub_s32
+#define vqsub_s64                   __vqsub_s64
+#define vqsub_s8                    __vqsub_s8
+#define vqsub_u16                   __vqsub_u16
+#define vqsub_u32                   __vqsub_u32
+#define vqsub_u64                   __vqsub_u64
+#define vqsub_u8                    __vqsub_u8
+#define vqsubq_s16                  __vqsubq_s16
+#define vqsubq_s32                  __vqsubq_s32
+#define vqsubq_s64                  __vqsubq_s64
+#define vqsubq_s8                   __vqsubq_s8
+#define vqsubq_u16                  __vqsubq_u16
+#define vqsubq_u32                  __vqsubq_u32
+#define vqsubq_u64                  __vqsubq_u64
+#define vqsubq_u8                   __vqsubq_u8
+#define vrecpe_f32                  __vrecpe_f32
+#define vrecpe_u32                  __vrecpe_u32
+#define vrsqrte_f32                 __vrsqrte_f32
+#define vrsqrte_u32                 __vrsqrte_u32
+#define vrecpeq_f32                 __vrecpeq_f32
+#define vrecpeq_u32                 __vrecpeq_u32
+#define vrsqrteq_f32                __vrsqrteq_f32
+#define vrsqrteq_u32                __vrsqrteq_u32
+#define vrecps_f32                  __vrecps_f32
+#define vrecpsq_f32                 __vrecpsq_f32
+#define vrev16_p8                   __vrev16_p8
+#define vrev16_s8                   __vrev16_s8
+#define vrev16_u8                   __vrev16_u8
+#define vrev32_p16                  __vrev32_p16
+#define vrev32_p8                   __vrev32_p8
+#define vrev32_s16                  __vrev32_s16
+#define vrev32_s8                   __vrev32_s8
+#define vrev32_u16                  __vrev32_u16
+#define vrev32_u8                   __vrev32_u8
+#define vrev64_f32                  __vrev64_f32
+#define vrev64_p16                  __vrev64_p16
+#define vrev64_p8                   __vrev64_p8
+#define vrev64_s16                  __vrev64_s16
+#define vrev64_s32                  __vrev64_s32
+#define vrev64_s8                   __vrev64_s8
+#define vrev64_u16                  __vrev64_u16
+#define vrev64_u32                  __vrev64_u32
+#define vrev64_u8                   __vrev64_u8
+#define vrev16q_p8                  __vrev16q_p8
+#define vrev16q_s8                  __vrev16q_s8
+#define vrev16q_u8                  __vrev16q_u8
+#define vrev32q_p16                 __vrev32q_p16
+#define vrev32q_p8                  __vrev32q_p8
+#define vrev32q_s16                 __vrev32q_s16
+#define vrev32q_s8                  __vrev32q_s8
+#define vrev32q_u16                 __vrev32q_u16
+#define vrev32q_u8                  __vrev32q_u8
+#define vrev64q_f32                 __vrev64q_f32
+#define vrev64q_p16                 __vrev64q_p16
+#define vrev64q_p8                  __vrev64q_p8
+#define vrev64q_s16                 __vrev64q_s16
+#define vrev64q_s32                 __vrev64q_s32
+#define vrev64q_s8                  __vrev64q_s8
+#define vrev64q_u16                 __vrev64q_u16
+#define vrev64q_u32                 __vrev64q_u32
+#define vrev64q_u8                  __vrev64q_u8
+#define vrnd_f32                    __vrnd_f32
+#define vrnda_f32                   __vrnda_f32
+#define vrndm_f32                   __vrndm_f32
+#define vrndn_f32                   __vrndn_f32
+#define vrndp_f32                   __vrndp_f32
+#define vrndx_f32                   __vrndx_f32
+#define vrndq_f32                   __vrndq_f32
+#define vrndaq_f32                  __vrndaq_f32
+#define vrndmq_f32                  __vrndmq_f32
+#define vrndnq_f32                  __vrndnq_f32
+#define vrndpq_f32                  __vrndpq_f32
+#define vrndxq_f32                  __vrndxq_f32
+#define vrsqrts_f32                 __vrsqrts_f32
+#define vrsqrtsq_f32                __vrsqrtsq_f32
+#define vshl_n_s16                  __vshl_n_s16
+#define vshl_n_s32                  __vshl_n_s32
+#define vshl_n_s64                  __vshl_n_s64
+#define vshl_n_s8                   __vshl_n_s8
+#define vshl_n_u16                  __vshl_n_u16
+#define vshl_n_u32                  __vshl_n_u32
+#define vshl_n_u64                  __vshl_n_u64
+#define vshl_n_u8                   __vshl_n_u8
+#define vshlq_n_s16                 __vshlq_n_s16
+#define vshlq_n_s32                 __vshlq_n_s32
+#define vshlq_n_s64                 __vshlq_n_s64
+#define vshlq_n_s8                  __vshlq_n_s8
+#define vshlq_n_u16                 __vshlq_n_u16
+#define vshlq_n_u32                 __vshlq_n_u32
+#define vshlq_n_u64                 __vshlq_n_u64
+#define vshlq_n_u8                  __vshlq_n_u8
+#define vqrshl_s16                  __vqrshl_s16
+#define vqrshl_s32                  __vqrshl_s32
+#define vqrshl_s64                  __vqrshl_s64
+#define vqrshl_s8                   __vqrshl_s8
+#define vqrshl_u16                  __vqrshl_u16
+#define vqrshl_u32                  __vqrshl_u32
+#define vqrshl_u64                  __vqrshl_u64
+#define vqrshl_u8                   __vqrshl_u8
+#define vqshl_s16                   __vqshl_s16
+#define vqshl_s32                   __vqshl_s32
+#define vqshl_s64                   __vqshl_s64
+#define vqshl_s8                    __vqshl_s8
+#define vqshl_u16                   __vqshl_u16
+#define vqshl_u32                   __vqshl_u32
+#define vqshl_u64                   __vqshl_u64
+#define vqshl_u8                    __vqshl_u8
+#define vrshl_s16                   __vrshl_s16
+#define vrshl_s32                   __vrshl_s32
+#define vrshl_s64                   __vrshl_s64
+#define vrshl_s8                    __vrshl_s8
+#define vrshl_u16                   __vrshl_u16
+#define vrshl_u32                   __vrshl_u32
+#define vrshl_u64                   __vrshl_u64
+#define vrshl_u8                    __vrshl_u8
+#define vshl_s16                    __vshl_s16
+#define vshl_s32                    __vshl_s32
+#define vshl_s64                    __vshl_s64
+#define vshl_s8                     __vshl_s8
+#define vshl_u16                    __vshl_u16
+#define vshl_u32                    __vshl_u32
+#define vshl_u64                    __vshl_u64
+#define vshl_u8                     __vshl_u8
+#define vqrshlq_s16                 __vqrshlq_s16
+#define vqrshlq_s32                 __vqrshlq_s32
+#define vqrshlq_s64                 __vqrshlq_s64
+#define vqrshlq_s8                  __vqrshlq_s8
+#define vqrshlq_u16                 __vqrshlq_u16
+#define vqrshlq_u32                 __vqrshlq_u32
+#define vqrshlq_u64                 __vqrshlq_u64
+#define vqrshlq_u8                  __vqrshlq_u8
+#define vqshlq_s16                  __vqshlq_s16
+#define vqshlq_s32                  __vqshlq_s32
+#define vqshlq_s64                  __vqshlq_s64
+#define vqshlq_s8                   __vqshlq_s8
+#define vqshlq_u16                  __vqshlq_u16
+#define vqshlq_u32                  __vqshlq_u32
+#define vqshlq_u64                  __vqshlq_u64
+#define vqshlq_u8                   __vqshlq_u8
+#define vrshlq_s16                  __vrshlq_s16
+#define vrshlq_s32                  __vrshlq_s32
+#define vrshlq_s64                  __vrshlq_s64
+#define vrshlq_s8                   __vrshlq_s8
+#define vrshlq_u16                  __vrshlq_u16
+#define vrshlq_u32                  __vrshlq_u32
+#define vrshlq_u64                  __vrshlq_u64
+#define vrshlq_u8                   __vrshlq_u8
+#define vshlq_s16                   __vshlq_s16
+#define vshlq_s32                   __vshlq_s32
+#define vshlq_s64                   __vshlq_s64
+#define vshlq_s8                    __vshlq_s8
+#define vshlq_u16                   __vshlq_u16
+#define vshlq_u32                   __vshlq_u32
+#define vshlq_u64                   __vshlq_u64
+#define vshlq_u8                    __vshlq_u8
+#define vshll_n_s16                 __vshll_n_s16
+#define vshll_n_s32                 __vshll_n_s32
+#define vshll_n_s8                  __vshll_n_s8
+#define vshll_n_u16                 __vshll_n_u16
+#define vshll_n_u32                 __vshll_n_u32
+#define vshll_n_u8                  __vshll_n_u8
+#define vrshr_n_s16                 __vrshr_n_s16
+#define vrshr_n_s32                 __vrshr_n_s32
+#define vrshr_n_s64                 __vrshr_n_s64
+#define vrshr_n_s8                  __vrshr_n_s8
+#define vrshr_n_u16                 __vrshr_n_u16
+#define vrshr_n_u32                 __vrshr_n_u32
+#define vrshr_n_u64                 __vrshr_n_u64
+#define vrshr_n_u8                  __vrshr_n_u8
+#define vshr_n_s16                  __vshr_n_s16
+#define vshr_n_s32                  __vshr_n_s32
+#define vshr_n_s64                  __vshr_n_s64
+#define vshr_n_s8                   __vshr_n_s8
+#define vshr_n_u16                  __vshr_n_u16
+#define vshr_n_u32                  __vshr_n_u32
+#define vshr_n_u64                  __vshr_n_u64
+#define vshr_n_u8                   __vshr_n_u8
+#define vrshrq_n_s16                __vrshrq_n_s16
+#define vrshrq_n_s32                __vrshrq_n_s32
+#define vrshrq_n_s64                __vrshrq_n_s64
+#define vrshrq_n_s8                 __vrshrq_n_s8
+#define vrshrq_n_u16                __vrshrq_n_u16
+#define vrshrq_n_u32                __vrshrq_n_u32
+#define vrshrq_n_u64                __vrshrq_n_u64
+#define vrshrq_n_u8                 __vrshrq_n_u8
+#define vshrq_n_s16                 __vshrq_n_s16
+#define vshrq_n_s32                 __vshrq_n_s32
+#define vshrq_n_s64                 __vshrq_n_s64
+#define vshrq_n_s8                  __vshrq_n_s8
+#define vshrq_n_u16                 __vshrq_n_u16
+#define vshrq_n_u32                 __vshrq_n_u32
+#define vshrq_n_u64                 __vshrq_n_u64
+#define vshrq_n_u8                  __vshrq_n_u8
+#define vrshrn_n_s16                __vrshrn_n_s16
+#define vrshrn_n_s32                __vrshrn_n_s32
+#define vrshrn_n_s64                __vrshrn_n_s64
+#define vrshrn_n_u16                __vrshrn_n_u16
+#define vrshrn_n_u32                __vrshrn_n_u32
+#define vrshrn_n_u64                __vrshrn_n_u64
+#define vshrn_n_s16                 __vshrn_n_s16
+#define vshrn_n_s32                 __vshrn_n_s32
+#define vshrn_n_s64                 __vshrn_n_s64
+#define vshrn_n_u16                 __vshrn_n_u16
+#define vshrn_n_u32                 __vshrn_n_u32
+#define vshrn_n_u64                 __vshrn_n_u64
+#define vsli_n_p16                  __vsli_n_p16
+#define vsli_n_p8                   __vsli_n_p8
+#define vsli_n_s16                  __vsli_n_s16
+#define vsli_n_s32                  __vsli_n_s32
+#define vsli_n_s64                  __vsli_n_s64
+#define vsli_n_s8                   __vsli_n_s8
+#define vsli_n_u16                  __vsli_n_u16
+#define vsli_n_u32                  __vsli_n_u32
+#define vsli_n_u64                  __vsli_n_u64
+#define vsli_n_u8                   __vsli_n_u8
+#define vsliq_n_p16                 __vsliq_n_p16
+#define vsliq_n_p8                  __vsliq_n_p8
+#define vsliq_n_s16                 __vsliq_n_s16
+#define vsliq_n_s32                 __vsliq_n_s32
+#define vsliq_n_s64                 __vsliq_n_s64
+#define vsliq_n_s8                  __vsliq_n_s8
+#define vsliq_n_u16                 __vsliq_n_u16
+#define vsliq_n_u32                 __vsliq_n_u32
+#define vsliq_n_u64                 __vsliq_n_u64
+#define vsliq_n_u8                  __vsliq_n_u8
+#define vrsra_n_s16                 __vrsra_n_s16
+#define vrsra_n_s32                 __vrsra_n_s32
+#define vrsra_n_s64                 __vrsra_n_s64
+#define vrsra_n_s8                  __vrsra_n_s8
+#define vrsra_n_u16                 __vrsra_n_u16
+#define vrsra_n_u32                 __vrsra_n_u32
+#define vrsra_n_u64                 __vrsra_n_u64
+#define vrsra_n_u8                  __vrsra_n_u8
+#define vsra_n_s16                  __vsra_n_s16
+#define vsra_n_s32                  __vsra_n_s32
+#define vsra_n_s64                  __vsra_n_s64
+#define vsra_n_s8                   __vsra_n_s8
+#define vsra_n_u16                  __vsra_n_u16
+#define vsra_n_u32                  __vsra_n_u32
+#define vsra_n_u64                  __vsra_n_u64
+#define vsra_n_u8                   __vsra_n_u8
+#define vrsraq_n_s16                __vrsraq_n_s16
+#define vrsraq_n_s32                __vrsraq_n_s32
+#define vrsraq_n_s64                __vrsraq_n_s64
+#define vrsraq_n_s8                 __vrsraq_n_s8
+#define vrsraq_n_u16                __vrsraq_n_u16
+#define vrsraq_n_u32                __vrsraq_n_u32
+#define vrsraq_n_u64                __vrsraq_n_u64
+#define vrsraq_n_u8                 __vrsraq_n_u8
+#define vsraq_n_s16                 __vsraq_n_s16
+#define vsraq_n_s32                 __vsraq_n_s32
+#define vsraq_n_s64                 __vsraq_n_s64
+#define vsraq_n_s8                  __vsraq_n_s8
+#define vsraq_n_u16                 __vsraq_n_u16
+#define vsraq_n_u32                 __vsraq_n_u32
+#define vsraq_n_u64                 __vsraq_n_u64
+#define vsraq_n_u8                  __vsraq_n_u8
+#define vsri_n_p16                  __vsri_n_p16
+#define vsri_n_p8                   __vsri_n_p8
+#define vsri_n_s16                  __vsri_n_s16
+#define vsri_n_s32                  __vsri_n_s32
+#define vsri_n_s64                  __vsri_n_s64
+#define vsri_n_s8                   __vsri_n_s8
+#define vsri_n_u16                  __vsri_n_u16
+#define vsri_n_u32                  __vsri_n_u32
+#define vsri_n_u64                  __vsri_n_u64
+#define vsri_n_u8                   __vsri_n_u8
+#define vsriq_n_p16                 __vsriq_n_p16
+#define vsriq_n_p8                  __vsriq_n_p8
+#define vsriq_n_s16                 __vsriq_n_s16
+#define vsriq_n_s32                 __vsriq_n_s32
+#define vsriq_n_s64                 __vsriq_n_s64
+#define vsriq_n_s8                  __vsriq_n_s8
+#define vsriq_n_u16                 __vsriq_n_u16
+#define vsriq_n_u32                 __vsriq_n_u32
+#define vsriq_n_u64                 __vsriq_n_u64
+#define vsriq_n_u8                  __vsriq_n_u8
+#define vst1_f32                    __vst1_f32
+#define vst1_p16                    __vst1_p16
+#define vst1_p8                     __vst1_p8
+#define vst1_s16                    __vst1_s16
+#define vst1_s32                    __vst1_s32
+#define vst1_s64                    __vst1_s64
+#define vst1_s8                     __vst1_s8
+#define vst1_u16                    __vst1_u16
+#define vst1_u32                    __vst1_u32
+#define vst1_u64                    __vst1_u64
+#define vst1_u8                     __vst1_u8
+#define vst1_f32_ex                 __vst1_f32_ex
+#define vst1_p16_ex                 __vst1_p16_ex
+#define vst1_p8_ex                  __vst1_p8_ex
+#define vst1_s16_ex                 __vst1_s16_ex
+#define vst1_s32_ex                 __vst1_s32_ex
+#define vst1_s64_ex                 __vst1_s64_ex
+#define vst1_s8_ex                  __vst1_s8_ex
+#define vst1_u16_ex                 __vst1_u16_ex
+#define vst1_u32_ex                 __vst1_u32_ex
+#define vst1_u64_ex                 __vst1_u64_ex
+#define vst1_u8_ex                  __vst1_u8_ex
+#define vst1q_f32                   __vst1q_f32
+#define vst1q_p16                   __vst1q_p16
+#define vst1q_p8                    __vst1q_p8
+#define vst1q_s16                   __vst1q_s16
+#define vst1q_s32                   __vst1q_s32
+#define vst1q_s64                   __vst1q_s64
+#define vst1q_s8                    __vst1q_s8
+#define vst1q_u16                   __vst1q_u16
+#define vst1q_u32                   __vst1q_u32
+#define vst1q_u64                   __vst1q_u64
+#define vst1q_u8                    __vst1q_u8
+#define vst1q_f32_ex                __vst1q_f32_ex
+#define vst1q_p16_ex                __vst1q_p16_ex
+#define vst1q_p8_ex                 __vst1q_p8_ex
+#define vst1q_s16_ex                __vst1q_s16_ex
+#define vst1q_s32_ex                __vst1q_s32_ex
+#define vst1q_s64_ex                __vst1q_s64_ex
+#define vst1q_s8_ex                 __vst1q_s8_ex
+#define vst1q_u16_ex                __vst1q_u16_ex
+#define vst1q_u32_ex                __vst1q_u32_ex
+#define vst1q_u64_ex                __vst1q_u64_ex
+#define vst1q_u8_ex                 __vst1q_u8_ex
+#define vst1_lane_f32               __vst1_lane_f32
+#define vst1_lane_p16               __vst1_lane_p16
+#define vst1_lane_p8                __vst1_lane_p8
+#define vst1_lane_s16               __vst1_lane_s16
+#define vst1_lane_s32               __vst1_lane_s32
+#define vst1_lane_s8                __vst1_lane_s8
+#define vst1_lane_u16               __vst1_lane_u16
+#define vst1_lane_u32               __vst1_lane_u32
+#define vst1_lane_u8                __vst1_lane_u8
+#define vst1q_lane_f32              __vst1q_lane_f32
+#define vst1q_lane_p16              __vst1q_lane_p16
+#define vst1q_lane_p8               __vst1q_lane_p8
+#define vst1q_lane_s16              __vst1q_lane_s16
+#define vst1q_lane_s32              __vst1q_lane_s32
+#define vst1q_lane_s8               __vst1q_lane_s8
+#define vst1q_lane_u16              __vst1q_lane_u16
+#define vst1q_lane_u32              __vst1q_lane_u32
+#define vst1q_lane_u8               __vst1q_lane_u8
+#define vst1_lane_f32_ex            __vst1_lane_f32_ex
+#define vst1_lane_p16_ex            __vst1_lane_p16_ex
+#define vst1_lane_s16_ex            __vst1_lane_s16_ex
+#define vst1_lane_s32_ex            __vst1_lane_s32_ex
+#define vst1_lane_u16_ex            __vst1_lane_u16_ex
+#define vst1_lane_u32_ex            __vst1_lane_u32_ex
+#define vst1q_lane_f32_ex           __vst1q_lane_f32_ex
+#define vst1q_lane_p16_ex           __vst1q_lane_p16_ex
+#define vst1q_lane_s16_ex           __vst1q_lane_s16_ex
+#define vst1q_lane_s32_ex           __vst1q_lane_s32_ex
+#define vst1q_lane_u16_ex           __vst1q_lane_u16_ex
+#define vst1q_lane_u32_ex           __vst1q_lane_u32_ex
+#define vst2_f32                    __vst2_f32
+#define vst2_p16                    __vst2_p16
+#define vst2_p8                     __vst2_p8
+#define vst2_s16                    __vst2_s16
+#define vst2_s32                    __vst2_s32
+#define vst2_s8                     __vst2_s8
+#define vst2_u16                    __vst2_u16
+#define vst2_u32                    __vst2_u32
+#define vst2_u8                     __vst2_u8
+#define vst2_s64                    __vst2_s64
+#define vst2_u64                    __vst2_u64
+#define vst2_s64_ex                 __vst2_s64_ex
+#define vst2_u64_ex                 __vst2_u64_ex
+#define vst2_f32_ex                 __vst2_f32_ex
+#define vst2_p16_ex                 __vst2_p16_ex
+#define vst2_p8_ex                  __vst2_p8_ex
+#define vst2_s16_ex                 __vst2_s16_ex
+#define vst2_s32_ex                 __vst2_s32_ex
+#define vst2_s8_ex                  __vst2_s8_ex
+#define vst2_u16_ex                 __vst2_u16_ex
+#define vst2_u32_ex                 __vst2_u32_ex
+#define vst2_u8_ex                  __vst2_u8_ex
+#define vst2q_f32                   __vst2q_f32
+#define vst2q_p16                   __vst2q_p16
+#define vst2q_p8                    __vst2q_p8
+#define vst2q_s16                   __vst2q_s16
+#define vst2q_s32                   __vst2q_s32
+#define vst2q_s8                    __vst2q_s8
+#define vst2q_u16                   __vst2q_u16
+#define vst2q_u32                   __vst2q_u32
+#define vst2q_u8                    __vst2q_u8
+#define vst2q_f32_ex                __vst2q_f32_ex
+#define vst2q_p16_ex                __vst2q_p16_ex
+#define vst2q_p8_ex                 __vst2q_p8_ex
+#define vst2q_s16_ex                __vst2q_s16_ex
+#define vst2q_s32_ex                __vst2q_s32_ex
+#define vst2q_s8_ex                 __vst2q_s8_ex
+#define vst2q_u16_ex                __vst2q_u16_ex
+#define vst2q_u32_ex                __vst2q_u32_ex
+#define vst2q_u8_ex                 __vst2q_u8_ex
+#define vst2_lane_f32               __vst2_lane_f32
+#define vst2_lane_p16               __vst2_lane_p16
+#define vst2_lane_p8                __vst2_lane_p8
+#define vst2_lane_s16               __vst2_lane_s16
+#define vst2_lane_s32               __vst2_lane_s32
+#define vst2_lane_s8                __vst2_lane_s8
+#define vst2_lane_u16               __vst2_lane_u16
+#define vst2_lane_u32               __vst2_lane_u32
+#define vst2_lane_u8                __vst2_lane_u8
+#define vst2q_lane_f32              __vst2q_lane_f32
+#define vst2q_lane_p16              __vst2q_lane_p16
+#define vst2q_lane_s16              __vst2q_lane_s16
+#define vst2q_lane_s32              __vst2q_lane_s32
+#define vst2q_lane_u16              __vst2q_lane_u16
+#define vst2q_lane_u32              __vst2q_lane_u32
+#define vst2_lane_f32_ex            __vst2_lane_f32_ex
+#define vst2_lane_p16_ex            __vst2_lane_p16_ex
+#define vst2_lane_p8_ex             __vst2_lane_p8_ex
+#define vst2_lane_s16_ex            __vst2_lane_s16_ex
+#define vst2_lane_s32_ex            __vst2_lane_s32_ex
+#define vst2_lane_s8_ex             __vst2_lane_s8_ex
+#define vst2_lane_u16_ex            __vst2_lane_u16_ex
+#define vst2_lane_u32_ex            __vst2_lane_u32_ex
+#define vst2_lane_u8_ex             __vst2_lane_u8_ex
+#define vst2q_lane_f32_ex           __vst2q_lane_f32_ex
+#define vst2q_lane_p16_ex           __vst2q_lane_p16_ex
+#define vst2q_lane_s16_ex           __vst2q_lane_s16_ex
+#define vst2q_lane_s32_ex           __vst2q_lane_s32_ex
+#define vst2q_lane_u16_ex           __vst2q_lane_u16_ex
+#define vst2q_lane_u32_ex           __vst2q_lane_u32_ex
+#define vst3_f32                    __vst3_f32
+#define vst3_p16                    __vst3_p16
+#define vst3_p8                     __vst3_p8
+#define vst3_s16                    __vst3_s16
+#define vst3_s32                    __vst3_s32
+#define vst3_s8                     __vst3_s8
+#define vst3_u16                    __vst3_u16
+#define vst3_u32                    __vst3_u32
+#define vst3_u8                     __vst3_u8
+#define vst3_s64                    __vst3_s64
+#define vst3_u64                    __vst3_u64
+#define vst3_s64_ex                 __vst3_s64_ex
+#define vst3_u64_ex                 __vst3_u64_ex
+#define vst3_f32_ex                 __vst3_f32_ex
+#define vst3_p16_ex                 __vst3_p16_ex
+#define vst3_p8_ex                  __vst3_p8_ex
+#define vst3_s16_ex                 __vst3_s16_ex
+#define vst3_s32_ex                 __vst3_s32_ex
+#define vst3_s8_ex                  __vst3_s8_ex
+#define vst3_u16_ex                 __vst3_u16_ex
+#define vst3_u32_ex                 __vst3_u32_ex
+#define vst3_u8_ex                  __vst3_u8_ex
+#define vst3q_f32                   __vst3q_f32
+#define vst3q_p16                   __vst3q_p16
+#define vst3q_p8                    __vst3q_p8
+#define vst3q_s16                   __vst3q_s16
+#define vst3q_s32                   __vst3q_s32
+#define vst3q_s8                    __vst3q_s8
+#define vst3q_u16                   __vst3q_u16
+#define vst3q_u32                   __vst3q_u32
+#define vst3q_u8                    __vst3q_u8
+#define vst3q_f32_ex                __vst3q_f32_ex
+#define vst3q_p16_ex                __vst3q_p16_ex
+#define vst3q_p8_ex                 __vst3q_p8_ex
+#define vst3q_s16_ex                __vst3q_s16_ex
+#define vst3q_s32_ex                __vst3q_s32_ex
+#define vst3q_s8_ex                 __vst3q_s8_ex
+#define vst3q_u16_ex                __vst3q_u16_ex
+#define vst3q_u32_ex                __vst3q_u32_ex
+#define vst3q_u8_ex                 __vst3q_u8_ex
+#define vst3_lane_f32               __vst3_lane_f32
+#define vst3_lane_p16               __vst3_lane_p16
+#define vst3_lane_p8                __vst3_lane_p8
+#define vst3_lane_s16               __vst3_lane_s16
+#define vst3_lane_s32               __vst3_lane_s32
+#define vst3_lane_s8                __vst3_lane_s8
+#define vst3_lane_u16               __vst3_lane_u16
+#define vst3_lane_u32               __vst3_lane_u32
+#define vst3_lane_u8                __vst3_lane_u8
+#define vst3q_lane_f32              __vst3q_lane_f32
+#define vst3q_lane_p16              __vst3q_lane_p16
+#define vst3q_lane_s16              __vst3q_lane_s16
+#define vst3q_lane_s32              __vst3q_lane_s32
+#define vst3q_lane_u16              __vst3q_lane_u16
+#define vst3q_lane_u32              __vst3q_lane_u32
+#define vst4_f32                    __vst4_f32
+#define vst4_p16                    __vst4_p16
+#define vst4_p8                     __vst4_p8
+#define vst4_s16                    __vst4_s16
+#define vst4_s32                    __vst4_s32
+#define vst4_s8                     __vst4_s8
+#define vst4_u16                    __vst4_u16
+#define vst4_u32                    __vst4_u32
+#define vst4_u8                     __vst4_u8
+#define vst4_s64                    __vst4_s64
+#define vst4_u64                    __vst4_u64
+#define vst4_s64_ex                 __vst4_s64_ex
+#define vst4_u64_ex                 __vst4_u64_ex
+#define vst4_f32_ex                 __vst4_f32_ex
+#define vst4_p16_ex                 __vst4_p16_ex
+#define vst4_p8_ex                  __vst4_p8_ex
+#define vst4_s16_ex                 __vst4_s16_ex
+#define vst4_s32_ex                 __vst4_s32_ex
+#define vst4_s8_ex                  __vst4_s8_ex
+#define vst4_u16_ex                 __vst4_u16_ex
+#define vst4_u32_ex                 __vst4_u32_ex
+#define vst4_u8_ex                  __vst4_u8_ex
+#define vst4q_f32                   __vst4q_f32
+#define vst4q_p16                   __vst4q_p16
+#define vst4q_p8                    __vst4q_p8
+#define vst4q_s16                   __vst4q_s16
+#define vst4q_s32                   __vst4q_s32
+#define vst4q_s8                    __vst4q_s8
+#define vst4q_u16                   __vst4q_u16
+#define vst4q_u32                   __vst4q_u32
+#define vst4q_u8                    __vst4q_u8
+#define vst4q_f32_ex                __vst4q_f32_ex
+#define vst4q_p16_ex                __vst4q_p16_ex
+#define vst4q_p8_ex                 __vst4q_p8_ex
+#define vst4q_s16_ex                __vst4q_s16_ex
+#define vst4q_s32_ex                __vst4q_s32_ex
+#define vst4q_s8_ex                 __vst4q_s8_ex
+#define vst4q_u16_ex                __vst4q_u16_ex
+#define vst4q_u32_ex                __vst4q_u32_ex
+#define vst4q_u8_ex                 __vst4q_u8_ex
+#define vst4_lane_f32               __vst4_lane_f32
+#define vst4_lane_p16               __vst4_lane_p16
+#define vst4_lane_p8                __vst4_lane_p8
+#define vst4_lane_s16               __vst4_lane_s16
+#define vst4_lane_s32               __vst4_lane_s32
+#define vst4_lane_s8                __vst4_lane_s8
+#define vst4_lane_u16               __vst4_lane_u16
+#define vst4_lane_u32               __vst4_lane_u32
+#define vst4_lane_u8                __vst4_lane_u8
+#define vst4q_lane_f32              __vst4q_lane_f32
+#define vst4q_lane_p16              __vst4q_lane_p16
+#define vst4q_lane_s16              __vst4q_lane_s16
+#define vst4q_lane_s32              __vst4q_lane_s32
+#define vst4q_lane_u16              __vst4q_lane_u16
+#define vst4q_lane_u32              __vst4q_lane_u32
+#define vst4_lane_f32_ex            __vst4_lane_f32_ex
+#define vst4_lane_p16_ex            __vst4_lane_p16_ex
+#define vst4_lane_p8_ex             __vst4_lane_p8_ex
+#define vst4_lane_s16_ex            __vst4_lane_s16_ex
+#define vst4_lane_s32_ex            __vst4_lane_s32_ex
+#define vst4_lane_s8_ex             __vst4_lane_s8_ex
+#define vst4_lane_u16_ex            __vst4_lane_u16_ex
+#define vst4_lane_u32_ex            __vst4_lane_u32_ex
+#define vst4_lane_u8_ex             __vst4_lane_u8_ex
+#define vst4q_lane_f32_ex           __vst4q_lane_f32_ex
+#define vst4q_lane_p16_ex           __vst4q_lane_p16_ex
+#define vst4q_lane_s16_ex           __vst4q_lane_s16_ex
+#define vst4q_lane_s32_ex           __vst4q_lane_s32_ex
+#define vst4q_lane_u16_ex           __vst4q_lane_u16_ex
+#define vst4q_lane_u32_ex           __vst4q_lane_u32_ex
+#define vsub_f32                    __vsub_f32
+#define vsub_s16                    __vsub_s16
+#define vsub_s32                    __vsub_s32
+#define vsub_s64                    __vsub_s64
+#define vsub_s8                     __vsub_s8
+#define vsub_u16                    __vsub_u16
+#define vsub_u32                    __vsub_u32
+#define vsub_u64                    __vsub_u64
+#define vsub_u8                     __vsub_u8
+#define vsubq_f32                   __vsubq_f32
+#define vsubq_s16                   __vsubq_s16
+#define vsubq_s32                   __vsubq_s32
+#define vsubq_s64                   __vsubq_s64
+#define vsubq_s8                    __vsubq_s8
+#define vsubq_u16                   __vsubq_u16
+#define vsubq_u32                   __vsubq_u32
+#define vsubq_u64                   __vsubq_u64
+#define vsubq_u8                    __vsubq_u8
+#define vrsubhn_s16                 __vrsubhn_s16
+#define vrsubhn_s32                 __vrsubhn_s32
+#define vrsubhn_s64                 __vrsubhn_s64
+#define vrsubhn_u16                 __vrsubhn_u16
+#define vrsubhn_u32                 __vrsubhn_u32
+#define vrsubhn_u64                 __vrsubhn_u64
+#define vsubhn_s16                  __vsubhn_s16
+#define vsubhn_s32                  __vsubhn_s32
+#define vsubhn_s64                  __vsubhn_s64
+#define vsubhn_u16                  __vsubhn_u16
+#define vsubhn_u32                  __vsubhn_u32
+#define vsubhn_u64                  __vsubhn_u64
+#define vsubl_s16                   __vsubl_s16
+#define vsubl_s32                   __vsubl_s32
+#define vsubl_s8                    __vsubl_s8
+#define vsubl_u16                   __vsubl_u16
+#define vsubl_u32                   __vsubl_u32
+#define vsubl_u8                    __vsubl_u8
+#define vsubw_s16                   __vsubw_s16
+#define vsubw_s32                   __vsubw_s32
+#define vsubw_s8                    __vsubw_s8
+#define vsubw_u16                   __vsubw_u16
+#define vsubw_u32                   __vsubw_u32
+#define vsubw_u8                    __vsubw_u8
+#define vtbl2_p8                    __vtbl2_p8
+#define vtbl2_s8                    __vtbl2_s8
+#define vtbl2_u8                    __vtbl2_u8
+#define vtbx2_p8                    __vtbx2_p8
+#define vtbx2_s8                    __vtbx2_s8
+#define vtbx2_u8                    __vtbx2_u8
+#define vtbl3_p8                    __vtbl3_p8
+#define vtbl3_s8                    __vtbl3_s8
+#define vtbl3_u8                    __vtbl3_u8
+#define vtbx3_p8                    __vtbx3_p8
+#define vtbx3_s8                    __vtbx3_s8
+#define vtbx3_u8                    __vtbx3_u8
+#define vtbl4_p8                    __vtbl4_p8
+#define vtbl4_s8                    __vtbl4_s8
+#define vtbl4_u8                    __vtbl4_u8
+#define vtbx4_p8                    __vtbx4_p8
+#define vtbx4_s8                    __vtbx4_s8
+#define vtbx4_u8                    __vtbx4_u8
+#define vtbl1_p8                    __vtbl1_p8
+#define vtbl1_s8                    __vtbl1_s8
+#define vtbl1_u8                    __vtbl1_u8
+#define vtbx1_p8                    __vtbx1_p8
+#define vtbx1_s8                    __vtbx1_s8
+#define vtbx1_u8                    __vtbx1_u8
+#define vtrn_f32                    __vtrn_f32
+#define vtrn_p16                    __vtrn_p16
+#define vtrn_p8                     __vtrn_p8
+#define vtrn_s16                    __vtrn_s16
+#define vtrn_s32                    __vtrn_s32
+#define vtrn_s8                     __vtrn_s8
+#define vtrn_u16                    __vtrn_u16
+#define vtrn_u32                    __vtrn_u32
+#define vtrn_u8                     __vtrn_u8
+#define vtrnq_f32                   __vtrnq_f32
+#define vtrnq_p16                   __vtrnq_p16
+#define vtrnq_p8                    __vtrnq_p8
+#define vtrnq_s16                   __vtrnq_s16
+#define vtrnq_s32                   __vtrnq_s32
+#define vtrnq_s8                    __vtrnq_s8
+#define vtrnq_u16                   __vtrnq_u16
+#define vtrnq_u32                   __vtrnq_u32
+#define vtrnq_u8                    __vtrnq_u8
+#define vtrnq_s64                   __vtrnq_s64
+#define vtrnq_u64                   __vtrnq_u64
+#define vtst_p8                     __vtst_p8
+#define vtst_s16                    __vtst_s16
+#define vtst_s32                    __vtst_s32
+#define vtst_s8                     __vtst_s8
+#define vtst_u16                    __vtst_u16
+#define vtst_u32                    __vtst_u32
+#define vtst_u8                     __vtst_u8
+#define vtstq_p8                    __vtstq_p8
+#define vtstq_s16                   __vtstq_s16
+#define vtstq_s32                   __vtstq_s32
+#define vtstq_s8                    __vtstq_s8
+#define vtstq_u16                   __vtstq_u16
+#define vtstq_u32                   __vtstq_u32
+#define vtstq_u8                    __vtstq_u8
+#define vuzp_p16                    __vuzp_p16
+#define vuzp_p8                     __vuzp_p8
+#define vuzp_s16                    __vuzp_s16
+#define vuzp_s8                     __vuzp_s8
+#define vuzp_u16                    __vuzp_u16
+#define vuzp_u8                     __vuzp_u8
+#define vuzp_f32                    __vuzp_f32
+#define vuzp_s32                    __vuzp_s32
+#define vuzp_u32                    __vuzp_u32
+#define vuzpq_f32                   __vuzpq_f32
+#define vuzpq_p16                   __vuzpq_p16
+#define vuzpq_p8                    __vuzpq_p8
+#define vuzpq_s16                   __vuzpq_s16
+#define vuzpq_s32                   __vuzpq_s32
+#define vuzpq_s8                    __vuzpq_s8
+#define vuzpq_u16                   __vuzpq_u16
+#define vuzpq_u32                   __vuzpq_u32
+#define vuzpq_u8                    __vuzpq_u8
+#define vzip_p16                    __vzip_p16
+#define vzip_p8                     __vzip_p8
+#define vzip_s16                    __vzip_s16
+#define vzip_s8                     __vzip_s8
+#define vzip_u16                    __vzip_u16
+#define vzip_u8                     __vzip_u8
+#define vzip_f32                    __vzip_f32
+#define vzip_s32                    __vzip_s32
+#define vzip_u32                    __vzip_u32
+#define vzipq_f32                   __vzipq_f32
+#define vzipq_p16                   __vzipq_p16
+#define vzipq_p8                    __vzipq_p8
+#define vzipq_s16                   __vzipq_s16
+#define vzipq_s32                   __vzipq_s32
+#define vzipq_s8                    __vzipq_s8
+#define vzipq_u16                   __vzipq_u16
+#define vzipq_u32                   __vzipq_u32
+#define vzipq_u8                    __vzipq_u8
+
+#define vreinterpret_f32_s8         __vreinterpret_f32_s8
+#define vreinterpret_f32_s16        __vreinterpret_f32_s16
+#define vreinterpret_f32_s32        __vreinterpret_f32_s32
+#define vreinterpret_f32_s64        __vreinterpret_f32_s64
+#define vreinterpret_f32_p8         __vreinterpret_f32_p8
+#define vreinterpret_f32_p16        __vreinterpret_f32_p16
+#define vreinterpret_f32_u8         __vreinterpret_f32_u8
+#define vreinterpret_f32_u16        __vreinterpret_f32_u16
+#define vreinterpret_f32_u32        __vreinterpret_f32_u32
+#define vreinterpret_f32_u64        __vreinterpret_f32_u64
+#define vreinterpret_s8_f32         __vreinterpret_s8_f32
+#define vreinterpret_s8_s16         __vreinterpret_s8_s16
+#define vreinterpret_s8_s32         __vreinterpret_s8_s32
+#define vreinterpret_s8_s64         __vreinterpret_s8_s64
+#define vreinterpret_s8_p8          __vreinterpret_s8_p8
+#define vreinterpret_s8_p16         __vreinterpret_s8_p16
+#define vreinterpret_s8_u8          __vreinterpret_s8_u8
+#define vreinterpret_s8_u16         __vreinterpret_s8_u16
+#define vreinterpret_s8_u32         __vreinterpret_s8_u32
+#define vreinterpret_s8_u64         __vreinterpret_s8_u64
+#define vreinterpret_s16_f32        __vreinterpret_s16_f32
+#define vreinterpret_s16_s8         __vreinterpret_s16_s8
+#define vreinterpret_s16_s32        __vreinterpret_s16_s32
+#define vreinterpret_s16_s64        __vreinterpret_s16_s64
+#define vreinterpret_s16_p8         __vreinterpret_s16_p8
+#define vreinterpret_s16_p16        __vreinterpret_s16_p16
+#define vreinterpret_s16_u8         __vreinterpret_s16_u8
+#define vreinterpret_s16_u16        __vreinterpret_s16_u16
+#define vreinterpret_s16_u32        __vreinterpret_s16_u32
+#define vreinterpret_s16_u64        __vreinterpret_s16_u64
+#define vreinterpret_s32_f32        __vreinterpret_s32_f32
+#define vreinterpret_s32_s8         __vreinterpret_s32_s8
+#define vreinterpret_s32_s16        __vreinterpret_s32_s16
+#define vreinterpret_s32_s64        __vreinterpret_s32_s64
+#define vreinterpret_s32_p8         __vreinterpret_s32_p8
+#define vreinterpret_s32_p16        __vreinterpret_s32_p16
+#define vreinterpret_s32_u8         __vreinterpret_s32_u8
+#define vreinterpret_s32_u16        __vreinterpret_s32_u16
+#define vreinterpret_s32_u32        __vreinterpret_s32_u32
+#define vreinterpret_s32_u64        __vreinterpret_s32_u64
+#define vreinterpret_s64_f32        __vreinterpret_s64_f32
+#define vreinterpret_s64_s8         __vreinterpret_s64_s8
+#define vreinterpret_s64_s16        __vreinterpret_s64_s16
+#define vreinterpret_s64_s32        __vreinterpret_s64_s32
+#define vreinterpret_s64_p8         __vreinterpret_s64_p8
+#define vreinterpret_s64_p16        __vreinterpret_s64_p16
+#define vreinterpret_s64_u8         __vreinterpret_s64_u8
+#define vreinterpret_s64_u16        __vreinterpret_s64_u16
+#define vreinterpret_s64_u32        __vreinterpret_s64_u32
+#define vreinterpret_s64_u64        __vreinterpret_s64_u64
+#define vreinterpret_p8_f32         __vreinterpret_p8_f32
+#define vreinterpret_p8_s8          __vreinterpret_p8_s8
+#define vreinterpret_p8_s16         __vreinterpret_p8_s16
+#define vreinterpret_p8_s32         __vreinterpret_p8_s32
+#define vreinterpret_p8_s64         __vreinterpret_p8_s64
+#define vreinterpret_p8_p16         __vreinterpret_p8_p16
+#define vreinterpret_p8_u8          __vreinterpret_p8_u8
+#define vreinterpret_p8_u16         __vreinterpret_p8_u16
+#define vreinterpret_p8_u32         __vreinterpret_p8_u32
+#define vreinterpret_p8_u64         __vreinterpret_p8_u64
+#define vreinterpret_p16_f32        __vreinterpret_p16_f32
+#define vreinterpret_p16_s8         __vreinterpret_p16_s8
+#define vreinterpret_p16_s16        __vreinterpret_p16_s16
+#define vreinterpret_p16_s32        __vreinterpret_p16_s32
+#define vreinterpret_p16_s64        __vreinterpret_p16_s64
+#define vreinterpret_p16_p8         __vreinterpret_p16_p8
+#define vreinterpret_p16_u8         __vreinterpret_p16_u8
+#define vreinterpret_p16_u16        __vreinterpret_p16_u16
+#define vreinterpret_p16_u32        __vreinterpret_p16_u32
+#define vreinterpret_p16_u64        __vreinterpret_p16_u64
+#define vreinterpret_u8_f32         __vreinterpret_u8_f32
+#define vreinterpret_u8_s8          __vreinterpret_u8_s8
+#define vreinterpret_u8_s16         __vreinterpret_u8_s16
+#define vreinterpret_u8_s32         __vreinterpret_u8_s32
+#define vreinterpret_u8_s64         __vreinterpret_u8_s64
+#define vreinterpret_u8_p8          __vreinterpret_u8_p8
+#define vreinterpret_u8_p16         __vreinterpret_u8_p16
+#define vreinterpret_u8_u16         __vreinterpret_u8_u16
+#define vreinterpret_u8_u32         __vreinterpret_u8_u32
+#define vreinterpret_u8_u64         __vreinterpret_u8_u64
+#define vreinterpret_u16_f32        __vreinterpret_u16_f32
+#define vreinterpret_u16_s8         __vreinterpret_u16_s8
+#define vreinterpret_u16_s16        __vreinterpret_u16_s16
+#define vreinterpret_u16_s32        __vreinterpret_u16_s32
+#define vreinterpret_u16_s64        __vreinterpret_u16_s64
+#define vreinterpret_u16_p8         __vreinterpret_u16_p8
+#define vreinterpret_u16_p16        __vreinterpret_u16_p16
+#define vreinterpret_u16_u8         __vreinterpret_u16_u8
+#define vreinterpret_u16_u32        __vreinterpret_u16_u32
+#define vreinterpret_u16_u64        __vreinterpret_u16_u64
+#define vreinterpret_u32_f32        __vreinterpret_u32_f32
+#define vreinterpret_u32_s8         __vreinterpret_u32_s8
+#define vreinterpret_u32_s16        __vreinterpret_u32_s16
+#define vreinterpret_u32_s32        __vreinterpret_u32_s32
+#define vreinterpret_u32_s64        __vreinterpret_u32_s64
+#define vreinterpret_u32_p8         __vreinterpret_u32_p8
+#define vreinterpret_u32_p16        __vreinterpret_u32_p16
+#define vreinterpret_u32_u8         __vreinterpret_u32_u8
+#define vreinterpret_u32_u16        __vreinterpret_u32_u16
+#define vreinterpret_u32_u64        __vreinterpret_u32_u64
+#define vreinterpret_u64_f32        __vreinterpret_u64_f32
+#define vreinterpret_u64_s8         __vreinterpret_u64_s8
+#define vreinterpret_u64_s16        __vreinterpret_u64_s16
+#define vreinterpret_u64_s32        __vreinterpret_u64_s32
+#define vreinterpret_u64_s64        __vreinterpret_u64_s64
+#define vreinterpret_u64_p8         __vreinterpret_u64_p8
+#define vreinterpret_u64_p16        __vreinterpret_u64_p16
+#define vreinterpret_u64_u8         __vreinterpret_u64_u8
+#define vreinterpret_u64_u16        __vreinterpret_u64_u16
+#define vreinterpret_u64_u32        __vreinterpret_u64_u32
+#define vreinterpretq_f32_s8        __vreinterpretq_f32_s8
+#define vreinterpretq_f32_s16       __vreinterpretq_f32_s16
+#define vreinterpretq_f32_s32       __vreinterpretq_f32_s32
+#define vreinterpretq_f32_s64       __vreinterpretq_f32_s64
+#define vreinterpretq_f32_p8        __vreinterpretq_f32_p8
+#define vreinterpretq_f32_p16       __vreinterpretq_f32_p16
+#define vreinterpretq_f32_u8        __vreinterpretq_f32_u8
+#define vreinterpretq_f32_u16       __vreinterpretq_f32_u16
+#define vreinterpretq_f32_u32       __vreinterpretq_f32_u32
+#define vreinterpretq_f32_u64       __vreinterpretq_f32_u64
+#define vreinterpretq_s8_f32        __vreinterpretq_s8_f32
+#define vreinterpretq_s8_s16        __vreinterpretq_s8_s16
+#define vreinterpretq_s8_s32        __vreinterpretq_s8_s32
+#define vreinterpretq_s8_s64        __vreinterpretq_s8_s64
+#define vreinterpretq_s8_p8         __vreinterpretq_s8_p8
+#define vreinterpretq_s8_p16        __vreinterpretq_s8_p16
+#define vreinterpretq_s8_u8         __vreinterpretq_s8_u8
+#define vreinterpretq_s8_u16        __vreinterpretq_s8_u16
+#define vreinterpretq_s8_u32        __vreinterpretq_s8_u32
+#define vreinterpretq_s8_u64        __vreinterpretq_s8_u64
+#define vreinterpretq_s16_f32       __vreinterpretq_s16_f32
+#define vreinterpretq_s16_s8        __vreinterpretq_s16_s8
+#define vreinterpretq_s16_s32       __vreinterpretq_s16_s32
+#define vreinterpretq_s16_s64       __vreinterpretq_s16_s64
+#define vreinterpretq_s16_p8        __vreinterpretq_s16_p8
+#define vreinterpretq_s16_p16       __vreinterpretq_s16_p16
+#define vreinterpretq_s16_u8        __vreinterpretq_s16_u8
+#define vreinterpretq_s16_u16       __vreinterpretq_s16_u16
+#define vreinterpretq_s16_u32       __vreinterpretq_s16_u32
+#define vreinterpretq_s16_u64       __vreinterpretq_s16_u64
+#define vreinterpretq_s32_f32       __vreinterpretq_s32_f32
+#define vreinterpretq_s32_s8        __vreinterpretq_s32_s8
+#define vreinterpretq_s32_s16       __vreinterpretq_s32_s16
+#define vreinterpretq_s32_s64       __vreinterpretq_s32_s64
+#define vreinterpretq_s32_p8        __vreinterpretq_s32_p8
+#define vreinterpretq_s32_p16       __vreinterpretq_s32_p16
+#define vreinterpretq_s32_u8        __vreinterpretq_s32_u8
+#define vreinterpretq_s32_u16       __vreinterpretq_s32_u16
+#define vreinterpretq_s32_u32       __vreinterpretq_s32_u32
+#define vreinterpretq_s32_u64       __vreinterpretq_s32_u64
+#define vreinterpretq_s64_f32       __vreinterpretq_s64_f32
+#define vreinterpretq_s64_s8        __vreinterpretq_s64_s8
+#define vreinterpretq_s64_s16       __vreinterpretq_s64_s16
+#define vreinterpretq_s64_s32       __vreinterpretq_s64_s32
+#define vreinterpretq_s64_p8        __vreinterpretq_s64_p8
+#define vreinterpretq_s64_p16       __vreinterpretq_s64_p16
+#define vreinterpretq_s64_u8        __vreinterpretq_s64_u8
+#define vreinterpretq_s64_u16       __vreinterpretq_s64_u16
+#define vreinterpretq_s64_u32       __vreinterpretq_s64_u32
+#define vreinterpretq_s64_u64       __vreinterpretq_s64_u64
+#define vreinterpretq_p8_f32        __vreinterpretq_p8_f32
+#define vreinterpretq_p8_s8         __vreinterpretq_p8_s8
+#define vreinterpretq_p8_s16        __vreinterpretq_p8_s16
+#define vreinterpretq_p8_s32        __vreinterpretq_p8_s32
+#define vreinterpretq_p8_s64        __vreinterpretq_p8_s64
+#define vreinterpretq_p8_p16        __vreinterpretq_p8_p16
+#define vreinterpretq_p8_u8         __vreinterpretq_p8_u8
+#define vreinterpretq_p8_u16        __vreinterpretq_p8_u16
+#define vreinterpretq_p8_u32        __vreinterpretq_p8_u32
+#define vreinterpretq_p8_u64        __vreinterpretq_p8_u64
+#define vreinterpretq_p16_f32       __vreinterpretq_p16_f32
+#define vreinterpretq_p16_s8        __vreinterpretq_p16_s8
+#define vreinterpretq_p16_s16       __vreinterpretq_p16_s16
+#define vreinterpretq_p16_s32       __vreinterpretq_p16_s32
+#define vreinterpretq_p16_s64       __vreinterpretq_p16_s64
+#define vreinterpretq_p16_p8        __vreinterpretq_p16_p8
+#define vreinterpretq_p16_u8        __vreinterpretq_p16_u8
+#define vreinterpretq_p16_u16       __vreinterpretq_p16_u16
+#define vreinterpretq_p16_u32       __vreinterpretq_p16_u32
+#define vreinterpretq_p16_u64       __vreinterpretq_p16_u64
+#define vreinterpretq_u8_f32        __vreinterpretq_u8_f32
+#define vreinterpretq_u8_s8         __vreinterpretq_u8_s8
+#define vreinterpretq_u8_s16        __vreinterpretq_u8_s16
+#define vreinterpretq_u8_s32        __vreinterpretq_u8_s32
+#define vreinterpretq_u8_s64        __vreinterpretq_u8_s64
+#define vreinterpretq_u8_p8         __vreinterpretq_u8_p8
+#define vreinterpretq_u8_p16        __vreinterpretq_u8_p16
+#define vreinterpretq_u8_u16        __vreinterpretq_u8_u16
+#define vreinterpretq_u8_u32        __vreinterpretq_u8_u32
+#define vreinterpretq_u8_u64        __vreinterpretq_u8_u64
+#define vreinterpretq_u16_f32       __vreinterpretq_u16_f32
+#define vreinterpretq_u16_s8        __vreinterpretq_u16_s8
+#define vreinterpretq_u16_s16       __vreinterpretq_u16_s16
+#define vreinterpretq_u16_s32       __vreinterpretq_u16_s32
+#define vreinterpretq_u16_s64       __vreinterpretq_u16_s64
+#define vreinterpretq_u16_p8        __vreinterpretq_u16_p8
+#define vreinterpretq_u16_p16       __vreinterpretq_u16_p16
+#define vreinterpretq_u16_u8        __vreinterpretq_u16_u8
+#define vreinterpretq_u16_u32       __vreinterpretq_u16_u32
+#define vreinterpretq_u16_u64       __vreinterpretq_u16_u64
+#define vreinterpretq_u32_f32       __vreinterpretq_u32_f32
+#define vreinterpretq_u32_s8        __vreinterpretq_u32_s8
+#define vreinterpretq_u32_s16       __vreinterpretq_u32_s16
+#define vreinterpretq_u32_s32       __vreinterpretq_u32_s32
+#define vreinterpretq_u32_s64       __vreinterpretq_u32_s64
+#define vreinterpretq_u32_p8        __vreinterpretq_u32_p8
+#define vreinterpretq_u32_p16       __vreinterpretq_u32_p16
+#define vreinterpretq_u32_u8        __vreinterpretq_u32_u8
+#define vreinterpretq_u32_u16       __vreinterpretq_u32_u16
+#define vreinterpretq_u32_u64       __vreinterpretq_u32_u64
+#define vreinterpretq_u64_f32       __vreinterpretq_u64_f32
+#define vreinterpretq_u64_s8        __vreinterpretq_u64_s8
+#define vreinterpretq_u64_s16       __vreinterpretq_u64_s16
+#define vreinterpretq_u64_s32       __vreinterpretq_u64_s32
+#define vreinterpretq_u64_s64       __vreinterpretq_u64_s64
+#define vreinterpretq_u64_p8        __vreinterpretq_u64_p8
+#define vreinterpretq_u64_p16       __vreinterpretq_u64_p16
+#define vreinterpretq_u64_u8        __vreinterpretq_u64_u8
+#define vreinterpretq_u64_u16       __vreinterpretq_u64_u16
+#define vreinterpretq_u64_u32       __vreinterpretq_u64_u32
+
+#define vmul_n_s16                  __vmul_n_s16
+#define vmul_n_s32                  __vmul_n_s32
+#define vmul_n_u16                  __vmul_n_u16
+#define vmul_n_u32                  __vmul_n_u32
+#define vmulq_n_s16                 __vmulq_n_s16
+#define vmulq_n_s32                 __vmulq_n_s32
+#define vmulq_n_u16                 __vmulq_n_u16
+#define vmulq_n_u32                 __vmulq_n_u32
+#define vmull_n_s16                 __vmull_n_s16
+#define vmull_n_s32                 __vmull_n_s32
+#define vmull_n_u16                 __vmull_n_u16
+#define vmull_n_u32                 __vmull_n_u32
+#define vqdmulh_n_s16               __vqdmulh_n_s16
+#define vqdmulh_n_s32               __vqdmulh_n_s32
+#define vqdmulhq_n_s16              __vqdmulhq_n_s16
+#define vqdmulhq_n_s32              __vqdmulhq_n_s32
+#define vqdmull_n_s16               __vqdmull_n_s16
+#define vqdmull_n_s32               __vqdmull_n_s32
+#define vqrdmulh_n_s16              __vqrdmulh_n_s16
+#define vqrdmulh_n_s32              __vqrdmulh_n_s32
+#define vqrdmulhq_n_s16             __vqrdmulhq_n_s16
+#define vqrdmulhq_n_s32             __vqrdmulhq_n_s32
+
+#define vmla_n_s16                  __vmla_n_s16
+#define vmla_n_s32                  __vmla_n_s32
+#define vmla_n_u16                  __vmla_n_u16
+#define vmla_n_u32                  __vmla_n_u32
+#define vmlaq_n_s16                 __vmlaq_n_s16
+#define vmlaq_n_s32                 __vmlaq_n_s32
+#define vmlaq_n_u16                 __vmlaq_n_u16
+#define vmlaq_n_u32                 __vmlaq_n_u32
+#define vmlal_n_s16                 __vmlal_n_s16
+#define vmlal_n_s32                 __vmlal_n_s32
+#define vmlal_n_u16                 __vmlal_n_u16
+#define vmlal_n_u32                 __vmlal_n_u32
+#define vmls_n_s16                  __vmls_n_s16
+#define vmls_n_s32                  __vmls_n_s32
+#define vmls_n_u16                  __vmls_n_u16
+#define vmls_n_u32                  __vmls_n_u32
+#define vmlsq_n_s16                 __vmlsq_n_s16
+#define vmlsq_n_s32                 __vmlsq_n_s32
+#define vmlsq_n_u16                 __vmlsq_n_u16
+#define vmlsq_n_u32                 __vmlsq_n_u32
+#define vmlsl_n_s16                 __vmlsl_n_s16
+#define vmlsl_n_s32                 __vmlsl_n_s32
+#define vmlsl_n_u16                 __vmlsl_n_u16
+#define vmlsl_n_u32                 __vmlsl_n_u32
+#define vqdmlal_n_s16               __vqdmlal_n_s16
+#define vqdmlal_n_s32               __vqdmlal_n_s32
+#define vqdmlsl_n_s16               __vqdmlsl_n_s16
+#define vqdmlsl_n_s32               __vqdmlsl_n_s32
+
+#define vdup_lane_s64               __vdup_lane_s64
+#define vdup_lane_u64               __vdup_lane_u64
+#define vdupq_lane_s64              __vdupq_lane_s64
+#define vdupq_lane_u64              __vdupq_lane_u64
+
+#endif // !defined(_ARM_ISO_COMPATIBLE_INTRINSIC_NAMES)
+
+#if defined (__cplusplus)
+}
+#endif  /* defined (__cplusplus) */
+
+#endif

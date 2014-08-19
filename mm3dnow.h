@@ -14,9 +14,18 @@
  */
 
 #pragma once
+
+#if !defined(_M_IX86)
+#error This header is specific to X86 targets
+#endif
+
 #ifndef _MM3DNOW_H_INCLUDED
 #define _MM3DNOW_H_INCLUDED
 #ifndef __midl
+
+#if !defined _M_IX86
+    #error This header is specific to the X86 target
+#endif
 
 #include <vcruntime.h>
 #include <mmintrin.h>

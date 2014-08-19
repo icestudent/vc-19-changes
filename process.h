@@ -31,8 +31,10 @@ _CRT_BEGIN_C_HEADER
 
 
 
-_ACRTIMP __declspec(noreturn) void __cdecl exit (_In_ int _Code);
+_ACRTIMP __declspec(noreturn) void __cdecl exit(_In_ int _Code);
 _ACRTIMP __declspec(noreturn) void __cdecl _exit(_In_ int _Code);
+_ACRTIMP __declspec(noreturn) void __cdecl _Exit(_In_ int _Code);
+_ACRTIMP __declspec(noreturn) void __cdecl quick_exit(_In_ int _Code);
 _ACRTIMP __declspec(noreturn) void __cdecl abort(void);
 
 _DCRTIMP int __cdecl system(_In_opt_z_ char const* _Command);
@@ -40,7 +42,8 @@ _DCRTIMP int __cdecl system(_In_opt_z_ char const* _Command);
 _ACRTIMP void __cdecl _cexit(void);
 _ACRTIMP void __cdecl _c_exit(void);
 
-
+typedef void (__stdcall *_tls_callback_type)(void *, unsigned long, void *);
+_ACRTIMP void __cdecl _register_thread_local_exe_atexit_callback(_In_ _tls_callback_type _Callback);
 
 // Declare DLL notification (initialization/termination) routines.  The preferred
 // method is for the CRT client to define DllMain(), which will automatically be

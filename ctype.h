@@ -12,6 +12,7 @@
 #include <corecrt_wctype.h>
 
 _CRT_BEGIN_C_HEADER
+#if !defined __midl && !defined RC_INVOKED
 
 
 
@@ -71,11 +72,7 @@ _Check_return_ _ACRTIMP int __cdecl __iscsym(_In_ int _C);
     // Maximum number of bytes in multi-byte character in the current locale
     // (also defined in stdlib.h).
     #ifndef MB_CUR_MAX
-        #ifdef _CRTBLD
-            #define __MB_CUR_MAX(ptloci) (ptloci)->mb_cur_max
-        #endif
-
-        #if defined _CRT_DISABLE_PERFCRIT_LOCKS && !defined _DLL
+          #if defined _CRT_DISABLE_PERFCRIT_LOCKS && !defined _DLL
             #define MB_CUR_MAX __mb_cur_max
         #else
             #define MB_CUR_MAX ___mb_cur_max_func()
@@ -130,23 +127,50 @@ _Check_return_ _ACRTIMP int __cdecl __iscsym(_In_ int _C);
         #define iscntrl(c)  (MB_CUR_MAX > 1 ? _isctype(c, _CONTROL) : __chvalidchk(c, _CONTROL))
     #endif
 
+    __inline __crt_locale_data_public* __CRTDECL __acrt_get_locale_data_prefix(void const volatile* const _LocalePointers)
+    {
+        _locale_t const _TypedLocalePointers = (_locale_t)_LocalePointers;
+        return (__crt_locale_data_public*)_TypedLocalePointers->locinfo;
+    }
+
     #ifdef _DEBUG
-        _ACRTIMP int __cdecl _chvalidator_l(_In_opt_ _locale_t, _In_ int _Ch, _In_ int _Mask);
-        #define _chvalidchk_l(c, flag, locale)  _chvalidator_l(locale, c, flag)
-    #else
-        #define _chvalidchk_l(c, flag, locale)                      \
-            (locale==NULL                                           \
-                ? __chvalidchk(c, flag)                             \
-                : ((_locale_t)locale)->locinfo->pctype[c] & (flag))
+    _ACRTIMP int __cdecl _chvalidator_l(_In_opt_ _locale_t, _In_ int _Ch, _In_ int _Mask);
     #endif
+
+    __inline int __CRTDECL _chvalidchk_l(
+        _In_     int       const _C,
+        _In_     int       const _Mask,
+        _In_opt_ _locale_t const _Locale
+        )
+    {
+        #ifdef _DEBUG
+        return _chvalidator_l(_Locale, _C, _Mask);
+        #else
+        if (_Locale)
+        {
+            return __acrt_get_locale_data_prefix(_Locale)->_locale_pctype[_C] & _Mask;
+        }
+            
+        return __chvalidchk(_C, _Mask);
+        #endif
+    }
 
     #define __ascii_isalpha_l(c, locale) (_chvalidchk_l(c, _ALPHA, locale))
     #define __ascii_isdigit_l(c, locale) (_chvalidchk_l(c, _DIGIT, locale))
 
-    #define _ischartype_l(c, flag, locale)                                      \
-        (((locale) != NULL && (((_locale_t)(locale))->locinfo->mb_cur_max) > 1) \
-            ? _isctype_l((c), (flag), (locale))                                 \
-            : _chvalidchk_l((c), (flag), (locale)))
+    __inline int __CRTDECL _ischartype_l(
+        _In_     int       const _C,
+        _In_     int       const _Mask,
+        _In_opt_ _locale_t const _Locale
+        )
+    {
+        if (_Locale && __acrt_get_locale_data_prefix(_Locale)->_locale_mb_cur_max > 1)
+        {
+            return _isctype_l(_C, _Mask, _Locale);
+        }
+
+        return _chvalidchk_l(_C, _Mask, _Locale);
+    }
 
     #define _isalpha_l(c, locale)  _ischartype_l(c, _ALPHA, locale)
     #define _isupper_l(c, locale)  _ischartype_l(c, _UPPER, locale)
@@ -192,4 +216,5 @@ _Check_return_ _ACRTIMP int __cdecl __iscsym(_In_ int _C);
 
 
 
+#endif // !defined __midl && !defined RC_INVOKED
 _CRT_END_C_HEADER

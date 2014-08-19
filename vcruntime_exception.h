@@ -121,6 +121,17 @@ private:
     }
 };
 
+class bad_array_new_length
+    : public bad_alloc
+{
+public:
+
+    bad_array_new_length() throw()
+        : bad_alloc("bad array new length")
+    {
+    }
+};
+
 } // namespace std
 
 #endif // !RC_INVOKED && _HAS_EXCEPTIONS

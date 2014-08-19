@@ -886,14 +886,7 @@ public:
 		{	// construct from rvalue function object
 		_Task = ::Concurrency::create_task([this]()
 			{	// do it now
-			if (_Inline)
-				this->_Call_immediate();
-			else
-				{	// turn on oversubscription for launch::async
-				::Concurrency::details::_Context::_Oversubscribe(true);
-				this->_Call_immediate();
-				::Concurrency::details::_Context::_Oversubscribe(false);
-				}
+			this->_Call_immediate();
 			});
 
 		this->_Running = true;

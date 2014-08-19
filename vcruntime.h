@@ -189,9 +189,9 @@ _CRT_BEGIN_C_HEADER
     typedef __int64          ptrdiff_t;
     typedef __int64          intptr_t;
 #else
-    typedef _W64 unsigned int size_t;
-    typedef _W64 int          ptrdiff_t;
-    typedef _W64 int          intptr_t;
+    typedef unsigned int     size_t;
+    typedef int              ptrdiff_t;
+    typedef int              intptr_t;
 #endif
 
 // Indicate that these common types are defined
@@ -225,7 +225,7 @@ _CRT_BEGIN_C_HEADER
     #endif
 #endif
 
-#if defined _M_X64 || defined _M_ARM
+#if defined _M_X64 || defined _M_ARM || defined _M_CRT_UNSUPPORTED
     #define _UNALIGNED __unaligned
 #else
     #define _UNALIGNED

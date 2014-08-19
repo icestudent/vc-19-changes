@@ -13,8 +13,13 @@
 #pragma pack(push, _CRT_PACKING)
 #ifndef RC_INVOKED
 
-
-struct __type_info_node;
+#if defined _M_CEE_MIXED && !defined _VCRT_BUILD
+    // Provide a fake definition of __type_info_node to suppress linker warning
+    // LNK4248: unresolved typeref token for '__type_info_node'; image may not run.
+    struct __type_info_node { };
+#else
+    struct __type_info_node;
+#endif
 
 #ifdef _M_CEE_PURE
     extern System::IntPtr __type_info_root_node;

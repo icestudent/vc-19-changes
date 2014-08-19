@@ -222,28 +222,7 @@ _STD_END
 
  #endif /* _HAS_EXCEPTIONS */
 
-#if _HAS_EXCEPTIONS
-_STD_BEGIN
-#else
-_STDEXT_BEGIN
-#endif
-
-		// CLASS bad_array_new_length
-class bad_array_new_length
-	: public bad_alloc
-	{	// bad array new exception
-public:
-
-	bad_array_new_length() _THROW0()
-		: bad_alloc("bad array new length")
-		{	// default construct
-		}
-	};
-
-#if _HAS_EXCEPTIONS
-_STD_END
-#else
-_STDEXT_END
+#if !(_HAS_EXCEPTIONS)
 
 _STD_BEGIN
 

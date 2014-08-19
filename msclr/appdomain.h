@@ -27,7 +27,7 @@
 #define _MSCLR_STDCALL_DISTINCT 1
 #elif defined (_M_X64)
 #define _MSCLR_STDCALL_DISTINCT 0
-#elif defined (_M_ARM)
+#elif defined (_M_ARM) || defined (_M_CRT_UNSUPPORTED)
 #define _MSCLR_STDCALL_DISTINCT 0
 #else  /* defined (_M_ARM) */
 #error Need to add setting for different CPU

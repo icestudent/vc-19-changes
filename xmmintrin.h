@@ -26,9 +26,18 @@
  */
 
 #pragma once
+
+#if !defined(_M_IX86) && !defined(_M_X64)
+#error This header is specific to X86 and X64 targets
+#endif
+
 #ifndef _INCLUDED_MM2
 #define _INCLUDED_MM2
 #ifndef __midl
+
+#if !defined _M_IX86 && !defined _M_X64
+    #error This header is specific to X86 and X64 targets
+#endif
 
 #if defined (_M_CEE_PURE)
         #error ERROR: XMM intrinsics not supported in the pure mode!
@@ -115,10 +124,15 @@ typedef union __declspec(intrin_type) __declspec(align(16)) __m128 {
 
 
 /* constants for use with _mm_prefetch */
+#define _MM_HINT_NTA    0
 #define _MM_HINT_T0     1
 #define _MM_HINT_T1     2
 #define _MM_HINT_T2     3
-#define _MM_HINT_NTA    0
+#define _MM_HINT_ENTA   4
+// The values below are not yet supported.
+//#define _MM_HINT_ET0    5
+//#define _MM_HINT_ET1    6
+//#define _MM_HINT_ET2    7
 
 /* (this declspec not supported with 0.A or 0.B) */
 #define _MM_ALIGN16 _VCRT_ALIGN(16)

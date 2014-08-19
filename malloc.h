@@ -72,14 +72,10 @@ void* __cdecl _alloca(_In_ size_t _Size);
     #define _ALLOCA_S_STACK_MARKER  0xCCCC
     #define _ALLOCA_S_HEAP_MARKER   0xDDDD
 
-    #if defined _M_IX86
-        #define _ALLOCA_S_MARKER_SIZE 8
-    #elif defined _M_X64
+    #ifdef _WIN64
         #define _ALLOCA_S_MARKER_SIZE 16
-    #elif defined _M_ARM
+    #else
         #define _ALLOCA_S_MARKER_SIZE 8
-    #elif !defined RC_INVOKED
-        #error Unsupported target platform.
     #endif
 
     _STATIC_ASSERT(sizeof(unsigned int) <= _ALLOCA_S_MARKER_SIZE);
@@ -144,7 +140,7 @@ void* __cdecl _alloca(_In_ size_t _Size);
 
     #pragma warning(push)
     #pragma warning(disable: 6014)
-    _CRTNOALIAS __inline void __CRTDECL _freea(_Pre_maybenull_ _Post_invalid_ void* _Memory)
+    __inline void __CRTDECL _freea(_Pre_maybenull_ _Post_invalid_ void* _Memory)
     {
         unsigned int _Marker;
         if (_Memory)

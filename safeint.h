@@ -562,7 +562,7 @@ public:
         return val;
     }
 
-#if _NATIVE_WCHAR_T_DEFINED
+#ifdef _NATIVE_WCHAR_T_DEFINED
     operator wchar_t() const
     {
         unsigned __int16 val;

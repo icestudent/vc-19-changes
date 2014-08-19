@@ -46,7 +46,7 @@ namespace Concurrency
 {
 namespace details
 {
-    _CRTIMP2 size_t __cdecl _GetCombinableSize();
+    _CONCRTIMP size_t __cdecl _GetCombinableSize();
 } // namespace details
 
 class structured_task_group;
@@ -897,7 +897,7 @@ inline void interruption_point()
 /// <seealso cref="task_group Class"/>
 /// <seealso cref="structured_task_group Class"/>
 /**/
-_CRTIMP2 bool __cdecl is_current_task_group_canceling();
+_CONCRTIMP bool __cdecl is_current_task_group_canceling();
 
 // Parallel Algorithms and Patterns
 

@@ -36,14 +36,14 @@ typedef _Uint4_t _Atomic_integral_t;
   #define _LONG_SIZE		4
   #define _LONGLONG_SIZE	8
 
-  #if defined(_M_X64) || defined(_LP64) || defined(__x86_64)
+  #if defined(_WIN64)
    #define _ADDR_SIZE		8
    #define _MS_64	1
 
-  #else /* defined(_M_X64) || defined(_LP64) || defined(__x86_64) */
+  #else /* defined(_WIN64) */
    #define _ADDR_SIZE		4
    #define _MS_64	0
-  #endif /* defined(_M_X64) || defined(_LP64) || defined(__x86_64) */
+  #endif /* defined(_WIN64) */
 
 		/* TYPEDEF _Atomic_flag_t */
 

@@ -1,6 +1,6 @@
 /****
 * Copyright (C) 2007-2008 Advanced Micro Devices Inc.  All rights reserved.
-*
+* 
 *  The information and source code contained herein is the exclusive
 *  property of Advanced Micro Devices and may not be disclosed, examined
 *  or reproduced in whole or in part without explicit written authorization
@@ -11,9 +11,18 @@
 ****/
 
 #pragma once
+
+#if !defined(_M_IX86) && !defined(_M_X64)
+#error This header is specific to X86 and X64 targets
+#endif
+
 #ifndef _INCLUDED_AMM
 #define _INCLUDED_AMM
 #ifndef __midl
+
+#if !defined _M_IX86 && !defined _M_X64
+    #error This header is specific to X86 and X64 targets
+#endif
 
 #if defined (_M_CEE_PURE)
   #error ERROR: This file is not supported in the pure mode!

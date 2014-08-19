@@ -413,8 +413,8 @@ _ACRTIMP int __cdecl _timespec64_get(
 
         _Check_return_
         static __inline int __CRTDECL timespec_get(
-            _Out_ struct timespec* _Ts,
-            _In_  int              _Base
+            _Out_ struct timespec* const _Ts,
+            _In_  int              const _Base
             )
         {
             return _timespec32_get((struct _timespec32*)_Ts, _Base); 
@@ -518,8 +518,8 @@ _ACRTIMP int __cdecl _timespec64_get(
 
         _Check_return_
         static __inline int __CRTDECL timespec_get(
-            _Out_ struct timespec* _Ts,
-            _In_  int              _Base
+            _Out_ struct timespec* const _Ts,
+            _In_  int              const _Base
             )
         {
             return _timespec64_get((struct _timespec64*)_Ts, _Base); 
@@ -538,8 +538,8 @@ _ACRTIMP int __cdecl _timespec64_get(
 
             _Check_return_wat_
             static __inline errno_t __CRTDECL gmtime_s(
-                _Out_ struct tm* const _Tm,
-                _In_  time_t*    const _Time
+                _Out_ struct tm*    const _Tm,
+                _In_  time_t const* const _Time
                 )
             {
                 return _gmtime64_s(_Tm, _Time);

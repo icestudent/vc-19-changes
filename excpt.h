@@ -39,7 +39,7 @@ typedef enum _EXCEPTION_DISPOSITION
         _Inout_ void*                  _DispatcherContext
         );
 
-#elif defined _M_X64 || defined _M_ARM
+#elif defined _M_X64 || defined _M_ARM || defined _M_CRT_UNSUPPORTED
     #ifndef _M_CEE_PURE
 
         struct _EXCEPTION_RECORD;

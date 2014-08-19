@@ -29,9 +29,9 @@
 
 #define _PPL_CONTAINER
 
-#if !(defined (_M_X64) || defined (_M_IX86) || defined (_M_ARM))
-    #error ERROR: Concurrency Runtime is supported only on X64, X86, and ARM architectures.
-#endif  /* !(defined (_M_X64) || defined (_M_IX86) || defined (_M_ARM)) */
+#if !(defined (_M_X64) || defined (_M_IX86) || defined (_M_ARM) || defined (_M_CRT_UNSUPPORTED))
+    #error ERROR: Concurrency Runtime is supported only on X64, X86, ARM, and CRT_UNSUPPORTED architectures.
+#endif  /* !(defined (_M_X64) || defined (_M_IX86) || defined (_M_ARM) || defined (_M_CRT_UNSUPPORTED)) */
 
 #if defined (_M_CEE)
     #error ERROR: Concurrency Runtime is not supported when compiling /clr.
@@ -95,27 +95,27 @@ namespace details
         virtual void _Copy_item( _Page& _Dst, size_t _Index, const void* _Src ) = 0;
         virtual void _Assign_and_destroy_item( void* _Dst, _Page& _Src, size_t _Index ) = 0;
     protected:
-        _CRTIMP2 _Concurrent_queue_base_v4( size_t _Item_size );
-        _CRTIMP2 virtual ~_Concurrent_queue_base_v4();
+        _CONCRTIMP _Concurrent_queue_base_v4( size_t _Item_size );
+        _CONCRTIMP virtual ~_Concurrent_queue_base_v4();
 
         // Enqueue item at tail of queue
-        _CRTIMP2 void _Internal_push( const void* _Src );
+        _CONCRTIMP void _Internal_push( const void* _Src );
 
         // Enqueue item at tail of queue by move
-        _CRTIMP2 void _Internal_move_push( void* _Src );
+        _CONCRTIMP void _Internal_move_push( void* _Src );
 
         // swap the internal representation
-        _CRTIMP2 void _Concurrent_queue_base_v4::_Internal_swap( _Concurrent_queue_base_v4& other );
+        _CONCRTIMP void _Concurrent_queue_base_v4::_Internal_swap( _Concurrent_queue_base_v4& other );
 
         // Attempt to dequeue item from queue.
         /** NULL if there was no item to dequeue. */
-        _CRTIMP2 bool _Internal_pop_if_present( void* _Dst );
+        _CONCRTIMP bool _Internal_pop_if_present( void* _Dst );
 
         // Get size of queue
-        _CRTIMP2 size_t _Internal_size() const;
+        _CONCRTIMP size_t _Internal_size() const;
 
         // Test instantaneous queue empty
-        _CRTIMP2 bool _Internal_empty() const;
+        _CONCRTIMP bool _Internal_empty() const;
 
         // custom allocator
         virtual _Page *_Allocate_page() = 0;
@@ -124,10 +124,10 @@ namespace details
         virtual void _Deallocate_page( _Page *p ) = 0;
 
         // free any remaining pages
-        _CRTIMP2 void _Internal_finish_clear() ;
+        _CONCRTIMP void _Internal_finish_clear() ;
 
         // throw an exception
-        _CRTIMP2 void _Internal_throw_exception() const;
+        _CONCRTIMP void _Internal_throw_exception() const;
 
     private:
         // Deny copy construction
@@ -236,16 +236,16 @@ namespace details
         }
 
         // Construct iterator pointing to head of queue.
-        _CRTIMP2 _Concurrent_queue_iterator_base_v4( const _Concurrent_queue_base&  );
+        _CONCRTIMP _Concurrent_queue_iterator_base_v4( const _Concurrent_queue_base&  );
 
         // Assignment
-        _CRTIMP2 void _Assign( const _Concurrent_queue_iterator_base_v4& );
+        _CONCRTIMP void _Assign( const _Concurrent_queue_iterator_base_v4& );
 
         // Advance iterator one step towards tail of queue.
-        _CRTIMP2 void _Advance();
+        _CONCRTIMP void _Advance();
 
         // Destructor
-        _CRTIMP2 ~_Concurrent_queue_iterator_base_v4();
+        _CONCRTIMP ~_Concurrent_queue_iterator_base_v4();
     };
 
     typedef _Concurrent_queue_iterator_base_v4 concurrent_queue_iterator_base;

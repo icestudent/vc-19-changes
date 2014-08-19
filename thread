@@ -13,8 +13,6 @@
 #include <functional>
 #include <chrono>
 
- #include <concrt.h>
-
 #include <thr/xthread>
 #include <thr/xtimec.h>
 
@@ -96,7 +94,8 @@ public:
 
 	static unsigned int hardware_concurrency() _NOEXCEPT
 		{	// return number of hardware thread contexts
-		return (::Concurrency::details::_GetConcurrency());
+		static const unsigned int _Cnt = _Thrd_hardware_concurrency();
+		return (_Cnt);
 		}
 
 	native_handle_type native_handle()
@@ -122,24 +121,11 @@ thread::id get_id() _NOEXCEPT;
 
 inline void yield() _NOEXCEPT
 	{	// give up balance of time slice
-	if (::Concurrency::details::_CurrentScheduler::_Id() != -1)
-		{	// yield, then quit
-		::Concurrency::details::_Context::_Yield();
-		return;
-		}
 	_Thrd_yield();
 	}
 
 inline void sleep_until(const stdext::threads::xtime *_Abs_time)
 	{	// sleep until _Abs_time
-	if (::Concurrency::details::_CurrentScheduler::_Id() != -1)
-		{
-		stdext::threads::xtime _Now;
-		stdext::threads::xtime_get(&_Now, TIME_UTC);
-		::Concurrency::wait(_Xtime_diff_to_millis2(_Abs_time, &_Now));
-		return;
-		}
-
 	_Thrd_sleep(_Abs_time);
 	}
 

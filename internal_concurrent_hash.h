@@ -58,7 +58,7 @@ public:
 // An efficient implementation of the _Reverse function utilizes a 2^8 or 2^16 lookup table holding the
 // bit-reversed values of [0..2^8 - 1] or [0..2^16 - 1] respectively. Those values can also be computed
 // on the fly at a slightly higher cost.
-extern _CRTIMP2 const unsigned char _Byte_reverse_table[];
+extern _CONCRTIMP const unsigned char _Byte_reverse_table[];
 
 // Given a byte, reverses it
 inline unsigned char _Reverse_byte(unsigned char _Original_byte)

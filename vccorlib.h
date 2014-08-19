@@ -941,6 +941,11 @@ namespace Platform
 
 		static __TArg* AllocateAndZeroInitialize(unsigned int __countArg);
 		static __TArg* AllocateAndCopyElements(const __TArg* __srcArg, unsigned int __countArg);
+		
+#if defined(_PREFIX_) || defined(_PREFAST_)
+	internal:
+		__TArg& operator[](unsigned int __indexArg) const;
+#endif // defined(_PREFIX_) || defined(_PREFAST_)
 	public:
 		virtual ~WriteOnlyArray();
 	};

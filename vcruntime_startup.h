@@ -30,7 +30,8 @@ typedef enum _crt_exit_return_mode
 typedef enum _crt_exit_cleanup_mode
 {
     _crt_exit_full_cleanup,
-    _crt_exit_quick_cleanup
+    _crt_exit_quick_cleanup,
+    _crt_exit_no_cleanup
 } _crt_exit_cleanup_mode;
 
 extern _crt_exit_return_mode __current_exit_return_mode;

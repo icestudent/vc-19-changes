@@ -22,9 +22,9 @@
 #error Must not be included during CRT build with _CRT_WINDOWS flag enabled
 #endif
 
-#if !(defined (_M_X64) || defined (_M_IX86) || defined (_M_ARM))
-    #error ERROR: Concurrency Runtime is supported only on X64, X86 and ARM architectures.
-#endif  /* !(defined (_M_X64) || defined (_M_IX86) || defined (_M_ARM)) */
+#if !(defined (_M_X64) || defined (_M_IX86) || defined (_M_ARM) || defined (_M_CRT_UNSUPPORTED))
+    #error ERROR: Concurrency Runtime is supported only on X64, X86, ARM, and CRT_UNSUPPORTED architectures.
+#endif  /* !(defined (_M_X64) || defined (_M_IX86) || defined (_M_ARM) || defined (_M_CRT_UNSUPPORTED)) */
 
 #if defined (_M_CEE)
     #error ERROR: Concurrency Runtime is not supported when compiling /clr.
@@ -49,9 +49,6 @@
 #pragma pack(push,_CRT_PACKING)
 #pragma push_macro("new")
 #undef new
-
-#pragma warning(push)
-#pragma warning(disable:4297) // Function expected not to throw but does
 
 // Forward declare structs needed from Windows header files
 
@@ -92,14 +89,14 @@ inline void _YieldProcessor() {}
 #undef _InterlockedExchangePointer
 #undef _InterlockedCompareExchangePointer
 
-#define _InterlockedExchangePointer(_Target, _Value) reinterpret_cast<void *>(static_cast<__w64 long>(_InterlockedExchange( \
-    static_cast<long volatile *>(reinterpret_cast<__w64 long volatile *>(static_cast<void * volatile *>(_Target))), \
-    static_cast<long>(reinterpret_cast<__w64 long>(static_cast<void *>(_Value))))))
+#define _InterlockedExchangePointer(_Target, _Value) reinterpret_cast<void *>(static_cast<long>(_InterlockedExchange( \
+    static_cast<long volatile *>(reinterpret_cast<long volatile *>(static_cast<void * volatile *>(_Target))), \
+    static_cast<long>(reinterpret_cast<long>(static_cast<void *>(_Value))))))
 
-#define _InterlockedCompareExchangePointer(_Target, _Exchange, _Comparand) reinterpret_cast<void *>(static_cast<__w64 long>(_InterlockedCompareExchange( \
-    static_cast<long volatile *>(reinterpret_cast<__w64 long volatile *>(static_cast<void * volatile *>(_Target))), \
-    static_cast<long>(reinterpret_cast<__w64 long>(static_cast<void *>(_Exchange))), \
-    static_cast<long>(reinterpret_cast<__w64 long>(static_cast<void *>(_Comparand))))))
+#define _InterlockedCompareExchangePointer(_Target, _Exchange, _Comparand) reinterpret_cast<void *>(static_cast<long>(_InterlockedCompareExchange( \
+    static_cast<long volatile *>(reinterpret_cast<long volatile *>(static_cast<void * volatile *>(_Target))), \
+    static_cast<long>(reinterpret_cast<long>(static_cast<void *>(_Exchange))), \
+    static_cast<long>(reinterpret_cast<long>(static_cast<void *>(_Comparand))))))
 
 #endif  /* defined (_M_IX86) */
 
@@ -112,7 +109,7 @@ inline void _YieldProcessor() {}
     static_cast<long>(_Exchange), \
     static_cast<long>(_Comparand)))
 
-typedef _W64 unsigned long DWORD_PTR, *PDWORD_PTR;
+typedef unsigned long DWORD_PTR, *PDWORD_PTR;
 
 #else  /* (defined (_M_IX86) || defined (_M_ARM)) */
 
@@ -174,7 +171,7 @@ namespace Concurrency
 ///     indefinite.
 /// </remarks>
 /**/
-_CRTIMP2 void __cdecl wait(unsigned int _Milliseconds);
+_CONCRTIMP void __cdecl wait(unsigned int _Milliseconds);
 
 /// <summary>
 ///     Allocates a block of memory of the size specified from the Concurrency Runtime Caching Suballocator.
@@ -191,7 +188,7 @@ _CRTIMP2 void __cdecl wait(unsigned int _Milliseconds);
 /// </remarks>
 /// <seealso cref="Concurrency::Free Function"/>
 /**/
-_CRTIMP2 void * __cdecl Alloc(size_t _NumBytes);
+_CONCRTIMP void * __cdecl Alloc(size_t _NumBytes);
 
 /// <summary>
 ///     Releases a block of memory previously allocated by the <c>Alloc</c> method to the Concurrency Runtime Caching Suballocator.
@@ -206,7 +203,7 @@ _CRTIMP2 void * __cdecl Alloc(size_t _NumBytes);
 /// </remarks>
 /// <seealso cref="Concurrency::Alloc Function"/>
 /**/
-_CRTIMP2 void __cdecl Free(_Pre_maybenull_ _Post_invalid_ void * _PAllocation);
+_CONCRTIMP void __cdecl Free(_Pre_maybenull_ _Post_invalid_ void * _PAllocation);
 
 /// <summary>
 ///     Concurrency::details contains definitions of support routines in the public namespaces and one or more macros.
@@ -238,7 +235,7 @@ _CRTIMP2 void __cdecl Free(_Pre_maybenull_ _Post_invalid_ void * _PAllocation);
 ///     the affinity it is restricted to. Therefore, all changes to process affinity should be made before calling this method.</para>
 /// </remarks>
 /**/
-_CRTIMP2 void __cdecl set_task_execution_resources(DWORD_PTR _ProcessAffinityMask);
+_CONCRTIMP void __cdecl set_task_execution_resources(DWORD_PTR _ProcessAffinityMask);
 
 /// <summary>
 ///     Restricts the execution resources used by the Concurrency Runtime internal worker threads to the affinity set specified.
@@ -262,7 +259,7 @@ _CRTIMP2 void __cdecl set_task_execution_resources(DWORD_PTR _ProcessAffinityMas
 ///     the affinity it is restricted to. Therefore, all changes to process affinity should be made before calling this method.</para>
 /// </remarks>
 /**/
-_CRTIMP2 void __cdecl set_task_execution_resources(unsigned short _Count, PGROUP_AFFINITY _PGroupAffinity);
+_CONCRTIMP void __cdecl set_task_execution_resources(unsigned short _Count, PGROUP_AFFINITY _PGroupAffinity);
 
 #endif  /* _CRT_USE_WINAPI_FAMILY_DESKTOP_APP */
 
@@ -387,11 +384,11 @@ namespace details
     class _Context
     {
     public:
-        _CRTIMP2 _Context(::Concurrency::Context * _PContext = NULL) : _M_pContext(_PContext) {}
-        _CRTIMP2 static _Context __cdecl _CurrentContext();
-        _CRTIMP2 static void __cdecl _Yield();
-        _CRTIMP2 static void __cdecl _Oversubscribe(bool _BeginOversubscription);
-        _CRTIMP2 bool _IsSynchronouslyBlocked() const;
+        _CONCRTIMP _Context(::Concurrency::Context * _PContext = NULL) : _M_pContext(_PContext) {}
+        _CONCRTIMP static _Context __cdecl _CurrentContext();
+        _CONCRTIMP static void __cdecl _Yield();
+        _CONCRTIMP static void __cdecl _Oversubscribe(bool _BeginOversubscription);
+        _CONCRTIMP bool _IsSynchronouslyBlocked() const;
     private:
         ::Concurrency::Context * _M_pContext;
     };
@@ -399,10 +396,10 @@ namespace details
     class _Scheduler
     {
     public:
-        _CRTIMP2 _Scheduler(::Concurrency::Scheduler * _PScheduler = NULL) : _M_pScheduler(_PScheduler) {}
-        _CRTIMP2 unsigned int _Reference();
-        _CRTIMP2 unsigned int _Release();
-        _CRTIMP2 Concurrency::Scheduler * _GetScheduler() { return _M_pScheduler; }
+        _CONCRTIMP _Scheduler(::Concurrency::Scheduler * _PScheduler = NULL) : _M_pScheduler(_PScheduler) {}
+        _CONCRTIMP unsigned int _Reference();
+        _CONCRTIMP unsigned int _Release();
+        _CONCRTIMP Concurrency::Scheduler * _GetScheduler() { return _M_pScheduler; }
 
     private:
         ::Concurrency::Scheduler * _M_pScheduler;
@@ -411,10 +408,10 @@ namespace details
     class _CurrentScheduler
     {
     public:
-        _CRTIMP2 static void __cdecl _ScheduleTask(TaskProc _Proc, void * _Data);
-        _CRTIMP2 static unsigned int __cdecl _Id();
-        _CRTIMP2 static unsigned int __cdecl _GetNumberOfVirtualProcessors();
-        _CRTIMP2 static _Scheduler __cdecl _Get();
+        _CONCRTIMP static void __cdecl _ScheduleTask(TaskProc _Proc, void * _Data);
+        _CONCRTIMP static unsigned int __cdecl _Id();
+        _CONCRTIMP static unsigned int __cdecl _GetNumberOfVirtualProcessors();
+        _CONCRTIMP static _Scheduler __cdecl _Get();
     };
 
     //
@@ -460,7 +457,7 @@ namespace details
         }
     };
 
-#if defined (_M_X64)
+#if defined (_WIN64)
     template<>
     struct _Subatomic_impl<8> {
         template <typename _Ty>
@@ -555,8 +552,8 @@ namespace details
         volatile long& _M_flag;
 
     public:
-        _CRTIMP2 _SpinLock(volatile long& _Flag);
-        _CRTIMP2 ~_SpinLock();
+        _CONCRTIMP _SpinLock(volatile long& _Flag);
+        _CONCRTIMP ~_SpinLock();
 
     private:
         _SpinLock(const _SpinLock&);
@@ -574,7 +571,7 @@ namespace details
         static void __cdecl _Initialize();
 
         // Returns the current value of s_spinCount
-        _CRTIMP2 static unsigned int __cdecl _Value();
+        _CONCRTIMP static unsigned int __cdecl _Value();
 
         // The number of iterations used for spinning
         static unsigned int _S_spinCount;
@@ -584,21 +581,21 @@ namespace details
     ///     Default method for yielding during a spin wait
     /// </summary>
     /**/
-    void _CRTIMP2 __cdecl _UnderlyingYield();
+    void _CONCRTIMP __cdecl _UnderlyingYield();
 
     /// <summary>
     ///     Returns the hardware concurrency available to the Concurrency Runtime, taking into account process affinity, or any restrictions
     ///     in place because of the set_task_execution_resources method.
     /// </summary>
     /**/
-    unsigned int _CRTIMP2 __cdecl _GetConcurrency();
+    unsigned int _CONCRTIMP __cdecl _GetConcurrency();
 
     /// <summary>
     ///     Implements busy wait with no backoff
     /// </summary>
     /**/
     template<unsigned int _YieldCount = 1>
-    class _CRTIMP2 _SpinWait
+    class _CONCRTIMP _SpinWait
     {
     public:
 
@@ -788,20 +785,20 @@ namespace details
     {
     public:
         // Constructor for _ReentrantBlockingLock
-        _CRTIMP2 _ReentrantBlockingLock();
+        _CONCRTIMP _ReentrantBlockingLock();
 
         // Destructor for _ReentrantBlockingLock
-        _CRTIMP2 ~_ReentrantBlockingLock();
+        _CONCRTIMP ~_ReentrantBlockingLock();
 
         // Acquire the lock, spin if necessary
-        _CRTIMP2 void _Acquire();
+        _CONCRTIMP void _Acquire();
 
         // Tries to acquire the lock, does not spin.
         // Returns true if the acquisition worked, false otherwise
-        _CRTIMP2 bool _TryAcquire();
+        _CONCRTIMP bool _TryAcquire();
 
         // Releases the lock
-        _CRTIMP2 void _Release();
+        _CONCRTIMP void _Release();
 
 
         // An exception safe RAII wrapper.
@@ -841,17 +838,17 @@ namespace details
     {
     public:
         // Constructor for _ReentrantLock
-        _CRTIMP2 _ReentrantLock();
+        _CONCRTIMP _ReentrantLock();
 
         // Acquire the lock, spin if necessary
-        _CRTIMP2 void _Acquire();
+        _CONCRTIMP void _Acquire();
 
         // Tries to acquire the lock, does not spin
         // Returns true if the acquisition worked, false otherwise
-        _CRTIMP2 bool _TryAcquire();
+        _CONCRTIMP bool _TryAcquire();
 
         // Releases the lock
-        _CRTIMP2 void _Release();
+        _CONCRTIMP void _Release();
 
         // An exception safe RAII wrapper.
         class _Scoped_lock
@@ -892,20 +889,20 @@ namespace details
         //
         // The constructor is exported because _NonReentrantLock is
         // included in DevUnitTests.
-        _CRTIMP2 _NonReentrantBlockingLock();
+        _CONCRTIMP _NonReentrantBlockingLock();
 
         // Constructor for _NonReentrantBlockingLock
-        _CRTIMP2 ~_NonReentrantBlockingLock();
+        _CONCRTIMP ~_NonReentrantBlockingLock();
 
         // Acquire the lock, spin if necessary
-        _CRTIMP2 void _Acquire();
+        _CONCRTIMP void _Acquire();
 
         // Tries to acquire the lock, does not spin
         // Returns true if the lock is taken, false otherwise
-        _CRTIMP2 bool _TryAcquire();
+        _CONCRTIMP bool _TryAcquire();
 
         // Releases the lock
-        _CRTIMP2 void _Release();
+        _CONCRTIMP void _Release();
 
         // An exception safe RAII wrapper.
         class _Scoped_lock
@@ -951,25 +948,25 @@ namespace details
         //
         // The constructor and destructor are exported because _ReaderWriterLock is
         // included in DevUnitTests.
-        _CRTIMP2 _ReaderWriterLock();
+        _CONCRTIMP _ReaderWriterLock();
 
         // Acquire lock for reading. Spins until all writers finish, new writers
         // can cut in front of a waiting reader.
-        _CRTIMP2 void _AcquireRead();
+        _CONCRTIMP void _AcquireRead();
 
         // Release lock for reading. The last reader changes m_state to State.kFree
-        _CRTIMP2 void _ReleaseRead();
+        _CONCRTIMP void _ReleaseRead();
 
         // Acquire lock for writing. Spin until no readers exist, then acquire lock
         // and prevent new readers.
-        _CRTIMP2 void _AcquireWrite();
+        _CONCRTIMP void _AcquireWrite();
 
         // Release lock for writing.
-        _CRTIMP2 void _ReleaseWrite();
+        _CONCRTIMP void _ReleaseWrite();
 
         // Try to acquire the write lock, do not spin if unable to acquire.
         // Returns true if the acquisition worked, false otherwise
-        _CRTIMP2 bool _TryAcquireWrite();
+        _CONCRTIMP bool _TryAcquireWrite();
 
         // Returns true if it is in write state, false otherwise
         bool _HasWriteLock() const
@@ -1218,7 +1215,7 @@ public:
     ///     The <c>HRESULT</c> value of the error that caused the exception.
     /// </param>
     /**/
-    _CRTIMP2 scheduler_resource_allocation_error(_In_z_ const char * _Message, HRESULT _Hresult) throw();
+    _CONCRTIMP scheduler_resource_allocation_error(_In_z_ const char * _Message, HRESULT _Hresult) throw();
 
     /// <summary>
     ///     Constructs a <c>scheduler_resource_allocation_error</c> object.
@@ -1227,7 +1224,7 @@ public:
     ///     The <c>HRESULT</c> value of the error that caused the exception.
     /// </param>
     /**/
-    explicit _CRTIMP2 scheduler_resource_allocation_error(HRESULT _Hresult) throw();
+    explicit _CONCRTIMP scheduler_resource_allocation_error(HRESULT _Hresult) throw();
 
     /// <summary>
     ///     Returns the error code that caused the exception.
@@ -1236,7 +1233,7 @@ public:
     ///     The <c>HRESULT</c> value of the error that caused the exception.
     /// </returns>
     /**/
-    _CRTIMP2 HRESULT get_error_code() const throw();
+    _CONCRTIMP HRESULT get_error_code() const throw();
 
 private:
     HRESULT _Hresult;
@@ -1265,7 +1262,7 @@ public:
     ///     The <c>HRESULT</c> value of the error that caused the exception.
     /// </param>
     /**/
-    _CRTIMP2 scheduler_worker_creation_error(_In_z_ const char * _Message, HRESULT _Hresult) throw();
+    _CONCRTIMP scheduler_worker_creation_error(_In_z_ const char * _Message, HRESULT _Hresult) throw();
 
     /// <summary>
     ///     Constructs a <c>scheduler_worker_creation_error</c> object.
@@ -1274,7 +1271,7 @@ public:
     ///     The <c>HRESULT</c> value of the error that caused the exception.
     /// </param>
     /**/
-    explicit _CRTIMP2 scheduler_worker_creation_error(HRESULT _Hresult) throw();
+    explicit _CONCRTIMP scheduler_worker_creation_error(HRESULT _Hresult) throw();
 };
 
 /// <summary>
@@ -1291,13 +1288,13 @@ public:
     ///     A descriptive message of the error.
     /// </param>
     /**/
-    explicit _CRTIMP2 unsupported_os(_In_z_ const char * _Message) throw();
+    explicit _CONCRTIMP unsupported_os(_In_z_ const char * _Message) throw();
 
     /// <summary>
     ///     Constructs an <c>unsupported_os</c> object.
     /// </summary>
     /**/
-    _CRTIMP2 unsupported_os() throw();
+    _CONCRTIMP unsupported_os() throw();
 };
 
 /// <summary>
@@ -1317,13 +1314,13 @@ public:
     ///     A descriptive message of the error.
     /// </param>
     /**/
-    explicit _CRTIMP2 scheduler_not_attached(_In_z_ const char * _Message) throw();
+    explicit _CONCRTIMP scheduler_not_attached(_In_z_ const char * _Message) throw();
 
     /// <summary>
     ///     Constructs a <c>scheduler_not_attached</c> object.
     /// </summary>
     /**/
-    _CRTIMP2 scheduler_not_attached() throw();
+    _CONCRTIMP scheduler_not_attached() throw();
 };
 
 /// <summary>
@@ -1343,13 +1340,13 @@ public:
     ///     A descriptive message of the error.
     /// </param>
     /**/
-    explicit _CRTIMP2 improper_scheduler_attach(_In_z_ const char * _Message) throw();
+    explicit _CONCRTIMP improper_scheduler_attach(_In_z_ const char * _Message) throw();
 
     /// <summary>
     ///     Constructs an <c>improper_scheduler_attach</c> object.
     /// </summary>
     /**/
-    _CRTIMP2 improper_scheduler_attach() throw();
+    _CONCRTIMP improper_scheduler_attach() throw();
 };
 
 /// <summary>
@@ -1371,13 +1368,13 @@ public:
     ///     A descriptive message of the error.
     /// </param>
     /**/
-    explicit _CRTIMP2 improper_scheduler_detach(_In_z_ const char * _Message) throw();
+    explicit _CONCRTIMP improper_scheduler_detach(_In_z_ const char * _Message) throw();
 
     /// <summary>
     ///     Constructs an <c>improper_scheduler_detach</c> object.
     /// </summary>
     /**/
-    _CRTIMP2 improper_scheduler_detach() throw();
+    _CONCRTIMP improper_scheduler_detach() throw();
 };
 
 /// <summary>
@@ -1398,13 +1395,13 @@ public:
     ///     A descriptive message of the error.
     /// </param>
     /**/
-    explicit _CRTIMP2 improper_scheduler_reference(_In_z_ const char* _Message) throw();
+    explicit _CONCRTIMP improper_scheduler_reference(_In_z_ const char* _Message) throw();
 
     /// <summary>
     ///     Constructs an <c>improper_scheduler_reference</c> object.
     /// </summary>
     /**/
-    _CRTIMP2 improper_scheduler_reference() throw();
+    _CONCRTIMP improper_scheduler_reference() throw();
 };
 
 /// <summary>
@@ -1423,13 +1420,13 @@ public:
     ///     A descriptive message of the error.
     /// </param>
     /**/
-    explicit _CRTIMP2 default_scheduler_exists(_In_z_ const char * _Message) throw();
+    explicit _CONCRTIMP default_scheduler_exists(_In_z_ const char * _Message) throw();
 
     /// <summary>
     ///     Constructs a <c>default_scheduler_exists</c> object.
     /// </summary>
     /**/
-    _CRTIMP2 default_scheduler_exists() throw();
+    _CONCRTIMP default_scheduler_exists() throw();
 };
 
 /// <summary>
@@ -1456,13 +1453,13 @@ public:
     ///     A descriptive message of the error.
     /// </param>
     /**/
-    explicit _CRTIMP2 context_unblock_unbalanced(_In_z_ const char * _Message) throw();
+    explicit _CONCRTIMP context_unblock_unbalanced(_In_z_ const char * _Message) throw();
 
     /// <summary>
     ///     Constructs a <c>context_unblock_unbalanced</c> object.
     /// </summary>
     /**/
-    _CRTIMP2 context_unblock_unbalanced() throw();
+    _CONCRTIMP context_unblock_unbalanced() throw();
 };
 
 /// <summary>
@@ -1482,13 +1479,13 @@ public:
     ///     A descriptive message of the error.
     /// </param>
     /**/
-    explicit _CRTIMP2 context_self_unblock(_In_z_ const char * _Message) throw();
+    explicit _CONCRTIMP context_self_unblock(_In_z_ const char * _Message) throw();
 
     /// <summary>
     ///     Constructs a <c>context_self_unblock</c> object.
     /// </summary>
     /**/
-    _CRTIMP2 context_self_unblock() throw();
+    _CONCRTIMP context_self_unblock() throw();
 };
 
 /// <summary>
@@ -1518,13 +1515,13 @@ public:
     ///     A descriptive message of the error.
     /// </param>
     /**/
-    explicit _CRTIMP2 missing_wait(_In_z_ const char * _Message) throw();
+    explicit _CONCRTIMP missing_wait(_In_z_ const char * _Message) throw();
 
     /// <summary>
     ///     Constructs a <c>missing_wait</c> object.
     /// </summary>
     /**/
-    _CRTIMP2 missing_wait() throw();
+    _CONCRTIMP missing_wait() throw();
 };
 
 /// <summary>
@@ -1547,13 +1544,13 @@ public:
     ///     A descriptive message of the error.
     /// </param>
     /**/
-    explicit _CRTIMP2 bad_target(_In_z_ const char * _Message) throw();
+    explicit _CONCRTIMP bad_target(_In_z_ const char * _Message) throw();
 
     /// <summary>
     ///     Constructs a <c>bad_target</c> object.
     /// </summary>
     /**/
-    _CRTIMP2 bad_target() throw();
+    _CONCRTIMP bad_target() throw();
 };
 
 /// <summary>
@@ -1571,13 +1568,13 @@ public:
     ///     A descriptive message of the error.
     /// </param>
     /**/
-    explicit _CRTIMP2 message_not_found(_In_z_ const char * _Message) throw();
+    explicit _CONCRTIMP message_not_found(_In_z_ const char * _Message) throw();
 
     /// <summary>
     ///     Constructs a <c>message_not_found</c> object.
     /// </summary>
     /**/
-    _CRTIMP2 message_not_found() throw();
+    _CONCRTIMP message_not_found() throw();
 };
 
 /// <summary>
@@ -1597,13 +1594,13 @@ public:
     ///     A descriptive message of the error.
     /// </param>
     /**/
-    explicit _CRTIMP2 invalid_link_target(_In_z_ const char * _Message) throw();
+    explicit _CONCRTIMP invalid_link_target(_In_z_ const char * _Message) throw();
 
     /// <summary>
     ///     Constructs an <c>invalid_link_target</c> object.
     /// </summary>
     /**/
-    _CRTIMP2 invalid_link_target() throw();
+    _CONCRTIMP invalid_link_target() throw();
 };
 
 /// <summary>
@@ -1626,13 +1623,13 @@ public:
     ///     A descriptive message of the error.
     /// </param>
     /**/
-    explicit _CRTIMP2 invalid_scheduler_policy_key(_In_z_ const char * _Message) throw();
+    explicit _CONCRTIMP invalid_scheduler_policy_key(_In_z_ const char * _Message) throw();
 
     /// <summary>
     ///     Constructs an <c>invalid_scheduler_policy_key</c> object.
     /// </summary>
     /**/
-    _CRTIMP2 invalid_scheduler_policy_key() throw();
+    _CONCRTIMP invalid_scheduler_policy_key() throw();
 };
 
 /// <summary>
@@ -1654,13 +1651,13 @@ public:
     ///     A descriptive message of the error.
     /// </param>
     /**/
-    explicit _CRTIMP2 invalid_scheduler_policy_value(_In_z_ const char * _Message) throw();
+    explicit _CONCRTIMP invalid_scheduler_policy_value(_In_z_ const char * _Message) throw();
 
     /// <summary>
     ///     Constructs an <c>invalid_scheduler_policy_value</c> object.
     /// </summary>
     /**/
-    _CRTIMP2 invalid_scheduler_policy_value() throw();
+    _CONCRTIMP invalid_scheduler_policy_value() throw();
 };
 
 /// <summary>
@@ -1682,13 +1679,13 @@ public:
     ///     A descriptive message of the error.
     /// </param>
     /**/
-    explicit _CRTIMP2 invalid_scheduler_policy_thread_specification(_In_z_ const char * _Message) throw();
+    explicit _CONCRTIMP invalid_scheduler_policy_thread_specification(_In_z_ const char * _Message) throw();
 
     /// <summary>
     ///     Constructs an <c>invalid_scheduler_policy_value</c> object.
     /// </summary>
     /**/
-    _CRTIMP2 invalid_scheduler_policy_thread_specification() throw();
+    _CONCRTIMP invalid_scheduler_policy_thread_specification() throw();
 };
 
 /// <summary>
@@ -1716,13 +1713,13 @@ public:
     ///     A descriptive message of the error.
     /// </param>
     /**/
-    explicit _CRTIMP2 nested_scheduler_missing_detach(_In_z_ const char * _Message) throw();
+    explicit _CONCRTIMP nested_scheduler_missing_detach(_In_z_ const char * _Message) throw();
 
     /// <summary>
     ///     Constructs a <c>nested_scheduler_missing_detach</c> object.
     /// </summary>
     /**/
-    _CRTIMP2 nested_scheduler_missing_detach() throw();
+    _CONCRTIMP nested_scheduler_missing_detach() throw();
 };
 
 /// <summary>
@@ -1739,13 +1736,13 @@ public:
     ///     A descriptive message of the error.
     /// </param>
     /**/
-    explicit _CRTIMP2 operation_timed_out(_In_z_ const char * _Message) throw();
+    explicit _CONCRTIMP operation_timed_out(_In_z_ const char * _Message) throw();
 
     /// <summary>
     ///     Constructs an <c>operation_timed_out</c> object.
     /// </summary>
     /**/
-    _CRTIMP2 operation_timed_out() throw();
+    _CONCRTIMP operation_timed_out() throw();
 };
 
 /// <summary>
@@ -1773,13 +1770,13 @@ public:
     ///     A descriptive message of the error.
     /// </param>
     /**/
-    explicit _CRTIMP2 invalid_multiple_scheduling(_In_z_ const char * _Message) throw();
+    explicit _CONCRTIMP invalid_multiple_scheduling(_In_z_ const char * _Message) throw();
 
     /// <summary>
     ///     Constructs an <c>invalid_multiple_scheduling</c> object.
     /// </summary>
     /**/
-    _CRTIMP2 invalid_multiple_scheduling() throw();
+    _CONCRTIMP invalid_multiple_scheduling() throw();
 };
 
 /// <summary>
@@ -1799,13 +1796,13 @@ public:
     ///     A descriptive message of the error.
     /// </param>
     /**/
-    explicit _CRTIMP2 invalid_oversubscribe_operation(_In_z_ const char * _Message) throw();
+    explicit _CONCRTIMP invalid_oversubscribe_operation(_In_z_ const char * _Message) throw();
 
     /// <summary>
     ///     Constructs an <c>invalid_oversubscribe_operation</c> object.
     /// </summary>
     /**/
-    _CRTIMP2 invalid_oversubscribe_operation() throw();
+    _CONCRTIMP invalid_oversubscribe_operation() throw();
 };
 
 /// <summary>
@@ -1829,13 +1826,13 @@ public:
     ///     A descriptive message of the error.
     /// </param>
     /**/
-    explicit _CRTIMP2 improper_lock(_In_z_ const char * _Message) throw();
+    explicit _CONCRTIMP improper_lock(_In_z_ const char * _Message) throw();
 
     /// <summary>
     ///     Constructs an <c>improper_lock</c> exception.
     /// </summary>
     /**/
-    _CRTIMP2 improper_lock() throw();
+    _CONCRTIMP improper_lock() throw();
 };
 
 /// <summary>
@@ -1882,7 +1879,7 @@ public:
     ///     A location representing the NUMA node specified by the <paramref name="_NumaNodeNumber"/> parameter.
     /// </returns>
     /**/
-    _CRTIMP2 static location __cdecl from_numa_node(unsigned short _NumaNodeNumber);
+    _CONCRTIMP static location __cdecl from_numa_node(unsigned short _NumaNodeNumber);
 
 #endif  /* _CRT_USE_WINAPI_FAMILY_DESKTOP_APP */
 
@@ -1893,7 +1890,7 @@ public:
     ///     A location representing the most specific place the calling thread is executing.
     /// </returns>
     /**/
-    _CRTIMP2 static location __cdecl current();
+    _CONCRTIMP static location __cdecl current();
 
     /// <summary>
     ///     Assigns the contents of a different <c>location</c> object to this one.
@@ -1912,7 +1909,9 @@ public:
     ///     Destroys a <c>location</c> object.
     /// </summary>
     /**/
-    ~location() = default;
+    ~location()
+    {
+    }
 
     /// <summary>
     ///     Determines whether two <c>location</c> objects represent the same location.
@@ -1948,7 +1947,7 @@ public:
     ///     Returns a location representing the scheduling node that the calling thread is executing.
     /// </summary>
     /**/
-    _CRTIMP2 static location __cdecl _Current_node();
+    _CONCRTIMP static location __cdecl _Current_node();
 
     /// <summary>
     ///     Describes the type of the given location.
@@ -2463,7 +2462,7 @@ public:
     /// <seealso cref="SchedulerPolicy::SetConcurrencyLimits Method"/>
     /// <seealso cref="PolicyElementKey Enumeration"/>
     /**/
-    _CRTIMP2 SchedulerPolicy();
+    _CONCRTIMP SchedulerPolicy();
 
     /// <summary>
     ///     Constructs a new scheduler policy and populates it with values for <see cref="PolicyElementKey Enumeration">policy keys</see>
@@ -2487,7 +2486,7 @@ public:
     /// <seealso cref="SchedulerPolicy::SetConcurrencyLimits Method"/>
     /// <seealso cref="PolicyElementKey Enumeration"/>
     /**/
-    _CRTIMP2 SchedulerPolicy(size_t _PolicyKeyCount, ...);
+    _CONCRTIMP SchedulerPolicy(size_t _PolicyKeyCount, ...);
 
     /// <summary>
     ///     Constructs a new scheduler policy and populates it with values for <see cref="PolicyElementKey Enumeration">policy keys</see>
@@ -2511,7 +2510,7 @@ public:
     /// <seealso cref="SchedulerPolicy::SetConcurrencyLimits Method"/>
     /// <seealso cref="PolicyElementKey Enumeration"/>
     /**/
-    _CRTIMP2 SchedulerPolicy(const SchedulerPolicy& _SrcPolicy);
+    _CONCRTIMP SchedulerPolicy(const SchedulerPolicy& _SrcPolicy);
 
     /// <summary>
     ///     Assigns the scheduler policy from another scheduler policy.
@@ -2530,13 +2529,13 @@ public:
     /// <seealso cref="SchedulerPolicy::SetConcurrencyLimits Method"/>
     /// <seealso cref="PolicyElementKey Enumeration"/>
     /**/
-    _CRTIMP2 SchedulerPolicy& operator=(const SchedulerPolicy& _RhsPolicy);
+    _CONCRTIMP SchedulerPolicy& operator=(const SchedulerPolicy& _RhsPolicy);
 
     /// <summary>
     ///     Destroys a scheduler policy.
     /// </summary>
     /**/
-    _CRTIMP2 ~SchedulerPolicy();
+    _CONCRTIMP ~SchedulerPolicy();
 
     /// <summary>
     ///     Retrieves the value of the policy key supplied as the <paramref name="_Key"/> parameter.
@@ -2554,7 +2553,7 @@ public:
     /// <seealso cref="SchedulerPolicy::SetConcurrencyLimits Method"/>
     /// <seealso cref="PolicyElementKey Enumeration"/>
     /**/
-    _CRTIMP2 unsigned int GetPolicyValue(PolicyElementKey _Key) const;
+    _CONCRTIMP unsigned int GetPolicyValue(PolicyElementKey _Key) const;
 
     /// <summary>
     ///     Sets the value of the policy key supplied as the <paramref name="_Key"/> parameter and returns the old value.
@@ -2580,7 +2579,7 @@ public:
     /// <seealso cref="SchedulerPolicy::SetConcurrencyLimits Method"/>
     /// <seealso cref="PolicyElementKey Enumeration"/>
     /**/
-    _CRTIMP2 unsigned int SetPolicyValue(PolicyElementKey _Key, unsigned int _Value);
+    _CONCRTIMP unsigned int SetPolicyValue(PolicyElementKey _Key, unsigned int _Value);
 
     /// <summary>
     ///     Simultaneously sets the <c>MinConcurrency</c> and <c>MaxConcurrency</c> policies on the <c>SchedulerPolicy</c> object.
@@ -2601,7 +2600,7 @@ public:
     /// <seealso cref="SchedulerPolicy::SetPolicyValue Method"/>
     /// <seealso cref="PolicyElementKey Enumeration"/>
     /**/
-    _CRTIMP2 void SetConcurrencyLimits(unsigned int _MinConcurrency, unsigned int _MaxConcurrency = MaxExecutionResources);
+    _CONCRTIMP void SetConcurrencyLimits(unsigned int _MinConcurrency, unsigned int _MaxConcurrency = MaxExecutionResources);
 
     /// <summary>
     ///     Checks if this policy is a valid policy for a Concurrency Runtime scheduler. If it is not, an appropriate exception will be thrown.
@@ -2715,7 +2714,7 @@ public:
     ///     This method will not result in scheduler attachment if the calling context is not already associated with a scheduler.
     /// </remarks>
     /**/
-    _CRTIMP2 static unsigned int __cdecl Id();
+    _CONCRTIMP static unsigned int __cdecl Id();
 
     /// <summary>
     ///     Returns a copy of the policy that the current scheduler was created with.
@@ -2729,7 +2728,7 @@ public:
     /// </remarks>
     /// <seealso cref="SchedulerPolicy Class"/>
     /**/
-    _CRTIMP2 static SchedulerPolicy __cdecl GetPolicy();
+    _CONCRTIMP static SchedulerPolicy __cdecl GetPolicy();
 
     /// <summary>
     ///     Returns a pointer to the scheduler associated with the calling context, also referred to as the current scheduler.
@@ -2743,7 +2742,7 @@ public:
     ///     returned by this method.
     /// </remarks>
     /**/
-    _CRTIMP2 static Scheduler * __cdecl Get();
+    _CONCRTIMP static Scheduler * __cdecl Get();
 
     /// <summary>
     ///     Returns the current number of virtual processors for the scheduler associated with the calling context.
@@ -2758,7 +2757,7 @@ public:
     ///     with the calling context. This value can be stale the moment it is returned.</para>
     /// </remarks>
     /**/
-    _CRTIMP2 static unsigned int __cdecl GetNumberOfVirtualProcessors();
+    _CONCRTIMP static unsigned int __cdecl GetNumberOfVirtualProcessors();
 
     /// <summary>
     ///     Creates a new scheduler whose behavior is described by the <paramref name="_Policy"/> parameter and attaches it to the calling context.
@@ -2783,7 +2782,7 @@ public:
     /// <seealso cref="Scheduler::Release Method"/>
     /// <seealso cref="Task Scheduler (Concurrency Runtime)"/>
     /**/
-    _CRTIMP2 static void __cdecl Create(const SchedulerPolicy& _Policy);
+    _CONCRTIMP static void __cdecl Create(const SchedulerPolicy& _Policy);
 
     /// <summary>
     ///     Detaches the current scheduler from the calling context and restores the previously attached scheduler as the current
@@ -2802,7 +2801,7 @@ public:
     /// <seealso cref="Scheduler::Attach Method"/>
     /// <seealso cref="CurrentScheduler::Create Method"/>
     /**/
-    _CRTIMP2 static void __cdecl Detach();
+    _CONCRTIMP static void __cdecl Detach();
 
     /// <summary>
     ///     Causes the Windows event handle passed in the <paramref name="_ShutdownEvent"/> parameter to be signaled when the scheduler associated with
@@ -2818,7 +2817,7 @@ public:
     ///     scheduler_not_attached </see> exception being thrown.
     /// </remarks>
     /**/
-    _CRTIMP2 static void __cdecl RegisterShutdownEvent(HANDLE _ShutdownEvent);
+    _CONCRTIMP static void __cdecl RegisterShutdownEvent(HANDLE _ShutdownEvent);
 
     /// <summary>
     ///     Creates a new schedule group within the scheduler associated with the calling context. The version that takes the parameter
@@ -2841,7 +2840,7 @@ public:
     /// <seealso cref="Task Scheduler (Concurrency Runtime)"/>
     /// <seealso cref="location Class"/>
     /**/
-    _CRTIMP2 static ScheduleGroup * __cdecl CreateScheduleGroup();
+    _CONCRTIMP static ScheduleGroup * __cdecl CreateScheduleGroup();
 
     /// <summary>
     ///     Creates a new schedule group within the scheduler associated with the calling context. The version that takes the parameter
@@ -2867,7 +2866,7 @@ public:
     /// <seealso cref="Task Scheduler (Concurrency Runtime)"/>
     /// <seealso cref="location Class"/>
     /**/
-    _CRTIMP2 static ScheduleGroup * __cdecl CreateScheduleGroup(location& _Placement);
+    _CONCRTIMP static ScheduleGroup * __cdecl CreateScheduleGroup(location& _Placement);
 
     /// <summary>
     ///     Schedules a light-weight task within the scheduler associated with the calling context. The light-weight task will be placed
@@ -2888,7 +2887,7 @@ public:
     /// <seealso cref="ScheduleGroup Class"/>
     /// <seealso cref="location Class"/>
     /**/
-    _CRTIMP2 static void __cdecl ScheduleTask(TaskProc _Proc, _Inout_opt_ void * _Data);
+    _CONCRTIMP static void __cdecl ScheduleTask(TaskProc _Proc, _Inout_opt_ void * _Data);
 
     /// <summary>
     ///     Schedules a light-weight task within the scheduler associated with the calling context. The light-weight task will be placed
@@ -2912,7 +2911,7 @@ public:
     /// <seealso cref="ScheduleGroup Class"/>
     /// <seealso cref="location Class"/>
     /**/
-    _CRTIMP2 static void __cdecl ScheduleTask(TaskProc _Proc, _Inout_opt_ void * _Data, location& _Placement);
+    _CONCRTIMP static void __cdecl ScheduleTask(TaskProc _Proc, _Inout_opt_ void * _Data, location& _Placement);
 
     /// <summary>
     ///     Determines whether a given location is available on the current scheduler.
@@ -2931,7 +2930,7 @@ public:
     ///     location can change availability.</para>
     /// </remarks>
     /**/
-    _CRTIMP2 static bool __cdecl IsAvailableLocation(const location& _Placement);
+    _CONCRTIMP static bool __cdecl IsAvailableLocation(const location& _Placement);
 };
 
 /// <summary>
@@ -3000,7 +2999,7 @@ public:
     /// <seealso cref="PolicyElementKey Enumeration"/>
     /// <seealso cref="Task Scheduler (Concurrency Runtime)"/>
     /**/
-    _CRTIMP2 static Scheduler * __cdecl Create(const SchedulerPolicy& _Policy);
+    _CONCRTIMP static Scheduler * __cdecl Create(const SchedulerPolicy& _Policy);
 
     /// <summary>
     ///     Returns a unique identifier for the scheduler.
@@ -3114,7 +3113,7 @@ public:
     /// <seealso cref="PolicyElementKey Enumeration"/>
     /// <seealso cref="Task Scheduler (Concurrency Runtime)"/>
     /**/
-    _CRTIMP2 static void __cdecl SetDefaultSchedulerPolicy(const SchedulerPolicy& _Policy);
+    _CONCRTIMP static void __cdecl SetDefaultSchedulerPolicy(const SchedulerPolicy& _Policy);
 
     /// <summary>
     ///     Resets the default scheduler policy to the runtime default. The next time a default scheduler is created, it will use the
@@ -3128,7 +3127,7 @@ public:
     /// <seealso cref="Scheduler::SetDefaultSchedulerPolicy Method"/>
     /// <seealso cref="SchedulerPolicy Class"/>
     /**/
-    _CRTIMP2 static void __cdecl ResetDefaultSchedulerPolicy();
+    _CONCRTIMP static void __cdecl ResetDefaultSchedulerPolicy();
 
     /// <summary>
     ///     Creates a new schedule group within the scheduler. The version that takes the parameter <paramref name="_Placement"/> causes tasks
@@ -3293,7 +3292,7 @@ public:
     ///     to which the current context belongs; otherwise, the value <c>-1</c>.
     /// </returns>
     /**/
-    _CRTIMP2 static unsigned int __cdecl Id();
+    _CONCRTIMP static unsigned int __cdecl Id();
 
     /// <summary>
     ///     Returns an identifier for the virtual processor that the current context is executing on.
@@ -3308,7 +3307,7 @@ public:
     ///     for debugging or tracing purposes only.
     /// </remarks>
     /**/
-    _CRTIMP2 static unsigned int __cdecl VirtualProcessorId();
+    _CONCRTIMP static unsigned int __cdecl VirtualProcessorId();
 
     /// <summary>
     ///     Returns an identifier for the schedule group that the current context is working on.
@@ -3319,7 +3318,7 @@ public:
     /// </returns>
     /// <seealso cref="ScheduleGroup Class"/>
     /**/
-    _CRTIMP2 static unsigned int __cdecl ScheduleGroupId();
+    _CONCRTIMP static unsigned int __cdecl ScheduleGroupId();
 
     /// <summary>
     ///     Blocks the current context.
@@ -3342,7 +3341,7 @@ public:
     /// <seealso cref="Context::Unblock Method"/>
     /// <seealso cref="Task Scheduler (Concurrency Runtime)"/>
     /**/
-    _CRTIMP2 static void __cdecl Block();
+    _CONCRTIMP static void __cdecl Block();
 
     /// <summary>
     ///     Unblocks the context and causes it to become runnable.
@@ -3395,7 +3394,7 @@ public:
     ///     scheduler currently associated with the calling context.</para>
     /// </remarks>
     /**/
-    _CRTIMP2 static void __cdecl _SpinYield();
+    _CONCRTIMP static void __cdecl _SpinYield();
 
     /// <summary>
     ///     Yields execution so that another context can execute. If no other context is available to yield to, the scheduler
@@ -3408,7 +3407,7 @@ public:
     /// <seealso cref="Context::Block Method"/>
     /// <seealso cref="Context::Unblock Method"/>
     /**/
-    _CRTIMP2 static void __cdecl Yield();
+    _CONCRTIMP static void __cdecl Yield();
 
     /// <summary>
     ///     Returns an indication of whether the task collection which is currently executing inline on the current context
@@ -3421,7 +3420,7 @@ public:
     ///     <para>This method will not result in scheduler attachment if the calling context is not already associated with a scheduler.</para>
     /// </returns>
     /**/
-    _CRTIMP2 static bool __cdecl IsCurrentTaskCollectionCanceling();
+    _CONCRTIMP static bool __cdecl IsCurrentTaskCollectionCanceling();
 
     /// <summary>
     ///     Returns a pointer to the current context.
@@ -3434,7 +3433,7 @@ public:
     ///     scheduler currently associated with the calling context.
     /// </remarks>
     /**/
-    _CRTIMP2 static Context * __cdecl CurrentContext();
+    _CONCRTIMP static Context * __cdecl CurrentContext();
 
     /// <summary>
     ///     Injects an additional virtual processor into a scheduler for the duration of a block of code when invoked on a context executing
@@ -3446,7 +3445,7 @@ public:
     /// </param>
     /// <seealso cref="Task Scheduler (Concurrency Runtime)"/>
     /**/
-    _CRTIMP2 static void __cdecl Oversubscribe(bool _BeginOversubscription);
+    _CONCRTIMP static void __cdecl Oversubscribe(bool _BeginOversubscription);
 
 protected:
 
@@ -3494,7 +3493,7 @@ public:
     ///     Constructs a new critical section.
     /// </summary>
     /**/
-    _CRTIMP2 critical_section();
+    _CONCRTIMP critical_section();
 
     /// <summary>
     ///     Destroys a critical section.
@@ -3504,7 +3503,7 @@ public:
     ///     still held results in undefined behavior.
     /// </remarks>
     /**/
-    _CRTIMP2 ~critical_section();
+    _CONCRTIMP ~critical_section();
 
     /// <summary>
     ///     Acquires this critical section.
@@ -3518,7 +3517,7 @@ public:
     /// <seealso cref="critical_section::unlock Method"/>
     /// <seealso cref="critical_section::scoped_lock Class"/>
     /**/
-    _CRTIMP2 void lock();
+    _CONCRTIMP void lock();
 
     /// <summary>
     ///     Tries to acquire the lock without blocking.
@@ -3528,7 +3527,7 @@ public:
     /// </returns>
     /// <seealso cref="critical_section::unlock Method"/>
     /**/
-    _CRTIMP2 bool try_lock();
+    _CONCRTIMP bool try_lock();
 
     /// <summary>
     ///     Tries to acquire the lock without blocking for a specific number of milliseconds.
@@ -3541,7 +3540,7 @@ public:
     /// </returns>
     /// <seealso cref="critical_section::unlock Method"/>
     /**/
-    _CRTIMP2 bool try_lock_for(unsigned int _Timeout);
+    _CONCRTIMP bool try_lock_for(unsigned int _Timeout);
 
     /// <summary>
     ///     Unlocks the critical section.
@@ -3549,7 +3548,7 @@ public:
     /// <seealso cref="critical_section::lock Method"/>
     /// <seealso cref="critical_section::try_lock Method"/>
     /**/
-    _CRTIMP2 void unlock();
+    _CONCRTIMP void unlock();
 
     /// <summary>
     ///     A reference to a <c>critical_section</c> object.
@@ -3568,7 +3567,7 @@ public:
     ///     The method simply returns a reference to the object itself.
     /// </remarks>
     /**/
-    _CRTIMP2 native_handle_type native_handle();
+    _CONCRTIMP native_handle_type native_handle();
 
     /// <summary>
     ///     Guarantees that if any context holds the lock at the time the method is called, that context has released
@@ -3612,14 +3611,14 @@ public:
         /// </param>
         /// <seealso cref="critical_section Class"/>
         /**/
-        explicit _CRTIMP2 scoped_lock(critical_section& _Critical_section);
+        explicit _CONCRTIMP scoped_lock(critical_section& _Critical_section);
 
         /// <summary>
         ///     Destroys a <c>scoped_lock</c> object and releases the critical section supplied in its constructor.
         /// </summary>
         /// <seealso cref="critical_section Class"/>
         /**/
-        _CRTIMP2 ~scoped_lock();
+        _CONCRTIMP ~scoped_lock();
 
     private:
 
@@ -3676,7 +3675,7 @@ public:
     ///     Constructs a new <c>reader_writer_lock</c> object.
     /// </summary>
     /**/
-    _CRTIMP2 reader_writer_lock();
+    _CONCRTIMP reader_writer_lock();
 
     /// <summary>
     ///     Destroys the <c>reader_writer_lock</c> object.
@@ -3686,7 +3685,7 @@ public:
     ///     still held results in undefined behavior.
     /// </remarks>
     /**/
-    _CRTIMP2 ~reader_writer_lock();
+    _CONCRTIMP ~reader_writer_lock();
 
     /// <summary>
     ///     Acquires the reader-writer lock as a writer.
@@ -3702,7 +3701,7 @@ public:
     /// </remarks>
     /// <seealso cref="reader_writer_lock::unlock Method"/>
     /**/
-    _CRTIMP2 void lock();
+    _CONCRTIMP void lock();
 
     /// <summary>
     ///     Attempts to acquire the reader-writer lock as a writer without blocking.
@@ -3712,7 +3711,7 @@ public:
     /// </returns>
     /// <seealso cref="reader_writer_lock::unlock Method"/>
     /**/
-    _CRTIMP2 bool try_lock();
+    _CONCRTIMP bool try_lock();
 
     /// <summary>
     ///     Acquires the reader-writer lock as a reader. If there are writers, active readers have to wait until they are done.
@@ -3726,7 +3725,7 @@ public:
     /// </remarks>
     /// <seealso cref="reader_writer_lock::unlock Method"/>
     /**/
-    _CRTIMP2 void lock_read();
+    _CONCRTIMP void lock_read();
 
     /// <summary>
     ///     Attempts to acquire the reader-writer lock as a reader without blocking.
@@ -3736,7 +3735,7 @@ public:
     /// </returns>
     /// <seealso cref="reader_writer_lock::unlock Method"/>
     /**/
-    _CRTIMP2 bool try_lock_read();
+    _CONCRTIMP bool try_lock_read();
 
     /// <summary>
     ///     Unlocks the reader-writer lock based on who locked it, reader or writer.
@@ -3750,7 +3749,7 @@ public:
     /// <seealso cref="reader_writer_lock::try_lock Method"/>
     /// <seealso cref="reader_writer_lock::try_lock_read Method"/>
     /**/
-    _CRTIMP2 void unlock();
+    _CONCRTIMP void unlock();
 
     /// <summary>
     ///     Acquires a write lock given a specific write node to lock.
@@ -3783,13 +3782,13 @@ public:
         ///     The <c>reader_writer_lock</c> object to acquire as a writer.
         /// </param>
         /**/
-        explicit _CRTIMP2 scoped_lock(reader_writer_lock& _Reader_writer_lock);
+        explicit _CONCRTIMP scoped_lock(reader_writer_lock& _Reader_writer_lock);
 
         /// <summary>
         ///     Destroys a <c>reader_writer_lock</c> object and releases the lock supplied in its constructor.
         /// </summary>
         /**/
-        _CRTIMP2 ~scoped_lock();
+        _CONCRTIMP ~scoped_lock();
 
     private:
 
@@ -3816,13 +3815,13 @@ public:
         ///     The <c>reader_writer_lock</c> object to acquire as a reader.
         /// </param>
         /**/
-        explicit _CRTIMP2 scoped_lock_read(reader_writer_lock& _Reader_writer_lock);
+        explicit _CONCRTIMP scoped_lock_read(reader_writer_lock& _Reader_writer_lock);
 
         /// <summary>
         ///     Destroys a <c>scoped_lock_read</c> object and releases the lock supplied in its constructor.
         /// </summary>
         /**/
-        _CRTIMP2 ~scoped_lock_read();
+        _CONCRTIMP ~scoped_lock_read();
 
     private:
 
@@ -3928,7 +3927,7 @@ public:
     ///     Constructs a new event.
     /// </summary>
     /**/
-    _CRTIMP2 event();
+    _CONCRTIMP event();
 
     /// <summary>
     ///     Destroys an event.
@@ -3938,7 +3937,7 @@ public:
     ///     still waiting on it results in undefined behavior.
     /// </remarks>
     /**/
-    _CRTIMP2 ~event();
+    _CONCRTIMP ~event();
 
     /// <summary>
     ///     Waits for the event to become signaled.
@@ -3955,7 +3954,7 @@ public:
     /// <seealso cref="COOPERATIVE_TIMEOUT_INFINITE Constant">COOPERATIVE_TIMEOUT_INFINITE</seealso>
     /// <seealso cref="COOPERATIVE_WAIT_TIMEOUT Constant">COOPERATIVE_WAIT_TIMEOUT</seealso>
     /**/
-    _CRTIMP2 size_t wait(unsigned int _Timeout = COOPERATIVE_TIMEOUT_INFINITE);
+    _CONCRTIMP size_t wait(unsigned int _Timeout = COOPERATIVE_TIMEOUT_INFINITE);
 
     /// <summary>
     ///     Signals the event.
@@ -3966,7 +3965,7 @@ public:
     /// <seealso cref="event::wait Method"/>
     /// <seealso cref="event::reset Method"/>
     /**/
-    _CRTIMP2 void set();
+    _CONCRTIMP void set();
 
     /// <summary>
     ///     Resets the event to a non-signaled state.
@@ -3974,7 +3973,7 @@ public:
     /// <seealso cref="event::set Method"/>
     /// <seealso cref="event::wait Method"/>
     /**/
-    _CRTIMP2 void reset();
+    _CONCRTIMP void reset();
 
     /// <summary>
     ///     Waits for multiple events to become signaled.
@@ -4008,7 +4007,7 @@ public:
     /// <seealso cref="COOPERATIVE_TIMEOUT_INFINITE Constant">COOPERATIVE_TIMEOUT_INFINITE</seealso>
     /// <seealso cref="COOPERATIVE_WAIT_TIMEOUT Constant">COOPERATIVE_WAIT_TIMEOUT</seealso>
     /**/
-    _CRTIMP2 static size_t __cdecl wait_for_multiple(_In_reads_(_Count) event ** _PPEvents, size_t _Count, bool _FWaitAll, unsigned int _Timeout = COOPERATIVE_TIMEOUT_INFINITE);
+    _CONCRTIMP static size_t __cdecl wait_for_multiple(_In_reads_(_Count) event ** _PPEvents, size_t _Count, bool _FWaitAll, unsigned int _Timeout = COOPERATIVE_TIMEOUT_INFINITE);
 
 
     /// <summary>
@@ -4092,23 +4091,23 @@ namespace details
     public:
 
         // Constructor for _NonReentrantPPLLock
-        _CRTIMP2 _NonReentrantPPLLock();
+        _CONCRTIMP _NonReentrantPPLLock();
 
         // Acquire the lock, spin if necessary
-        _CRTIMP2 void _Acquire(void * _Lock_node);
+        _CONCRTIMP void _Acquire(void * _Lock_node);
 
         // Releases the lock
-        _CRTIMP2 void _Release();
+        _CONCRTIMP void _Release();
 
         // An exception safe RAII wrapper.
         class _Scoped_lock
         {
         public:
             // Constructs a holder and acquires the specified lock
-            _CRTIMP2 explicit _Scoped_lock(_NonReentrantPPLLock& _Lock);
+            _CONCRTIMP explicit _Scoped_lock(_NonReentrantPPLLock& _Lock);
 
             // Destroys the holder and releases the lock
-            _CRTIMP2 ~_Scoped_lock();
+            _CONCRTIMP ~_Scoped_lock();
 
         private:
             _NonReentrantPPLLock& _M_lock;
@@ -4128,23 +4127,23 @@ namespace details
     {
     public:
         // Constructor for _ReentrantPPLLock
-        _CRTIMP2 _ReentrantPPLLock();
+        _CONCRTIMP _ReentrantPPLLock();
 
         // Acquire the lock, spin if necessary
-        _CRTIMP2 void _Acquire(void * _Lock_node);
+        _CONCRTIMP void _Acquire(void * _Lock_node);
 
         // Releases the lock
-        _CRTIMP2 void _Release();
+        _CONCRTIMP void _Release();
 
         // An exception safe RAII wrapper.
         class _Scoped_lock
         {
         public:
             // Constructs a holder and acquires the specified lock
-            _CRTIMP2 explicit _Scoped_lock(_ReentrantPPLLock& _Lock);
+            _CONCRTIMP explicit _Scoped_lock(_ReentrantPPLLock& _Lock);
 
             // Destroys the holder and releases the lock
-            _CRTIMP2 ~_Scoped_lock();
+            _CONCRTIMP ~_Scoped_lock();
 
         private:
             _ReentrantPPLLock& _M_lock;
@@ -4253,7 +4252,7 @@ namespace details
         }
 
         // Place associated task collection in a safe state.
-        _CRTIMP2 void _CheckTaskCollection();
+        _CONCRTIMP void _CheckTaskCollection();
 
     private:
 
@@ -4512,7 +4511,7 @@ namespace details
         ///     When this cancellation token is canceled, the structured task group will be canceled.
         /// </param>
         /**/
-        _CRTIMP2 _StructuredTaskCollection(_CancellationTokenState *_PTokenState);
+        _CONCRTIMP _StructuredTaskCollection(_CancellationTokenState *_PTokenState);
 
         /// <summary>
         ///     Destruct a task collection and wait on all associated work to finish. Clients must call '_StructuredTaskCollection::_Wait'
@@ -4521,7 +4520,7 @@ namespace details
         ///     If another exception occurs because work is aborted, the process will terminate (C++ semantics).
         /// </summary>
         /**/
-        _CRTIMP2 ~_StructuredTaskCollection();
+        _CONCRTIMP ~_StructuredTaskCollection();
    
         /// <summary>
         ///     Schedules a chore that can potentially run in parallel. The chore is pushed onto the associated workstealing queue, and
@@ -4538,7 +4537,7 @@ namespace details
         ///     have specific placement.
         /// </param>
         /**/
-        _CRTIMP2 void _Schedule(_UnrealizedChore * _PChore, location * _PLocation);
+        _CONCRTIMP void _Schedule(_UnrealizedChore * _PChore, location * _PLocation);
 
         /// <summary>
         ///     Schedules a chore that can potentially run in parallel. The chore is pushed onto the associated workstealing queue, and
@@ -4551,13 +4550,13 @@ namespace details
         ///     The new unrealized chore to schedule
         /// </param>
         /**/
-        _CRTIMP2 void _Schedule(_UnrealizedChore * _PChore);
+        _CONCRTIMP void _Schedule(_UnrealizedChore * _PChore);
 
         /// <summary>
         ///     Cancels work on the task collection.
         /// </summary>
         /**/
-        _CRTIMP2 void _Cancel();
+        _CONCRTIMP void _Cancel();
 
         /// <summary>
         ///     Informs the caller whether or not the task collection is currently in the midst of cancellation. Note that this
@@ -4570,7 +4569,7 @@ namespace details
         ///     An indication of whether the task collection is in the midst of a cancellation (or is guaranteed to be shortly).
         /// </returns>
         /**/
-        _CRTIMP2 bool _IsCanceling();
+        _CONCRTIMP bool _IsCanceling();
 
         /// <summary>
         ///     A cancellation friendly wrapper with which to execute _PChore and then
@@ -4586,7 +4585,7 @@ namespace details
         ///     An indication of the status of the wait.
         /// </returns>
         /**/
-        _CRTIMP2 _TaskCollectionStatus __stdcall _RunAndWait(_UnrealizedChore * _PChore = NULL);
+        _CONCRTIMP _TaskCollectionStatus __stdcall _RunAndWait(_UnrealizedChore * _PChore = NULL);
 
         /// <summary>
         ///     Waits for all chores running in the _StructuredTaskCollection to finish (normally or abnormally). This method encapsulates
@@ -4623,12 +4622,12 @@ namespace details
         ///     Internal routine to abort work on the task collection.
         /// </summary>
         /**/
-        _CRTIMP2 void _Abort();
+        _CONCRTIMP void _Abort();
 
         /// <summary>
         ///     Internal routine to clean up after a cancellation token.
         /// </summary>
-        _CRTIMP2 void _CleanupToken();
+        _CONCRTIMP void _CleanupToken();
 
         /// <summary>
         ///     Performs task cleanup normally done at destruction time.
@@ -4704,7 +4703,7 @@ namespace details
         ///     Constructs a new task collection.
         /// </summary>
         /**/
-        _CRTIMP2 _TaskCollection();
+        _CONCRTIMP _TaskCollection();
 
         /// <summary>
         ///     Constructs a new task collection whose cancellation is governed by the specified cancellation token state.
@@ -4713,7 +4712,7 @@ namespace details
         ///     When this cancellation token is canceled, the task collection is canceled.
         /// </param>
         /**/
-        _CRTIMP2 _TaskCollection(_CancellationTokenState *_PTokenState);
+        _CONCRTIMP _TaskCollection(_CancellationTokenState *_PTokenState);
 
         /// <summary>
         ///     Destroys a task collection. Clients must call '_TaskCollection::_Wait' or '_TaskCollection::_RunAndWait' prior to destructing
@@ -4722,7 +4721,7 @@ namespace details
         ///     is aborted, the process will terminate (C++ semantics).
         /// </summary>
         /**/
-        _CRTIMP2 ~_TaskCollection();
+        _CONCRTIMP ~_TaskCollection();
 
         /// <summary>
         ///     Schedules a chore that can potentially run in parallel. The chore is pushed onto the associated workstealing queue, and
@@ -4739,7 +4738,7 @@ namespace details
         ///     have specific placement.
         /// </param>
         /**/
-        _CRTIMP2 void _Schedule(_UnrealizedChore * _PChore, location * _PLocation);
+        _CONCRTIMP void _Schedule(_UnrealizedChore * _PChore, location * _PLocation);
 
         /// <summary>
         ///     Schedules a chore that can potentially run in parallel. The chore is pushed onto the associated workstealing queue, and
@@ -4752,13 +4751,13 @@ namespace details
         ///     The new unrealized chore to schedule
         /// </param>
         /**/
-        _CRTIMP2 void _Schedule(_UnrealizedChore * _PChore);
+        _CONCRTIMP void _Schedule(_UnrealizedChore * _PChore);
 
         /// <summary>
         ///     Cancels work on the task collection.
         /// </summary>
         /**/
-        _CRTIMP2 void _Cancel();
+        _CONCRTIMP void _Cancel();
 
         /// <summary>
         ///     Informs the caller whether or not the task collection is currently in the midst of a cancellation. Note that this
@@ -4771,7 +4770,7 @@ namespace details
         ///     An indication of whether the task collection is in the midst of a cancellation (or is guaranteed to be shortly).
         /// </returns>
         /**/
-        _CRTIMP2 bool _IsCanceling();
+        _CONCRTIMP bool _IsCanceling();
 
         /// <summary>
         ///     A cancellation friendly wrapper with which to execute _PChore and then
@@ -4788,7 +4787,7 @@ namespace details
         /// </returns>
         /// </summary>
         /**/
-        _CRTIMP2 _TaskCollectionStatus __stdcall _RunAndWait(_UnrealizedChore * _PChore = NULL);
+        _CONCRTIMP _TaskCollectionStatus __stdcall _RunAndWait(_UnrealizedChore * _PChore = NULL);
 
         /// <summary>
         ///     Waits for all chores running in the _TaskCollection to finish (normally or abnormally). This method encapsulates
@@ -5159,7 +5158,7 @@ namespace details
         ///     The inline depth will be set to 0 when the context is first initialized,
         ///     and the caller is responsible to maintain that depth.
         /// </summary>
-        _CRTIMP2 static size_t & __cdecl _GetCurrentInlineDepth();
+        _CONCRTIMP static size_t & __cdecl _GetCurrentInlineDepth();
     };
 
     /// <summary>
@@ -5180,7 +5179,7 @@ namespace details
         /// <returns>
         ///     Pointer to a new instance of _AsyncTaskCollection.
         /// </returns>
-        _CRTIMP2 static _AsyncTaskCollection * __cdecl _NewCollection(_CancellationTokenState *_PTokenState);
+        _CONCRTIMP static _AsyncTaskCollection * __cdecl _NewCollection(_CancellationTokenState *_PTokenState);
 
         /// <summary>
         ///     Schedule a chore with automatic inlining. The chore is pushed onto the associated workstealing queue, and
@@ -5256,7 +5255,7 @@ namespace details
 
         void _NotificationHandler();
 
-        _CRTIMP2 virtual void _Destroy();
+        _CONCRTIMP virtual void _Destroy();
 
         // Private constructor
         _AsyncTaskCollection(_CancellationTokenState *_PTokenState);
@@ -5291,9 +5290,9 @@ namespace details
     {
     public:
 
-        _CRTIMP2 _Cancellation_beacon();
+        _CONCRTIMP _Cancellation_beacon();
 
-        _CRTIMP2 ~_Cancellation_beacon();
+        _CONCRTIMP ~_Cancellation_beacon();
 
         bool _Is_signaled() const
         {
@@ -5302,7 +5301,7 @@ namespace details
 
         // This method should only be called when the beacon is signaled. It confirms whether a cancellation is indeed happening and that the beacon
         // was not flagged due to a false positive race. If the cancellation is not confirmed, the beacon is lowered.
-        _CRTIMP2 bool _Confirm_cancel();
+        _CONCRTIMP bool _Confirm_cancel();
 
         void _Raise()
         {
@@ -5336,16 +5335,16 @@ namespace details
         //
         // _Ms: The duration and period of the timer in milliseconds.
         // _FRepeating: An indication of whether the timer is repeating (periodic) or not.
-        _CRTIMP2 _Timer(unsigned int _Ms, bool _FRepeating);
+        _CONCRTIMP _Timer(unsigned int _Ms, bool _FRepeating);
 
         // Destroys the timer.
-        _CRTIMP2 virtual ~_Timer();
+        _CONCRTIMP virtual ~_Timer();
 
         // Starts the timer.
-        _CRTIMP2 void _Start();
+        _CONCRTIMP void _Start();
 
         // Stops the timer.
-        _CRTIMP2 void _Stop();
+        _CONCRTIMP void _Stop();
 
     private:
         friend class _TimerStub;
@@ -5395,7 +5394,7 @@ namespace details
     ///     the Concurrency runtime ETW provider.
     /// </summary>
     /**/
-    _CRTIMP2 const _CONCRT_TRACE_INFO * _GetConcRTTraceInfo();
+    _CONCRTIMP const _CONCRT_TRACE_INFO * _GetConcRTTraceInfo();
 
     /// <summary>
     ///     Register ConcRT as an ETW Event Provider.
@@ -5419,7 +5418,7 @@ namespace details
 ///     If tracing was correctly initiated, <c>S_OK</c> is returned; otherwise, <c>E_NOT_STARTED</c> is returned.
 /// </returns>
 /**/
-__declspec(deprecated("Concurrency::EnableTracing is a deprecated function.")) _CRTIMP2 HRESULT __cdecl EnableTracing();
+__declspec(deprecated("Concurrency::EnableTracing is a deprecated function.")) _CONCRTIMP HRESULT __cdecl EnableTracing();
 
 /// <summary>
 ///     Disables tracing in the Concurrency Runtime. This function is deprecated because ETW tracing is unregistered by default.
@@ -5429,7 +5428,7 @@ __declspec(deprecated("Concurrency::EnableTracing is a deprecated function.")) _
 ///     <c>E_NOT_STARTED</c> is returned
 /// </returns>
 /**/
-__declspec(deprecated("Concurrency::DisableTracing is a deprecated function.")) _CRTIMP2 HRESULT __cdecl DisableTracing();
+__declspec(deprecated("Concurrency::DisableTracing is a deprecated function.")) _CONCRTIMP HRESULT __cdecl DisableTracing();
 
 /// <summary>
 ///     The types of events that can be traced using the tracing functionality offered by the Concurrency Runtime.
@@ -5498,7 +5497,7 @@ enum ConcRT_EventType
 ///     The ETW provider GUID for the Concurrency Runtime.
 /// </summary>
 /**/
-_CRTIMP2 extern const GUID ConcRT_ProviderGuid;
+_CONCRTIMP extern const GUID ConcRT_ProviderGuid;
 
 //
 // GUIDS for events
@@ -5511,7 +5510,7 @@ _CRTIMP2 extern const GUID ConcRT_ProviderGuid;
 ///     This category of events is not currently fired by the Concurrency Runtime.
 /// </remarks>
 /**/
-_CRTIMP2 extern const GUID ConcRTEventGuid;
+_CONCRTIMP extern const GUID ConcRTEventGuid;
 
 /// <summary>
 ///     A category GUID describing ETW events fired by the Concurrency Runtime that are directly related to scheduler activity.
@@ -5519,7 +5518,7 @@ _CRTIMP2 extern const GUID ConcRTEventGuid;
 /// <seealso cref="CurrentScheduler Class"/>
 /// <seealso cref="Scheduler Class"/>
 /**/
-_CRTIMP2 extern const GUID SchedulerEventGuid;
+_CONCRTIMP extern const GUID SchedulerEventGuid;
 
 /// <summary>
 ///     A category GUID describing ETW events fired by the Concurrency Runtime that are directly related to schedule groups.
@@ -5529,14 +5528,14 @@ _CRTIMP2 extern const GUID SchedulerEventGuid;
 /// </remarks>
 /// <seealso cref="ScheduleGroup Class"/>
 /**/
-_CRTIMP2 extern const GUID ScheduleGroupEventGuid;
+_CONCRTIMP extern const GUID ScheduleGroupEventGuid;
 
 /// <summary>
 ///     A category GUID describing ETW events fired by the Concurrency Runtime that are directly related to contexts.
 /// </summary>
 /// <seealso cref="Context Class"/>
 /**/
-_CRTIMP2 extern const GUID ContextEventGuid;
+_CONCRTIMP extern const GUID ContextEventGuid;
 
 /// <summary>
 ///     A category GUID describing ETW events fired by the Concurrency Runtime that are directly related to chores or tasks.
@@ -5547,13 +5546,13 @@ _CRTIMP2 extern const GUID ContextEventGuid;
 /// <seealso cref="task_group Class"/>
 /// <seealso cref="structured_task_group Class"/>
 /**/
-_CRTIMP2 extern const GUID ChoreEventGuid;
+_CONCRTIMP extern const GUID ChoreEventGuid;
 
 /// <summary>
 ///     A category GUID describing ETW events fired by the Concurrency Runtime that are directly related to virtual processors.
 /// </summary>
 /**/
-_CRTIMP2 extern const GUID VirtualProcessorEventGuid;
+_CONCRTIMP extern const GUID VirtualProcessorEventGuid;
 
 /// <summary>
 ///     A category GUID describing ETW events fired by the Concurrency Runtime that are directly related to locks.
@@ -5564,7 +5563,7 @@ _CRTIMP2 extern const GUID VirtualProcessorEventGuid;
 /// <seealso cref="critical_section Class"/>
 /// <seealso cref="reader_writer_lock Class"/>
 /**/
-_CRTIMP2 extern const GUID LockEventGuid;
+_CONCRTIMP extern const GUID LockEventGuid;
 
 /// <summary>
 ///     A category GUID describing ETW events fired by the Concurrency Runtime that are directly related to the resource manager.
@@ -5574,7 +5573,7 @@ _CRTIMP2 extern const GUID LockEventGuid;
 /// </remarks>
 /// <seealso cref="IResourceManager Structure"/>
 /**/
-_CRTIMP2 extern const GUID ResourceManagerEventGuid;
+_CONCRTIMP extern const GUID ResourceManagerEventGuid;
 
 /// <summary>
 ///     A category GUID describing ETW events fired by the Concurrency Runtime that are directly related to usage of the <c>parallel_invoke</c>
@@ -5582,7 +5581,7 @@ _CRTIMP2 extern const GUID ResourceManagerEventGuid;
 /// </summary>
 /// <seealso cref="parallel_invoke Function"/>
 /**/
-_CRTIMP2 extern const GUID PPLParallelInvokeEventGuid;
+_CONCRTIMP extern const GUID PPLParallelInvokeEventGuid;
 
 /// <summary>
 ///     A category GUID describing ETW events fired by the Concurrency Runtime that are directly related to usage of the <c>parallel_for</c>
@@ -5590,7 +5589,7 @@ _CRTIMP2 extern const GUID PPLParallelInvokeEventGuid;
 /// </summary>
 /// <seealso cref="parallel_for Function"/>
 /**/
-_CRTIMP2 extern const GUID PPLParallelForEventGuid;
+_CONCRTIMP extern const GUID PPLParallelForEventGuid;
 
 /// <summary>
 ///     A category GUID describing ETW events fired by the Concurrency Runtime that are directly related to usage of the <c>parallel_for_each</c>
@@ -5598,16 +5597,16 @@ _CRTIMP2 extern const GUID PPLParallelForEventGuid;
 /// </summary>
 /// <seealso cref="parallel_for_each Function"/>
 /**/
-_CRTIMP2 extern const GUID PPLParallelForeachEventGuid;
+_CONCRTIMP extern const GUID PPLParallelForeachEventGuid;
 
 /// <summary>
 ///     A category GUID ({B9B5B78C-0713-4898-A21A-C67949DCED07}) describing ETW events fired by the Agents library in the Concurrency Runtime.
 /// </summary>
 /**/
-_CRTIMP2 extern const GUID AgentEventGuid;
+_CONCRTIMP extern const GUID AgentEventGuid;
 
 // Trace an event signaling a parallel function
-_CRTIMP2 void __cdecl _Trace_ppl_function(const GUID& _Guid, unsigned char _Level, ConcRT_EventType _Type);
+_CONCRTIMP void __cdecl _Trace_ppl_function(const GUID& _Guid, unsigned char _Level, ConcRT_EventType _Type);
 
 /// <summary>
 ///     Trace flags for the event types
@@ -5701,11 +5700,47 @@ enum Agents_EventType
 //        };
 
 // Emit a trace event specific to the agents library of the given type and payload
-_CRTIMP2 void __cdecl _Trace_agents(Agents_EventType _Type, __int64 agentId, ...);
+_CONCRTIMP void __cdecl _Trace_agents(Agents_EventType _Type, __int64 agentId, ...);
 }
+
+#ifndef _NO_DEFAULT_CONCRT_LIB
+
+#undef _DEBUG_AFFIX
+#undef _IDL_AFFIX
+#undef _IDL_DEFAULT
+#undef _LIB_STEM
+
+#ifdef _DEBUG
+    #define _DEBUG_AFFIX "d"
+    #define _IDL_DEFAULT 2
+#else
+    #define _DEBUG_AFFIX ""
+    #define _IDL_DEFAULT 0
+#endif /* _DEBUG */
+
+#if defined(_DLL) && !defined(_STATIC_CPPLIB)
+    #define _LIB_STEM "concrt"
+#else /* defined(_DLL) && !defined(_STATIC_CPPLIB) */
+    #define _LIB_STEM "libconcrt"
+    #if _ITERATOR_DEBUG_LEVEL != _IDL_DEFAULT
+        #define _IDL_AFFIX _CRT_STRINGIZE(_ITERATOR_DEBUG_LEVEL)
+    #endif /* _ITERATOR_DEBUG_LEVEL != _IDL_DEFAULT */
+#endif /* defined(_DLL) && !defined(_STATIC_CPPLIB) */
+
+#ifndef _IDL_AFFIX
+    #define _IDL_AFFIX ""
+#endif /* _IDL_AFFIX */
+
+#pragma comment(lib, _LIB_STEM _DEBUG_AFFIX _IDL_AFFIX)
+
+#undef _DEBUG_AFFIX
+#undef _IDL_AFFIX
+#undef _IDL_DEFAULT
+#undef _LIB_STEM
+
+#endif /* _NO_DEFAULT_CONCRT_LIB */
 
 namespace concurrency = Concurrency;
 
-#pragma warning(pop)
 #pragma pop_macro("new")
 #pragma pack(pop)

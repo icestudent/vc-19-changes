@@ -38,7 +38,7 @@ template <> class NumericType<unsigned char>    { public: enum{ isBool = false, 
 template <> class NumericType<signed char>      { public: enum{ isBool = false, isFloat = false, isInt = true }; };
 template <> class NumericType<short>            { public: enum{ isBool = false, isFloat = false, isInt = true }; };
 template <> class NumericType<unsigned short>   { public: enum{ isBool = false, isFloat = false, isInt = true }; };
-#if _NATIVE_WCHAR_T_DEFINED
+#ifdef _NATIVE_WCHAR_T_DEFINED
 template <> class NumericType<wchar_t>          { public: enum{ isBool = false, isFloat = false, isInt = true }; };
 #endif  /* _NATIVE_WCHAR_T_DEFINED */
 template <> class NumericType<int>              { public: enum{ isBool = false, isFloat = false, isInt = true }; };

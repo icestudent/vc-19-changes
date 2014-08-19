@@ -34,7 +34,6 @@ _CRT_BEGIN_C_HEADER
 
 
 
-typedef int     mbstate_t;
 typedef wchar_t _Wint_t;
 
 
@@ -184,7 +183,7 @@ _ACRTIMP int __cdecl wctob(
         _In_opt_ mbstate_t const* _P
         )
     {
-        return _P == NULL || *_P == 0;
+        return _P == NULL || _P->_Wchar == 0;
     }
 
     __inline wchar_t _CONST_RETURN* __CRTDECL wmemchr(

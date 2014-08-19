@@ -9,6 +9,7 @@
 #define _INC_CRTDBG
 
 #include <corecrt.h>
+#include <vcruntime_new_debug.h>
 
 _CRT_BEGIN_C_HEADER
 
@@ -784,45 +785,6 @@ typedef struct _CrtMemState
 #define _RPTFW3 _RPTFWN
 #define _RPTFW4 _RPTFWN
 #define _RPTFW5 _RPTFWN
-
-#if defined __cplusplus && !defined _MFC_OVERRIDES_NEW
-
-    #pragma push_macro("new")
-    #undef new
-
-    _Check_return_ _Ret_notnull_ _Post_writable_byte_size_(_Size)
-    extern "C++" _CRTALLOCATOR void* __CRTDECL operator new(
-        _In_   size_t      _Size,
-        _In_   int         _BlockUse,
-        _In_z_ char const* _FileName,
-        _In_   int         _LineNumber
-        );
-
-    _Check_return_ _Ret_notnull_ _Post_writable_byte_size_(_Size)
-    extern "C++" _CRTALLOCATOR void* __CRTDECL operator new[](
-        _In_   size_t      _Size,
-        _In_   int         _BlockUse,
-        _In_z_ char const* _FileName,
-        _In_   int         _LineNumber
-        );
-
-    extern "C++" void __CRTDECL operator delete(
-        void*       _Block,
-        int         _BlockUse,
-        char const* _FileName,
-        int         _LineNumber
-        );
-
-    extern "C++" void __CRTDECL operator delete[](
-        void*       _Block,
-        int         _BlockUse,
-        char const* _FileName,
-        int         _LineNumber
-        );
-
-    #pragma pop_macro("new")
-
-#endif
 
 
 

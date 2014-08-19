@@ -30,9 +30,9 @@
 
 #define _PPL_CONTAINER
 
-#if !(defined (_M_X64) || defined (_M_IX86) || defined (_M_ARM))
-    #error ERROR: Concurrency Runtime is supported only on X64, X86 and ARM architectures.
-#endif  /* !(defined (_M_X64) || defined (_M_IX86) || defined (_M_ARM)) */
+#if !(defined (_M_X64) || defined (_M_IX86) || defined (_M_ARM) || defined (_M_CRT_UNSUPPORTED))
+    #error ERROR: Concurrency Runtime is supported only on X64, X86, ARM, and CRT_UNSUPPORTED architectures.
+#endif  /* !(defined (_M_X64) || defined (_M_IX86) || defined (_M_ARM) || defined (_M_CRT_UNSUPPORTED)) */
 
 #if defined (_M_CEE)
     #error ERROR: Concurrency Runtime is not supported when compiling /clr.
@@ -101,9 +101,9 @@ namespace details
                 _My_storage[_I]._My_array = NULL;
             _My_segment = _My_storage;
         }
-        _CRTIMP2 ~_Concurrent_vector_base_v4();
+        _CONCRTIMP ~_Concurrent_vector_base_v4();
 
-        _CRTIMP2 static _Segment_index_t __cdecl _Segment_index_of( _Size_type _Index );
+        _CONCRTIMP static _Segment_index_t __cdecl _Segment_index_of( _Size_type _Index );
 
         static _Segment_index_t _Segment_base( _Segment_index_t _K )
         {
@@ -135,23 +135,23 @@ namespace details
             void* _Table[_Pointers_per_long_table];
         };
 
-        _CRTIMP2 void _Internal_reserve( _Size_type _N, _Size_type _Element_size, _Size_type _Max_size );
-        _CRTIMP2 _Size_type _Internal_capacity() const;
+        _CONCRTIMP void _Internal_reserve( _Size_type _N, _Size_type _Element_size, _Size_type _Max_size );
+        _CONCRTIMP _Size_type _Internal_capacity() const;
         void _Internal_grow( _Size_type _Start, _Size_type _Finish, _Size_type _Element_size, _My_internal_array_op2 _Init, const void *_Src );
         _Size_type _Internal_grow_segment( const _Size_type _Start, _Size_type _Finish, _Size_type _Element_size, _Segment_t** _PPSegment, _Size_type* _PSegStart, _Size_type* _PSegFinish );
-        _CRTIMP2 _Size_type _Internal_grow_by( _Size_type _Delta, _Size_type _Element_size, _My_internal_array_op2 _Init, const void *_Src );
-        _CRTIMP2 void* _Internal_push_back( _Size_type _Element_size, _Size_type& _Index );
-        _CRTIMP2 _Segment_index_t _Internal_clear( _My_internal_array_op1 _Destroy );
+        _CONCRTIMP _Size_type _Internal_grow_by( _Size_type _Delta, _Size_type _Element_size, _My_internal_array_op2 _Init, const void *_Src );
+        _CONCRTIMP void* _Internal_push_back( _Size_type _Element_size, _Size_type& _Index );
+        _CONCRTIMP _Segment_index_t _Internal_clear( _My_internal_array_op1 _Destroy );
         void _Internal_truncate( _Size_type _Old_size, _Size_type _New_size, _Size_type _Element_size, _My_internal_array_op1 _Destroy);
-        _CRTIMP2 void* _Internal_compact( _Size_type _Element_size, void *_Table, _My_internal_array_op1 _Destroy, _My_internal_array_op2 _Copy );
-        _CRTIMP2 void _Internal_copy( const _Concurrent_vector_base_v4& _Src, _Size_type _Element_size, _My_internal_array_op2 _Copy );
-        _CRTIMP2 void _Internal_assign( const _Concurrent_vector_base_v4& _Src, _Size_type _Element_size,
+        _CONCRTIMP void* _Internal_compact( _Size_type _Element_size, void *_Table, _My_internal_array_op1 _Destroy, _My_internal_array_op2 _Copy );
+        _CONCRTIMP void _Internal_copy( const _Concurrent_vector_base_v4& _Src, _Size_type _Element_size, _My_internal_array_op2 _Copy );
+        _CONCRTIMP void _Internal_assign( const _Concurrent_vector_base_v4& _Src, _Size_type _Element_size,
                               _My_internal_array_op1 _Destroy, _My_internal_array_op2 _Assign, _My_internal_array_op2 _Copy );
-        _CRTIMP2 void _Internal_throw_exception(_Size_type) const;
-        _CRTIMP2 void _Internal_swap(_Concurrent_vector_base_v4&);
+        _CONCRTIMP void _Internal_throw_exception(_Size_type) const;
+        _CONCRTIMP void _Internal_swap(_Concurrent_vector_base_v4&);
 
-        _CRTIMP2 void _Internal_resize( _Size_type _New_size, _Size_type _Element_size, _Size_type _Max_size, _My_internal_array_op1 _Destroy, _My_internal_array_op2 _Init, const void* _Src);
-        _CRTIMP2 _Size_type _Internal_grow_to_at_least_with_result( _Size_type _New_size, _Size_type _Element_size, _My_internal_array_op2 _Init, const void *_Src );
+        _CONCRTIMP void _Internal_resize( _Size_type _New_size, _Size_type _Element_size, _Size_type _Max_size, _My_internal_array_op1 _Destroy, _My_internal_array_op2 _Init, const void* _Src);
+        _CONCRTIMP _Size_type _Internal_grow_to_at_least_with_result( _Size_type _New_size, _Size_type _Element_size, _My_internal_array_op2 _Init, const void *_Src );
 
         // Count of segments in the first block.
         _Subatomic<_Size_type> _My_first_block;

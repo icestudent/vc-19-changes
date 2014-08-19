@@ -7,9 +7,10 @@
 //
 #pragma once
 
-#ifdef __cplusplus
-
 #include <vcruntime.h>
+
+#ifdef __cplusplus
+extern "C++" {
 
 #pragma pack(push, _CRT_PACKING)
 
@@ -69,38 +70,51 @@ void __CRTDECL operator delete[](
     std::nothrow_t const&
     ) throw();
 
-#ifndef _MFC_OVERRIDES_NEW
+void __CRTDECL operator delete(
+    void*  _Block,
+    size_t _Size
+    );
 
-    _Check_return_ _Ret_notnull_ _Post_writable_byte_size_(_Size)
-    _VCRT_ALLOCATOR void* __CRTDECL operator new(
-        _In_   size_t      _Size,
-        _In_   int         _BlockUse,
-        _In_z_ char const* _FileName,
-        _In_   int         _LineNumber
-        );
+void __CRTDECL operator delete(
+    void*  _Block,
+    size_t _Size,
+    std::nothrow_t const&
+    ) throw();
 
-    _Check_return_ _Ret_notnull_ _Post_writable_byte_size_(_Size)
-    _VCRT_ALLOCATOR void* __CRTDECL operator new[](
-        _In_   size_t      _Size,
-        _In_   int         _BlockUse,
-        _In_z_ char const* _FileName,
-        _In_   int         _LineNumber
-        );
+void __CRTDECL operator delete[](
+    void* _Block,
+    size_t _Size
+    );
 
-    void __CRTDECL operator delete(
-        void*       _Block,
-        int         _BlockUse,
-        char const* _FileName,
-        int         _LineNumber
-        );
+void __CRTDECL operator delete[](
+    void*  _Block,
+    size_t _Size,
+    std::nothrow_t const&
+    ) throw();
 
-    void __CRTDECL operator delete[](
-        void*       _Block,
-        int         _BlockUse,
-        char const* _FileName,
-        int         _LineNumber
-        );
+#ifndef __PLACEMENT_NEW_INLINE
+    #define __PLACEMENT_NEW_INLINE
+    inline void* __CRTDECL operator new(size_t, void* _Where) throw()
+    {
+        return _Where;
+    }
 
+    inline void __CRTDECL operator delete(void*, void*) throw()
+    {
+        return;
+    }
+#endif
+
+#ifndef __PLACEMENT_VEC_NEW_INLINE
+    #define __PLACEMENT_VEC_NEW_INLINE
+    inline void* __CRTDECL operator new[](size_t, void* _Where) throw()
+    {
+        return _Where;
+    }
+
+    inline void __CRTDECL operator delete[](void*, void*) throw()
+    {
+    }
 #endif
 
 #pragma pop_macro("new")
@@ -108,4 +122,5 @@ void __CRTDECL operator delete[](
 #pragma warning(pop)
 #pragma pack(pop)
 
+} // extern "C++"
 #endif // __cplusplus

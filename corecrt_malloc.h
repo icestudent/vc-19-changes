@@ -51,14 +51,14 @@ _CRT_BEGIN_C_HEADER
 #endif
 
 _Check_return_ _Ret_maybenull_ _Post_writable_byte_size_(_Count * _Size)
-_ACRTIMP _CRTALLOCATOR _CRTNOALIAS _CRTRESTRICT
+_ACRTIMP _CRTALLOCATOR _CRTRESTRICT
 void* __cdecl _calloc_base(
     _In_ size_t _Count,
     _In_ size_t _Size
     );
 
 _Check_return_ _Ret_maybenull_ _Post_writable_byte_size_(_Count * _Size)
-_ACRTIMP _CRT_JIT_INTRINSIC _CRTALLOCATOR _CRTNOALIAS _CRTRESTRICT
+_ACRTIMP _CRT_JIT_INTRINSIC _CRTALLOCATOR _CRTRESTRICT
 void* __cdecl calloc(
     _In_ _CRT_GUARDOVERFLOW size_t _Count,
     _In_ _CRT_GUARDOVERFLOW size_t _Size
@@ -76,24 +76,24 @@ void* __cdecl _expand(
     _In_ _CRT_GUARDOVERFLOW size_t _Size
     );
 
-_ACRTIMP _CRTNOALIAS
+_ACRTIMP
 void __cdecl _free_base(
     _Pre_maybenull_ _Post_invalid_ void* _Block
     );
 
-_ACRTIMP _CRTNOALIAS
+_ACRTIMP
 void __cdecl free(
     _Pre_maybenull_ _Post_invalid_ void* _Block
     );
 
 _Check_return_ _Ret_maybenull_ _Post_writable_byte_size_(_Size)
-_ACRTIMP _CRTALLOCATOR _CRTNOALIAS _CRTRESTRICT
+_ACRTIMP _CRTALLOCATOR _CRTRESTRICT
 void* __cdecl _malloc_base(
     _In_ size_t _Size
     );
 
 _Check_return_ _Ret_maybenull_ _Post_writable_byte_size_(_Size)
-_ACRTIMP _CRTALLOCATOR _CRT_JIT_INTRINSIC _CRTNOALIAS _CRTRESTRICT
+_ACRTIMP _CRTALLOCATOR _CRT_JIT_INTRINSIC _CRTRESTRICT
 void* __cdecl malloc(
     _In_ _CRT_GUARDOVERFLOW size_t _Size
     );
@@ -105,41 +105,41 @@ size_t __cdecl _msize(
     );
 
 _Success_(return != 0) _Check_return_ _Ret_maybenull_ _Post_writable_byte_size_(_Size)
-_ACRTIMP _CRTALLOCATOR _CRTNOALIAS _CRTRESTRICT
+_ACRTIMP _CRTALLOCATOR _CRTRESTRICT
 void* __cdecl _realloc_base(
     _Pre_maybenull_ _Post_invalid_  void*  _Block,
     _In_                            size_t _Size
     );
 
 _Success_(return != 0) _Check_return_ _Ret_maybenull_ _Post_writable_byte_size_(_Size)
-_ACRTIMP _CRTALLOCATOR _CRTNOALIAS _CRTRESTRICT
+_ACRTIMP _CRTALLOCATOR _CRTRESTRICT
 void* __cdecl realloc(
     _Pre_maybenull_ _Post_invalid_ void*  _Block,
     _In_ _CRT_GUARDOVERFLOW        size_t _Size
     );
 
 _Success_(return != 0) _Check_return_ _Ret_maybenull_ _Post_writable_byte_size_(_Count * _Size)
-_ACRTIMP _CRTALLOCATOR _CRTNOALIAS _CRTRESTRICT
+_ACRTIMP _CRTALLOCATOR _CRTRESTRICT
 void* __cdecl _recalloc(
     _Pre_maybenull_ _Post_invalid_ void*  _Block,
     _In_ _CRT_GUARDOVERFLOW        size_t _Count,
     _In_ _CRT_GUARDOVERFLOW        size_t _Size
     );
 
-_ACRTIMP _CRTNOALIAS
+_ACRTIMP
 void __cdecl _aligned_free(
     _Pre_maybenull_ _Post_invalid_ void* _Block
     );
 
 _Check_return_ _Ret_maybenull_ _Post_writable_byte_size_(_Size)
-_ACRTIMP _CRTALLOCATOR _CRTNOALIAS _CRTRESTRICT
+_ACRTIMP _CRTALLOCATOR _CRTRESTRICT
 void* __cdecl _aligned_malloc(
     _In_ _CRT_GUARDOVERFLOW size_t _Size,
     _In_                    size_t _Alignment
     );
 
 _Check_return_ _Ret_maybenull_ _Post_writable_byte_size_(_Size)
-_ACRTIMP _CRTALLOCATOR _CRTNOALIAS _CRTRESTRICT
+_ACRTIMP _CRTALLOCATOR _CRTRESTRICT
 void* __cdecl _aligned_offset_malloc(
     _In_ _CRT_GUARDOVERFLOW size_t _Size,
     _In_                    size_t _Alignment,
@@ -155,7 +155,7 @@ size_t __cdecl _aligned_msize(
     );
 
 _Success_(return != 0) _Check_return_ _Ret_maybenull_ _Post_writable_byte_size_(_Size)
-_ACRTIMP _CRTALLOCATOR _CRTNOALIAS _CRTRESTRICT
+_ACRTIMP _CRTALLOCATOR _CRTRESTRICT
 void* __cdecl _aligned_offset_realloc(
     _Pre_maybenull_ _Post_invalid_ void*  _Block,
     _In_ _CRT_GUARDOVERFLOW        size_t _Size,
@@ -164,7 +164,7 @@ void* __cdecl _aligned_offset_realloc(
     );
 
 _Success_(return != 0) _Check_return_ _Ret_maybenull_ _Post_writable_byte_size_(_Count * _Size)
-_ACRTIMP _CRTALLOCATOR _CRTNOALIAS _CRTRESTRICT
+_ACRTIMP _CRTALLOCATOR _CRTRESTRICT
 void* __cdecl _aligned_offset_recalloc(
     _Pre_maybenull_ _Post_invalid_ void*  _Block,
     _In_ _CRT_GUARDOVERFLOW        size_t _Count,
@@ -174,7 +174,7 @@ void* __cdecl _aligned_offset_recalloc(
     );
 
 _Success_(return != 0) _Check_return_ _Ret_maybenull_ _Post_writable_byte_size_(_Size)
-_ACRTIMP _CRTALLOCATOR _CRTNOALIAS _CRTRESTRICT
+_ACRTIMP _CRTALLOCATOR _CRTRESTRICT
 void* __cdecl _aligned_realloc(
     _Pre_maybenull_ _Post_invalid_ void*  _Block,
     _In_ _CRT_GUARDOVERFLOW        size_t _Size,
@@ -182,7 +182,7 @@ void* __cdecl _aligned_realloc(
     );
 
 _Success_(return != 0) _Check_return_ _Ret_maybenull_ _Post_writable_byte_size_(_Count * _Size)
-_ACRTIMP _CRTALLOCATOR _CRTNOALIAS _CRTRESTRICT
+_ACRTIMP _CRTALLOCATOR _CRTRESTRICT
 void* __cdecl _aligned_recalloc(
     _Pre_maybenull_ _Post_invalid_ void*  _Block,
     _In_ _CRT_GUARDOVERFLOW        size_t _Count,

@@ -2487,10 +2487,11 @@ namespace details
     // The callers to _Copy_data_on_host all have static_assert that _Rank has to be 1, 2, or 3 dimensions for texture
     //
     template <typename _Input_iterator, typename _Value_type>
-    inline void _Copy_data_on_host(int _Rank, _Input_iterator _Src, _Out_ _Value_type *_Dst,
-                                   size_t _Width, size_t _Height, size_t _Depth,
-                                   size_t _Dst_row_pitch_in_bytes, size_t _Dst_depth_pitch_in_bytes,
-                                   size_t _Src_row_pitch, size_t _Src_depth_pitch)
+    inline void _Copy_data_on_host_src_iter
+        (int _Rank, _Input_iterator _Src, _Out_ _Value_type *_Dst,
+         size_t _Width, size_t _Height, size_t _Depth,
+         size_t _Dst_row_pitch_in_bytes, size_t _Dst_depth_pitch_in_bytes,
+         size_t _Src_row_pitch, size_t _Src_depth_pitch)
     {
         switch(_Rank)
         {
@@ -2550,10 +2551,11 @@ namespace details
     #pragma warning ( pop ) // disable : 6101
 
     template <typename _Output_iterator, typename _Value_type>
-    inline void _Copy_data_on_host(int _Rank, const _Value_type * _Src, _Output_iterator _Dst,
-                                   size_t _Width, size_t _Height, size_t _Depth,
-                                   size_t _Src_row_pitch_in_bytes, size_t _Src_depth_pitch_in_bytes,
-                                   size_t _Dst_row_pitch, size_t _Dst_depth_pitch)
+    inline void _Copy_data_on_host_dst_iter
+        (int _Rank, const _Value_type * _Src, _Output_iterator _Dst,
+         size_t _Width, size_t _Height, size_t _Depth,
+         size_t _Src_row_pitch_in_bytes, size_t _Src_depth_pitch_in_bytes,
+         size_t _Dst_row_pitch, size_t _Dst_depth_pitch)
     {
         switch(_Rank)
         {

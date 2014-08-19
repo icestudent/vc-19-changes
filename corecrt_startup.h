@@ -124,7 +124,7 @@ _ACRTIMP int __cdecl _execute_onexit_table(_onexit_table_t* table);
 
 bool __cdecl __acrt_initialize(void);
 bool __cdecl __acrt_uninitialize(_In_ bool _Terminating);
-bool __cdecl __acrt_uninitialize_critical(void);
+bool __cdecl __acrt_uninitialize_critical(_In_ bool _Terminating);
 bool __cdecl __acrt_thread_attach(void);
 bool __cdecl __acrt_thread_detach(void);
 

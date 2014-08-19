@@ -9,9 +9,18 @@
 ****/
 
 #pragma once
+
+#if !defined(_M_IX86) && !defined(_M_X64)
+#error This header is specific to X86 and X64 targets
+#endif
+
 #ifndef _INCLUDED_TMM
 #define _INCLUDED_TMM
 #ifndef __midl
+
+#if !defined _M_IX86 && !defined _M_X64
+    #error This header is specific to X86 and X64 targets
+#endif
 
 #if defined (_M_CEE_PURE)
         #error ERROR: XMM intrinsics not supported in the pure mode!

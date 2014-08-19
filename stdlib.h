@@ -47,8 +47,10 @@ _ACRTIMP void  __cdecl _swab(
 #define EXIT_SUCCESS 0
 #define EXIT_FAILURE 1
 
-_ACRTIMP __declspec(noreturn) void __cdecl exit (_In_ int _Code);
+_ACRTIMP __declspec(noreturn) void __cdecl exit(_In_ int _Code);
 _ACRTIMP __declspec(noreturn) void __cdecl _exit(_In_ int _Code);
+_ACRTIMP __declspec(noreturn) void __cdecl _Exit(_In_ int _Code);
+_ACRTIMP __declspec(noreturn) void __cdecl quick_exit(_In_ int _Code);
 _ACRTIMP __declspec(noreturn) void __cdecl abort(void);
 
 // Argument values for _set_abort_behavior().
@@ -137,6 +139,8 @@ _ACRTIMP unsigned int __cdecl _set_abort_behavior(
     int       __cdecl atexit(void (__cdecl*)(void));
     _onexit_t __cdecl _onexit(_In_opt_ _onexit_t _Func);
 #endif
+
+int __cdecl at_quick_exit(void (__cdecl*)(void));
 
 
 
@@ -285,11 +289,11 @@ _Check_return_ _ACRTIMP lldiv_t __cdecl lldiv(_In_ long long _Numerator, _In_ lo
 #pragma warning (disable:6540) 
 
 unsigned int     __cdecl _rotl  (_In_ unsigned int     _Value, _In_ int _Shift);
-unsigned long    __cdecl _lrotl (_In_ unsigned long    _Value, _In_ int _Shift);
+_Check_return_ unsigned long    __cdecl _lrotl (_In_ unsigned long    _Value, _In_ int _Shift);
 unsigned __int64 __cdecl _rotl64(_In_ unsigned __int64 _Value, _In_ int _Shift);
 
 unsigned int     __cdecl _rotr  (_In_ unsigned int     _Value, _In_ int _Shift);
-unsigned long    __cdecl _lrotr (_In_ unsigned long    _Value, _In_ int _Shift);
+_Check_return_ unsigned long    __cdecl _lrotr (_In_ unsigned long    _Value, _In_ int _Shift);
 unsigned __int64 __cdecl _rotr64(_In_ unsigned __int64 _Value, _In_ int _Shift);
 
 #pragma warning (pop)
@@ -766,10 +770,6 @@ _ACRTIMP char* __cdecl _gcvt(
 // Maximum number of bytes in multi-byte character in the current locale
 // (also defined in ctype.h).
 #ifndef MB_CUR_MAX
-    #ifdef _CRTBLD
-        #define __MB_CUR_MAX(ptloci) (ptloci)->mb_cur_max
-    #endif
-
     #define MB_CUR_MAX ___mb_cur_max_func()
     #ifndef _M_CEE_PURE
         _ACRTIMP extern int __mb_cur_max;
@@ -1137,9 +1137,9 @@ __DEFINE_CPP_OVERLOAD_SECURE_FUNC_SPLITPATH(errno_t, _splitpath_s, char, _Dest)
 
     _Check_return_opt_
     _DCRTIMP errno_t __cdecl _dupenv_s(
-        _Outptr_result_buffer_maybenull_(*_PBufferSizeInBytes) _Outptr_result_z_ char**      _PBuffer,
-        _Out_opt_                                                                size_t*     _PBufferSizeInBytes,
-        _In_z_                                                                   char const* _VarName
+        _Outptr_result_buffer_maybenull_(*_PBufferSizeInBytes) _Outptr_result_maybenull_z_ char**      _PBuffer,
+        _Out_opt_                                                                          size_t*     _PBufferSizeInBytes,
+        _In_z_                                                                             char const* _VarName
         );
 
     #if defined (_DEBUG) && defined (_CRTDBG_MAP_ALLOC)

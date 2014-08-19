@@ -94,7 +94,7 @@ _Array_projection_helper<_T,1>::_Project0(_In_ array<_T,1>* _Array, int _I) __GP
 template<int _Rank>
 inline extent<_Rank> _Get_extent_at_level_unsafe(const extent<_Rank> &_Base_extent, unsigned int _Level) __GPU
 {
-    static_assert(_Rank >= 3);
+    static_assert(_Rank >= 3, "_Rank >= 3");
 }
 
 template<>

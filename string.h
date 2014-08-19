@@ -340,7 +340,7 @@ __DEFINE_CPP_OVERLOAD_SECURE_FUNC_0_2(
     )
 
 __DEFINE_CPP_OVERLOAD_STANDARD_NFUNC_0_2_EX(
-    char*, __RETURN_POLICY_DST, _ACRTIMP, strncpy, strncpy_s,
+    char*, __RETURN_POLICY_DST, _VCRTIMP, strncpy, strncpy_s,
     _Out_writes_z_(_Size)               char,
     _Out_writes_(_Count) _Post_maybez_, char,        _Destination,
     _In_reads_or_z_(_Count)             char const*, _Source,

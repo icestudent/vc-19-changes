@@ -32,6 +32,12 @@ _CRT_BEGIN_C_HEADER
     #endif
 #endif
 
+// If you need the ability to remove __declspec(import) from an API, to support static replacement,
+// declare the API using _ACRTIMP_ALT instead of _ACRTIMP.
+#ifndef _ACRTIMP_ALT
+#define _ACRTIMP_ALT _ACRTIMP
+#endif
+
 #ifndef _DCRTIMP
     #if defined _CRTIMP && !defined _VCRT_DEFINED_CRTIMP
         #define _DCRTIMP _CRTIMP
@@ -46,8 +52,11 @@ _CRT_BEGIN_C_HEADER
     #endif
 #endif
 
-#define _CRTNOALIAS __declspec(noalias)
-#define _CRTRESTRICT __declspec(restrict)
+#if defined _CRT_SUPPRESS_RESTRICT || defined _CORECRT_BUILD
+    #define _CRTRESTRICT
+#else
+    #define _CRTRESTRICT __declspec(restrict)
+#endif
 
 #if _MSC_VER >= 1900 && !defined __EDG__ && !defined _CORECRT_BUILD
     #define _CRTALLOCATOR __declspec(allocator)
@@ -214,7 +223,7 @@ extern "C++"
         );
 #endif
 
-_ACRTIMP void __cdecl _invalid_parameter_noinfo(void);
+_ACRTIMP_ALT void __cdecl _invalid_parameter_noinfo(void);
 _ACRTIMP __declspec(noreturn) void __cdecl _invalid_parameter_noinfo_noreturn(void);
 
 __declspec(noreturn)
@@ -261,9 +270,9 @@ _ACRTIMP void __cdecl _invoke_watson(
     #ifdef _CRT_NONSTDC_NO_WARNINGS
         #define _CRT_NONSTDC_DEPRECATE(_NewName)
     #else
-        #define _CRT_NONSTDC_DEPRECATE(_NewName) _CRT_DEPRECATE_TEXT(           \
-            "The POSIX name for this item is deprecated. Instead, use the ISO " \
-            "C++ conformant name: " #_NewName ". See online help for details.")
+        #define _CRT_NONSTDC_DEPRECATE(_NewName) _CRT_DEPRECATE_TEXT(             \
+            "The POSIX name for this item is deprecated. Instead, use the ISO C " \
+            "and C++ conformant name: " #_NewName ". See online help for details.")
     #endif
 #endif
 
@@ -439,9 +448,31 @@ _ACRTIMP void __cdecl _invoke_watson(
 typedef int                           errno_t;
 typedef unsigned short                wint_t;
 typedef unsigned short                wctype_t;
-typedef _W64 long                     __time32_t;
+typedef long                          __time32_t;
 typedef __int64                       __time64_t;
-typedef struct __crt_locale_pointers* _locale_t; 
+
+typedef struct __crt_locale_data_public
+{
+    unsigned short const* _locale_pctype;
+    int                   _locale_mb_cur_max;
+    unsigned int          _locale_lc_codepage;
+} __crt_locale_data_public;
+
+typedef struct __crt_locale_pointers
+{
+    struct __crt_locale_data*    locinfo;
+    struct __crt_multibyte_data* mbcinfo;
+} __crt_locale_pointers;
+
+typedef __crt_locale_pointers* _locale_t; 
+
+typedef struct _Mbstatet
+{ // state of a multibyte translation
+    unsigned long _Wchar;
+    unsigned short _Byte, _State;
+} _Mbstatet;
+
+typedef _Mbstatet mbstate_t;
 
 #if defined _USE_32BIT_TIME_T && defined _WIN64
     #error You cannot use 32-bit time_t (_USE_32BIT_TIME_T) with _WIN64
@@ -587,7 +618,7 @@ typedef struct __crt_locale_pointers* _locale_t;
                 _ReturnType __CRTDECL _FuncName(_DstType (&_Dst)[_Size], _TType1 _TArg1, ...) _CRT_SECURE_CPP_NOTHROW              \
                 {                                                                                                                  \
                     va_list _ArgList;                                                                                              \
-                    _crt_va_start(_ArgList, _TArg1);                                                                               \
+                    __crt_va_start(_ArgList, _TArg1);                                                                              \
                     return _VFuncName(_Dst, _Size, _TArg1, _ArgList);                                                              \
                 }                                                                                                                  \
                 __pragma(warning(pop));                                                                                            \
@@ -603,7 +634,7 @@ typedef struct __crt_locale_pointers* _locale_t;
                 _ReturnType __CRTDECL _FuncName(_DstType (&_Dst)[_Size], _TType1 _TArg1, _TType2 _TArg2, ...) _CRT_SECURE_CPP_NOTHROW               \
                 {                                                                                                                                   \
                     va_list _ArgList;                                                                                                               \
-                    _crt_va_start(_ArgList, _TArg2);                                                                                                \
+                    __crt_va_start(_ArgList, _TArg2);                                                                                               \
                     return _VFuncName(_Dst, _Size, _TArg1, _TArg2, _ArgList);                                                                       \
                 }                                                                                                                                   \
                 __pragma(warning(pop));                                                                                                             \
@@ -1113,7 +1144,7 @@ typedef struct __crt_locale_pointers* _locale_t;
             _ReturnType __CRTDECL _FuncName(_T &_Dst, _TType1 _TArg1, ...) _CRT_SECURE_CPP_NOTHROW \
             { \
                 va_list _ArgList; \
-                _crt_va_start(_ArgList, _TArg1); \
+                __crt_va_start(_ArgList, _TArg1); \
                 return __insecure_##_VFuncName(static_cast<_DstType *>(_Dst), _TArg1, _ArgList); \
             } \
             template <typename _T> \
@@ -1122,7 +1153,7 @@ typedef struct __crt_locale_pointers* _locale_t;
             _ReturnType __CRTDECL _FuncName(const _T &_Dst, _TType1 _TArg1, ...) _CRT_SECURE_CPP_NOTHROW \
             { \
                 va_list _ArgList; \
-                _crt_va_start(_ArgList, _TArg1); \
+                __crt_va_start(_ArgList, _TArg1); \
                 return __insecure_##_VFuncName(static_cast<_DstType *>(_Dst), _TArg1, _ArgList); \
             } \
                 __pragma(warning(pop)); \
@@ -1135,7 +1166,7 @@ typedef struct __crt_locale_pointers* _locale_t;
             _ReturnType __CRTDECL _FuncName(_DstType * &_Dst, _TType1 _TArg1, ...) _CRT_SECURE_CPP_NOTHROW \
             { \
                 va_list _ArgList; \
-                _crt_va_start(_ArgList, _TArg1); \
+                __crt_va_start(_ArgList, _TArg1); \
                 return __insecure_##_VFuncName(_Dst, _TArg1, _ArgList); \
             } \
                 __pragma(warning(pop)); \
@@ -1147,7 +1178,7 @@ typedef struct __crt_locale_pointers* _locale_t;
             _ReturnType __CRTDECL _FuncName(_DstType (&_Dst)[_Size], _TType1 _TArg1, ...) _CRT_SECURE_CPP_NOTHROW \
             { \
                 va_list _ArgList; \
-                _crt_va_start(_ArgList, _TArg1); \
+                __crt_va_start(_ArgList, _TArg1); \
                 _ReturnPolicy(_SecureVFuncName(_Dst, _Size, _TArg1, _ArgList), _Dst); \
             } \
                 __pragma(warning(pop)); \
@@ -1160,7 +1191,7 @@ typedef struct __crt_locale_pointers* _locale_t;
             _ReturnType __CRTDECL _FuncName<1>(_DstType (&_Dst)[1], _TType1 _TArg1, ...) _CRT_SECURE_CPP_NOTHROW \
             { \
                 va_list _ArgList; \
-                _crt_va_start(_ArgList, _TArg1); \
+                __crt_va_start(_ArgList, _TArg1); \
                 _ReturnPolicy(_SecureVFuncName(_Dst, 1, _TArg1, _ArgList), _Dst); \
             } \
                 __pragma(warning(pop)); \
@@ -1218,7 +1249,7 @@ typedef struct __crt_locale_pointers* _locale_t;
             _ReturnType __CRTDECL _FuncName(_T &_Dst, _TType1 _TArg1, _TType2 _TArg2, ...) _CRT_SECURE_CPP_NOTHROW \
             { \
                 va_list _ArgList; \
-                _crt_va_start(_ArgList, _TArg2); \
+                __crt_va_start(_ArgList, _TArg2); \
                 return __insecure_##_VFuncName(static_cast<_DstType *>(_Dst), _TArg1, _TArg2, _ArgList); \
             } \
             template <typename _T> \
@@ -1227,7 +1258,7 @@ typedef struct __crt_locale_pointers* _locale_t;
             _ReturnType __CRTDECL _FuncName(const _T &_Dst, _TType1 _TArg1, _TType2 _TArg2, ...) _CRT_SECURE_CPP_NOTHROW \
             { \
                 va_list _ArgList; \
-                _crt_va_start(_ArgList, _TArg2); \
+                __crt_va_start(_ArgList, _TArg2); \
                 return __insecure_##_VFuncName(static_cast<_DstType *>(_Dst), _TArg1, _TArg2, _ArgList); \
             } \
                 __pragma(warning(pop)); \
@@ -1240,7 +1271,7 @@ typedef struct __crt_locale_pointers* _locale_t;
             _ReturnType __CRTDECL _FuncName(_DstType * &_Dst, _TType1 _TArg1, _TType2 _TArg2, ...) _CRT_SECURE_CPP_NOTHROW \
             { \
                 va_list _ArgList; \
-                _crt_va_start(_ArgList, _TArg2); \
+                __crt_va_start(_ArgList, _TArg2); \
                 return __insecure_##_VFuncName(_Dst, _TArg1, _TArg2, _ArgList); \
             } \
                 __pragma(warning(pop)); \
@@ -1252,7 +1283,7 @@ typedef struct __crt_locale_pointers* _locale_t;
             _ReturnType __CRTDECL _FuncName(_SecureDstType (&_Dst)[_Size], _TType1 _TArg1, _TType2 _TArg2, ...) _CRT_SECURE_CPP_NOTHROW \
             { \
                 va_list _ArgList; \
-                _crt_va_start(_ArgList, _TArg2); \
+                __crt_va_start(_ArgList, _TArg2); \
                 _ReturnPolicy(_SecureVFuncName(_Dst, _Size, _TArg1, _TArg2, _ArgList), _Dst); \
             } \
                 __pragma(warning(pop)); \
@@ -1265,7 +1296,7 @@ typedef struct __crt_locale_pointers* _locale_t;
             _ReturnType __CRTDECL _FuncName<1>(_DstType (&_Dst)[1], _TType1 _TArg1, _TType2 _TArg2, ...) _CRT_SECURE_CPP_NOTHROW \
             { \
                 va_list _ArgList; \
-                _crt_va_start(_ArgList, _TArg2); \
+                __crt_va_start(_ArgList, _TArg2); \
                 _ReturnPolicy(_SecureVFuncName(_Dst, 1, _TArg1, _TArg2, _ArgList), _Dst); \
             } \
                 __pragma(warning(pop)); \

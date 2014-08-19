@@ -32,6 +32,7 @@ _CRTIMP2_PURE void __cdecl _Thrd_exit(int);
 _CRTIMP2_PURE int __cdecl _Thrd_join(_Thrd_t, int *);
 _CRTIMP2_PURE void __cdecl _Thrd_sleep(const xtime*);
 _CRTIMP2_PURE void __cdecl _Thrd_yield(void);
+_CRTIMP2_PURE unsigned int __cdecl _Thrd_hardware_concurrency(void);
 _CRTIMP2_PURE int __cdecl _Thrd_equal(_Thrd_t, _Thrd_t);
 _CRTIMP2_PURE int __cdecl _Thrd_lt(_Thrd_t, _Thrd_t);
 _CRTIMP2_PURE _Thrd_t __cdecl _Thrd_current(void);
@@ -71,10 +72,10 @@ _CRTIMP2_PURE int __cdecl _Cnd_timedwait(_Cnd_t,
 	_Mtx_t, const xtime *);
 _CRTIMP2_PURE int __cdecl _Cnd_broadcast(_Cnd_t);
 _CRTIMP2_PURE int __cdecl _Cnd_signal(_Cnd_t);
-_CRTIMP2_PURE int __cdecl _Cnd_register_at_thread_exit(_Cnd_t,
+_CRTIMP2_PURE void __cdecl _Cnd_register_at_thread_exit(_Cnd_t,
 	_Mtx_t, int *);
-_CRTIMP2_PURE int __cdecl _Cnd_unregister_at_thread_exit(_Mtx_t);
-_CRTIMP2_PURE int __cdecl _Cnd_do_broadcast_at_thread_exit(void);
+_CRTIMP2_PURE void __cdecl _Cnd_unregister_at_thread_exit(_Mtx_t);
+_CRTIMP2_PURE void __cdecl _Cnd_do_broadcast_at_thread_exit(void);
 
 	/* thread specific storage */
 typedef _Tss_imp_t _Tss_t;

@@ -207,7 +207,7 @@ _CRT_BEGIN_C_HEADER
 
     #define _CW_DEFAULT (_RC_NEAR + _PC_53 + _EM_INVALID + _EM_ZERODIVIDE + _EM_OVERFLOW + _EM_UNDERFLOW + _EM_INEXACT + _EM_DENORMAL)
 
-#elif defined _M_X64 || defined _M_ARM
+#elif defined _M_X64 || defined _M_ARM || defined _M_CRT_UNSUPPORTED
 
     #define _CW_DEFAULT (_RC_NEAR + _EM_INVALID + _EM_ZERODIVIDE + _EM_OVERFLOW + _EM_UNDERFLOW + _EM_INEXACT + _EM_DENORMAL)
 

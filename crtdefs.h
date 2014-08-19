@@ -38,6 +38,18 @@
     #endif
 #endif
 
+#ifndef _CONCRTIMP
+    #if defined CONCRTDLL && defined _CRTBLD
+        #define _CONCRTIMP __declspec(dllexport)
+    #else
+        #if defined _DLL && !defined _STATIC_CPPLIB
+            #define _CONCRTIMP __declspec(dllimport)
+        #else
+            #define _CONCRTIMP
+        #endif
+    #endif
+#endif
+
 #ifndef _MRTIMP2
     #if defined CRTDLL2 && defined _CRTBLD
         #define _MRTIMP2 __declspec(dllexport)

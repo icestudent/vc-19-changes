@@ -85,10 +85,10 @@ namespace details
     {
     public:
         // Creates a new runtime object.
-        _CRTIMP2 _Runtime_object();
+        _CONCRTIMP _Runtime_object();
 
         // Creates a runtime object from an identity.
-        _CRTIMP2 _Runtime_object(::Concurrency::runtime_object_identity _Id);
+        _CONCRTIMP _Runtime_object(::Concurrency::runtime_object_identity _Id);
 
         // Gets the runtime object identity.
         virtual ::Concurrency::runtime_object_identity _GetId() const
@@ -11547,7 +11547,7 @@ public:
     /// <seealso cref="Scheduler Class"/>
     /// <seealso cref="ScheduleGroup Class"/>
     /**/
-    _CRTIMP2 agent();
+    _CONCRTIMP agent();
 
 #ifdef _CRT_USE_WINAPI_FAMILY_DESKTOP_APP
     /// <summary>
@@ -11563,7 +11563,7 @@ public:
     /// <seealso cref="Scheduler Class"/>
     /// <seealso cref="ScheduleGroup Class"/>
     /**/
-    _CRTIMP2 agent(Scheduler& _PScheduler);
+    _CONCRTIMP agent(Scheduler& _PScheduler);
 
     /// <summary>
     ///     Constructs an agent.
@@ -11579,7 +11579,7 @@ public:
     /// <seealso cref="Scheduler Class"/>
     /// <seealso cref="ScheduleGroup Class"/>
     /**/
-    _CRTIMP2 agent(ScheduleGroup& _PGroup);
+    _CONCRTIMP agent(ScheduleGroup& _PGroup);
 #endif  /* _CRT_USE_WINAPI_FAMILY_DESKTOP_APP */
 
     /// <summary>
@@ -11591,7 +11591,7 @@ public:
     ///     in the destructor of a class that inherits from the <c>agent</c> class.
     /// </remarks>
     /**/
-    _CRTIMP2 virtual ~agent();
+    _CONCRTIMP virtual ~agent();
 
     /// <summary>
     ///     An asynchronous source of status information from the agent.
@@ -11600,7 +11600,7 @@ public:
     ///     Returns a message source that can send messages about the current state of the agent.
     /// </returns>
     /**/
-    _CRTIMP2 ISource<agent_status> * status_port();
+    _CONCRTIMP ISource<agent_status> * status_port();
 
     /// <summary>
     ///     A synchronous source of status information from the agent.
@@ -11611,7 +11611,7 @@ public:
     /// </returns>
     /// <seealso cref="agent_status Enumeration"/>
     /**/
-    _CRTIMP2 agent_status status();
+    _CONCRTIMP agent_status status();
 
     /// <summary>
     ///     Moves an agent from the <c>agent_created</c> state to the <c>agent_runnable</c> state, and schedules it for execution.
@@ -11621,7 +11621,7 @@ public:
     /// </returns>
     /// <seealso cref="agent_status Enumeration"/>
     /**/
-    _CRTIMP2 bool start();
+    _CONCRTIMP bool start();
 
     /// <summary>
     ///     Moves an agent from either the <c>agent_created</c> or <c>agent_runnable</c> states to the <c>agent_canceled</c> state.
@@ -11632,7 +11632,7 @@ public:
     /// </returns>
     /// <seealso cref="agent_status Enumeration"/>
     /**/
-    _CRTIMP2 bool cancel();
+    _CONCRTIMP bool cancel();
 
     /// <summary>
     ///     Waits for an agent to complete its task.
@@ -11657,7 +11657,7 @@ public:
     /// <seealso cref="agent::wait_for_one Method"/>
     /// <seealso cref="agent_status Enumeration"/>
     /**/
-    _CRTIMP2 static agent_status __cdecl wait(_Inout_ agent * _PAgent, unsigned int _Timeout = COOPERATIVE_TIMEOUT_INFINITE);
+    _CONCRTIMP static agent_status __cdecl wait(_Inout_ agent * _PAgent, unsigned int _Timeout = COOPERATIVE_TIMEOUT_INFINITE);
 
     /// <summary>
     ///     Waits for all of the specified agents to complete their tasks.
@@ -11685,7 +11685,7 @@ public:
     /// <seealso cref="agent::wait_for_one Method"/>
     /// <seealso cref="agent_status Enumeration"/>
     /**/
-    _CRTIMP2 static void __cdecl wait_for_all(size_t _Count, _In_reads_(_Count) agent ** _PAgents,
+    _CONCRTIMP static void __cdecl wait_for_all(size_t _Count, _In_reads_(_Count) agent ** _PAgents,
         _Out_writes_opt_(_Count) agent_status * _PStatus = NULL, unsigned int _Timeout = COOPERATIVE_TIMEOUT_INFINITE);
 
     /// <summary>
@@ -11716,7 +11716,7 @@ public:
     /// <seealso cref="agent::wait_for_all Method"/>
     /// <seealso cref="agent_status Enumeration"/>
     /**/
-    _CRTIMP2 static void __cdecl wait_for_one(size_t _Count, _In_reads_(_Count) agent ** _PAgents, agent_status& _Status,
+    _CONCRTIMP static void __cdecl wait_for_one(size_t _Count, _In_reads_(_Count) agent ** _PAgents, agent_status& _Status,
                                       size_t& _Index, unsigned int _Timeout = COOPERATIVE_TIMEOUT_INFINITE);
 
 protected:
@@ -11745,7 +11745,7 @@ protected:
     /// </remarks>
     /// <seealso cref="agent_status Enumeration"/>
     /**/
-    _CRTIMP2 bool done();
+    _CONCRTIMP bool done();
 
     /// <summary>
     ///     Holds the current status of the agent.

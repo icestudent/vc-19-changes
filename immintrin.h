@@ -12,9 +12,18 @@
 *******************************************************************************/
 
 #pragma once
+
+#if !defined(_M_IX86) && !defined(_M_X64)
+#error This header is specific to X86 and X64 targets
+#endif
+
 #ifndef _INCLUDED_IMM
 #define _INCLUDED_IMM
 #ifndef __midl
+
+#if !defined _M_IX86 && !defined _M_X64
+    #error This header is specific to X86 and X64 targets
+#endif
 
 #if defined (_M_CEE_PURE)
         #error ERROR: Intel Architecture intrinsic functions not supported in the pure mode!
@@ -1225,6 +1234,15 @@ extern void __cdecl _xsaveopt64(void *, unsigned __int64);
 #endif  /* defined (_M_X64) */
 
 /*
+ * Performs a full or compressed partial save of the enabled processor state
+ * components using the specified memory address location and a mask.
+ */
+extern void __cdecl _xsavec(void *, unsigned __int64);
+#if defined (_M_X64)
+extern void __cdecl _xsavec64(void *, unsigned __int64);
+#endif  /* defined (_M_X64) */
+
+/*
  * Performs a full or partial restore of the enabled processor states
  * using the state information stored in the specified memory address location
  * and a mask.
@@ -1232,6 +1250,26 @@ extern void __cdecl _xsaveopt64(void *, unsigned __int64);
 extern void __cdecl _xrstor(void const *, unsigned __int64);
 #if defined (_M_X64)
 extern void __cdecl _xrstor64(void const *, unsigned __int64);
+#endif  /* defined (_M_X64) */
+
+/*
+ * Performs a full or partial save of the enabled processor extended
+ * and supervisor state components in compacted form using the
+ * specified memory address location and masks in XCR0 and IA32_XSS MSR.
+ */
+extern void __cdecl _xsaves(void *, unsigned __int64);
+#if defined (_M_X64)
+extern void __cdecl _xsaves64(void *, unsigned __int64);
+#endif  /* defined (_M_X64) */
+
+/*
+ * Performs a full or partial restore of the enabled processor extended
+ * and supervisor states using the state information stored in the
+ * specified memory address location and masks in XCR0 and IA32_XSS MSR.
+ */
+extern void __cdecl _xrstors(void const *, unsigned __int64);
+#if defined (_M_X64)
+extern void __cdecl _xrstors64(void const *, unsigned __int64);
 #endif  /* defined (_M_X64) */
 
 /*
@@ -1924,6 +1962,18 @@ extern unsigned char __cdecl _addcarryx_u32(unsigned char /*c_in*/,
                                                    unsigned int /*src1*/,
                                                    unsigned int /*src2*/,
                                                    unsigned int * /*out*/);
+
+/*
+ * The Secure Hash Algorithm (SHA) New Instructions.
+*/
+extern __m128i _mm_sha1rnds4_epu32(__m128i, __m128i, const int);
+extern __m128i _mm_sha1nexte_epu32(__m128i, __m128i);
+extern __m128i _mm_sha1msg1_epu32(__m128i, __m128i);
+extern __m128i _mm_sha1msg2_epu32(__m128i, __m128i);
+extern __m128i _mm_sha256rnds2_epu32(__m128i, __m128i, __m128i);
+extern __m128i _mm_sha256msg1_epu32(__m128i, __m128i);
+extern __m128i _mm_sha256msg2_epu32(__m128i, __m128i);
+
 #if defined(_M_X64)
 extern unsigned char __cdecl _addcarryx_u64(unsigned char /*c_in*/,
                                                    unsigned __int64 /*src1*/,

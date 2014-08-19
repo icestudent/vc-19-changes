@@ -373,9 +373,9 @@ __DEFINE_CPP_OVERLOAD_SECURE_FUNC_SPLITPATH(
 
     _Check_return_wat_
     _DCRTIMP errno_t __cdecl _wdupenv_s(
-        _Outptr_result_buffer_maybenull_(*_BufferSizeInWords) _Outptr_result_z_ wchar_t**      _Buffer,
-        _Out_opt_                                                               size_t*        _BufferSizeInWords,
-        _In_z_                                                                  wchar_t const* _VarName
+        _Outptr_result_buffer_maybenull_(*_BufferSizeInWords) _Outptr_result_maybenull_z_ wchar_t**      _Buffer,
+        _Out_opt_                                                                         size_t*        _BufferSizeInWords,
+        _In_z_                                                                            wchar_t const* _VarName
         );
 
     #pragma pop_macro("_wdupenv_s")

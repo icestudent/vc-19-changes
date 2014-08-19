@@ -444,9 +444,9 @@ clients and process-global for mixed clients.
   #endif /* defined(__cplusplus) */
 
 /* These functions are for enabling STATIC_CPPLIB functionality */
-  #define _cpp_stdin  (__iob_func(0))
-  #define _cpp_stdout (__iob_func(1))
-  #define _cpp_stderr (__iob_func(2))
+  #define _cpp_stdin  (__acrt_iob_func(0))
+  #define _cpp_stdout (__acrt_iob_func(1))
+  #define _cpp_stderr (__acrt_iob_func(2))
   #define _cpp_isleadbyte(c) (__pctype_func()[(unsigned char)(c)] & _LEADBYTE)
  #else  /* _CRTBLD */
   #if !defined(_CRTDATA2)
@@ -540,11 +540,13 @@ typedef unsigned int char32_t;
 
 		/* MULTITHREAD PROPERTIES */
 		/* LOCK MACROS */
-#define _LOCK_LOCALE	0
-#define _LOCK_MALLOC	1
-#define _LOCK_STREAM	2
-#define _LOCK_DEBUG		3
-#define _MAX_LOCK		4	/* one more than highest lock number */
+#define _LOCK_LOCALE			0
+#define _LOCK_MALLOC			1
+#define _LOCK_STREAM			2
+#define _LOCK_DEBUG				3
+#define _LOCK_CALL_ONCE			4
+#define _LOCK_CALL_ONCEEX		5
+#define _LOCK_AT_THREAD_EXIT	6
 
  #ifdef __cplusplus
 _STD_BEGIN
@@ -747,10 +749,9 @@ _STD_END
 _C_STD_BEGIN
 _MRTIMP2 void __cdecl _Atexit(void (__cdecl *)(void));
 
-typedef int _Mbstatet;
 typedef unsigned long _Uint32t;
 
-#define _Mbstinit(x)	mbstate_t x = {0}
+#define _Mbstinit(x)	mbstate_t x = {}
 _C_STD_END
 
  #define _NO_RETURN(fun)	__declspec(noreturn) void fun
