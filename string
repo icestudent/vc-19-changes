@@ -624,7 +624,6 @@ inline wstring to_wstring(long double _Val)
 	return (_Floating_to_wstring(L"%Lf", _Val));
 	}
 
- #if _MSC_FULL_VER >= 190021510 /* TRANSITION */
 	// basic_string LITERALS
 inline namespace literals {
 inline namespace string_literals {
@@ -653,7 +652,6 @@ inline u32string operator "" s(const char32_t *_Str, size_t _Len)
  #endif /* _HAS_CHAR16_T_LANGUAGE_SUPPORT */
 }	// inline namespace string_literals
 }	// inline namespace literals
- #endif /* _MSC_FULL_VER >= 190021510 */
 
 _STD_END
 

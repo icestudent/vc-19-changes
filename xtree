@@ -621,288 +621,234 @@ public:
 	size_type _Mysize;	// number of elements
 	};
 
-		// TEMPLATE CLASS _Tree_alloc
-template<bool _Al_has_storage,
-	class _Alloc_types>
-	class _Tree_alloc
-		: public _Tree_val<typename _Alloc_types::_Val_types>
-	{	// base class for tree to hold allocator with storage
+		// TEMPLATE CLASS _Tree_comp_alloc
+template<class _Traits>
+	class _Tree_comp_alloc
+	{	// base class for tree to hold ordering predicate, allocator
 public:
-	typename _Alloc_types::_Alnod_type _Alnod;	// allocator object
+	typedef _Tree_comp_alloc<_Traits> _Myt;
 
-	typedef _Tree_alloc<_Al_has_storage, _Alloc_types> _Myt;
+	typedef typename _Traits::allocator_type allocator_type;
+	typedef typename _Traits::key_compare key_compare;
+
+	typedef _Tree_base_types<typename _Traits::value_type,
+		allocator_type> _Alloc_types;
+
 	typedef typename _Alloc_types::_Alloc _Alloc;
 	typedef typename _Alloc_types::_Alnod_type _Alty;
 	typedef typename _Alloc_types::_Node _Node;
 	typedef typename _Alloc_types::_Nodeptr _Nodeptr;
+	typedef typename _Alloc_types::_Val_types _Val_types;
+
+	typedef _Nodeptr& _Nodepref;
+
+	typedef typename _Val_types::value_type value_type;
+	typedef typename _Val_types::size_type size_type;
+	typedef typename _Val_types::difference_type difference_type;
+	typedef typename _Val_types::pointer pointer;
+	typedef typename _Val_types::const_pointer const_pointer;
+	typedef typename _Val_types::reference reference;
+	typedef typename _Val_types::const_reference const_reference;
+
+	typedef _Tree_const_iterator<_Tree_val<_Val_types> > const_iterator;
+	typedef _Tree_iterator<_Tree_val<_Val_types> > iterator;
+
+	enum _Redbl
+		{	// colors for link to parent
+		_Red, _Black
+		};
+
+	static char& _Color(_Nodeptr _Pnode)
+		{	// return reference to color in node
+		return (_Tree_val<_Val_types>::_Color(_Pnode));
+		}
+
+	static char& _Isnil(_Nodeptr _Pnode)
+		{	// return reference to nil flag in node
+		return (_Tree_val<_Val_types>::_Isnil(_Pnode));
+		}
+
+	static _Nodepref _Left(_Nodeptr _Pnode)
+		{	// return reference to left pointer in node
+		return (_Tree_val<_Val_types>::_Left(_Pnode));
+		}
+
+	static _Nodepref _Parent(_Nodeptr _Pnode)
+		{	// return reference to parent pointer in node
+		return (_Tree_val<_Val_types>::_Parent(_Pnode));
+		}
+
+	static _Nodepref _Right(_Nodeptr _Pnode)
+		{	// return reference to right pointer in node
+		return (_Tree_val<_Val_types>::_Right(_Pnode));
+		}
+
+	static reference _Myval(_Nodeptr _Pnode)
+		{	// return reference to value in node
+		return (_Tree_val<_Val_types>::_Myval(_Pnode));
+		}
+
+	static _Nodeptr _Max(_Nodeptr _Pnode)
+		{	// return rightmost node in subtree at _Pnode
+		return (_Tree_val<_Val_types>::_Max(_Pnode));
+		}
+
+	static _Nodeptr _Min(_Nodeptr _Pnode)
+		{	// return leftmost node in subtree at _Pnode
+		return (_Tree_val<_Val_types>::_Min(_Pnode));
+		}
+
+	_Tree_comp_alloc(const key_compare& _Parg, const allocator_type& _Al)
+		: _Mypair(_One_then_variadic_args_t(), _Parg, _One_then_variadic_args_t(), _Al)
+		{	// construct from comparator, allocator
+		_Construct();
+		}
 
  #if _ITERATOR_DEBUG_LEVEL == 0
 
-	_Tree_alloc(const _Alloc& _Al = _Alloc())
-		: _Alnod(_Al)
-		{	// construct head node, allocator from _Al
-		this->_Myhead = _Buyheadnode();
+	void _Construct()
+		{	// construct head node
+		_Myhead() = _Buyheadnode();
 		}
 
-	~_Tree_alloc() _NOEXCEPT
+	~_Tree_comp_alloc() _NOEXCEPT
 		{	// destroy head node
-		_Freeheadnode(this->_Myhead);
+		_Freeheadnode(_Myhead());
 		}
 
 	void _Change_alloc(const _Alty& _Al)
 		{	// replace old allocator
-		this->_Alnod = _Al;
+		_Getal() = _Al;
 		}
 
 	void _Swap_alloc(_Myt& _Right)
 		{	// swap allocators
-		_Swap_adl(this->_Alnod, _Right._Alnod);
+		_Swap_adl(_Getal(), _Right._Getal());
 		}
 
  #else /* _ITERATOR_DEBUG_LEVEL == 0 */
 
-	_Tree_alloc(const _Alloc& _Al = _Alloc())
-		: _Alnod(_Al)
-		{	// construct allocators from _Al
-		this->_Myhead = _Buyheadnode();
+	void _Construct()
+		{	// construct head node, proxy
+		_Myhead() = _Buyheadnode();
 		_TRY_BEGIN
 		_Alloc_proxy();
 		_CATCH_ALL
-		_Freeheadnode(this->_Myhead);
+		_Freeheadnode(_Myhead());
 		_RERAISE;
 		_CATCH_END
 		}
 
-	~_Tree_alloc() _NOEXCEPT
-		{	// destroy proxy
-		_Freeheadnode(this->_Myhead);
+	~_Tree_comp_alloc() _NOEXCEPT
+		{	// destroy head node, proxy
+		_Freeheadnode(_Myhead());
 		_Free_proxy();
 		}
 
 	void _Change_alloc(const _Alty& _Al)
 		{	// replace old allocator
 		_Free_proxy();
-		this->_Alnod = _Al;
+		_Getal() = _Al;
 		_Alloc_proxy();
 		}
 
 	void _Swap_alloc(_Myt& _Right)
 		{	// swap allocators
-		_Swap_adl(this->_Alnod, _Right._Alnod);
-		_Swap_adl(this->_Myproxy, _Right._Myproxy);
+		_Swap_adl(_Getal(), _Right._Getal());
+		_Swap_adl(_Myproxy(), _Right._Myproxy());
 		}
 
 	void _Alloc_proxy()
-		{	// construct proxy from _Alnod
-		typename _Alty::template rebind<_Container_proxy>::other
-			_Alproxy(this->_Alnod);
-		this->_Myproxy = _Alproxy.allocate(1);
-		_Alproxy.construct(this->_Myproxy, _Container_proxy());
-		this->_Myproxy->_Mycont = this;
-		}
-
-	void _Free_proxy()
-		{	// destroy proxy
-		typename _Alty::template rebind<_Container_proxy>::other
-			_Alproxy(this->_Alnod);
-		this->_Orphan_all();
-		_Alproxy.destroy(this->_Myproxy);
-		_Alproxy.deallocate(this->_Myproxy, 1);
-		this->_Myproxy = 0;
-		}
- #endif /* _ITERATOR_DEBUG_LEVEL == 0 */
-
-	_Nodeptr _Buyheadnode()
-		{	// get head node using current allocator
-		_Nodeptr _Pnode = this->_Alnod.allocate(1);
-
-		_TRY_BEGIN
-		this->_Alnod.construct(
-			_STD addressof(this->_Left(_Pnode)), _Pnode);
-		this->_Alnod.construct(
-			_STD addressof(this->_Parent(_Pnode)), _Pnode);
-		this->_Alnod.construct(
-			_STD addressof(this->_Right(_Pnode)), _Pnode);
-		_CATCH_ALL
-		this->_Alnod.deallocate(_Pnode, 1);
-		_RERAISE;
-		_CATCH_END
-
-		this->_Color(_Pnode) = this->_Black;
-		this->_Isnil(_Pnode) = true;
-		return (_Pnode);
-		}
-
-	void _Freeheadnode(_Nodeptr _Pnode)
-		{	// free head node using current allocator
-		this->_Alnod.destroy(
-			_STD addressof(this->_Left(_Pnode)));
-		this->_Alnod.destroy(
-			_STD addressof(this->_Parent(_Pnode)));
-		this->_Alnod.destroy(
-			_STD addressof(this->_Right(_Pnode)));
-		this->_Alnod.deallocate(_Pnode, 1);
-		}
-
-	_Alty& _Getal()
-		{	// get reference to allocator
-		return (this->_Alnod);
-		}
-
-	const _Alty& _Getal() const
-		{	// get reference to allocator
-		return (this->_Alnod);
-		}
-	};
-
-		// TEMPLATE CLASS _Tree_alloc
-template<class _Alloc_types>
-	class _Tree_alloc<false, _Alloc_types>
-		: public _Tree_val<typename _Alloc_types::_Val_types>
-	{	// base class for tree to hold allocator with no storage
-public:
-	typedef _Tree_alloc<false, _Alloc_types> _Myt;
-	typedef _Tree_val<typename _Alloc_types::_Val_types> _Mybase;
-	typedef typename _Alloc_types::_Alloc _Alloc;
-	typedef typename _Alloc_types::_Alnod_type _Alty;
-	typedef typename _Alloc_types::_Node _Node;
-	typedef typename _Alloc_types::_Nodeptr _Nodeptr;
-
- #if _ITERATOR_DEBUG_LEVEL == 0
-	_Tree_alloc(const _Alloc& = _Alloc())
-		{	// construct head node, allocator from _Al
-		this->_Myhead = _Buyheadnode();
-		}
-
-	~_Tree_alloc() _NOEXCEPT
-		{	// destroy head node
-		_Freeheadnode(this->_Myhead);
-		}
-
-	void _Change_alloc(const _Alty&)
-		{	// replace old allocator
-		}
-
-	void _Swap_alloc(_Myt&)
-		{	// swap allocators
-		}
-
- #else /* _ITERATOR_DEBUG_LEVEL == 0 */
-	_Tree_alloc(const _Alloc& = _Alloc())
-		{	// construct allocators from _Al
-		this->_Myhead = _Buyheadnode();
-		_TRY_BEGIN
-		_Alloc_proxy();
-		_CATCH_ALL
-		_Freeheadnode(this->_Myhead);
-		_RERAISE;
-		_CATCH_END
-		}
-
-	~_Tree_alloc() _NOEXCEPT
-		{	// destroy proxy
-		_Freeheadnode(this->_Myhead);
-		_Free_proxy();
-		}
-
-	void _Change_alloc(const _Alty&)
-		{	// replace old allocator
-		}
-
-	void _Swap_alloc(_Myt&)
-		{	// swap allocators
-		}
-
-	void _Alloc_proxy()
-		{	// construct proxy from _Alnod
+		{	// construct proxy
 		typename _Alty::template rebind<_Container_proxy>::other
 			_Alproxy(_Getal());
-		this->_Myproxy = _Alproxy.allocate(1);
-		_Alproxy.construct(this->_Myproxy, _Container_proxy());
-		this->_Myproxy->_Mycont = this;
+		_Myproxy() = _Alproxy.allocate(1);
+		_Alproxy.construct(_Myproxy(), _Container_proxy());
+		_Myproxy()->_Mycont = &_Get_data();
 		}
 
 	void _Free_proxy()
 		{	// destroy proxy
 		typename _Alty::template rebind<_Container_proxy>::other
 			_Alproxy(_Getal());
-		this->_Orphan_all();
-		_Alproxy.destroy(this->_Myproxy);
-		_Alproxy.deallocate(this->_Myproxy, 1);
-		this->_Myproxy = 0;
+		_Orphan_all();
+		_Alproxy.destroy(_Myproxy());
+		_Alproxy.deallocate(_Myproxy(), 1);
+		_Myproxy() = 0;
 		}
+
+	_Iterator_base12 **_Getpfirst() const
+		{	// get address of iterator chain
+		return (_Get_data()._Getpfirst());
+		}
+
+	_Container_proxy * & _Myproxy() _NOEXCEPT
+		{	// return reference to _Myproxy
+		return (_Get_data()._Myproxy);
+		}
+
+	_Container_proxy * const & _Myproxy() const _NOEXCEPT
+		{	// return const reference to _Myproxy
+		return (_Get_data()._Myproxy);
+		}
+
  #endif /* _ITERATOR_DEBUG_LEVEL == 0 */
+
+	void _Orphan_all()
+		{	// orphan all iterators
+		_Get_data()._Orphan_all();
+		}
+
+	void _Swap_all(_Myt& _Right)
+		{	// swap all iterators
+		_Get_data()._Swap_all(_Right._Get_data());
+		}
 
 	_Nodeptr _Buyheadnode()
 		{	// get head node using current allocator
-		_Nodeptr _Pnode = this->_Getal().allocate(1);
+		_Nodeptr _Pnode = _Getal().allocate(1);
 
 		_TRY_BEGIN
-		this->_Getal().construct(
-			_STD addressof(this->_Left(_Pnode)), _Pnode);
-		this->_Getal().construct(
-			_STD addressof(this->_Parent(_Pnode)), _Pnode);
-		this->_Getal().construct(
-			_STD addressof(this->_Right(_Pnode)), _Pnode);
+		_Getal().construct(
+			_STD addressof(_Left(_Pnode)), _Pnode);
+		_Getal().construct(
+			_STD addressof(_Parent(_Pnode)), _Pnode);
+		_Getal().construct(
+			_STD addressof(_Right(_Pnode)), _Pnode);
 		_CATCH_ALL
-		this->_Getal().deallocate(_Pnode, 1);
+		_Getal().deallocate(_Pnode, 1);
 		_RERAISE;
 		_CATCH_END
 
-		this->_Color(_Pnode) = this->_Black;
-		this->_Isnil(_Pnode) = true;
+		_Color(_Pnode) = _Black;
+		_Isnil(_Pnode) = true;
 		return (_Pnode);
 		}
 
 	void _Freeheadnode(_Nodeptr _Pnode)
 		{	// free head node using current allocator
-		this->_Getal().destroy(
-			_STD addressof(this->_Left(_Pnode)));
-		this->_Getal().destroy(
-			_STD addressof(this->_Parent(_Pnode)));
-		this->_Getal().destroy(
-			_STD addressof(this->_Right(_Pnode)));
-		this->_Getal().deallocate(_Pnode, 1);
-		}
-
-	_Alty _Getal() const
-		{	// get allocator
-		return (_Alty());
-		}
-	};
-
-		// TEMPLATE CLASS _Tree_buy
-template<class _Ty,
-	class _Alloc>
-	class _Tree_buy
-		: public _Tree_alloc<!is_empty<_Alloc>::value,
-			_Tree_base_types<_Ty, _Alloc> >
-	{	// base class for tree to hold buynode/freenode functions
-public:
-	typedef _Tree_alloc<!is_empty<_Alloc>::value,
-		_Tree_base_types<_Ty, _Alloc> > _Mybase;
-	typedef typename _Mybase::_Alty _Alty;
-	typedef typename _Mybase::_Nodeptr _Nodeptr;
-	typedef typename _Mybase::value_type value_type;
-
-	_Tree_buy(const _Alloc& _Al = _Alloc())
-		: _Mybase(_Al)
-		{	// construct from allocator
+		_Getal().destroy(
+			_STD addressof(_Left(_Pnode)));
+		_Getal().destroy(
+			_STD addressof(_Parent(_Pnode)));
+		_Getal().destroy(
+			_STD addressof(_Right(_Pnode)));
+		_Getal().deallocate(_Pnode, 1);
 		}
 
 	_Nodeptr _Buynode0()
 		{	// allocate a non-value node
-		_Nodeptr _Pnode = this->_Getal().allocate(1);
+		_Nodeptr _Pnode = _Getal().allocate(1);
 
 		_TRY_BEGIN
-		this->_Getal().construct(
-			_STD addressof(this->_Left(_Pnode)), this->_Myhead);
-		this->_Getal().construct(
-			_STD addressof(this->_Parent(_Pnode)), this->_Myhead);
-		this->_Getal().construct(
-			_STD addressof(this->_Right(_Pnode)), this->_Myhead);
+		_Getal().construct(
+			_STD addressof(_Left(_Pnode)), _Myhead());
+		_Getal().construct(
+			_STD addressof(_Parent(_Pnode)), _Myhead());
+		_Getal().construct(
+			_STD addressof(_Right(_Pnode)), _Myhead());
 		_CATCH_ALL
-		this->_Getal().deallocate(_Pnode, 1);
+		_Getal().deallocate(_Pnode, 1);
 		_RERAISE;
 		_CATCH_END
 
@@ -911,13 +857,13 @@ public:
 
 	void _Freenode0(_Nodeptr _Pnode)
 		{	// free non-value node using current allocator
-		this->_Getal().destroy(
-			_STD addressof(this->_Left(_Pnode)));
-		this->_Getal().destroy(
-			_STD addressof(this->_Parent(_Pnode)));
-		this->_Getal().destroy(
-			_STD addressof(this->_Right(_Pnode)));
-		this->_Getal().deallocate(_Pnode, 1);
+		_Getal().destroy(
+			_STD addressof(_Left(_Pnode)));
+		_Getal().destroy(
+			_STD addressof(_Parent(_Pnode)));
+		_Getal().destroy(
+			_STD addressof(_Right(_Pnode)));
+		_Getal().deallocate(_Pnode, 1);
 		}
 
 	template<class... _Valty>
@@ -925,12 +871,12 @@ public:
 		{	// allocate a node with defaults and set links and value
 		_Nodeptr _Pnode = _Buynode0();
 
-		this->_Color(_Pnode) = this->_Red;
-		this->_Isnil(_Pnode) = false;
+		_Color(_Pnode) = _Red;
+		_Isnil(_Pnode) = false;
 
 		_TRY_BEGIN
-		this->_Getal().construct(
-			_STD addressof(this->_Myval(_Pnode)),
+		_Getal().construct(
+			_STD addressof(_Myval(_Pnode)),
 				_STD forward<_Valty>(_Val)...);
 		_CATCH_ALL
 		_Freenode0(_Pnode);
@@ -940,93 +886,69 @@ public:
 		return (_Pnode);
 		}
 
-	};
-
-		// TEMPLATE CLASS _Tree_comp
-template<bool _Pr_has_storage,
-	class _Traits>
-	class _Tree_comp
-		: public _Tree_buy<typename _Traits::value_type,
-			typename _Traits::allocator_type>
-	{	// base class for _Tree to hold ordering predicate with storage
-public:
-	typedef _Tree_comp<_Pr_has_storage, _Traits> _Myt;
-	typedef _Tree_buy<typename _Traits::value_type,
-		typename _Traits::allocator_type> _Mybase;
-
-	typedef typename _Traits::allocator_type allocator_type;
-	typedef typename _Traits::key_compare key_compare;
-
-	_Tree_comp(const key_compare& _Parg, const allocator_type& _Al)
-		: _Mybase(_Al), comp(_Parg)
-		{	// construct ordering predicate
+	key_compare& _Getcomp() _NOEXCEPT
+		{	// return reference to ordering predicate
+		return (_Mypair._Get_first());
 		}
 
-	key_compare& _Getcomp()
-		{	// get reference to ordering predicate
-		return (comp);
+	const key_compare& _Getcomp() const _NOEXCEPT
+		{	// return const reference to ordering predicate
+		return (_Mypair._Get_first());
 		}
 
-	const key_compare& _Getcomp() const
-		{	// get reference to ordering predicate
-		return (comp);
+	_Alty& _Getal() _NOEXCEPT
+		{	// return reference to allocator
+		return (_Mypair._Get_second()._Get_first());
 		}
 
-	void _Setcomp(const key_compare& _Right)
-		{	// copy ordering predicate
-		comp = _Right;
+	const _Alty& _Getal() const _NOEXCEPT
+		{	// return const reference to allocator
+		return (_Mypair._Get_second()._Get_first());
 		}
 
-	void _Swapcomp(key_compare& _Right)
-		{	// swap ordering predicate
-		_Swap_adl(comp, _Right);
+	_Tree_val<_Val_types>& _Get_data() _NOEXCEPT
+		{	// return reference to _Tree_val
+		return (_Mypair._Get_second()._Get_second());
 		}
 
-	key_compare comp;
-	};
-
-template<class _Traits>
-	class _Tree_comp<false, _Traits>
-		: public _Tree_buy<typename _Traits::value_type,
-			typename _Traits::allocator_type>
-	{	// base class for _Tree to hold ordering predicate with no storage
-public:
-	typedef _Tree_comp<false, _Traits> _Myt;
-	typedef _Tree_buy<typename _Traits::value_type,
-		typename _Traits::allocator_type> _Mybase;
-
-	typedef typename _Traits::allocator_type allocator_type;
-	typedef typename _Traits::key_compare key_compare;
-
-	_Tree_comp(const key_compare&, const allocator_type& _Al)
-		: _Mybase(_Al)
-		{	// construct ordering predicate
+	const _Tree_val<_Val_types>& _Get_data() const _NOEXCEPT
+		{	// return const reference to _Tree_val
+		return (_Mypair._Get_second()._Get_second());
 		}
 
-	key_compare _Getcomp() const
-		{	// get ordering predicate
-		return (key_compare());
+	_Nodeptr& _Myhead() _NOEXCEPT
+		{	// return reference to _Myhead
+		return (_Get_data()._Myhead);
 		}
 
-	void _Setcomp(const key_compare&)
-		{	// copy ordering predicate
+	const _Nodeptr& _Myhead() const _NOEXCEPT
+		{	// return const reference to _Myhead
+		return (_Get_data()._Myhead);
 		}
 
-	void _Swapcomp(const key_compare&)
-		{	// swap ordering predicate
+	size_type& _Mysize() _NOEXCEPT
+		{	// return reference to _Mysize
+		return (_Get_data()._Mysize);
 		}
+
+	const size_type& _Mysize() const _NOEXCEPT
+		{	// return const reference to _Mysize
+		return (_Get_data()._Mysize);
+		}
+
+private:
+	_Compressed_pair<key_compare,
+		_Compressed_pair<_Alty, _Tree_val<_Val_types> > > _Mypair;
 	};
 
 		// TEMPLATE CLASS _Tree
 template<class _Traits>
 	class _Tree
-		: public _Tree_comp<
-			!is_empty<typename _Traits::key_compare>::value, _Traits>
-	{	// ordered red-black tree for [multi_]{map set}
+		: public _Tree_comp_alloc<_Traits>
+	{	// ordered red-black tree for map/multimap/set/multiset
 public:
 	typedef _Tree<_Traits> _Myt;
-	typedef _Tree_comp<
-		!is_empty<typename _Traits::key_compare>::value, _Traits> _Mybase;
+	typedef _Tree_comp_alloc<_Traits> _Mybase;
 
 	typedef typename _Traits::key_type key_type;
 	typedef typename _Traits::value_compare value_compare;
@@ -1074,18 +996,6 @@ public:
 		{	// construct empty tree
 		}
 
-	_Tree(const value_type *_First, const value_type *_Last,
-		const key_compare& _Parg, const allocator_type& _Al)
-		: _Mybase(_Parg, _Al)
-		{	// construct tree from [_First, _Last) array
-		_TRY_BEGIN
-		insert(_First, _Last);
-		_CATCH_ALL
-		_Tidy();
-		_RERAISE;
-		_CATCH_END
-		}
-
 	_Tree(const _Myt& _Right, const allocator_type& _Al)
 		: _Mybase(_Right.key_comp(), _Al)
 		{	// construct tree by copying _Right, allocator
@@ -1126,9 +1036,9 @@ public:
 	void _Assign_rv(_Myt&& _Right, true_type)
 		{	// move from _Right, stealing its contents
 		this->_Swap_all(_Right);
-		this->_Swapcomp(_Right._Getcomp());
-		_Swap_adl(this->_Myhead, _Right._Myhead);
-		_STD swap(this->_Mysize, _Right._Mysize);
+		_Swap_adl(this->_Getcomp(), _Right._Getcomp());
+		_Swap_adl(this->_Myhead(), _Right._Myhead());
+		_STD swap(this->_Mysize(), _Right._Mysize());
 		}
 
 	void _Assign_rv(_Myt&& _Right, false_type)
@@ -1209,7 +1119,7 @@ public:
 				&& _Alty::propagate_on_container_copy_assignment::value)
 				this->_Change_alloc(_Right._Getal());
 
-			this->_Setcomp(_Right._Getcomp());
+			this->_Getcomp() = _Right._Getcomp();
 			_Copy(_Right, _Copy_tag());
 			}
 		return (*this);
@@ -1217,22 +1127,22 @@ public:
 
 	iterator begin() _NOEXCEPT
 		{	// return iterator for beginning of mutable sequence
-		return (iterator(_Lmost(), this));
+		return (iterator(_Lmost(), &this->_Get_data()));
 		}
 
 	const_iterator begin() const _NOEXCEPT
 		{	// return iterator for beginning of nonmutable sequence
-		return (const_iterator(_Lmost(), this));
+		return (const_iterator(_Lmost(), &this->_Get_data()));
 		}
 
 	iterator end() _NOEXCEPT
 		{	// return iterator for end of mutable sequence
-		return (iterator(this->_Myhead, this));
+		return (iterator(this->_Myhead(), &this->_Get_data()));
 		}
 
 	const_iterator end() const _NOEXCEPT
 		{	// return iterator for end of nonmutable sequence
-		return (const_iterator(this->_Myhead, this));
+		return (const_iterator(this->_Myhead(), &this->_Get_data()));
 		}
 
 	reverse_iterator rbegin() _NOEXCEPT
@@ -1277,7 +1187,7 @@ public:
 
 	size_type size() const _NOEXCEPT
 		{	// return length of sequence
-		return (this->_Mysize);
+		return (this->_Mysize());
 		}
 
 	size_type max_size() const _NOEXCEPT
@@ -1335,7 +1245,7 @@ public:
 	iterator erase(const_iterator _Where)
 		{	// erase element at _Where
  #if _ITERATOR_DEBUG_LEVEL == 2
-		if (_Where._Getcont() != this || this->_Isnil(_Where._Mynode()))
+		if (_Where._Getcont() != &this->_Get_data() || this->_Isnil(_Where._Mynode()))
 			_DEBUG_ERROR("map/set erase iterator outside range");
 		_Nodeptr _Erasednode = _Where._Mynode();	// node to erase
 		++_Where;	// save successor iterator for return
@@ -1509,10 +1419,10 @@ public:
 
 		this->_Getal().deallocate(_Erasednode, 1);
 
-		if (0 < this->_Mysize)
-			--this->_Mysize;
+		if (0 < this->_Mysize())
+			--this->_Mysize();
 
-		return (iterator(_Where._Ptr, this));	// return successor iterator
+		return (iterator(_Where._Ptr, &this->_Get_data()));	// return successor iterator
 		}
 
 	iterator erase(const_iterator _First, const_iterator _Last)
@@ -1526,7 +1436,7 @@ public:
 			{	// partial erase, one at a time
 			while (_First != _Last)
 				erase(_First++);
-			return (iterator(_First._Ptr, this));
+			return (iterator(_First._Ptr, &this->_Get_data()));
 			}
 		}
 
@@ -1546,10 +1456,10 @@ public:
  #endif /* _ITERATOR_DEBUG_LEVEL == 2 */
 
 		_Erase(_Root());
-		_Root() = this->_Myhead;
-		_Lmost() = this->_Myhead;
-		_Rmost() = this->_Myhead;
-		this->_Mysize = 0;
+		_Root() = this->_Myhead();
+		_Lmost() = this->_Myhead();
+		_Rmost() = this->_Myhead();
+		this->_Mysize() = 0;
 		}
 
 	iterator find(const key_type& _Keyval)
@@ -1615,12 +1525,12 @@ public:
 
 	iterator lower_bound(const key_type& _Keyval)
 		{	// find leftmost node not less than _Keyval in mutable tree
-		return (iterator(_Lbound(_Keyval), this));
+		return (iterator(_Lbound(_Keyval), &this->_Get_data()));
 		}
 
 	const_iterator lower_bound(const key_type& _Keyval) const
 		{	// find leftmost node not less than _Keyval in nonmutable tree
-		return (const_iterator(_Lbound(_Keyval), this));
+		return (const_iterator(_Lbound(_Keyval), &this->_Get_data()));
 		}
 
 	template<class _Other,
@@ -1628,7 +1538,7 @@ public:
 		class = typename _Mycomp::is_transparent>
 		iterator lower_bound(const _Other& _Keyval)
 		{	// find leftmost node not less than _Keyval in mutable tree
-		return (iterator(_Lbound(_Keyval), this));
+		return (iterator(_Lbound(_Keyval), &this->_Get_data()));
 		}
 
 	template<class _Other,
@@ -1636,17 +1546,17 @@ public:
 		class = typename _Mycomp::is_transparent>
 		const_iterator lower_bound(const _Other& _Keyval) const
 		{	// find leftmost node not less than _Keyval in nonmutable tree
-		return (const_iterator(_Lbound(_Keyval), this));
+		return (const_iterator(_Lbound(_Keyval), &this->_Get_data()));
 		}
 
 	iterator upper_bound(const key_type& _Keyval)
 		{	// find leftmost node greater than _Keyval in mutable tree
-		return (iterator(_Ubound(_Keyval), this));
+		return (iterator(_Ubound(_Keyval), &this->_Get_data()));
 		}
 
 	const_iterator upper_bound(const key_type& _Keyval) const
 		{	// find leftmost node greater than _Keyval in nonmutable tree
-		return (const_iterator(_Ubound(_Keyval), this));
+		return (const_iterator(_Ubound(_Keyval), &this->_Get_data()));
 		}
 
 	template<class _Other,
@@ -1654,7 +1564,7 @@ public:
 		class = typename _Mycomp::is_transparent>
 		iterator upper_bound(const _Other& _Keyval)
 		{	// find leftmost node greater than _Keyval in mutable tree
-		return (iterator(_Ubound(_Keyval), this));
+		return (iterator(_Ubound(_Keyval), &this->_Get_data()));
 		}
 
 	template<class _Other,
@@ -1662,7 +1572,7 @@ public:
 		class = typename _Mycomp::is_transparent>
 		const_iterator upper_bound(const _Other& _Keyval) const
 		{	// find leftmost node greater than _Keyval in nonmutable tree
-		return (const_iterator(_Ubound(_Keyval), this));
+		return (const_iterator(_Ubound(_Keyval), &this->_Get_data()));
 		}
 
 	_Pairii equal_range(const key_type& _Keyval)
@@ -1698,17 +1608,17 @@ public:
 		else if (this->_Getal() == _Right._Getal())
 			{	// same allocator, swap control information
 			this->_Swap_all(_Right);
-			this->_Swapcomp(_Right._Getcomp());
-			_Swap_adl(this->_Myhead, _Right._Myhead);
-			_STD swap(this->_Mysize, _Right._Mysize);
+			_Swap_adl(this->_Getcomp(), _Right._Getcomp());
+			_Swap_adl(this->_Myhead(), _Right._Myhead());
+			_STD swap(this->_Mysize(), _Right._Mysize());
 			}
 
 		else if (_Alty::propagate_on_container_swap::value)
 			{	// swap allocators and control information
 			this->_Swap_alloc(_Right);
-			this->_Swapcomp(_Right._Getcomp());
-			_Swap_adl(this->_Myhead, _Right._Myhead);
-			_STD swap(this->_Mysize, _Right._Mysize);
+			_Swap_adl(this->_Getcomp(), _Right._Getcomp());
+			_Swap_adl(this->_Myhead(), _Right._Myhead());
+			_STD swap(this->_Mysize(), _Right._Mysize());
 			}
 
 		else
@@ -1758,12 +1668,12 @@ protected:
 		_TRY_BEGIN
 
  #if _ITERATOR_DEBUG_LEVEL == 2
-		if (_Where._Getcont() != this)
+		if (_Where._Getcont() != &this->_Get_data())
 			_DEBUG_ERROR("map/set insert iterator outside range");
  #endif /* _ITERATOR_DEBUG_LEVEL == 2 */
 
 		if (size() == 0)
-			return (_Insert_at(true, this->_Myhead,
+			return (_Insert_at(true, this->_Myhead(),
 				_STD forward<_Valty>(_Val), _Newnode));	// empty tree
 		else if (this->_Multi)
 			{	// insert even if duplicate
@@ -1870,7 +1780,7 @@ protected:
 		{	// try to insert node, on left if _Leftish
 		_TRY_BEGIN
 		_Nodeptr _Trynode = _Root();
-		_Nodeptr _Wherenode = this->_Myhead;
+		_Nodeptr _Wherenode = this->_Myhead();
 		bool _Addleft = true;	// add to left of head if tree empty
 
 		while (!this->_Isnil(_Trynode))
@@ -1893,7 +1803,7 @@ protected:
 				_STD forward<_Valty>(_Val), _Newnode), true));
 		else
 			{	// insert only if unique
-			iterator _Where = iterator(_Wherenode, this);
+			iterator _Where = iterator(_Wherenode, &this->_Get_data());
 			if (!_Addleft)
 				;	// need to test if insert after is okay
 			else if (_Where == begin())
@@ -1924,7 +1834,7 @@ protected:
 		iterator _Insert_at(bool _Addleft, _Nodeptr _Wherenode,
 		_Valty&& _Val, _Nodety _Node)
 		{	// add node with value next to _Wherenode, to left if _Addleft
-		if (max_size() - 1 <= this->_Mysize)
+		if (max_size() - 1 <= this->_Mysize())
 			{	// tree would get too big, fail
 			_Destroy_if_not_nil(_Node);
 			_Xlength_error("map/set<T> too long");
@@ -1932,10 +1842,10 @@ protected:
 		_Nodeptr _Newnode = _Buynode_if_nil(_Node,
 			_STD forward<_Valty>(_Val));
 
-		++this->_Mysize;
+		++this->_Mysize();
 		_Newnode->_Parent = _Wherenode;
 
-		if (_Wherenode == this->_Myhead)
+		if (_Wherenode == this->_Myhead())
 			{	// first node in tree, just set head values
 			_Root() = _Newnode;
 			_Lmost() = _Newnode;
@@ -2011,14 +1921,14 @@ protected:
 				}
 
 		this->_Color(_Root()) = this->_Black;	// root is always black
-		return (iterator(_Newnode, this));
+		return (iterator(_Newnode, &this->_Get_data()));
 		}
 
 	template<class _Moveit>
 		void _Copy(const _Myt& _Right, _Moveit _Movefl)
 		{	// copy or move entire tree from _Right
-		_Root() = _Copy_nodes(_Right._Root(), this->_Myhead, _Movefl);
-		this->_Mysize = _Right.size();
+		_Root() = _Copy_nodes(_Right._Root(), this->_Myhead(), _Movefl);
+		this->_Mysize() = _Right.size();
 		if (!this->_Isnil(_Root()))
 			{	// nonempty tree, look for new smallest and largest
 			_Lmost() = this->_Min(_Root());
@@ -2026,8 +1936,8 @@ protected:
 			}
 		else
 			{	// empty tree, just tidy head pointers
-			_Lmost() = this->_Myhead;
-			_Rmost() = this->_Myhead;
+			_Lmost() = this->_Myhead();
+			_Rmost() = this->_Myhead();
 			}
 		}
 
@@ -2056,7 +1966,7 @@ protected:
 		_Nodeptr _Copy_nodes(_Nodeptr _Rootnode, _Nodeptr _Wherenode,
 			_Moveit _Movefl)
 		{	// copy entire subtree, recursively
-		_Nodeptr _Newroot = this->_Myhead;	// point at nil node
+		_Nodeptr _Newroot = this->_Myhead();	// point at nil node
 
 		if (!this->_Isnil(_Rootnode))
 			{	// copy or move a node, then any subtrees
@@ -2086,8 +1996,8 @@ protected:
 		_Paircc _Eqrange(const _Other& _Keyval) const
 		{	// find leftmost node not less than _Keyval
 		_Nodeptr _Pnode = _Root();
-		_Nodeptr _Lonode = this->_Myhead;	// end() if search fails
-		_Nodeptr _Hinode = this->_Myhead;	// end() if search fails
+		_Nodeptr _Lonode = this->_Myhead();	// end() if search fails
+		_Nodeptr _Hinode = this->_Myhead();	// end() if search fails
 
 		while (!this->_Isnil(_Pnode))
 			if (_DEBUG_LT_PRED(this->_Getcomp(), this->_Key(_Pnode), _Keyval))
@@ -2113,8 +2023,8 @@ protected:
 			else
 				_Pnode = this->_Right(_Pnode);	// descend right subtree
 
-		const_iterator _First = const_iterator(_Lonode, this);
-		const_iterator _Last = const_iterator(_Hinode, this);
+		const_iterator _First = const_iterator(_Lonode, &this->_Get_data());
+		const_iterator _Last = const_iterator(_Hinode, &this->_Get_data());
 		return (_Paircc(_First, _Last));
 		}
 
@@ -2122,8 +2032,8 @@ protected:
 		_Pairii _Eqrange(const _Other& _Keyval)
 		{	// find leftmost node not less than _Keyval
 		_Paircc _Ans(static_cast<const _Myt *>(this)->_Eqrange(_Keyval));
-		iterator _First = iterator(_Ans.first._Ptr, this);
-		iterator _Last = iterator(_Ans.second._Ptr, this);
+		iterator _First = iterator(_Ans.first._Ptr, &this->_Get_data());
+		iterator _Last = iterator(_Ans.second._Ptr, &this->_Get_data());
 		return (_Pairii(_First, _Last));
 		}
 
@@ -2157,7 +2067,7 @@ protected:
 		_Nodeptr _Lbound(const _Other& _Keyval) const
 		{	// find leftmost node not less than _Keyval
 		_Nodeptr _Pnode = _Root();
-		_Nodeptr _Wherenode = this->_Myhead;	// end() if search fails
+		_Nodeptr _Wherenode = this->_Myhead();	// end() if search fails
 
 		while (!this->_Isnil(_Pnode))
 			if (_Compare(this->_Key(_Pnode), _Keyval))
@@ -2173,7 +2083,7 @@ protected:
 
 	_Nodeptr& _Lmost() const
 		{	// return leftmost node in nonmutable tree
-		return (this->_Left(this->_Myhead));
+		return (this->_Left(this->_Myhead()));
 		}
 
 	void _Lrotate(_Nodeptr _Wherenode)
@@ -2198,12 +2108,12 @@ protected:
 
 	_Nodeptr& _Rmost() const
 		{	// return rightmost node in nonmutable tree
-		return (this->_Right(this->_Myhead));
+		return (this->_Right(this->_Myhead()));
 		}
 
 	_Nodeptr& _Root() const
 		{	// return root of nonmutable tree
-		return (this->_Parent(this->_Myhead));
+		return (this->_Parent(this->_Myhead()));
 		}
 
 	void _Rrotate(_Nodeptr _Wherenode)
@@ -2230,7 +2140,7 @@ protected:
 		_Nodeptr _Ubound(const _Other& _Keyval) const
 		{	// find leftmost node greater than _Keyval
 		_Nodeptr _Pnode = _Root();
-		_Nodeptr _Wherenode = this->_Myhead;	// end() if search fails
+		_Nodeptr _Wherenode = this->_Myhead();	// end() if search fails
 
 		while (!this->_Isnil(_Pnode))
 			if (_Compare(_Keyval, this->_Key(_Pnode)))
@@ -2251,7 +2161,7 @@ protected:
 		const_iterator **_Pnext = (const_iterator **)this->_Getpfirst();
 		if (_Pnext != 0)
 			while (*_Pnext != 0)
-				if ((*_Pnext)->_Ptr == this->_Myhead
+				if ((*_Pnext)->_Ptr == this->_Myhead()
 					|| _Ptr != 0 && (*_Pnext)->_Ptr != _Ptr)
 					_Pnext = (const_iterator **)(*_Pnext)->_Getpnext();
 				else

@@ -655,12 +655,33 @@ template<class _FwdIt1,
 	class _Diff2,
 	class _Pr> inline
 	_FwdIt1 _Search(_FwdIt1 _First1, _FwdIt1 _Last1,
-		_FwdIt2 _First2, _FwdIt2 _Last2, _Pr _Pred, _Diff1 *, _Diff2 *)
-	{	// find first [_First2, _Last2) satisfying _Pred
-	_Diff1 _Count1 = 0;
-	_Distance(_First1, _Last1, _Count1);
-	_Diff2 _Count2 = 0;
-	_Distance(_First2, _Last2, _Count2);
+		_FwdIt2 _First2, _FwdIt2 _Last2, _Pr _Pred, _Diff1 *, _Diff2 *,
+		forward_iterator_tag, forward_iterator_tag)
+	{	// find first [_First2, _Last2) satisfying _Pred, arbitrary iterators
+	for (; ; ++_First1)
+		{
+		_FwdIt1 _Mid1 = _First1;
+		for (_FwdIt2 _Mid2 = _First2; ; ++_Mid1, (void)++_Mid2)
+			if (_Mid2 == _Last2)
+				return (_First1);
+			else if (_Mid1 == _Last1)
+				return (_Last1);
+			else if (!_Pred(*_Mid1, *_Mid2))
+				break;
+		}
+	}
+
+template<class _FwdIt1,
+	class _FwdIt2,
+	class _Diff1,
+	class _Diff2,
+	class _Pr> inline
+	_FwdIt1 _Search(_FwdIt1 _First1, _FwdIt1 _Last1,
+		_FwdIt2 _First2, _FwdIt2 _Last2, _Pr _Pred, _Diff1 *, _Diff2 *,
+		random_access_iterator_tag, random_access_iterator_tag)
+	{	// find first [_First2, _Last2) satisfying _Pred, random-access iterators
+	_Diff1 _Count1 = _Last1 - _First1;
+	_Diff2 _Count2 = _Last2 - _First2;
 
 	for (; _Count2 <= _Count1; ++_First1, (void)--_Count1)
 		{	// room for match, try it
@@ -686,7 +707,8 @@ template<class _FwdIt1,
 	return (_Rechecked(_First1,
 		_Search(_Unchecked(_First1), _Unchecked(_Last1),
 			_Unchecked(_First2), _Unchecked(_Last2), _Pred,
-			_Dist_type(_First1), _Dist_type(_First2))));
+			_Dist_type(_First1), _Dist_type(_First2),
+			_Iter_cat(_First1), _Iter_cat(_First2))));
 	}
 
 		// TEMPLATE FUNCTION search
@@ -700,102 +722,102 @@ template<class _FwdIt1,
 	}
 
 		// TEMPLATE FUNCTION search_n WITH PRED
-template<class _FwdIt1,
-	class _Diff2,
+template<class _FwdIt,
+	class _Diff,
 	class _Ty,
 	class _Pr> inline
-	_FwdIt1 _Search_n(_FwdIt1 _First1, _FwdIt1 _Last1,
-		_Diff2 _Count, const _Ty& _Val, _Pr _Pred, forward_iterator_tag)
+	_FwdIt _Search_n(_FwdIt _First, _FwdIt _Last,
+		_Diff _Count, const _Ty& _Val, _Pr _Pred, forward_iterator_tag)
 	{	// find first _Count * _Val satisfying _Pred, forward iterators
 	if (_Count <= 0)
-		return (_First1);
+		return (_First);
 
-	for (; _First1 != _Last1; ++_First1)
-		if (_Pred(*_First1, _Val))
+	for (; _First != _Last; ++_First)
+		if (_Pred(*_First, _Val))
 			{	// found start of possible match, check it out
-			_FwdIt1 _Mid1 = _First1;
+			_FwdIt _Mid = _First;
 
-			for (_Diff2 _Count1 = _Count; ; )
+			for (_Diff _Count1 = _Count; ; )
 				if (--_Count1 == 0)
-					return (_First1);	// found rest of match, report it
-				else if (++_Mid1 == _Last1)
-					return (_Last1);	// short match at end
-				else if (!_Pred(*_Mid1, _Val))
+					return (_First);	// found rest of match, report it
+				else if (++_Mid == _Last)
+					return (_Last);	// short match at end
+				else if (!_Pred(*_Mid, _Val))
 					{	// short match not at end
 					break;
 					}
 
-			_First1 = _Mid1;	// pick up just beyond failed match
+			_First = _Mid;	// pick up just beyond failed match
 			}
-	return (_Last1);
+	return (_Last);
 	}
 
-template<class _FwdIt1,
-	class _Diff2,
+template<class _FwdIt,
+	class _Diff,
 	class _Ty,
 	class _Pr> inline
-	_FwdIt1 _Search_n(_FwdIt1 _First1, _FwdIt1 _Last1,
-		_Diff2 _Count, const _Ty& _Val, _Pr _Pred, random_access_iterator_tag)
+	_FwdIt _Search_n(_FwdIt _First, _FwdIt _Last,
+		_Diff _Count, const _Ty& _Val, _Pr _Pred, random_access_iterator_tag)
 	{	// find first _Count * _Val satisfying _Pred, random-access iterators
 	if (_Count <= 0)
-		return (_First1);
+		return (_First);
 
-	_FwdIt1 _Oldfirst1 = _First1;
-	for (_Diff2 _Inc = 0; _Count <= _Last1 - _Oldfirst1; )
+	_FwdIt _Oldfirst = _First;
+	for (_Diff _Inc = 0; _Count <= _Last - _Oldfirst; )
 		{	// enough room, look for a match
-		_First1 = _Oldfirst1 + _Inc;
-		if (_Pred(*_First1, _Val))
+		_First = _Oldfirst + _Inc;
+		if (_Pred(*_First, _Val))
 			{	// found part of possible match, check it out
-			_Diff2 _Count1 = _Count;
-			_FwdIt1 _Mid1 = _First1;
+			_Diff _Count1 = _Count;
+			_FwdIt _Mid = _First;
 
-			for (; _Oldfirst1 != _First1 && _Pred(_First1[-1], _Val);
-				--_First1)
+			for (; _Oldfirst != _First && _Pred(_First[-1], _Val);
+				--_First)
 				--_Count1;	// back up over any skipped prefix
 
-			if (_Count1 <= _Last1 - _Mid1)
+			if (_Count1 <= _Last - _Mid)
 				for (; ; )
 					{	// enough left, test suffix
 					if (--_Count1 == 0)
-						return (_First1);	// found rest of match, report it
-					else if (!_Pred(*++_Mid1, _Val))
+						return (_First);	// found rest of match, report it
+					else if (!_Pred(*++_Mid, _Val))
 						{	// short match not at end
 						break;
 						}
 					}
-			_Oldfirst1 = ++_Mid1;	// failed match, take small jump
+			_Oldfirst = ++_Mid;	// failed match, take small jump
 			_Inc = 0;
 			}
 		else
 			{	// no match, take big jump and back up as needed
-			_Oldfirst1 = _First1 + 1;
+			_Oldfirst = _First + 1;
 			_Inc = _Count - 1;
 			}
 		}
-	return (_Last1);
+	return (_Last);
 	}
 
-template<class _FwdIt1,
-	class _Diff2,
+template<class _FwdIt,
+	class _Diff,
 	class _Ty,
 	class _Pr> inline
-	_FwdIt1 search_n(_FwdIt1 _First1, _FwdIt1 _Last1,
-		_Diff2 _Count, const _Ty& _Val, _Pr _Pred)
+	_FwdIt search_n(_FwdIt _First, _FwdIt _Last,
+		_Diff _Count, const _Ty& _Val, _Pr _Pred)
 	{	// find first _Count * _Val satisfying _Pred
-	_DEBUG_RANGE_PTR(_First1, _Last1, _Pred);
-	return (_Rechecked(_First1,
-		_Search_n(_Unchecked(_First1), _Unchecked(_Last1), _Count, _Val,
-			_Pred, _Iter_cat(_First1))));
+	_DEBUG_RANGE_PTR(_First, _Last, _Pred);
+	return (_Rechecked(_First,
+		_Search_n(_Unchecked(_First), _Unchecked(_Last), _Count, _Val,
+			_Pred, _Iter_cat(_First))));
 	}
 
 		// TEMPLATE FUNCTION search_n
-template<class _FwdIt1,
-	class _Diff2,
+template<class _FwdIt,
+	class _Diff,
 	class _Ty> inline
-	_FwdIt1 search_n(_FwdIt1 _First1, _FwdIt1 _Last1,
-		_Diff2 _Count, const _Ty& _Val)
+	_FwdIt search_n(_FwdIt _First, _FwdIt _Last,
+		_Diff _Count, const _Ty& _Val)
 	{	// find first _Count * _Val match
-	return (_STD search_n(_First1, _Last1, _Count, _Val,
+	return (_STD search_n(_First, _Last, _Count, _Val,
 		equal_to<>()));
 	}
 

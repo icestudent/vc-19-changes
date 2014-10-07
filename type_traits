@@ -31,12 +31,13 @@
   #define _IS_ABSTRACT(_Ty)	\
 	: _Cat_base<__is_abstract(_Ty)>
   #define _IS_FINAL(_Ty)	\
-	: _Cat_base<(__is_class(_Ty) || __is_union(_Ty))	\
-		&& (__is_final(_Ty) || __is_sealed(_Ty))>
+	: _Cat_base<(__is_class(_Ty) || __is_union(_Ty)) && __is_final(_Ty)>
   #define _IS_STANDARD_LAYOUT(_Ty)	\
 	: _Cat_base<__is_standard_layout(_Ty)>
   #define _IS_TRIVIAL(_Ty)	\
 	: _Cat_base<__is_trivial(_Ty)>
+  #define _IS_TRIVIALLY_COPYABLE(_Ty)	\
+	: _Cat_base<__is_trivially_copyable(_Ty)>
   #define _HAS_TRIVIAL_DESTRUCTOR(_Ty)	\
 	: _Cat_base<__has_trivial_destructor(_Ty)>
   #define _HAS_VIRTUAL_DESTRUCTOR(_Ty)	\
@@ -61,9 +62,6 @@
 	__is_nothrow_constructible
   #define _IS_TRIVIALLY_CONSTRUCTIBLE \
 	__is_trivially_constructible
-
-		// ADDITIONAL INTRINSICS
-// _IS_ASSIGNABLE(_To, _From)
 
 _STD_BEGIN
 	// TEMPLATE CLASS _Ptr_traits
@@ -177,29 +175,22 @@ template<class _Ty>
 	typedef const volatile _Ty type;
 	};
 
-	// TEMPLATE CLASS add_reference -- retained
-template<class _Ty>
-	struct add_reference
-	{	// add reference
-	typedef _Ty& type;
-	};
-
-#define _ADD_REFERENCE_VOID(CV_OPT) \
-template<> \
-	struct add_reference<CV_OPT void> \
-	{	/* add reference */ \
-	typedef CV_OPT void type; \
-	};
-
-_CLASS_DEFINE_CV(_ADD_REFERENCE_VOID)
-#undef _ADD_REFERENCE_VOID
-
 	// TEMPLATE CLASS add_lvalue_reference
 template<class _Ty>
 	struct add_lvalue_reference
 	{	// add lvalue reference
-	typedef typename add_reference<_Ty>::type type;
+	typedef _Ty& type;
 	};
+
+#define _ADD_LVALUE_REFERENCE_VOID(CV_OPT) \
+template<> \
+	struct add_lvalue_reference<CV_OPT void> \
+	{	/* add lvalue reference */ \
+	typedef CV_OPT void type; \
+	};
+
+_CLASS_DEFINE_CV(_ADD_LVALUE_REFERENCE_VOID)
+#undef _ADD_LVALUE_REFERENCE_VOID
 
 	// TEMPLATE CLASS add_rvalue_reference
 
@@ -212,7 +203,7 @@ template<class _Ty>
 #define _ADD_RVALUE_REFERENCE_VOID(CV_OPT) \
 template<> \
 	struct add_rvalue_reference<CV_OPT void> \
-	{	/* add reference */ \
+	{	/* add rvalue reference */ \
 	typedef CV_OPT void type; \
 	};
 
@@ -605,6 +596,12 @@ template<class _Ty>
 	{	// determine whether _Ty is trivial
 	};
 
+	// TEMPLATE CLASS is_trivially_copyable
+template<class _Ty>
+	struct is_trivially_copyable _IS_TRIVIALLY_COPYABLE(_Ty)
+	{	// determine whether _Ty is trivially copyable
+	};
+
 	// TEMPLATE CLASS has_virtual_destructor
 template<class _Ty>
 	struct has_virtual_destructor
@@ -637,24 +634,10 @@ template<class _Ty>
 	{	// determine whether _Ty has a copy constructor
 	};
 
-	// TEMPLATE CLASS has_copy_constructor -- retained
-template<class _Ty>
-	struct has_copy_constructor
-		: is_copy_constructible<_Ty>::type
-	{	// determine whether _Ty has a copy constructor
-	};
-
 	// TEMPLATE CLASS is_default_constructible
 template<class _Ty>
 	struct is_default_constructible
 		: is_constructible<_Ty>::type
-	{	// determine whether _Ty has a default constructor
-	};
-
-	// TEMPLATE CLASS has_default_constructor -- retained
-template<class _Ty>
-	struct has_default_constructor
-		: is_default_constructible<_Ty>::type
 	{	// determine whether _Ty has a default constructor
 	};
 
@@ -670,13 +653,6 @@ template<class _Ty>
 	{	// determine whether _Ty has a move constructor
 	};
 
-	// TEMPLATE CLASS has_move_constructor -- retained
-template<class _Ty>
-	struct has_move_constructor
-		: is_move_constructible<_Ty>::type
-	{	// determine whether _Ty has a move constructor
-	};
-
 	// TEMPLATE CLASS is_assignable
 
 template<class _To,
@@ -686,7 +662,7 @@ template<class _To,
 	template<class _Dest,
 		class _Src>
 		static auto _Fn(int)
-			-> decltype((_STD declval<_Dest>() = _STD declval<_Src>()),
+			-> decltype((void) (_STD declval<_Dest>() = _STD declval<_Src>()),
 				true_type());
 
 	template<class _Dest,
@@ -701,7 +677,6 @@ template<class _To,
 	class _From>
 	struct is_assignable
 		: _Is_assignable<_To, _From>::type
-//		_IS_ASSIGNABLE(_To, _From)
 	{	// determine whether _From can be assigned to _To
 	};
 
@@ -718,13 +693,6 @@ template<class _Ty>
 	{	// determine whether _Ty has a copy assignment operator
 	};
 
-	// TEMPLATE CLASS has_copy_assign -- retained
-template<class _Ty>
-	struct has_copy_assign
-		: is_copy_assignable<_Ty>::type
-	{	// determine whether _Ty has a copy assignment operator
-	};
-
 	// TEMPLATE CLASS is_move_assignable
 
 template<class _Ty>
@@ -733,12 +701,6 @@ template<class _Ty>
 			typename add_lvalue_reference<_Ty>::type,
 			typename add_rvalue_reference<_Ty>::type
 		>::type
-	{	// determine whether _Ty has a move assignment operator
-	};
-
-template<class _Ty>
-	struct has_move_assign
-		: is_move_assignable<_Ty>::type
 	{	// determine whether _Ty has a move assignment operator
 	};
 
@@ -776,32 +738,11 @@ template<class _Ty>
 	{	// determine whether _Ty has a trivial copy constructor
 	};
 
-	// TEMPLATE CLASS is_trivially_copyable
-template<class _Ty>
-	struct is_trivially_copyable
-		: is_trivially_copy_constructible<_Ty>::type
-	{	// determine whether _Ty has a trivial copy constructor
-	};
-
-	// TEMPLATE CLASS has_trivial_copy_constructor -- retained
-template<class _Ty>
-	struct has_trivial_copy_constructor
-		: is_trivially_copy_constructible<_Ty>::type
-	{	// determine whether _Ty has a trivial copy constructor
-	};
-
 	// TEMPLATE CLASS is_trivially_default_constructible
 template<class _Ty>
 	struct is_trivially_default_constructible
 		: is_trivially_constructible<_Ty>::type
 	{	// determine whether _Ty has a trivial default constructor
-	};
-
-	// TEMPLATE CLASS has_trivial_default_constructor -- retained
-template<class _Ty>
-	struct has_trivial_default_constructor
-		: is_trivially_default_constructible<_Ty>::type
-	{	// determine whether _Ty has a trivial constructor
 	};
 
 	// TEMPLATE CLASS is_trivially_move_constructible
@@ -813,13 +754,6 @@ template<class _Ty>
 			typename add_rvalue_reference<_Ty>::type
 		>::type
 
-	{	// determine whether _Ty has a trivial move constructor
-	};
-
-	// TEMPLATE CLASS has_trivial_move_constructor -- retained
-template<class _Ty>
-	struct has_trivial_move_constructor
-		: is_trivially_move_constructible<_Ty>::type
 	{	// determine whether _Ty has a trivial move constructor
 	};
 
@@ -847,13 +781,6 @@ template<class _Ty>
 	{	// determine whether _Ty has a trivial copy assignment operator
 	};
 
-	// TEMPLATE CLASS has_trivial_copy_assign -- retained
-template<class _Ty>
-	struct has_trivial_copy_assign
-		: is_trivially_copy_assignable<_Ty>::type
-	{	// determine whether _Ty has a trivial copy assignment operator
-	};
-
 	// TEMPLATE CLASS is_trivially_move_assignable
 template<class _Ty>
 	struct is_trivially_move_assignable
@@ -863,13 +790,6 @@ template<class _Ty>
 			typename add_rvalue_reference<_Ty>::type
 		>::type
 
-	{	// determine whether _Ty has a trivial move assignment operator
-	};
-
-	// TEMPLATE CLASS has_trivial_move_assign -- retained
-template<class _Ty>
-	struct has_trivial_move_assign
-		: is_trivially_move_assignable<_Ty>::type
 	{	// determine whether _Ty has a trivial move assignment operator
 	};
 
@@ -905,26 +825,10 @@ template<class _Ty>
 	{	// determine whether _Ty has a nothrow copy constructor
 	};
 
-	// TEMPLATE CLASS has_nothrow_copy_constructor -- retained
-template<class _Ty>
-	struct has_nothrow_copy_constructor
-
-		: is_nothrow_copy_constructible<_Ty>::type
-
-	{	// determine whether _Ty has a nothrow copy constructor
-	};
-
 	// TEMPLATE CLASS is_nothrow_default_constructible
 template<class _Ty>
 	struct is_nothrow_default_constructible
 		: is_nothrow_constructible<_Ty>::type
-	{	// determine whether _Ty has a nothrow default constructor
-	};
-
-	// TEMPLATE CLASS has_nothrow_default_constructor -- retained
-template<class _Ty>
-	struct has_nothrow_default_constructor
-		: is_nothrow_default_constructible<_Ty>::type
 	{	// determine whether _Ty has a nothrow default constructor
 	};
 
@@ -936,13 +840,6 @@ template<class _Ty>
 			_Ty,
 			typename add_rvalue_reference<_Ty>::type
 		>::type
-	{	// determine whether _Ty has a nothrow move constructor
-	};
-
-	// TEMPLATE CLASS has_nothrow_move_constructor -- retained
-template<class _Ty>
-	struct has_nothrow_move_constructor
-		: is_nothrow_move_constructible<_Ty>::type
 	{	// determine whether _Ty has a nothrow move constructor
 	};
 
@@ -970,13 +867,6 @@ template<class _Ty>
 	{	// determine whether _Ty has a nothrow copy assignment operator
 	};
 
-	// TEMPLATE CLASS has_nothrow_copy_assign -- retained
-template<class _Ty>
-	struct has_nothrow_copy_assign
-		: is_nothrow_copy_assignable<_Ty>::type
-	{	// determine whether _Ty has a nothrow copy assignment operator
-	};
-
 	// TEMPLATE CLASS is_nothrow_move_assignable
 template<class _Ty>
 	struct is_nothrow_move_assignable
@@ -989,82 +879,12 @@ template<class _Ty>
 	{	// determine whether _Ty has a nothrow move assignment operator
 	};
 
-	// TEMPLATE CLASS has_nothrow_move_assign -- retained
-template<class _Ty>
-	struct has_nothrow_move_assign
-		: is_nothrow_move_assignable<_Ty>::type
-	{	// determine whether _Ty has a nothrow move assignment operator
-	};
-
 	// TEMPLATE CLASS is_nothrow_destructible
 
 template<class _Ty>
 	struct is_nothrow_destructible
 		_IS_NOTHROW_DESTRUCTIBLE(_Ty)
 	{	// determine whether _Ty has a nothrow destructor
-	};
-
-	// TEMPLATE CLASS has_trivial_constructor -- retained
-template<class _Ty>
-	struct has_trivial_constructor
-
-		: is_trivially_default_constructible<_Ty>::type
-
-	{	// determine whether _Ty has a trivial default constructor
-	};
-
-	// TEMPLATE CLASS has_trivial_copy -- retained
-template<class _Ty>
-	struct has_trivial_copy
-
-		: is_trivially_copy_constructible<_Ty>::type
-
-	{	// determine whether _Ty has a trivial copy constructor
-	};
-
-	// TEMPLATE CLASS has_trivial_assign -- retained
-template<class _Ty>
-	struct has_trivial_assign
-
-		: is_trivially_copy_assignable<_Ty>::type
-
-	{	// determine whether _Ty has a trivial assignment operator
-	};
-
-	// TEMPLATE CLASS has_trivial_destructor -- retained
-template<class _Ty>
-	struct has_trivial_destructor
-
-		: is_trivially_destructible<_Ty>::type
-
-	{	// determine whether _Ty has a trivial destructor
-	};
-
-	// TEMPLATE CLASS has_nothrow_constructor -- retained
-template<class _Ty>
-	struct has_nothrow_constructor
-
-		: is_nothrow_default_constructible<_Ty>::type
-
-	{	// determine whether _Ty has a nothrow default constructor
-	};
-
-	// TEMPLATE CLASS has_nothrow_copy -- retained
-template<class _Ty>
-	struct has_nothrow_copy
-
-		: is_nothrow_copy_constructible<_Ty>::type
-
-	{	// determine whether _Ty has a nothrow copy constructor
-	};
-
-	// TEMPLATE CLASS has_nothrow_assign -- retained
-template<class _Ty>
-	struct has_nothrow_assign
-
-		: is_nothrow_copy_assignable<_Ty>::type
-
-	{	// determine whether _Ty has a nothrow assignment operator
 	};
 
 	// TEMPLATE CLASS is_signed
@@ -1361,7 +1181,6 @@ namespace tr1 {	// TR1 additions
 using _STD add_const;
 using _STD add_cv;
 using _STD add_pointer;
-using _STD add_reference;	// retained
 using _STD add_volatile;
 using _STD aligned_storage;
 using _STD alignment_of;
@@ -1370,13 +1189,6 @@ using _STD decay;
 using _STD enable_if;
 using _STD extent;
 using _STD false_type;
-using _STD has_nothrow_assign;	// retained
-using _STD has_nothrow_constructor;	// retained
-using _STD has_nothrow_copy;	// retained
-using _STD has_trivial_assign;	// retained
-using _STD has_trivial_constructor;	// retained
-using _STD has_trivial_copy;	// retained
-using _STD has_trivial_destructor;	// retained
 using _STD has_virtual_destructor;
 using _STD integral_constant;
 using _STD is_abstract;
@@ -1752,7 +1564,6 @@ template<class _Ty,
 template<class _Ty>
 	struct _Callable_base<_Ty, false>
 	{	// base types for callable object wrappers
-	enum {_EEN_INDIRECT = 0};	// helper for expression evaluator
 	typedef _Ty _MyTy;
 	typedef const _Ty& _MyCnstTy;
 
@@ -1787,7 +1598,6 @@ template<class _Ty>
 	struct _Callable_base<_Ty, true>
 	{	// base types for callable object wrappers holding references
 		// (used by reference_wrapper)
-	enum {_EEN_INDIRECT = 1};	// helper for expression evaluator
 	typedef _Ty _MyTy;
 	typedef _Ty& _MyCnstTy;
 

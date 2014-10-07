@@ -82,24 +82,6 @@ typedef void * HANDLE;
 inline void _YieldProcessor() {}
 #endif  /* (defined (_M_IX86) || defined (_M_X64)) */
 
-// Make sure the exchange pointer intrinsics works on x86 architecture
-
-#if defined (_M_IX86) && !defined(FIXED_592562) // Leave enabled until onflict with inline function in 8.1 SDK winnt.h header is fixed
-
-#undef _InterlockedExchangePointer
-#undef _InterlockedCompareExchangePointer
-
-#define _InterlockedExchangePointer(_Target, _Value) reinterpret_cast<void *>(static_cast<long>(_InterlockedExchange( \
-    static_cast<long volatile *>(reinterpret_cast<long volatile *>(static_cast<void * volatile *>(_Target))), \
-    static_cast<long>(reinterpret_cast<long>(static_cast<void *>(_Value))))))
-
-#define _InterlockedCompareExchangePointer(_Target, _Exchange, _Comparand) reinterpret_cast<void *>(static_cast<long>(_InterlockedCompareExchange( \
-    static_cast<long volatile *>(reinterpret_cast<long volatile *>(static_cast<void * volatile *>(_Target))), \
-    static_cast<long>(reinterpret_cast<long>(static_cast<void *>(_Exchange))), \
-    static_cast<long>(reinterpret_cast<long>(static_cast<void *>(_Comparand))))))
-
-#endif  /* defined (_M_IX86) */
-
 #if (defined (_M_IX86) || defined (_M_ARM))
 
 #define _InterlockedIncrementSizeT(_Target) static_cast<size_t>(_InterlockedIncrement(reinterpret_cast<long volatile *>(_Target)))

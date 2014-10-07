@@ -226,6 +226,7 @@ template<class _Ty>
 	};
 
 template<class _Ty,
+	class _Derived,
 	class _Alloc>
 	struct _State_deleter
 	: _Deleter_base<_Ty>
@@ -437,6 +438,11 @@ public:
 		return (_Ready != 0);
 		}
 
+	bool _Already_has_stored_result() const
+		{	// return presence of stored result
+		return (_Has_stored_result);
+		}
+
 	bool _Already_retrieved() const
 		{	// return retrieved status
 		return (_Retrieved);
@@ -518,21 +524,25 @@ public:
 	};
 
 template<class _Ty,
+	class _Derived,
 	class _Alloc> inline
-	void _State_deleter<_Ty, _Alloc>::_Delete(_Associated_state<_Ty> *_State)
+	void _State_deleter<_Ty, _Derived, _Alloc>::_Delete(
+		_Associated_state<_Ty> *_State)
 	{	// delete _State and this using stored allocator
 	typedef _Wrap_alloc<_Alloc> _Alty0;
 
-	typedef typename _Alty0::template rebind<_Associated_state<_Ty> >
+	typedef typename _Alty0::template rebind<_Derived>
 		::other _State_allocator;
 	_State_allocator _St_alloc(_My_alloc);
 
-	typedef typename _Alty0::template rebind<_State_deleter<_Ty, _Alloc> >
+	typedef typename _Alty0::template rebind<_State_deleter>
 		::other _Deleter_allocator;
 	_Deleter_allocator _Del_alloc(_My_alloc);
 
-	_St_alloc.destroy(_State);
-	_St_alloc.deallocate(_State, 1);
+	_Derived *_Ptr = static_cast<_Derived *>(_State);
+
+	_St_alloc.destroy(_Ptr);
+	_St_alloc.deallocate(_Ptr, 1);
 
 	_Del_alloc.destroy(this);
 	_Del_alloc.deallocate(this, 1);
@@ -751,7 +761,7 @@ template<class _Ty,
 	class _Alloc> inline
 	_Associated_state<_Ty> *_Make_associated_state(const _Alloc& _Al)
 	{	// construct an _Associated_state object with an allocator
-	typedef _State_deleter<_Ty, _Alloc> _Delty;
+	typedef _State_deleter<_Ty, _Associated_state<_Ty>, _Alloc> _Delty;
 	typedef _Wrap_alloc<_Alloc> _Alty0;
 
 	typedef typename _Alty0::template rebind<_Delty>
@@ -797,7 +807,7 @@ template<class _Pack_state,
 	{	// construct a _Packaged_state object with an allocator from
 		// an rvalue function object
 	typedef _State_deleter<typename _Pack_state::_Mybase::_State_type,
-		_Alloc> _Delty;
+		_Pack_state, _Alloc> _Delty;
 	typedef _Wrap_alloc<_Alloc> _Alty0;
 
 	typedef typename _Alty0::template rebind<_Delty>
@@ -1799,13 +1809,16 @@ public:
 			_Throw_future_error(
 				make_error_code(future_errc::promise_already_satisfied));
 		_MyStateManagerType& _State = _MyPromise._Get_state_for_set();
+		if (_State._Ptr()->_Already_has_stored_result())
+			_Throw_future_error(
+				make_error_code(future_errc::promise_already_satisfied));
 		_MyStateType *_Ptr = static_cast<_MyStateType *>(_State._Ptr());
 		_Ptr->_Call_deferred(_STD forward<_ArgTypes>(_Args)...);
 		}
 
 	void reset()
 		{	// reset to newly constructed state
-		_MyStateManagerType& _State = _MyPromise._Get_state();
+		_MyStateManagerType& _State = _MyPromise._Get_state_for_set();
 		_MyStateType *_MyState = static_cast<_MyStateType *>(_State._Ptr());
 		function<_Ret(_ArgTypes...)> _Fnarg = _MyState->_Get_fn();
 		_MyPromiseType _New_promise(new _MyStateType(_Fnarg));

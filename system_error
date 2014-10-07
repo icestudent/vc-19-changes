@@ -98,7 +98,7 @@ enum class errc {	// names for generic error codes
 	wrong_protocol_type = EPROTOTYPE
 	};
 
-typedef errc generic_errno;
+typedef errc _Errc;
 
 		// ENUM io_errc
 
@@ -129,16 +129,16 @@ template<class _Enum>
 	};
 
 template<>
-	struct is_error_condition_enum<generic_errno>
+	struct is_error_condition_enum<_Errc>
 		: public true_type
 	{	// tests for error_condition enumeration
 	};
 
 class error_code;
 class error_condition;
-error_code make_error_code(generic_errno) _NOEXCEPT;
+error_code make_error_code(_Errc) _NOEXCEPT;
 error_code make_error_code(_Io_errc) _NOEXCEPT;
-error_condition make_error_condition(generic_errno) _NOEXCEPT;
+error_condition make_error_condition(_Errc) _NOEXCEPT;
 error_condition make_error_condition(_Io_errc) _NOEXCEPT;
 
 		// CLASS error_category
@@ -197,13 +197,13 @@ class error_code
 public:
 	typedef error_code _Myt;
 
-	error_code()
+	error_code() _NOEXCEPT
 		: _Myval(0),
 			_Mycat(&system_category())
 		{	// construct non-error
 		}
 
-	error_code(int _Val, const error_category& _Cat)
+	error_code(int _Val, const error_category& _Cat) _NOEXCEPT
 		: _Myval(_Val), _Mycat(&_Cat)
 		{	// construct from error code and category
 		}
@@ -211,13 +211,13 @@ public:
 	template<class _Enum,
 		class = typename enable_if<is_error_code_enum<_Enum>::value,
 			void>::type>
-		error_code(_Enum _Errcode)
+		error_code(_Enum _Errcode) _NOEXCEPT
 		: _Myval(0), _Mycat(0)
 		{	// construct from enumerated error code
 		*this = make_error_code(_Errcode);	// using ADL
 		}
 
-	void assign(int _Val, const error_category& _Cat)
+	void assign(int _Val, const error_category& _Cat) _NOEXCEPT
 		{	// assign error code and category
 		_Myval = _Val;
 		_Mycat = &_Cat;
@@ -225,7 +225,7 @@ public:
 
 	template<class _Enum>
 		typename enable_if<is_error_code_enum<_Enum>::value,
-			error_code>::type& operator=(_Enum _Errcode)
+			error_code>::type& operator=(_Enum _Errcode) _NOEXCEPT
 		{	// assign enumerated error code
 		*this = make_error_code(_Errcode);	// using ADL
 		return (*this);
@@ -237,17 +237,17 @@ public:
 		_Mycat = &system_category();
 		}
 
-	int value() const
+	int value() const _NOEXCEPT
 		{	// get error code
 		return (_Myval);
 		}
 
-	const error_category& category() const
+	const error_category& category() const _NOEXCEPT
 		{	// get category
 		return (*_Mycat);
 		}
 
-	error_condition default_error_condition() const;
+	error_condition default_error_condition() const _NOEXCEPT;
 
 	string message() const
 		{	// get name of error code
@@ -438,13 +438,13 @@ inline bool
 	}
 
 		// MEMBER FUNCTIONS for error_code
-inline error_condition error_code::default_error_condition() const
+inline error_condition error_code::default_error_condition() const _NOEXCEPT
 	{	// make error_condition for error code
 	return (category().default_error_condition(value()));
 	}
 
 		// FUNCTION make_error_code
-inline error_code make_error_code(generic_errno _Errno) _NOEXCEPT
+inline error_code make_error_code(_Errc _Errno) _NOEXCEPT
 	{	// make an error_code
 	return (error_code((int)_Errno, generic_category()));
 	}
@@ -455,7 +455,7 @@ inline error_code make_error_code(_Io_errc _Errno) _NOEXCEPT
 	}
 
 		// FUNCTION make_error_condition
-inline error_condition make_error_condition(generic_errno _Errno) _NOEXCEPT
+inline error_condition make_error_condition(_Errc _Errno) _NOEXCEPT
 	{	// make an error_condition
 	return (error_condition((int)_Errno, generic_category()));
 	}
@@ -556,14 +556,14 @@ protected:
 	};
 
 _CRTIMP2_PURE const char *__CLRCALL_PURE_OR_CDECL _Syserror_map(int);
-_CRTIMP2_PURE const char *__CLRCALL_PURE_OR_CDECL _Winerror_map(int);
+_CRTIMP2_PURE int __CLRCALL_PURE_OR_CDECL _Winerror_map(int);
 
 		// CLASS _Generic_error_category
 class _Generic_error_category
 	: public error_category
 	{	// categorize a generic error
 public:
-	_Generic_error_category()
+	_Generic_error_category() _NOEXCEPT
 		{	// default constructor
 		}
 
@@ -574,17 +574,16 @@ public:
 
 	virtual string message(int _Errcode) const
 		{	// convert to name of error
-		const char *_Name = _Syserror_map(_Errcode);
-		return (string(_Name != 0 ? _Name : "unknown error"));
+		return (_Syserror_map(_Errcode));
 		}
 	};
 
 		// CLASS _Iostream_error_category
 class _Iostream_error_category
 	: public _Generic_error_category
-	{	// categorize a Posix error
+	{	// categorize an iostream error
 public:
-	_Iostream_error_category()
+	_Iostream_error_category() _NOEXCEPT
 		{	// default constructor
 		}
 
@@ -604,10 +603,10 @@ public:
 
 		// CLASS _System_error_category
 class _System_error_category
-	: public _Generic_error_category
-	{	// categorize a generic error
+	: public error_category
+	{	// categorize an operating system error
 public:
-	_System_error_category()
+	_System_error_category() _NOEXCEPT
 		{	// default constructor
 		}
 
@@ -618,15 +617,16 @@ public:
 
 	virtual string message(int _Errcode) const
 		{	// convert to name of error
-		const char *_Name = _Winerror_map(_Errcode);
-		return (string(_Name != 0 ? _Name : "unknown error"));
+		return (_Syserror_map(_Winerror_map(_Errcode)));
 		}
 
 	virtual error_condition
 		default_error_condition(int _Errval) const _NOEXCEPT
 		{	// make error_condition for error code (generic if possible)
-		if (_Syserror_map(_Errval))
-			return (error_condition(_Errval, generic_category()));
+		int _Posv = _Winerror_map(_Errval);
+
+		if (_Posv != 0)
+			return (error_condition(_Posv, generic_category()));
 		else
 			return (error_condition(_Errval, system_category()));
 		}

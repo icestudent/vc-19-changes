@@ -12,12 +12,10 @@
 *
 * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ****/
-
 #pragma once
 
 #ifndef _PPLTASKS_H
 #define _PPLTASKS_H
-
 #include <pplwin.h>
 
 // Cannot build using a compiler that is older than dev10 SP1
@@ -375,8 +373,8 @@ namespace details
     };
 #endif  /* defined (__cplusplus_winrt) */
 
-    template <typename _Function> auto _IsCallable(_Function _Func, int) -> decltype(_Func(), std::true_type()) { (_Func); return std::true_type(); }
-    template <typename _Function> std::false_type _IsCallable(_Function, ...) { return std::false_type(); }
+    template <typename _Function> auto _IsCallable(_Function _Func, int) -> decltype(_Func(), std::true_type());
+    template <typename _Function> std::false_type _IsCallable(_Function, ...);
 
     template <>
     struct _TaskTypeTraits<void>
@@ -2724,13 +2722,13 @@ namespace details
     std::false_type _IsValidTaskCtor(_Ty _Param, ...);
 
     template<typename _ReturnType, typename _Ty>
-    void _ValidateTaskConstructorArgs(_Ty _Param)
+    void _ValidateTaskConstructorArgs(const _Ty& _Param)
     {
-        static_assert(std::is_same<decltype(_IsValidTaskCtor<_ReturnType>(_Param,0,0,0,0)),std::true_type>::value,
+        static_assert(std::is_same<decltype(_IsValidTaskCtor<_ReturnType, _Ty>(_Param,0,0,0,0)),std::true_type>::value,
 #if defined (__cplusplus_winrt)
-            "incorrect argument for task constructor; can be a callable object, an asynchronous operation, or a task_completion_event"
+            "incorrect argument for task constructor; must be a callable object, an asynchronous operation or a task_completion_event"
 #else  /* defined (__cplusplus_winrt) */
-            "incorrect argument for task constructor; can be a callable object or a task_completion_event"
+            "incorrect argument for task constructor; must be either a callable object or a task_completion_event"
 #endif  /* defined (__cplusplus_winrt) */
             );
 #if defined (__cplusplus_winrt)
@@ -2921,13 +2919,13 @@ public:
     explicit task(_Ty _Param)
     {
         task_options _TaskOptions;
-        details::_ValidateTaskConstructorArgs<_ReturnType,_Ty>(_Param);
+		details::_ValidateTaskConstructorArgs<_ReturnType,_Ty>(_Param);
 
         _CreateImpl(_TaskOptions.get_cancellation_token()._GetImplValue(), _TaskOptions.get_scheduler());
         // Do not move the next line out of this function. It is important that _CAPTURE_CALLSTACK() evaluate to the the call site of the task constructor.
         _SetTaskCreationCallstack(_CAPTURE_CALLSTACK());
 
-        _TaskInitMaybeFunctor(_Param, details::_IsCallable(_Param,0));
+        _TaskInitMaybeFunctor(_Param, decltype(details::_IsCallable(_Param,0))());
     }
 
     /// <summary>
@@ -2974,7 +2972,7 @@ public:
         // Do not move the next line out of this function. It is important that _CAPTURE_CALLSTACK() evaluate to the the call site of the task constructor.
         _SetTaskCreationCallstack(details::_get_internal_task_options(_TaskOptions)._M_hasPresetCreationCallstack ? details::_get_internal_task_options(_TaskOptions)._M_presetCreationCallstack : _CAPTURE_CALLSTACK());
         
-        _TaskInitMaybeFunctor(_Param, details::_IsCallable(_Param,0));
+        _TaskInitMaybeFunctor(_Param, decltype(details::_IsCallable(_Param,0))());
     }
 
     /// <summary>
@@ -3370,9 +3368,9 @@ private:
         details::_PPLTaskHandle<_ReturnType, _InitialTaskHandle<_InternalReturnType, _Function, _TypeSelection>, details::_UnrealizedChore_t>
     {
         _Function _M_function;
-        _InitialTaskHandle(const typename details::_Task_ptr<_ReturnType>::_Type & _TaskImpl, const _Function & _func)
+        _InitialTaskHandle(const typename details::_Task_ptr<_ReturnType>::_Type & _TaskImpl, _Function& _func)
             : details::_PPLTaskHandle<_ReturnType, _InitialTaskHandle<_InternalReturnType, _Function, _TypeSelection>, details::_UnrealizedChore_t>::_PPLTaskHandle(_TaskImpl)
-            , _M_function(_func)
+			, _M_function(_func)
         {
         }
 
@@ -3692,7 +3690,7 @@ private:
     ///     Initializes a task using a lambda, function pointer or function object.
     /// </summary>
     template<typename _InternalReturnType, typename _Function>
-    void _TaskInitWithFunctor(const _Function& _Func)
+    void _TaskInitWithFunctor(_Function& _Func)
     {
         typedef typename details::_InitFunctorTypeTraits<_InternalReturnType, decltype(_Func())> _Async_type_traits;
 
@@ -3744,7 +3742,7 @@ private:
     ///     Initializes a task using a callable object.
     /// </summary>
     template<typename _Function>
-    void _TaskInitMaybeFunctor(_Function & _Func, std::true_type)
+    void _TaskInitMaybeFunctor(_Function& _Func, std::true_type)
     {
         _TaskInitWithFunctor<_ReturnType, _Function>(_Func);
     }
@@ -3753,7 +3751,7 @@ private:
     ///     Initializes a task using a non-callable object.
     /// </summary>
     template<typename _Ty>
-    void _TaskInitMaybeFunctor(_Ty & _Param, std::false_type)
+    void _TaskInitMaybeFunctor(_Ty& _Param, std::false_type)
     {
         _TaskInitNoFunctor(_Param);
     }
@@ -3913,7 +3911,7 @@ public:
         // Do not move the next line out of this function. It is important that _CAPTURE_CALLSTACK() evaluate to the the call site of the task constructor.
         _M_unitTask._SetTaskCreationCallstack(details::_get_internal_task_options(_TaskOptions)._M_hasPresetCreationCallstack ? details::_get_internal_task_options(_TaskOptions)._M_presetCreationCallstack : _CAPTURE_CALLSTACK());
 
-        _TaskInitMaybeFunctor(_Param, details::_IsCallable(_Param,0));
+        _TaskInitMaybeFunctor(_Param, decltype(details::_IsCallable(_Param,0))());
     }
 
     /// <summary>
@@ -4264,7 +4262,7 @@ private:
     ///     Initializes a task using a callable object.
     /// </summary>
     template<typename _Function>
-    void _TaskInitMaybeFunctor(_Function & _Func, std::true_type)
+    void _TaskInitMaybeFunctor(_Function& _Func, std::true_type)
     {
         _M_unitTask._TaskInitWithFunctor<void, _Function>(_Func);
     }
@@ -4272,8 +4270,8 @@ private:
     /// <summary>
     ///     Initializes a task using a non-callable object.
     /// </summary>
-    template<typename _T>
-    void _TaskInitMaybeFunctor(_T & _Param, std::false_type)
+    template<typename _Ty>
+    void _TaskInitMaybeFunctor(_Ty& _Param, std::false_type)
     {
         _TaskInitNoFunctor(_Param);
     }
@@ -4384,7 +4382,7 @@ auto create_task(_Ty _Param, task_options _TaskOptions = task_options()) -> task
 #if defined (__cplusplus_winrt)
             "incorrect argument for create_task; can be a callable object, an asynchronous operation, or a task_completion_event"
 #else  /* defined (__cplusplus_winrt) */
-            "incorrect argument for create_task; can be a callable object or a task_completion_event"
+            "incorrect argument for create_task; must be either a callable object or a task_completion_event"
 #endif  /* defined (__cplusplus_winrt) */
     );
     details::_get_internal_task_options(_TaskOptions)._set_creation_callstack(_CAPTURE_CALLSTACK());

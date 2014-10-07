@@ -773,7 +773,6 @@ template<class _Rep,
 	return (_Xt);
 	}
 
- #if _MSC_FULL_VER >= 190021510 /* TRANSITION */
 	// duration LITERALS
 inline namespace literals {
 inline namespace chrono_literals {
@@ -844,7 +843,6 @@ inline chrono::duration<double, nano> operator "" ns(long double _Val)
 namespace chrono {
 	using namespace literals::chrono_literals;
 }	// namespace chrono
- #endif /* _MSC_FULL_VER >= 190021510 */
 _STD_END
  #pragma pop_macro("new")
  #pragma warning(pop)

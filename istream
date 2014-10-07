@@ -699,7 +699,8 @@ public:
 			for (; ; )
 				{	// get a metacharacter if more room in buffer
 				int_type _Meta;
-				if (_Count != INT_MAX && --_Count < 0)
+				if (_Count != (numeric_limits<streamsize>::max)()
+					&& --_Count < 0)
 					break;	// buffer full, quit
 				else if (_Traits::eq_int_type(_Traits::eof(),
 					_Meta = _Myios::rdbuf()->sbumpc()))

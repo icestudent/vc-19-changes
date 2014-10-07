@@ -164,7 +164,7 @@ public:
 	~_Pad() _NOEXCEPT;
 	void _Launch(_Thrd_t *_Thr);
 	void _Release();
-	virtual unsigned _Go() = 0;
+	virtual void _Go() = 0;
 
 private:
 	_Cnd_t _Cond;
@@ -183,18 +183,17 @@ public:
 		{	// construct from target
 		}
 
-	unsigned _Go()
+	virtual void _Go()
 		{	// run the thread function object
-		return (_Run(this));
+		_Run(this);
 		}
 
 private:
-	static unsigned _Run(_LaunchPad *_Ln)
+	static void _Run(_LaunchPad *_Ln) noexcept	// enforces termination
 		{	// make local copy of function object and call it
 		_Target _Local(_STD forward<_Target>(_Ln->_MyTarget));
 		_Ln->_Release();
 		_Local();
-		return (0);
 		}
 
 	_Target _MyTarget;

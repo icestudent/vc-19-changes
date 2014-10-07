@@ -77,9 +77,6 @@ public:
 	typedef typename _Mybase::const_reference const_reference;
 	typedef typename _Mybase::iterator iterator;
 	typedef typename _Mybase::const_iterator const_iterator;
-//	typedef typename _Mybase::reverse_iterator reverse_iterator;
-//	typedef typename _Mybase::const_reverse_iterator
-//		const_reverse_iterator;
 	typedef typename _Mybase::value_type value_type;
 
 	typedef typename _Mybase::iterator local_iterator;
@@ -271,12 +268,12 @@ public:
 
 	hasher hash_function() const
 		{	// return hasher object
-		return (this->_Gethash());
+		return (this->_Traitsobj._Gethash());
 		}
 
 	key_equal key_eq() const
 		{	// return equality comparator object
-		return (this->_Getkeyeq());
+		return (this->_Traitsobj._Getkeyeq());
 		}
 
 	_Pairib insert(const value_type& _Val)
@@ -357,9 +354,6 @@ public:
 	typedef typename _Mybase::const_reference const_reference;
 	typedef typename _Mybase::iterator iterator;
 	typedef typename _Mybase::const_iterator const_iterator;
-//	typedef typename _Mybase::reverse_iterator reverse_iterator;
-//	typedef typename _Mybase::const_reverse_iterator
-//		const_reverse_iterator;
 	typedef typename _Mybase::value_type value_type;
 
 	unordered_multiset()
@@ -555,12 +549,12 @@ public:
 
 	hasher hash_function() const
 		{	// return hasher object
-		return (this->_Gethash());
+		return (this->_Traitsobj._Gethash());
 		}
 
 	key_equal key_eq() const
 		{	// return equality comparator object
-		return (this->_Getkeyeq());
+		return (this->_Traitsobj._Getkeyeq());
 		}
 
 	iterator insert(const value_type& _Val)

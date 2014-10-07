@@ -157,45 +157,13 @@ struct space_info
 	};
 
 		// SYSTEM SUPPORT FUNCTIONS
-	// narrow filenames
-_FS_DLL void *__CLRCALL_PURE_OR_CDECL _Open_dir(char (&)[_MAX_FILESYS_NAME],
-	const char *, int&, _File_type&);
-_FS_DLL char *__CLRCALL_PURE_OR_CDECL _Read_dir(char (&)[_MAX_FILESYS_NAME],
-	void *, _File_type&);
-_FS_DLL void __CLRCALL_PURE_OR_CDECL _Close_dir(void *);
-_FS_DLL char *__CLRCALL_PURE_OR_CDECL _Current_get(char (&)[_MAX_FILESYS_NAME]);
-_FS_DLL bool __CLRCALL_PURE_OR_CDECL _Current_set(const char *);
-_FS_DLL char *__CLRCALL_PURE_OR_CDECL _Symlink_get(char (&)[_MAX_FILESYS_NAME],
-	const char *);
-_FS_DLL char *__CLRCALL_PURE_OR_CDECL _Temp_get(char (&)[_MAX_FILESYS_NAME]);
-
-_FS_DLL int __CLRCALL_PURE_OR_CDECL _Make_dir(const char *, const char *);
-_FS_DLL bool __CLRCALL_PURE_OR_CDECL _Remove_dir(const char *);
-
-_FS_DLL _File_type __CLRCALL_PURE_OR_CDECL _Stat(const char *, _Perms *);
-_FS_DLL _File_type __CLRCALL_PURE_OR_CDECL _Lstat(const char *, _Perms *);
-_FS_DLL uintmax_t __CLRCALL_PURE_OR_CDECL _File_size(const char *);
-_FS_DLL uintmax_t __CLRCALL_PURE_OR_CDECL _Hard_links(const char *);
-_FS_DLL time_t __CLRCALL_PURE_OR_CDECL _Last_write_time(const char *);
-_FS_DLL int __CLRCALL_PURE_OR_CDECL _Last_write_time(const char *, time_t);
-_FS_DLL space_info __CLRCALL_PURE_OR_CDECL _Statvfs(const char *);
-_FS_DLL int __CLRCALL_PURE_OR_CDECL _Equivalent(const char *, const char *);
-
-_FS_DLL int __CLRCALL_PURE_OR_CDECL _Link(const char *, const char *);
-_FS_DLL int __CLRCALL_PURE_OR_CDECL _Symlink(const char *, const char *);
-_FS_DLL int __CLRCALL_PURE_OR_CDECL _Rename(const char *, const char *);
-_FS_DLL int __CLRCALL_PURE_OR_CDECL _Resize(const char *, uintmax_t);
-_FS_DLL int __CLRCALL_PURE_OR_CDECL _Unlink(const char *);
-_FS_DLL int __CLRCALL_PURE_OR_CDECL _Copy_file(const char *, const char *);
-_FS_DLL int __CLRCALL_PURE_OR_CDECL _Chmod(const char *, _Perms);
-
 	// wide filenames
 _FS_DLL void *__CLRCALL_PURE_OR_CDECL _Open_dir(wchar_t (&)[_MAX_FILESYS_NAME],
 	const wchar_t *, int&, _File_type&);
 _FS_DLL wchar_t *__CLRCALL_PURE_OR_CDECL _Read_dir(wchar_t (&)[_MAX_FILESYS_NAME],
 	void *, _File_type&);
-//_FS_DLL void __CLRCALL_PURE_OR_CDECL _Close_dir(void *);
-_FS_DLL wchar_t *__CLRCALL_PURE_OR_CDECL _Current_get(wchar_t (&)[_MAX_FILESYS_NAME]);
+_FS_DLL void __CLRCALL_PURE_OR_CDECL _Close_dir(void *);
+_FS_DLL bool __CLRCALL_PURE_OR_CDECL _Current_get(wchar_t (&)[_MAX_FILESYS_NAME]);
 _FS_DLL bool __CLRCALL_PURE_OR_CDECL _Current_set(const wchar_t *);
 _FS_DLL wchar_t *__CLRCALL_PURE_OR_CDECL _Symlink_get(wchar_t (&)[_MAX_FILESYS_NAME],
 	const wchar_t *);
@@ -1263,6 +1231,7 @@ public:
 			_Cvt(_Str, _Mystr.c_str(), _Mystr.size()));
 		}
 
+ #if _HAS_CHAR16_T_LANGUAGE_SUPPORT
 	_STD u16string u16string() const
 		{	// return path as basic_string<char16_t> UTF16
 		_STD u16string _Str;
@@ -1276,6 +1245,7 @@ public:
 		return (_Path_cvt<value_type, char32_t>::
 			_Cvt(_Str, _Mystr.c_str(), _Mystr.size()));
 		}
+ #endif /* _HAS_CHAR16_T_LANGUAGE_SUPPORT */
 
 	// GENERIC FORMAT OBSERVERS
 
@@ -1312,6 +1282,7 @@ public:
 		return (_Make_generic().u8string());
 		}
 
+ #if _HAS_CHAR16_T_LANGUAGE_SUPPORT
 	_STD u16string generic_u16string() const
 		{	// return path as basic_string<char16_t> UTF16
 		return (_Make_generic().u16string());
@@ -1321,6 +1292,7 @@ public:
 		{	// return path as basic_string<char32_t> UTF32
 		return (_Make_generic().u32string());
 		}
+ #endif /* _HAS_CHAR16_T_LANGUAGE_SUPPORT */
 
 	// PATH COMPARISON
 	int compare(const path& _Path) const _NOEXCEPT
@@ -2306,7 +2278,7 @@ inline void copy(const path& _Oldpval, const path& _Newpval,
 	copy(_Oldpval, _Newpval, _Opts, _Code);
 	if (_Code != error_code())
 		_THROW_NCEE(filesystem_error,
-			"copy(p1, p2): invalid arguments");
+			"copy(p1, p2, options): invalid arguments");
 	}
 
 inline void copy(const path& _Oldpval, const path& _Newpval,
@@ -2375,7 +2347,7 @@ inline bool copy_file(const path& _Oldpval, const path& _Newpval,
 	bool _Ans = copy_file(_Oldpval, _Newpval, _Opt, _Code);
 	if (_Code != error_code())
 		_THROW_NCEE(filesystem_error,
-			"copy_file(p1, p2): invalid arguments");
+			"copy_file(p1, p2, options): invalid arguments");
 	return (_Ans);
 	}
 
@@ -2441,7 +2413,7 @@ inline bool create_directories(const path& _Path)
 	bool _Ans = create_directories(_Path, _Code);
 	if (_Code != error_code())
 		_THROW_NCEE(filesystem_error,
-			"create directories(p): invalid argument");
+			"create_directories(p): invalid argument");
 	return (_Ans);
 	}
 
@@ -2473,7 +2445,7 @@ inline bool create_directory(const path& _Path)
 
 	if (_Code != error_code())
 		_THROW_NCEE(filesystem_error,
-			"create_directory: invalid argument");
+			"create_directory(p): invalid argument");
 	return (_Ans);
 	}
 
@@ -2495,7 +2467,7 @@ inline bool create_directory(const path& _Path, const path& _Attrs)
 
 	if (_Code != error_code())
 		_THROW_NCEE(filesystem_error,
-			"create_directory: invalid argument");
+			"create_directory(p1, p2): invalid arguments");
 	return (_Ans);
 	}
 
@@ -2571,22 +2543,29 @@ inline void create_symlink(const path& _Oldpval, const path& _Newpval,
 
 inline path current_path()
 	{	// get current working directory
-	_Pchar _Dest[_MAX_FILESYS_NAME];
-	return (_Current_get(_Dest));
+	error_code _Code;
+	path _Ans = current_path(_Code);
+	if (_Code != error_code())
+		_THROW_NCEE(filesystem_error,
+			"current_path(): can't get current working directory");
+	return (_Ans);
 	}
 
 inline path current_path(
 	error_code& _Code)
 	{	// get current working directory
 	_Code = error_code();
-	return (current_path());
+	_Pchar _Dest[_MAX_FILESYS_NAME];
+	if (!_Current_get(_Dest))
+		_Code = make_error_code(errc::operation_not_permitted);
+	return (path(_Dest));
 	}
 
 inline void current_path(const path& _Path)
 	{	// set current working directory
 	if (!_Current_set(_Path.c_str()))
 		_THROW_NCEE(filesystem_error,
-			"current_path: invalid argument");
+			"current_path(p): invalid argument");
 	}
 
 inline void current_path(const path& _Path,
@@ -2845,7 +2824,7 @@ inline file_time_type last_write_time(const path& _Path)
 	time_t _Ticks = _Last_write_time(_Path.c_str());
 	if (_Ticks == -1)
 		_THROW_NCEE(filesystem_error,
-			"last_write_time: invalid argument");
+			"last_write_time(p): invalid argument");
 	return (chrono::system_clock::from_time_t(_Ticks));
 	}
 
@@ -2865,7 +2844,7 @@ inline void last_write_time(const path& _Path, file_time_type _Newtime)
 	if (_Last_write_time(_Path.c_str(),
 		chrono::system_clock::to_time_t(_Newtime)) == 0)
 		_THROW_NCEE(filesystem_error,
-			"last_write_time: invalid argument");
+			"last_write_time(p, new_time): invalid arguments");
 	}
 
 inline void last_write_time(const path& _Path, file_time_type _Newtime,
@@ -2883,7 +2862,7 @@ inline void permissions(const path& _Path, _Perms _Mask)
 	permissions(_Path, _Mask, _Code);
 	if (_Code != error_code())
 		_THROW_NCEE(filesystem_error,
-			"can't set permissions");
+			"permissions(p, prms): can't set permissions");
 	}
 
 inline void permissions(const path& _Path, _Perms _Mask,
@@ -2914,7 +2893,7 @@ inline path read_symlink(const path& _Path)
 	path _Sympath = read_symlink(_Path, _Code);
 	if (_Code != error_code())
 		_THROW_NCEE(filesystem_error,
-			"can't read symbolic link");
+			"read_symlink(p): can't read symbolic link");
 	return (_Path);
 	}
 

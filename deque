@@ -794,23 +794,36 @@ public:
 	};
 
 		// TEMPLATE CLASS _Deque_alloc
-template<bool _Al_has_storage,
-	class _Alloc_types>
+template<class _Alloc_types>
 	class _Deque_alloc
-		: public _Deque_val<typename _Alloc_types::_Val_types>
-	{	// base class for deque to hold allocator with storage
+	{	// base class for deque to hold allocator
 public:
-	typename _Alloc_types::_Alty _Alval;	// allocator object
-
-	typedef _Deque_alloc<_Al_has_storage, _Alloc_types> _Myt;
+	typedef _Deque_alloc<_Alloc_types> _Myt;
 	typedef typename _Alloc_types::_Alloc _Alloc;
 	typedef typename _Alloc_types::_Alty _Alty;
-
 	typedef typename _Alloc_types::_Alpty _Alpty;
+	typedef typename _Alloc_types::_Val_types _Val_types;
+
+	typedef typename _Val_types::value_type value_type;
+	typedef typename _Val_types::size_type size_type;
+	typedef typename _Val_types::difference_type difference_type;
+	typedef typename _Val_types::pointer pointer;
+	typedef typename _Val_types::const_pointer const_pointer;
+	typedef typename _Val_types::reference reference;
+	typedef typename _Val_types::const_reference const_reference;
+	typedef typename _Val_types::_Mapptr _Mapptr;
+
+	typedef _Deque_iterator<_Deque_val<_Val_types> > iterator;
+	typedef _Deque_const_iterator<_Deque_val<_Val_types> > const_iterator;
+
+	size_type _Getblock(size_type _Off) const
+		{	// determine block from offset
+		return (_Get_data()._Getblock(_Off));
+		}
 
 	_Deque_alloc(const _Alloc& _Al = _Alloc())
-		: _Alval(_Al)
-		{	// construct allocators from _Al
+		: _Mypair(_One_then_variadic_args_t(), _Al)
+		{	// construct allocator from _Al
 		_Alloc_proxy();
 		}
 
@@ -822,113 +835,133 @@ public:
 	void _Change_alloc(const _Alty& _Al)
 		{	// replace old allocator
 		_Free_proxy();
-		this->_Alval = _Al;
+		_Getal() = _Al;
 		_Alloc_proxy();
 		}
 
 	void _Swap_alloc(_Myt& _Right)
 		{	// swap allocators
-		_Swap_adl(this->_Alval, _Right._Alval);
-		_Swap_adl(this->_Myproxy, _Right._Myproxy);
+		_Swap_adl(_Getal(), _Right._Getal());
+		_Swap_adl(_Myproxy(), _Right._Myproxy());
 		}
 
 	void _Alloc_proxy()
-		{	// construct proxy from _Alval
+		{	// construct proxy
 		typename _Alty::template rebind<_Container_proxy>::other
-			_Alproxy(this->_Alval);
-		this->_Myproxy = _Alproxy.allocate(1);
-		_Alproxy.construct(this->_Myproxy, _Container_proxy());
-		this->_Myproxy->_Mycont = this;
+			_Alproxy(_Getal());
+		_Myproxy() = _Alproxy.allocate(1);
+		_Alproxy.construct(_Myproxy(), _Container_proxy());
+		_Myproxy()->_Mycont = &_Get_data();
 		}
 
 	void _Free_proxy()
 		{	// destroy proxy
 		typename _Alty::template rebind<_Container_proxy>::other
-			_Alproxy(this->_Alval);
-		this->_Orphan_all();
-		_Alproxy.destroy(this->_Myproxy);
-		_Alproxy.deallocate(this->_Myproxy, 1);
-		this->_Myproxy = 0;
+			_Alproxy(_Getal());
+		_Orphan_all();
+		_Alproxy.destroy(_Myproxy());
+		_Alproxy.deallocate(_Myproxy(), 1);
+		_Myproxy() = 0;
 		}
 
-	_Alty& _Getal()
-		{	// get reference to allocator
-		return (this->_Alval);
+	_Iterator_base12 **_Getpfirst() const
+		{	// get address of iterator chain
+		return (_Get_data()._Getpfirst());
 		}
 
-	const _Alty& _Getal() const
-		{	// get reference to allocator
-		return (this->_Alval);
-		}
-	};
-
-template<class _Alloc_types>
-	class _Deque_alloc<false, _Alloc_types>
-		: public _Deque_val<typename _Alloc_types::_Val_types>
-	{	// base class for deque to hold allocator with no storage
-public:
-	typedef _Deque_alloc<false, _Alloc_types> _Myt;
-	typedef typename _Alloc_types::_Alloc _Alloc;
-
-	typedef typename _Alloc_types::_Alty _Alty;
-
-	typedef typename _Alloc_types::_Alpty _Alpty;
-
-	_Deque_alloc(const _Alloc& = _Alloc())
-		{	// construct allocators from _Al
-		_Alloc_proxy();
+	_Container_proxy * & _Myproxy() _NOEXCEPT
+		{	// return reference to _Myproxy
+		return (_Get_data()._Myproxy);
 		}
 
-	~_Deque_alloc() _NOEXCEPT
-		{	// destroy proxy
-		_Free_proxy();
+	_Container_proxy * const & _Myproxy() const _NOEXCEPT
+		{	// return const reference to _Myproxy
+		return (_Get_data()._Myproxy);
 		}
 
-	void _Change_alloc(const _Alty&)
-		{	// replace old allocator
+	void _Orphan_all()
+		{	// orphan all iterators
+		_Get_data()._Orphan_all();
 		}
 
-	void _Swap_alloc(_Myt& _Right)
-		{	// swap allocators
-		_Swap_adl(this->_Myproxy, _Right._Myproxy);
+	void _Swap_all(_Myt& _Right)
+		{	// swap all iterators
+		_Get_data()._Swap_all(_Right._Get_data());
 		}
 
-	void _Alloc_proxy()
-		{	// construct proxy from _Alval
-		typename _Alty::template rebind<_Container_proxy>::other
-			_Alproxy;
-		this->_Myproxy = _Alproxy.allocate(1);
-		_Alproxy.construct(this->_Myproxy, _Container_proxy());
-		this->_Myproxy->_Mycont = this;
+	_Alty& _Getal() _NOEXCEPT
+		{	// return reference to allocator
+		return (_Mypair._Get_first());
 		}
 
-	void _Free_proxy()
-		{	// destroy proxy
-		typename _Alty::template rebind<_Container_proxy>::other
-			_Alproxy;
-		this->_Orphan_all();
-		_Alproxy.destroy(this->_Myproxy);
-		_Alproxy.deallocate(this->_Myproxy, 1);
-		this->_Myproxy = 0;
+	const _Alty& _Getal() const _NOEXCEPT
+		{	// return const reference to allocator
+		return (_Mypair._Get_first());
 		}
 
-	_Alty _Getal() const
-		{	// get reference to allocator
-		return (_Alty());
+	_Deque_val<_Val_types>& _Get_data() _NOEXCEPT
+		{	// return reference to _Deque_val
+		return (_Mypair._Get_second());
 		}
+
+	const _Deque_val<_Val_types>& _Get_data() const _NOEXCEPT
+		{	// return const reference to _Deque_val
+		return (_Mypair._Get_second());
+		}
+
+	_Mapptr& _Map() _NOEXCEPT
+		{	// return reference to _Map
+		return (_Get_data()._Map);
+		}
+
+	const _Mapptr& _Map() const _NOEXCEPT
+		{	// return const reference to _Map
+		return (_Get_data()._Map);
+		}
+
+	size_type& _Mapsize() _NOEXCEPT
+		{	// return reference to _Mapsize
+		return (_Get_data()._Mapsize);
+		}
+
+	const size_type& _Mapsize() const _NOEXCEPT
+		{	// return const reference to _Mapsize
+		return (_Get_data()._Mapsize);
+		}
+
+	size_type& _Myoff() _NOEXCEPT
+		{	// return reference to _Myoff
+		return (_Get_data()._Myoff);
+		}
+
+	const size_type& _Myoff() const _NOEXCEPT
+		{	// return const reference to _Myoff
+		return (_Get_data()._Myoff);
+		}
+
+	size_type& _Mysize() _NOEXCEPT
+		{	// return reference to _Mysize
+		return (_Get_data()._Mysize);
+		}
+
+	const size_type& _Mysize() const _NOEXCEPT
+		{	// return const reference to _Mysize
+		return (_Get_data()._Mysize);
+		}
+
+private:
+	_Compressed_pair<_Alty, _Deque_val<_Val_types> > _Mypair;
 	};
 
 		// TEMPLATE CLASS deque
 template<class _Ty,
 	class _Alloc = allocator<_Ty> >
 	class deque
-		: public _Deque_alloc<!is_empty<_Alloc>::value,
-			_Deque_base_types<_Ty, _Alloc> >
+		: public _Deque_alloc<_Deque_base_types<_Ty, _Alloc> >
 	{	// circular queue of pointers to blocks
 public:
 	typedef deque<_Ty, _Alloc> _Myt;
-	typedef _Deque_alloc<!is_empty<_Alloc>::value,
-		_Deque_base_types<_Ty, _Alloc> > _Mybase;
+	typedef _Deque_alloc<_Deque_base_types<_Ty, _Alloc> > _Mybase;
 	typedef _Alloc allocator_type;
 
 	typedef typename _Mybase::_Alty _Alty;
@@ -949,7 +982,6 @@ public:
 	typedef _STD reverse_iterator<iterator> reverse_iterator;
 	typedef _STD reverse_iterator<const_iterator> const_reverse_iterator;
 
-	static const int _EEM_DS = _DEQUESIZ;
 	enum {_EEN_DS = _DEQUESIZ};	// helper for expression evaluator
 	deque()
 		: _Mybase()
@@ -1038,32 +1070,32 @@ public:
 		}
 
 #define _PUSH_FRONT_BEGIN \
-	if (this->_Myoff % _DEQUESIZ == 0 \
-		&& this->_Mapsize <= (this->_Mysize + _DEQUESIZ) / _DEQUESIZ) \
+	if (this->_Myoff() % _DEQUESIZ == 0 \
+		&& this->_Mapsize() <= (this->_Mysize() + _DEQUESIZ) / _DEQUESIZ) \
 		_Growmap(1); \
-	this->_Myoff &= this->_Mapsize * _DEQUESIZ - 1; \
-	size_type _Newoff = this->_Myoff != 0 ? this->_Myoff \
-		: this->_Mapsize * _DEQUESIZ; \
+	this->_Myoff() &= this->_Mapsize() * _DEQUESIZ - 1; \
+	size_type _Newoff = this->_Myoff() != 0 ? this->_Myoff() \
+		: this->_Mapsize() * _DEQUESIZ; \
 	size_type _Block = this->_Getblock(--_Newoff); \
-	if (this->_Map[_Block] == pointer()) \
-		this->_Map[_Block] = this->_Getal().allocate(_DEQUESIZ)
+	if (this->_Map()[_Block] == pointer()) \
+		this->_Map()[_Block] = this->_Getal().allocate(_DEQUESIZ)
 
 #define _PUSH_FRONT_END \
-	this->_Myoff = _Newoff; \
-	++this->_Mysize
+	this->_Myoff() = _Newoff; \
+	++this->_Mysize()
 
 #define _PUSH_BACK_BEGIN \
-	if ((this->_Myoff + this->_Mysize) % _DEQUESIZ == 0 \
-		&& this->_Mapsize <= (this->_Mysize + _DEQUESIZ) / _DEQUESIZ) \
+	if ((this->_Myoff() + this->_Mysize()) % _DEQUESIZ == 0 \
+		&& this->_Mapsize() <= (this->_Mysize() + _DEQUESIZ) / _DEQUESIZ) \
 		_Growmap(1); \
-	this->_Myoff &= this->_Mapsize * _DEQUESIZ - 1; \
-	size_type _Newoff = this->_Myoff + this->_Mysize; \
+	this->_Myoff() &= this->_Mapsize() * _DEQUESIZ - 1; \
+	size_type _Newoff = this->_Myoff() + this->_Mysize(); \
 	size_type _Block = this->_Getblock(_Newoff); \
-	if (this->_Map[_Block] == pointer()) \
-		this->_Map[_Block] = this->_Getal().allocate(_DEQUESIZ)
+	if (this->_Map()[_Block] == pointer()) \
+		this->_Map()[_Block] = this->_Getal().allocate(_DEQUESIZ)
 
 #define _PUSH_BACK_END \
-	++this->_Mysize
+	++this->_Mysize()
 
 	deque(_Myt&& _Right)
 		: _Mybase(_Right._Getal())
@@ -1093,15 +1125,15 @@ public:
 	void _Assign_rv(_Myt&& _Right, true_type)
 		{	// move from _Right, stealing its contents
 		this->_Swap_all((_Myt&)_Right);
-		this->_Map = _Right._Map;
-		this->_Mapsize = _Right._Mapsize;
-		this->_Myoff = _Right._Myoff;
-		this->_Mysize = _Right._Mysize;
+		this->_Map() = _Right._Map();
+		this->_Mapsize() = _Right._Mapsize();
+		this->_Myoff() = _Right._Myoff();
+		this->_Mysize() = _Right._Mysize();
 
-		_Right._Map = _Mapptr();
-		_Right._Mapsize = 0;
-		_Right._Myoff = 0;
-		_Right._Mysize = 0;
+		_Right._Map() = _Mapptr();
+		_Right._Mapsize() = 0;
+		_Right._Myoff() = 0;
+		_Right._Mysize() = 0;
 		}
 
 	void _Assign_rv(_Myt&& _Right, false_type)
@@ -1125,7 +1157,7 @@ public:
 		this->_Orphan_all();
 		_PUSH_FRONT_BEGIN;
 		this->_Getal().construct(
-			this->_Map[_Block] + _Newoff % _DEQUESIZ,
+			this->_Map()[_Block] + _Newoff % _DEQUESIZ,
 			_STD forward<value_type>(_Val));
 		_PUSH_FRONT_END;
 		}
@@ -1135,7 +1167,7 @@ public:
 		this->_Orphan_all();
 		_PUSH_BACK_BEGIN;
 		this->_Getal().construct(
-			this->_Map[_Block] + _Newoff % _DEQUESIZ,
+			this->_Map()[_Block] + _Newoff % _DEQUESIZ,
 			_STD forward<value_type>(_Val));
 		_PUSH_BACK_END;
 		}
@@ -1151,7 +1183,7 @@ public:
 		this->_Orphan_all();
 		_PUSH_FRONT_BEGIN;
 		this->_Getal().construct(
-			this->_Map[_Block] + _Newoff % _DEQUESIZ,
+			this->_Map()[_Block] + _Newoff % _DEQUESIZ,
 			_STD forward<_Valty>(_Val)...);
 		_PUSH_FRONT_END;
 		}
@@ -1162,7 +1194,7 @@ public:
 		this->_Orphan_all();
 		_PUSH_BACK_BEGIN;
 		this->_Getal().construct(
-			this->_Map[_Block] + _Newoff % _DEQUESIZ,
+			this->_Map()[_Block] + _Newoff % _DEQUESIZ,
 			_STD forward<_Valty>(_Val)...);
 		_PUSH_BACK_END;
 		}
@@ -1173,11 +1205,11 @@ public:
 		size_type _Off = _Where - begin();
 
  #if _ITERATOR_DEBUG_LEVEL == 2
-		if (this->_Mysize < _Off)
+		if (this->_Mysize() < _Off)
 			_DEBUG_ERROR("deque emplace iterator outside range");
  #endif /* _ITERATOR_DEBUG_LEVEL == 2 */
 
-		if (_Off <= this->_Mysize / 2)
+		if (_Off <= this->_Mysize() / 2)
 			{	// closer to front, push to front then rotate
 			emplace_front(_STD forward<_Valty>(_Val)...);
 			_STD rotate(begin(), begin() + 1, begin() + 1 + _Off);
@@ -1233,9 +1265,9 @@ public:
 
 			this->_Orphan_all();
 
-			if (_Right._Mysize == 0)
+			if (_Right._Mysize() == 0)
 				clear();
-			else if (_Right._Mysize <= this->_Mysize)
+			else if (_Right._Mysize() <= this->_Mysize())
 				{	// enough elements, copy new and destroy old
 				iterator _Mid = _STD copy(_Right.begin(), _Right.end(),
 					begin());
@@ -1243,7 +1275,7 @@ public:
 				}
 			else
 				{	// new sequence longer, copy and construct new
-				const_iterator _Mid = _Right.begin() + this->_Mysize;
+				const_iterator _Mid = _Right.begin() + this->_Mysize();
 				_STD copy(_Right.begin(), _Mid, begin());
 				insert(end(), _Mid, _Right.end());
 				}
@@ -1253,27 +1285,27 @@ public:
 
 	iterator begin() _NOEXCEPT
 		{	// return iterator for beginning of mutable sequence
-		return (iterator(this->_Myoff, this));
+		return (iterator(this->_Myoff(), &this->_Get_data()));
 		}
 
 	const_iterator begin() const _NOEXCEPT
 		{	// return iterator for beginning of nonmutable sequence
-		return (const_iterator(this->_Myoff, this));
+		return (const_iterator(this->_Myoff(), &this->_Get_data()));
 		}
 
 	iterator end() _NOEXCEPT
 		{	// return iterator for end of mutable sequence
-		return (iterator(this->_Myoff + this->_Mysize, this));
+		return (iterator(this->_Myoff() + this->_Mysize(), &this->_Get_data()));
 		}
 
 	const_iterator end() const _NOEXCEPT
 		{	// return iterator for end of nonmutable sequence
-		return (const_iterator(this->_Myoff + this->_Mysize, this));
+		return (const_iterator(this->_Myoff() + this->_Mysize(), &this->_Get_data()));
 		}
 
 	iterator _Make_iter(const_iterator _Where) const
 		{	// make iterator from const_iterator
-		return (iterator(_Where._Myoff, this));
+		return (iterator(_Where._Myoff, &this->_Get_data()));
 		}
 
 	reverse_iterator rbegin() _NOEXCEPT
@@ -1318,13 +1350,13 @@ public:
 
 	void shrink_to_fit()
 		{	// reduce capacity
-		size_type _Oldcapacity = _DEQUESIZ * this->_Mapsize;
+		size_type _Oldcapacity = _DEQUESIZ * this->_Mapsize();
 		size_type _Newcapacity = _Oldcapacity / 2;
 
 		if (_Newcapacity < _DEQUESIZ * _DEQUEMAPSIZ)
 			_Newcapacity = _DEQUESIZ * _DEQUEMAPSIZ;
 
-		if ((empty() && 0 < this->_Mapsize)
+		if ((empty() && 0 < this->_Mapsize())
 			|| (!empty()
 				&& size() <= _Newcapacity
 				&& _Newcapacity < _Oldcapacity))
@@ -1337,24 +1369,24 @@ public:
 
 	void resize(size_type _Newsize)
 		{	// determine new length, padding as needed
-		while (this->_Mysize < _Newsize)
+		while (this->_Mysize() < _Newsize)
 			emplace_back();
 
-		while (_Newsize < this->_Mysize)
+		while (_Newsize < this->_Mysize())
 			pop_back();
 		}
 
 	void resize(size_type _Newsize, const value_type& _Val)
 		{	// determine new length, padding with _Val elements as needed
-		while (this->_Mysize < _Newsize)
+		while (this->_Mysize() < _Newsize)
 			push_back(_Val);
-		while (_Newsize < this->_Mysize)
+		while (_Newsize < this->_Mysize())
 			pop_back();
 		}
 
 	size_type size() const _NOEXCEPT
 		{	// return length of sequence
-		return (this->_Mysize);
+		return (this->_Mysize());
 		}
 
 	size_type max_size() const _NOEXCEPT
@@ -1364,7 +1396,7 @@ public:
 
 	bool empty() const _NOEXCEPT
 		{	// test if sequence is empty
-		return (this->_Mysize == 0);
+		return (this->_Mysize() == 0);
 		}
 
 	allocator_type get_allocator() const _NOEXCEPT
@@ -1374,14 +1406,14 @@ public:
 
 	const_reference at(size_type _Pos) const
 		{	// subscript nonmutable sequence with checking
-		if (this->_Mysize <= _Pos)
+		if (this->_Mysize() <= _Pos)
 			_Xran();
 		return (*(begin() + _Pos));
 		}
 
 	reference at(size_type _Pos)
 		{	// subscript mutable sequence with checking
-		if (this->_Mysize <= _Pos)
+		if (this->_Mysize() <= _Pos)
 			_Xran();
 		return (*(begin() + _Pos));
 		}
@@ -1389,7 +1421,7 @@ public:
 	const_reference operator[](size_type _Pos) const
 		{	// subscript nonmutable sequence
  #if _ITERATOR_DEBUG_LEVEL == 2
-		if (this->_Mysize <= _Pos)
+		if (this->_Mysize() <= _Pos)
 			_DEBUG_ERROR("deque subscript out of range");
  #endif /* _ITERATOR_DEBUG_LEVEL == 2 */
 
@@ -1399,7 +1431,7 @@ public:
 	reference operator[](size_type _Pos)
 		{	// subscript mutable sequence
  #if _ITERATOR_DEBUG_LEVEL == 2
-		if (this->_Mysize <= _Pos)
+		if (this->_Mysize() <= _Pos)
 			_DEBUG_ERROR("deque subscript out of range");
  #endif /* _ITERATOR_DEBUG_LEVEL == 2 */
 
@@ -1431,7 +1463,7 @@ public:
 		this->_Orphan_all();
 		_PUSH_FRONT_BEGIN;
 		this->_Getal().construct(
-			this->_Map[_Block] + _Newoff % _DEQUESIZ, _Val);
+			this->_Map()[_Block] + _Newoff % _DEQUESIZ, _Val);
 		_PUSH_FRONT_END;
 		}
 
@@ -1442,24 +1474,24 @@ public:
 			_DEBUG_ERROR("deque empty before pop");
 		else
 			{	// something to erase, do it
-			_Orphan_off(this->_Myoff);
-			size_type _Block = this->_Getblock(this->_Myoff);
+			_Orphan_off(this->_Myoff());
+			size_type _Block = this->_Getblock(this->_Myoff());
 			this->_Getal().destroy(
-				this->_Map[_Block] + this->_Myoff % _DEQUESIZ);
-			if (--this->_Mysize == 0)
-				this->_Myoff = 0;
+				this->_Map()[_Block] + this->_Myoff() % _DEQUESIZ);
+			if (--this->_Mysize() == 0)
+				this->_Myoff() = 0;
 			else
-				++this->_Myoff;
+				++this->_Myoff();
 			}
 
  #else /* _ITERATOR_DEBUG_LEVEL == 2 */
-		size_type _Block = this->_Getblock(this->_Myoff);
+		size_type _Block = this->_Getblock(this->_Myoff());
 		this->_Getal().destroy(
-			this->_Map[_Block] + this->_Myoff % _DEQUESIZ);
-		if (--this->_Mysize == 0)
-			this->_Myoff = 0;
+			this->_Map()[_Block] + this->_Myoff() % _DEQUESIZ);
+		if (--this->_Mysize() == 0)
+			this->_Myoff() = 0;
 		else
-			++this->_Myoff;
+			++this->_Myoff();
  #endif /* _ITERATOR_DEBUG_LEVEL == 2 */
 		}
 
@@ -1468,7 +1500,7 @@ public:
 		this->_Orphan_all();
 		_PUSH_BACK_BEGIN;
 		this->_Getal().construct(
-			this->_Map[_Block] + _Newoff % _DEQUESIZ, _Val);
+			this->_Map()[_Block] + _Newoff % _DEQUESIZ, _Val);
 		_PUSH_BACK_END;
 		}
 
@@ -1479,22 +1511,22 @@ public:
 			_DEBUG_ERROR("deque empty before pop");
 		else
 			{	// something to erase, do it
-			size_type _Newoff = this->_Myoff + this->_Mysize - 1;
+			size_type _Newoff = this->_Myoff() + this->_Mysize() - 1;
 			_Orphan_off(_Newoff);
 			size_type _Block = this->_Getblock(_Newoff);
 			this->_Getal().destroy(
-				this->_Map[_Block] + _Newoff % _DEQUESIZ);
-			if (--this->_Mysize == 0)
-				this->_Myoff = 0;
+				this->_Map()[_Block] + _Newoff % _DEQUESIZ);
+			if (--this->_Mysize() == 0)
+				this->_Myoff() = 0;
 			}
 
  #else /* _ITERATOR_DEBUG_LEVEL == 2 */
-		size_type _Newoff = this->_Myoff + this->_Mysize - 1;
+		size_type _Newoff = this->_Myoff() + this->_Mysize() - 1;
 		size_type _Block = this->_Getblock(_Newoff);
 		this->_Getal().destroy(
-			this->_Map[_Block] + _Newoff % _DEQUESIZ);
-		if (--this->_Mysize == 0)
-			this->_Myoff = 0;
+			this->_Map()[_Block] + _Newoff % _DEQUESIZ);
+		if (--this->_Mysize() == 0)
+			this->_Myoff() = 0;
  #endif /* _ITERATOR_DEBUG_LEVEL == 2 */
 		}
 
@@ -1521,11 +1553,11 @@ public:
 		size_type _Off = _Where - begin();
 
  #if _ITERATOR_DEBUG_LEVEL == 2
-		if (this->_Mysize < _Off)
+		if (this->_Mysize() < _Off)
 			_DEBUG_ERROR("deque insert iterator outside range");
  #endif /* _ITERATOR_DEBUG_LEVEL == 2 */
 
-		if (_Off <= this->_Mysize / 2)
+		if (_Off <= this->_Mysize() / 2)
 			{	// closer to front, push to front then copy
 			push_front(_Val);
 			_STD rotate(begin(), begin() + 1, begin() + 1 + _Off);
@@ -1554,28 +1586,28 @@ public:
 		size_type _Off = _Where - begin();
 
  #if _ITERATOR_DEBUG_LEVEL == 2
-		if (this->_Mysize < _Off)
+		if (this->_Mysize() < _Off)
 			_DEBUG_ERROR("deque insert iterator outside range");
 		_DEBUG_RANGE(_First, _Last);
  #endif /* _ITERATOR_DEBUG_LEVEL == 2 */
 
-		size_type _Oldsize = this->_Mysize;
+		size_type _Oldsize = this->_Mysize();
 
 		if (_First == _Last)
 			;
-		else if (_Off <= this->_Mysize / 2)
+		else if (_Off <= this->_Mysize() / 2)
 			{	// closer to front, push to front then rotate
 			_TRY_BEGIN
 			for (; _First != _Last; ++_First)
 				push_front(*_First);	// prepend flipped
 
 			_CATCH_ALL
-			for (; _Oldsize < this->_Mysize; )
+			for (; _Oldsize < this->_Mysize(); )
 				pop_front();	// restore old size, at least
 			_RERAISE;
 			_CATCH_END
 
-			size_type _Num = this->_Mysize - _Oldsize;
+			size_type _Num = this->_Mysize() - _Oldsize;
 			_STD reverse(begin(), begin() + _Num);	// flip new stuff in place
 			_STD rotate(begin(), begin() + _Num, begin() + _Num + _Off);
 			}
@@ -1586,7 +1618,7 @@ public:
 				push_back(*_First);	// append
 
 			_CATCH_ALL
-			for (; _Oldsize < this->_Mysize; )
+			for (; _Oldsize < this->_Mysize(); )
 				pop_back();	// restore old size, at least
 			_RERAISE;
 			_CATCH_END
@@ -1615,7 +1647,7 @@ public:
 
 		size_type _Off = _First - begin();
 		size_type _Count = _Last - _First;
-		bool _Moved = 0 < _Off && _Off + _Count < this->_Mysize;
+		bool _Moved = 0 < _Off && _Off + _Count < this->_Mysize();
 
  #else /* _ITERATOR_DEBUG_LEVEL == 2 */
 		size_type _Off = _First - begin();
@@ -1655,19 +1687,19 @@ public:
 		else if (this->_Getal() == _Right._Getal())
 			{	// same allocator, swap control information
 			this->_Swap_all(_Right);
-			_Swap_adl(this->_Map, _Right._Map);
-			_STD swap(this->_Mapsize, _Right._Mapsize);
-			_STD swap(this->_Myoff, _Right._Myoff);
-			_STD swap(this->_Mysize, _Right._Mysize);
+			_Swap_adl(this->_Map(), _Right._Map());
+			_STD swap(this->_Mapsize(), _Right._Mapsize());
+			_STD swap(this->_Myoff(), _Right._Myoff());
+			_STD swap(this->_Mysize(), _Right._Mysize());
 			}
 
 		else if (_Alty::propagate_on_container_swap::value)
 			{	// swap allocators and control information
 			this->_Swap_alloc(_Right);
-			_Swap_adl(this->_Map, _Right._Map);
-			_STD swap(this->_Mapsize, _Right._Mapsize);
-			_STD swap(this->_Myoff, _Right._Myoff);
-			_STD swap(this->_Mysize, _Right._Mysize);
+			_Swap_adl(this->_Map(), _Right._Map());
+			_STD swap(this->_Mapsize(), _Right._Mapsize());
+			_STD swap(this->_Myoff(), _Right._Myoff());
+			_STD swap(this->_Mysize(), _Right._Mysize());
 			}
 		else
 			{	// containers are incompatible
@@ -1688,11 +1720,11 @@ protected:
 		iterator _Mid;
 		size_type _Num;
 		size_type _Off = _Where - begin();
-		size_type _Rem = this->_Mysize - _Off;
-		size_type _Oldsize = this->_Mysize;
+		size_type _Rem = this->_Mysize() - _Off;
+		size_type _Oldsize = this->_Mysize();
 
  #if _ITERATOR_DEBUG_LEVEL == 2
-		if (this->_Mysize < _Off)
+		if (this->_Mysize() < _Off)
 			_DEBUG_ERROR("deque insert iterator outside range");
  #endif /* _ITERATOR_DEBUG_LEVEL == 2 */
 
@@ -1723,7 +1755,7 @@ protected:
 					_Tmp);	// fill in values
 				}
 			_CATCH_ALL
-			for (; _Oldsize < this->_Mysize; )
+			for (; _Oldsize < this->_Mysize(); )
 				pop_front();	// restore old size, at least
 			_RERAISE;
 			_CATCH_END
@@ -1756,7 +1788,7 @@ protected:
 					_Tmp);	// fill in values
 				}
 			_CATCH_ALL
-			for (; _Oldsize < this->_Mysize; )
+			for (; _Oldsize < this->_Mysize(); )
 				pop_back();	// restore old size, at least
 			_RERAISE;
 			_CATCH_END
@@ -1774,32 +1806,32 @@ protected:
 		}
 
 	void _Growmap(size_type _Count)
-		{	// grow map by at least _Count pointers, _Mapsize a power of 2
+		{	// grow map by at least _Count pointers, _Mapsize() a power of 2
 		static_assert(1 < _DEQUEMAPSIZ,
 			"The _Xlen() test should always be performed.");
 
 		typedef typename _Alpty::pointer _Blockptr;
 		_Alpty _Almap(this->_Getal());
-		size_type _Newsize = 0 < this->_Mapsize ? this->_Mapsize : 1;
-		while (_Newsize - this->_Mapsize < _Count || _Newsize < _DEQUEMAPSIZ)
-			{	// scale _Newsize to 2^N >= _Mapsize + _Count
+		size_type _Newsize = 0 < this->_Mapsize() ? this->_Mapsize() : 1;
+		while (_Newsize - this->_Mapsize() < _Count || _Newsize < _DEQUEMAPSIZ)
+			{	// scale _Newsize to 2^N >= _Mapsize() + _Count
 			if (max_size() / _DEQUESIZ - _Newsize < _Newsize)
 				_Xlen();	// result too long
 			_Newsize *= 2;
 			}
-		_Count = _Newsize - this->_Mapsize;
+		_Count = _Newsize - this->_Mapsize();
 
-		size_type _Myboff = this->_Myoff / _DEQUESIZ;
-		_Mapptr _Newmap = _Almap.allocate(this->_Mapsize + _Count);
+		size_type _Myboff = this->_Myoff() / _DEQUESIZ;
+		_Mapptr _Newmap = _Almap.allocate(this->_Mapsize() + _Count);
 		_Mapptr _Myptr = _Newmap + _Myboff;
 
-		_Myptr = _Uninitialized_copy(this->_Map + _Myboff,
-			this->_Map + this->_Mapsize,
+		_Myptr = _Uninitialized_copy(this->_Map() + _Myboff,
+			this->_Map() + this->_Mapsize(),
 			_Myptr, _Almap);	// copy initial to end
 		if (_Myboff <= _Count)
 			{	// increment greater than offset of initial block
-			_Myptr = _Uninitialized_copy(this->_Map,
-				this->_Map + _Myboff,
+			_Myptr = _Uninitialized_copy(this->_Map(),
+				this->_Map() + _Myboff,
 				_Myptr, _Almap);	// copy rest of old
 			_Uninitialized_default_fill_n(_Myptr, _Count - _Myboff,
 				_Almap);	// clear suffix of new
@@ -1808,24 +1840,24 @@ protected:
 			}
 		else
 			{	// increment not greater than offset of initial block
-			_Uninitialized_copy(this->_Map,
-				this->_Map + _Count,
+			_Uninitialized_copy(this->_Map(),
+				this->_Map() + _Count,
 				_Myptr, _Almap);	// copy more old
-			_Myptr = _Uninitialized_copy(this->_Map + _Count,
-				this->_Map + _Myboff,
+			_Myptr = _Uninitialized_copy(this->_Map() + _Count,
+				this->_Map() + _Myboff,
 				_Newmap, _Almap);	// copy rest of old
 			_Uninitialized_default_fill_n(_Myptr, _Count,
 				_Almap);	// clear rest to initial block
 			}
 
-		_Destroy_range(this->_Map + _Myboff, this->_Map + this->_Mapsize,
+		_Destroy_range(this->_Map() + _Myboff, this->_Map() + this->_Mapsize(),
 			_Almap);
-		if (this->_Map != _Mapptr())
-			_Almap.deallocate(this->_Map,
-				this->_Mapsize);	// free storage for old
+		if (this->_Map() != _Mapptr())
+			_Almap.deallocate(this->_Map(),
+				this->_Mapsize());	// free storage for old
 
-		this->_Map = _Newmap;	// point at new
-		this->_Mapsize += _Count;
+		this->_Map() = _Newmap;	// point at new
+		this->_Mapsize() += _Count;
 		}
 
 	void _Tidy()
@@ -1833,28 +1865,28 @@ protected:
 		_Alpty _Almap(this->_Getal());
 		while (!empty())
 			pop_back();
-		for (size_type _Block = this->_Mapsize; 0 < _Block; )
+		for (size_type _Block = this->_Mapsize(); 0 < _Block; )
 			{	// free storage for a block and destroy pointer
-			if (this->_Map[--_Block] != pointer())
+			if (this->_Map()[--_Block] != pointer())
 				{	// free block and destroy its pointer
-				this->_Getal().deallocate(this->_Map[_Block], _DEQUESIZ);
-				this->_Getal().destroy(&this->_Map[_Block]);
+				this->_Getal().deallocate(this->_Map()[_Block], _DEQUESIZ);
+				this->_Getal().destroy(&this->_Map()[_Block]);
 				}
 			}
 
-		if (this->_Map != _Mapptr())
-			_Almap.deallocate(this->_Map,
-				this->_Mapsize);	// free storage for map
-		this->_Mapsize = 0;
-		this->_Map = _Mapptr();
+		if (this->_Map() != _Mapptr())
+			_Almap.deallocate(this->_Map(),
+				this->_Mapsize());	// free storage for map
+		this->_Mapsize() = 0;
+		this->_Map() = _Mapptr();
 		}
 
  #if _ITERATOR_DEBUG_LEVEL == 2
 	void _Orphan_off(size_type _Offlo) const
 		{	// orphan iterators with specified offset(s)
-		size_type _Offhigh = this->_Myoff + this->_Mysize <= _Offlo + 1
+		size_type _Offhigh = this->_Myoff() + this->_Mysize() <= _Offlo + 1
 			? (size_type)(-1) : _Offlo;
-		if (_Offlo == this->_Myoff)
+		if (_Offlo == this->_Myoff())
 			_Offlo = 0;
 
 		_Lockit _Lock(_LOCK_DEBUG);

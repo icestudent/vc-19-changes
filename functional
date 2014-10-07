@@ -180,16 +180,21 @@ public:
 	virtual _Myt *_Copy(void *) = 0;
 	virtual _Myt *_Move(void *) = 0;
 	virtual _Rx _Do_call(_Types&&...) = 0;
-	virtual const _XSTD2 type_info& _Target_type() const = 0;
+	virtual const _XSTD2 type_info& _Target_type() const _NOEXCEPT = 0;
 	virtual void _Delete_this(bool) _NOEXCEPT = 0;
 
-	const void *_Target(const _XSTD2 type_info& _Info) const
+	const void *_Target(const _XSTD2 type_info& _Info) const _NOEXCEPT
 		{	// return pointer to stored object of type _Info
 		return (_Target_type() == _Info ? _Get() : 0);
 		}
 
-	virtual ~_Func_base() _NOEXCEPT
-		{	// destroy the object
+	_Func_base(const _Myt&) = delete;
+	_Myt& operator=(const _Myt&) = delete;
+
+	_Func_base() = default;
+
+	~_Func_base() _NOEXCEPT
+		{	// non-virtual due to _Delete_this()
 		}
 
 private:
@@ -208,41 +213,33 @@ public:
 	typedef _Func_impl<_Callable, _Alloc, _Rx, _Types...> _Myt;
 	typedef _Func_base<_Rx, _Types...> _Mybase;
 	typedef _Wrap_alloc<_Alloc> _Myalty0;
-	typedef typename _Myalty0::template rebind<_Func_impl>::other _Myalty;
+	typedef typename _Myalty0::template rebind<_Myt>::other _Myalty;
 
-	_Func_impl(const _Func_impl& _Right)
-		: _Callee(_Right._Callee),
-			_Myal(_Right._Myal)
-		{	// copy construct
-		}
-
-	_Func_impl(_Func_impl&& _Right)
-		: _Callee(_STD move(_Right._Callee)),
-			_Myal(_STD move(_Right._Myal))
-		{	// move construct
-		}
-
-	template<class _Other>
-		_Func_impl(_Other&& _Val,
-			typename enable_if<!is_same<_Myt,
-				typename decay<_Other>::type>::value,
-				const _Alloc&>::type _Ax)
-		: _Callee(_STD forward<_Other>(_Val)), _Myal(_Ax)
+	template<class _Other1,
+		class _Other2>
+		_Func_impl(_Other1&& _Val, _Other2&& _Ax)
+		: _Mypair(_One_then_variadic_args_t(),
+			_STD forward<_Other2>(_Ax), _STD forward<_Other1>(_Val))
 		{	// construct
 		}
 
+	~_Func_impl() _NOEXCEPT
+		{	// non-virtual due to _Delete_this()
+		}
+
+private:
 	virtual _Mybase *_Copy(void *_Where)
 		{	// return clone of *this
 		_Myt * _Ptr = static_cast<_Myt *>(_Where);
 		const bool _Large = _Ptr == 0;
 		if (_Large)
-			_Ptr = _Myal.allocate(1);
+			_Ptr = _Myal().allocate(1);
 
 		_TRY_BEGIN
-			_Myal.construct(_Ptr, *this);
+			_Myal().construct(_Ptr, _Callee(), _Myal());
 		_CATCH_ALL
 			if (_Large)
-				_Myal.deallocate(_Ptr, 1);
+				_Myal().deallocate(_Ptr, 1);
 		_RERAISE;
 		_CATCH_END
 
@@ -251,42 +248,57 @@ public:
 
 	virtual _Mybase *_Move(void *_Where)
 		{	// return clone of *this
+		_Myalty _Al = _Myal();
 		_Myt * _Ptr = static_cast<_Myt *>(_Where);
-		_Myal.construct(_Ptr, _STD move(*this));
+		_Al.construct(_Ptr, _STD move(_Callee()), _STD move(_Myal()));
 		return (_Ptr);
-		}
-
-	virtual ~_Func_impl() _NOEXCEPT
-		{	// destroy the object
 		}
 
 	virtual _Rx _Do_call(_Types&&... _Args)
 		{	// call wrapped function
-		return (_Callee.template _ApplyX<_Rx>(
+		return (_Callee().template _ApplyX<_Rx>(
 			_STD forward<_Types>(_Args)...));
 		}
 
-	virtual const _XSTD2 type_info& _Target_type() const
+	virtual const _XSTD2 type_info& _Target_type() const _NOEXCEPT
 		{	// return type information for stored object
 		return (typeid(typename _Callable::_MyTy));
 		}
 
-private:
 	virtual const void *_Get() const
 		{	// return address of stored object
-		return (_STD addressof(_Callee._Get()));
+		return (_STD addressof(_Callee()._Get()));
 		}
 
 	virtual void _Delete_this(bool _Deallocate) _NOEXCEPT
 		{	// destroy self
-		_Myalty _Al = _Myal;
+		_Myalty _Al = _Myal();
 		_Al.destroy(this);
 		if (_Deallocate)
 			_Al.deallocate(this, 1);
 		}
 
-	_Callable _Callee;
-	_Myalty _Myal;
+	_Compressed_pair<_Myalty, _Callable> _Mypair;
+
+	_Myalty& _Myal() _NOEXCEPT
+		{	// return reference to allocator
+		return (_Mypair._Get_first());
+		}
+
+	const _Myalty& _Myal() const _NOEXCEPT
+		{	// return const reference to allocator
+		return (_Mypair._Get_first());
+		}
+
+	_Callable& _Callee() _NOEXCEPT
+		{	// return reference to wrapped function
+		return (_Mypair._Get_second());
+		}
+
+	const _Callable& _Callee() const _NOEXCEPT
+		{	// return const reference to wrapped function
+		return (_Mypair._Get_second());
+		}
 	};
 
 	// TEMPLATE CLASS _Func_class
@@ -300,7 +312,7 @@ public:
 	typedef _Func_base<_Ret, _Types...> _Ptrt;
 	typedef _Ret result_type;
 
-	_Func_class()
+	_Func_class() _NOEXCEPT
 		{	// construct without stored object
 		_Set(0);
 		}
@@ -469,12 +481,12 @@ _MEMBER_CALL_CV(_FUNC_CLASS_RESET_PMF, )
 			}
 		}
 
-	const _XSTD2 type_info& _Target_type() const
+	const _XSTD2 type_info& _Target_type() const _NOEXCEPT
 		{	// return type information for stored object
 		return (_Getimpl() ? _Getimpl()->_Target_type() : typeid(void));
 		}
 
-	const void *_Target(const _XSTD2 type_info& _Info) const
+	const void *_Target(const _XSTD2 type_info& _Info) const _NOEXCEPT
 		{	// return pointer to stored object
 		return (_Getimpl() ? _Getimpl()->_Target(_Info) : 0);
 		}
@@ -533,6 +545,8 @@ private:
 		};
 
 	_Storage _Mystorage;
+
+	enum {_EEN_IMPL = _Num_ptrs - 1};	// helper for expression evaluator
 
 	_Ptrt *_Getimpl() const _NOEXCEPT
 		{	// get pointer to object

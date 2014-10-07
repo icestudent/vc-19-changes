@@ -21,7 +21,6 @@ template<size_t _Bits>
 	class bitset
 	{	// store fixed-length sequence of Boolean elements
 public:
-	enum : size_t {_EEN_BITS = _Bits};	// helper for expression evaluator
 	typedef typename _If<_Bits <= 32, _Uint32t, _ULonglong>::type _Ty;
 
 
@@ -162,20 +161,24 @@ public:
 			_Elem _E0,
 			_Elem _E1)
 		{	// initialize from [_Pos, _Pos + _Count) elements in string
-		typename basic_string<_Elem, _Tr, _Alloc>::size_type _Num;
 		if (_Str.size() < _Pos)
 			_Xran();	// _Pos off end
 		if (_Str.size() - _Pos < _Count)
 			_Count = _Str.size() - _Pos;	// trim _Count to size
+
+		typename basic_string<_Elem, _Tr, _Alloc>::size_type _Num;
+		for (_Num = 0; _Num < _Count; ++_Num)
+			if (!_Tr::eq(_Str[_Pos + _Num], _E0)
+				&& !_Tr::eq(_Str[_Pos + _Num], _E1))
+				_Xinv();
+
 		if (_Bits < _Count)
 			_Count = _Bits;	// trim _Count to length of bitset
 		_Tidy();
 
 		for (_Pos += _Count, _Num = 0; _Num < _Count; ++_Num)
-			if (_Str[--_Pos] == _E1)
+			if (_Tr::eq(_Str[--_Pos], _E1))
 				set(_Num);
-			else if (_Str[_Pos] != _E0)
-				_Xinv();
 		}
 
 	bitset<_Bits>& operator&=(const bitset<_Bits>& _Right) _NOEXCEPT

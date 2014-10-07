@@ -5180,7 +5180,7 @@ inline typename _Allocator::pointer _Construct_buffer(size_t _N, _Allocator &_Al
 
     // If the objects being sorted have trivial default constructors, they do not need to be
     // constructed here. This can benefit performance.
-    if (!std::has_trivial_default_constructor<typename _Allocator::value_type>::value)
+    if (!std::is_trivially_default_constructible<typename _Allocator::value_type>::value)
     {
         for (size_t _I = 0; _I < _N; _I++)
         {
@@ -5197,9 +5197,9 @@ inline typename _Allocator::pointer _Construct_buffer(size_t _N, _Allocator &_Al
 template<typename _Allocator>
 inline void _Destroy_buffer(typename _Allocator::pointer _P, size_t _N, _Allocator &_Alloc)
 {
-    // If the objects being sorted have trivial default destructors, they do not need to be
+    // If the objects being sorted have trivial destructors, they do not need to be
     // destructed here. This can benefit performance.
-    if (!std::has_trivial_destructor<typename _Allocator::value_type>::value)
+    if (!std::is_trivially_destructible<typename _Allocator::value_type>::value)
     {
         for (size_t _I = 0; _I < _N; _I++)
         {

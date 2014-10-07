@@ -19,7 +19,6 @@ template<class _Ty,
 	class array
 	{	// fixed size array of values
 public:
-	enum {_EEN_SIZE = _Size};	// helper for expression evaluator
 	typedef array<_Ty, _Size> _Myt;
 	typedef _Ty value_type;
 	typedef size_t size_type;
@@ -214,7 +213,6 @@ template<class _Ty>
 	class array<_Ty, 0>
 	{	// zero size array of values
 public:
-	enum {_EEN_SIZE = 0};	// helper for expression evaluator
 	typedef array<_Ty, 0> _Myt;
 	typedef _Ty value_type;
 	typedef size_t size_type;

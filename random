@@ -2803,15 +2803,15 @@ template<class _Elem,
 	}
 
 	// TEMPLATE CLASS geometric_distribution
-template<class _Ty0 = int,
-	class _Ty1 = double>
+template<class _Ty0 = int>
 	class geometric_distribution
 	{	// template class for geometric distribution
 public:
 	static_assert(_Is_IntType<_Ty0>::value,
 		"invalid template argument for geometric_distribution");
 
-	typedef geometric_distribution<_Ty0, _Ty1> _Myt;
+	typedef geometric_distribution<_Ty0> _Myt;
+	typedef double _Ty1;
 	typedef _Ty1 input_type;	// retained
 	typedef _Ty0 result_type;
 
@@ -2935,22 +2935,20 @@ private:
 
 template<class _Elem,
 	class _Traits,
-	class _Ty0,
-	class _Ty1>
+	class _Ty0>
 	basic_istream<_Elem, _Traits>& operator>>(
 		basic_istream<_Elem, _Traits>& _Istr,
-		geometric_distribution<_Ty0, _Ty1>& _Dist)
+		geometric_distribution<_Ty0>& _Dist)
 	{	// read state from _Istr
 	return (_Dist._Read(_Istr));
 	}
 
 template<class _Elem,
 	class _Traits,
-	class _Ty0,
-	class _Ty1>
+	class _Ty0>
 	basic_ostream<_Elem, _Traits>& operator<<(
 		basic_ostream<_Elem, _Traits>& _Ostr,
-		const geometric_distribution<_Ty0, _Ty1>& _Dist)
+		const geometric_distribution<_Ty0>& _Dist)
 	{	// write state to _Ostr
 	return (_Dist._Write(_Ostr));
 	}
@@ -2984,15 +2982,15 @@ private:
 	_Ty1 _G0;
 	};
 
-template<class _Ty0 = int,
-	class _Ty1 = double>
+template<class _Ty0 = int>
 	class poisson_distribution
 	{	// template class for poisson distribution
 public:
 	static_assert(_Is_IntType<_Ty0>::value,
 		"invalid template argument for poisson_distribution");
 
-	typedef poisson_distribution<_Ty0, _Ty1> _Myt;
+	typedef poisson_distribution<_Ty0> _Myt;
+	typedef double _Ty1;
 	typedef _Ty1 input_type;	// retained
 	typedef _Ty0 result_type;
 
@@ -3139,36 +3137,34 @@ private:
 
 template<class _Elem,
 	class _Traits,
-	class _Ty0,
-	class _Ty1>
+	class _Ty0>
 	basic_istream<_Elem, _Traits>& operator>>(
 		basic_istream<_Elem, _Traits>& _Istr,
-		poisson_distribution<_Ty0, _Ty1>& _Dist)
+		poisson_distribution<_Ty0>& _Dist)
 	{	// read state from _Istr
 	return (_Dist._Read(_Istr));
 	}
 
 template<class _Elem,
 	class _Traits,
-	class _Ty0,
-	class _Ty1>
+	class _Ty0>
 	basic_ostream<_Elem, _Traits>& operator<<(
 		basic_ostream<_Elem, _Traits>& _Ostr,
-		const poisson_distribution<_Ty0, _Ty1>& _Dist)
+		const poisson_distribution<_Ty0>& _Dist)
 	{	// write state to _Ostr
 	return (_Dist._Write(_Ostr));
 	}
 
 	// TEMPLATE CLASS binomial_distribution
-template<class _Ty0 = int,
-	class _Ty1 = double>
+template<class _Ty0 = int>
 	class binomial_distribution
 	{	// template class for binomial distribution
 public:
 	static_assert(_Is_IntType<_Ty0>::value,
 		"invalid template argument for binomial_distribution");
 
-	typedef binomial_distribution<_Ty0, _Ty1> _Myt;
+	typedef binomial_distribution<_Ty0> _Myt;
+	typedef double _Ty1;
 	typedef _Ty1 input_type;	// retained
 	typedef _Ty0 result_type;
 
@@ -3325,7 +3321,7 @@ private:
 			}
 		else if (_Par0._Mean < 1.0)
 			// events are rare, use Poisson distribution
-			return (_Par0._Small(_Eng));
+			_Res = _Par0._Small(_Eng);
 		else
 			{	// no shortcuts
 			for (; ; )
@@ -3346,8 +3342,8 @@ private:
 						+ (_Par0._Tx - _Res) * _Par0._Logp1))
 					break;
 				}
-			return (_Par0._Px == _Par0._Pp ? _Res : (_Par0._Tx - _Res));
 			}
+		return (_Par0._Px == _Par0._Pp ? _Res : (_Par0._Tx - _Res));
 		}
 
 	param_type _Par;
@@ -3355,22 +3351,20 @@ private:
 
 template<class _Elem,
 	class _Traits,
-	class _Ty0,
-	class _Ty1>
+	class _Ty0>
 	basic_istream<_Elem, _Traits>& operator>>(
 		basic_istream<_Elem, _Traits>& _Istr,
-		binomial_distribution<_Ty0, _Ty1>& _Dist)
+		binomial_distribution<_Ty0>& _Dist)
 	{	// read state from _Istr
 	return (_Dist._Read(_Istr));
 	}
 
 template<class _Elem,
 	class _Traits,
-	class _Ty0,
-	class _Ty1>
+	class _Ty0>
 	basic_ostream<_Elem, _Traits>& operator<<(
 		basic_ostream<_Elem, _Traits>& _Ostr,
-		const binomial_distribution<_Ty0, _Ty1>& _Dist)
+		const binomial_distribution<_Ty0>& _Dist)
 	{	// write state to _Ostr
 	return (_Dist._Write(_Ostr));
 	}

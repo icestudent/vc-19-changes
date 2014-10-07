@@ -461,112 +461,43 @@ public:
 	};
 
 		// TEMPLATE CLASS _Flist_alloc
-template<bool _Al_has_storage,
-	class _Alloc_types>
-	class _Flist_alloc
-		: public _Flist_val<typename _Alloc_types::_Val_types>
-	{	// base class for forward_list to hold allocator with storage
-public:
-	typedef _Flist_alloc<_Al_has_storage, _Alloc_types> _Myt;
-	typedef _Flist_val<typename _Alloc_types::_Val_types> _Mybase;
-	typedef typename _Alloc_types::_Alloc _Alloc;
-	typedef typename _Alloc_types::_Alnod_type _Alty;
-	typedef typename _Alloc_types::_Node _Node;
-	typedef typename _Alloc_types::_Nodeptr _Nodeptr;
-
- #if _ITERATOR_DEBUG_LEVEL == 0
-	_Flist_alloc(_Alloc _Al = _Alloc())
-		: _Alnod(_Al)
-		{	// construct allocator from _Al
-		}
-
-	~_Flist_alloc() _NOEXCEPT
-		{	// destroy head node
-		}
-
-	void _Change_alloc(const _Alty& _Al)
-		{	// replace old allocator
-		_Alnod = _Al;
-		}
-
-	void _Swap_alloc(_Myt& _Right)
-		{	// swap allocators
-		_Swap_adl(_Alnod, _Right._Alnod);
-		}
-
- #else /* _ITERATOR_DEBUG_LEVEL == 0 */
-	_Flist_alloc(_Alloc _Al = _Alloc())
-		: _Alnod(_Al)
-		{	// construct allocator from _Al
-		_Alloc_proxy();
-		}
-
-	~_Flist_alloc() _NOEXCEPT
-		{	// destroy proxy
-		_Free_proxy();
-		}
-
-	void _Change_alloc(const _Alty& _Al)
-		{	// replace old allocator
-		_Free_proxy();
-		_Alnod = _Al;
-		_Alloc_proxy();
-		}
-
-	void _Swap_alloc(_Myt& _Right)
-		{	// swap allocators
-		_Swap_adl(_Alnod, _Right._Alnod);
-		_Swap_adl(this->_Myproxy, _Right._Myproxy);
-		}
-
-	void _Alloc_proxy()
-		{	// construct proxy from _Alnod
-		typename _Alty::template rebind<_Container_proxy>::other
-			_Alproxy(_Alnod);
-		this->_Myproxy = _Alproxy.allocate(1);
-		_Alproxy.construct(this->_Myproxy, _Container_proxy());
-		this->_Myproxy->_Mycont = this;
-		}
-
-	void _Free_proxy()
-		{	// destroy proxy
-		typename _Alty::template rebind<_Container_proxy>::other
-			_Alproxy(_Alnod);
-		this->_Orphan_all();
-		_Alproxy.destroy(this->_Myproxy);
-		_Alproxy.deallocate(this->_Myproxy, 1);
-		this->_Myproxy = 0;
-		}
- #endif /* _ITERATOR_DEBUG_LEVEL == 0 */
-
-	_Alty& _Getal()
-		{	// get reference to allocator
-		return (_Alnod);
-		}
-
-	const _Alty& _Getal() const
-		{	// get reference to allocator
-		return (_Alnod);
-		}
-
-	_Alty _Alnod;	// allocator object for stored elements
-	};
-
-		// TEMPLATE CLASS _Flist_alloc
 template<class _Alloc_types>
-	class _Flist_alloc<false, _Alloc_types>
-		: public _Flist_val<typename _Alloc_types::_Val_types>
-	{	// base class for forward_list to hold allocator with no storage
+	class _Flist_alloc
+	{	// base class for forward_list to hold allocator
 public:
-	typedef _Flist_alloc<false, _Alloc_types> _Myt;
-	typedef _Flist_val<typename _Alloc_types::_Val_types> _Mybase;
+	typedef _Flist_alloc<_Alloc_types> _Myt;
 	typedef typename _Alloc_types::_Alloc _Alloc;
 	typedef typename _Alloc_types::_Alnod_type _Alty;
 	typedef typename _Alloc_types::_Node _Node;
 	typedef typename _Alloc_types::_Nodeptr _Nodeptr;
+	typedef typename _Alloc_types::_Val_types _Val_types;
+
+	typedef _Nodeptr& _Nodepref;
+
+	typedef typename _Val_types::value_type value_type;
+	typedef typename _Val_types::size_type size_type;
+	typedef typename _Val_types::difference_type difference_type;
+	typedef typename _Val_types::pointer pointer;
+	typedef typename _Val_types::const_pointer const_pointer;
+	typedef typename _Val_types::reference reference;
+	typedef typename _Val_types::const_reference const_reference;
+
+	typedef _Flist_const_iterator<_Flist_val<_Val_types> > const_iterator;
+	typedef _Flist_iterator<_Flist_val<_Val_types> > iterator;
+
+	static _Nodepref _Nextnode(_Nodeptr _Pnode)
+		{	// return reference to successor pointer in node
+		return (_Flist_val<_Val_types>::_Nextnode(_Pnode));
+		}
+
+	static reference _Myval(_Nodeptr _Pnode)
+		{	// return reference to value in node
+		return (_Flist_val<_Val_types>::_Myval(_Pnode));
+		}
 
  #if _ITERATOR_DEBUG_LEVEL == 0
-	_Flist_alloc(_Alloc = _Alloc())
+	_Flist_alloc(const _Alloc& _Al = _Alloc())
+		: _Mypair(_One_then_variadic_args_t(), _Al)
 		{	// construct allocator from _Al
 		}
 
@@ -574,17 +505,20 @@ public:
 		{	// destroy head node
 		}
 
-	void _Change_alloc(const _Alty&)
+	void _Change_alloc(const _Alty& _Al)
 		{	// replace old allocator
+		_Getal() = _Al;
 		}
 
-	void _Swap_alloc(_Myt&)
+	void _Swap_alloc(_Myt& _Right)
 		{	// swap allocators
+		_Swap_adl(_Getal(), _Right._Getal());
 		}
 
  #else /* _ITERATOR_DEBUG_LEVEL == 0 */
-	_Flist_alloc(_Alloc = _Alloc())
-		{	// construct allocators from _Al
+	_Flist_alloc(const _Alloc& _Al = _Alloc())
+		: _Mypair(_One_then_variadic_args_t(), _Al)
+		{	// construct allocator from _Al
 		_Alloc_proxy();
 		}
 
@@ -593,55 +527,110 @@ public:
 		_Free_proxy();
 		}
 
-	void _Change_alloc(const _Alty&)
+	void _Change_alloc(const _Alty& _Al)
 		{	// replace old allocator
+		_Free_proxy();
+		_Getal() = _Al;
+		_Alloc_proxy();
 		}
 
 	void _Swap_alloc(_Myt& _Right)
 		{	// swap allocators
-		_Swap_adl(this->_Myproxy, _Right._Myproxy);
+		_Swap_adl(_Getal(), _Right._Getal());
+		_Swap_adl(_Myproxy(), _Right._Myproxy());
 		}
 
 	void _Alloc_proxy()
-		{	// construct proxy from _Alnod
+		{	// construct proxy
 		typename _Alty::template rebind<_Container_proxy>::other
-			_Alproxy;
-		this->_Myproxy = _Alproxy.allocate(1);
-		_Alproxy.construct(this->_Myproxy, _Container_proxy());
-		this->_Myproxy->_Mycont = this;
+			_Alproxy(_Getal());
+		_Myproxy() = _Alproxy.allocate(1);
+		_Alproxy.construct(_Myproxy(), _Container_proxy());
+		_Myproxy()->_Mycont = &_Get_data();
 		}
 
 	void _Free_proxy()
 		{	// destroy proxy
 		typename _Alty::template rebind<_Container_proxy>::other
-			_Alproxy;
-		this->_Orphan_all();
-		_Alproxy.destroy(this->_Myproxy);
-		_Alproxy.deallocate(this->_Myproxy, 1);
-		this->_Myproxy = 0;
+			_Alproxy(_Getal());
+		_Orphan_all();
+		_Alproxy.destroy(_Myproxy());
+		_Alproxy.deallocate(_Myproxy(), 1);
+		_Myproxy() = 0;
+		}
+
+	_Iterator_base12 **_Getpfirst() const
+		{	// get address of iterator chain
+		return (_Get_data()._Getpfirst());
+		}
+
+	_Container_proxy * & _Myproxy() _NOEXCEPT
+		{	// return reference to _Myproxy
+		return (_Get_data()._Myproxy);
+		}
+
+	_Container_proxy * const & _Myproxy() const _NOEXCEPT
+		{	// return const reference to _Myproxy
+		return (_Get_data()._Myproxy);
 		}
  #endif /* _ITERATOR_DEBUG_LEVEL == 0 */
 
-	_Alty _Getal() const
-		{	// get reference to allocator
-		return (_Alty());
+	void _Orphan_all()
+		{	// orphan all iterators
+		_Get_data()._Orphan_all();
 		}
+
+	void _Swap_all(_Myt& _Right)
+		{	// swap all iterators
+		_Get_data()._Swap_all(_Right._Get_data());
+		}
+
+	_Alty& _Getal() _NOEXCEPT
+		{	// return reference to allocator
+		return (_Mypair._Get_first());
+		}
+
+	const _Alty& _Getal() const _NOEXCEPT
+		{	// return const reference to allocator
+		return (_Mypair._Get_first());
+		}
+
+	_Flist_val<_Val_types>& _Get_data() _NOEXCEPT
+		{	// return reference to _Flist_val
+		return (_Mypair._Get_second());
+		}
+
+	const _Flist_val<_Val_types>& _Get_data() const _NOEXCEPT
+		{	// return const reference to _Flist_val
+		return (_Mypair._Get_second());
+		}
+
+	_Nodeptr& _Myhead() _NOEXCEPT
+		{	// return reference to _Myhead
+		return (_Get_data()._Myhead);
+		}
+
+	const _Nodeptr& _Myhead() const _NOEXCEPT
+		{	// return const reference to _Myhead
+		return (_Get_data()._Myhead);
+		}
+
+private:
+	_Compressed_pair<_Alty, _Flist_val<_Val_types> > _Mypair;
 	};
 
 		// TEMPLATE CLASS _Flist_buy
 template<class _Ty,
 	class _Alloc>
 	class _Flist_buy
-		: public _Flist_alloc<!is_empty<_Alloc>::value,
-			_Flist_base_types<_Ty, _Alloc> >
+		: public _Flist_alloc<_Flist_base_types<_Ty, _Alloc> >
 	{	// base class for forward_list to hold buynode/freenode functions
 public:
-	typedef _Flist_alloc<!is_empty<_Alloc>::value,
-		_Flist_base_types<_Ty, _Alloc> > _Mybase;
+	typedef _Flist_alloc<_Flist_base_types<_Ty, _Alloc> > _Mybase;
 	typedef typename _Mybase::_Alty _Alty;
 	typedef typename _Mybase::_Nodeptr _Nodeptr;
 
-	_Flist_buy(_Alloc _Al = _Alloc())
+	_Flist_buy(const _Alloc& _Al = _Alloc())
 		: _Mybase(_Al)
 		{	// construct from allocator
 		}
@@ -838,7 +827,7 @@ public:
 	void _Assign_rv(_Myt&& _Right)
 		{	// swap with empty *this, same allocator
 		this->_Swap_all(_Right);
-		_Swap_adl(this->_Myhead, _Right._Myhead);
+		_Swap_adl(this->_Myhead(), _Right._Myhead());
 		}
 
 	void push_front(_Ty&& _Val)
@@ -869,7 +858,7 @@ public:
 		_Valty&&... _Val)
 		{	// insert element after _Where
  #if _ITERATOR_DEBUG_LEVEL == 2
-		if (_Where._Getcont() != this)
+		if (_Where._Getcont() != &this->_Get_data())
 			_DEBUG_ERROR("forward_list insert_after iterator outside range");
  #endif /* _ITERATOR_DEBUG_LEVEL == 2 */
 
@@ -928,42 +917,42 @@ public:
 
 	iterator before_begin() _NOEXCEPT
 		{	// return iterator before beginning of mutable sequence
-		return (iterator((_Nodeptr)&this->_Myhead, this));
+		return (iterator((_Nodeptr)&this->_Myhead(), &this->_Get_data()));
 		}
 
 	const_iterator before_begin() const _NOEXCEPT
-		{	// return iterator before beginning of mutable sequence
-		return (iterator((_Nodeptr)&this->_Myhead, this));
+		{	// return iterator before beginning of nonmutable sequence
+		return (iterator((_Nodeptr)&this->_Myhead(), &this->_Get_data()));
 		}
 
 	const_iterator cbefore_begin() const _NOEXCEPT
-		{	// return iterator before beginning of mutable sequence
-		return (iterator((_Nodeptr)&this->_Myhead, this));
+		{	// return iterator before beginning of nonmutable sequence
+		return (before_begin());
 		}
 
 	iterator begin() _NOEXCEPT
 		{	// return iterator for beginning of mutable sequence
-		return (iterator(this->_Myhead, this));
+		return (iterator(this->_Myhead(), &this->_Get_data()));
 		}
 
 	const_iterator begin() const _NOEXCEPT
 		{	// return iterator for beginning of nonmutable sequence
-		return (const_iterator(this->_Myhead, this));
+		return (const_iterator(this->_Myhead(), &this->_Get_data()));
 		}
 
 	iterator end() _NOEXCEPT
 		{	// return iterator for end of mutable sequence
-		return (iterator(0, this));
+		return (iterator(0, &this->_Get_data()));
 		}
 
 	const_iterator end() const _NOEXCEPT
 		{	// return iterator for end of nonmutable sequence
-		return (const_iterator(0, this));
+		return (const_iterator(0, &this->_Get_data()));
 		}
 
 	iterator _Make_iter(const_iterator _Where) const
 		{	// make iterator from const_iterator
-		return (iterator(_Where._Ptr, this));
+		return (iterator(_Where._Ptr, &this->_Get_data()));
 		}
 
 	const_iterator cbegin() const _NOEXCEPT
@@ -1124,7 +1113,7 @@ public:
 	iterator erase_after(const_iterator _Where)
 		{	// erase element after _Where
  #if _ITERATOR_DEBUG_LEVEL == 2
-		if (_Where._Getcont() != this
+		if (_Where._Getcont() != &this->_Get_data()
 			|| _Where == end())
 			_DEBUG_ERROR("forward_list erase_after iterator outside range");
 		_Nodeptr _Pnodeb = _Where._Mynode();
@@ -1180,8 +1169,8 @@ public:
  #endif /* _ITERATOR_DEBUG_LEVEL == 2 */
 
 		_Nodeptr _Pnext;
-		_Nodeptr _Pnode = this->_Myhead;
-		this->_Myhead = 0;
+		_Nodeptr _Pnode = this->_Myhead();
+		this->_Myhead() = 0;
 
 		for (; _Pnode != 0; _Pnode = _Pnext)
 			{	// delete an element
@@ -1198,13 +1187,13 @@ public:
 		else if (this->_Getal() == _Right._Getal())
 			{	// same allocator, swap control information
 			this->_Swap_all(_Right);
-			_Swap_adl(this->_Myhead, _Right._Myhead);
+			_Swap_adl(this->_Myhead(), _Right._Myhead());
 			}
 
 		else if (_Alty::propagate_on_container_swap::value)
 			{	// swap allocators and control information
 			this->_Swap_alloc(_Right);
-			_Swap_adl(this->_Myhead, _Right._Myhead);
+			_Swap_adl(this->_Myhead(), _Right._Myhead());
 			}
 		else
 			{	// containers are incompatible
@@ -1382,44 +1371,42 @@ public:
 	template<class _Pr2>
 		void sort(_Pr2 _Pred)
 		{	// order sequence, using _Pred
-		iterator _First = begin();
-		if (_First != end() && ++_First != end())
-			{	// worth sorting, do it
-			const size_t _MAXBINS = 25;
-			_Myt _Templist(this->_Getal()), _Binlist[_MAXBINS + 1];
-			size_t _Maxbin = 0;
+		_Sort(before_begin(), end(), _Pred, _STD distance(begin(), end()));
+		}
 
-			while (!empty())
-				{	// sort another element, using bins
-				_Templist._Splice_same_after(_Templist.before_begin(), *this,
-					before_begin(), ++begin());
+	template<class _Pr2>
+		void _Sort(iterator _Before_first, iterator _Last, _Pr2 _Pred,
+			size_type _Size)
+		{	// order (_Before_first, _Last), using _Pred
+			// _Size must be number of elements in range
+		if (_Size < 2)
+			return;	// nothing to do
 
-				size_t _Bin;
-				for (_Bin = 0; _Bin < _Maxbin && !_Binlist[_Bin].empty();
-					++_Bin)
-					{	// merge into ever larger bins
-					_Binlist[_Bin].merge(_Templist, _Pred);
-					_Binlist[_Bin].swap(_Templist);
-					}
+		iterator _Mid = _STD next(_Before_first, 1 + _Size / 2);
+		_Sort(_Before_first, _Mid, _Pred, _Size / 2);
+		iterator _First = _STD next(_Before_first);
 
-				if (_Bin == _MAXBINS)
-					_Binlist[_Bin - 1].merge(_Templist, _Pred);
-				else
-					{	// spill to new bin, while they last
-					_Binlist[_Bin].swap(_Templist);
-					if (_Bin == _Maxbin)
-						++_Maxbin;
-					}
+		iterator _Before_mid = _STD next(_Before_first, _Size / 2);
+		_Sort(_Before_mid, _Last, _Pred, _Size - _Size / 2);
+		_Mid = _STD next(_Before_mid);
+
+		for (;;)
+			{	// [_First, _Mid) and [_Mid, _Last) are sorted and non-empty
+			if (_DEBUG_LT_PRED(_Pred, *_Mid, *_First))
+				{	// consume _Mid
+				splice_after(_Before_first, *this, _Before_mid);
+				++_Before_first;
+				_Mid = _STD next(_Before_mid);
+				if (_Mid == _Last)
+					return;	// exhausted [_Mid, _Last); done
 				}
-
-			for (size_t _Bin = 1; _Bin < _Maxbin; ++_Bin)
-				_Binlist[_Bin].merge(_Binlist[_Bin - 1],
-					_Pred);	// merge up
-
-			_Analysis_assume_(0 < _Maxbin);
-
-			splice_after(before_begin(),
-				_Binlist[_Maxbin - 1]);	// result in last bin
+			else
+				{	// consume _First
+				++_Before_first;
+				++_First;
+				if (_First == _Mid)
+					return;	// exhausted [_First, _Mid); done
+				}
 			}
 		}
 
@@ -1454,7 +1441,7 @@ private:
 		_Myt& _Right, const_iterator _First, const_iterator _Last)
 		{	// splice _Right (_First, _Last) just after _Where
  #if _ITERATOR_DEBUG_LEVEL == 2
-		if (_Where._Getcont() != this || _Where == end())
+		if (_Where._Getcont() != &this->_Get_data() || _Where == end())
 			_DEBUG_ERROR("forward_list splice_after iterator outside range");
 		if (this->_Getal() != _Right._Getal())
 			_DEBUG_ERROR("forward_list containers incompatible for splice_after");
@@ -1466,7 +1453,7 @@ private:
 				{	// transfer ownership
 				const_iterator _Iter = _Next++;
 				_Right._Orphan_ptr(_Iter._Ptr);
-				_Iter._Adopt(this);
+				_Iter._Adopt(&this->_Get_data());
 				}
 			}
 
@@ -1525,7 +1512,7 @@ private:
 		const_iterator **_Pnext = (const_iterator **)this->_Getpfirst();
 		if (_Pnext != 0)
 			while (*_Pnext != 0)
-				if ((*_Pnext)->_Ptr == (_Nodeptr)&this->_Myhead
+				if ((*_Pnext)->_Ptr == (_Nodeptr)&this->_Myhead()
 					|| _Ptr != 0 && (*_Pnext)->_Ptr != _Ptr)
 					_Pnext = (const_iterator **)(*_Pnext)->_Getpnext();
 				else

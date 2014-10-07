@@ -250,6 +250,110 @@ typedef _Container_base12 _Container_base;
 typedef _Iterator_base12 _Iterator_base;
  #endif /* _ITERATOR_DEBUG_LEVEL == 0 */
 
+
+	// TEMPLATE CLASS _Compressed_pair
+struct _Zero_then_variadic_args_t
+	{	// tag type for value-initializing first,
+	};	// constructing second from remaining args
+
+struct _One_then_variadic_args_t
+	{	// tag type for constructing first from one arg,
+	};	// constructing second from remaining args
+
+template<class _Ty1,
+	class _Ty2,
+	bool = is_empty<_Ty1>::value && !is_final<_Ty1>::value>
+	class _Compressed_pair final
+		: private _Ty1
+	{	// store a pair of values, deriving from empty first
+private:
+	_Ty2 _Myval2;
+
+public:
+	template<class... _Other2>
+		explicit _Compressed_pair(_Zero_then_variadic_args_t,
+			_Other2&&... _Val2)
+		: _Ty1(), _Myval2(_STD forward<_Other2>(_Val2)...)
+		{	// construct from forwarded values
+		}
+
+	template<class _Other1,
+		class... _Other2>
+		_Compressed_pair(_One_then_variadic_args_t,
+			_Other1&& _Val1, _Other2&&... _Val2)
+		: _Ty1(_STD forward<_Other1>(_Val1)),
+			_Myval2(_STD forward<_Other2>(_Val2)...)
+		{	// construct from forwarded values
+		}
+
+	_Ty1& _Get_first() _NOEXCEPT
+		{	// return reference to first
+		return (*this);
+		}
+
+	const _Ty1& _Get_first() const _NOEXCEPT
+		{	// return const reference to first
+		return (*this);
+		}
+
+	_Ty2& _Get_second() _NOEXCEPT
+		{	// return reference to second
+		return (_Myval2);
+		}
+
+	const _Ty2& _Get_second() const _NOEXCEPT
+		{	// return const reference to second
+		return (_Myval2);
+		}
+	};
+
+template<class _Ty1,
+	class _Ty2>
+	class _Compressed_pair<_Ty1, _Ty2, false> final
+	{	// store a pair of values, not deriving from first
+private:
+	_Ty1 _Myval1;
+	_Ty2 _Myval2;
+
+public:
+	template<class... _Other2>
+		explicit _Compressed_pair(_Zero_then_variadic_args_t,
+			_Other2&&... _Val2)
+		: _Myval1(), _Myval2(_STD forward<_Other2>(_Val2)...)
+		{	// construct from forwarded values
+		}
+
+	template<class _Other1,
+		class... _Other2>
+		_Compressed_pair(_One_then_variadic_args_t,
+			_Other1&& _Val1, _Other2&&... _Val2)
+		: _Myval1(_STD forward<_Other1>(_Val1)),
+			_Myval2(_STD forward<_Other2>(_Val2)...)
+		{	// construct from forwarded values
+		}
+
+	_Ty1& _Get_first() _NOEXCEPT
+		{	// return reference to first
+		return (_Myval1);
+		}
+
+	const _Ty1& _Get_first() const _NOEXCEPT
+		{	// return const reference to first
+		return (_Myval1);
+		}
+
+	_Ty2& _Get_second() _NOEXCEPT
+		{	// return reference to second
+		return (_Myval2);
+		}
+
+	const _Ty2& _Get_second() const _NOEXCEPT
+		{	// return const reference to second
+		return (_Myval2);
+		}
+	};
+
+
 		// TEMPLATE FUNCTION _Is_checked AND FRIENDS
 
 		// TEMPLATE STRUCT _Get_unchecked_type AND FRIENDS
@@ -349,7 +453,6 @@ template<class _Category,
 	typedef _Category iterator_category;
 	typedef _Ty value_type;
 	typedef _Diff difference_type;
-	typedef _Diff distance_type;	// retained
 	typedef _Pointer pointer;
 	typedef _Reference reference;
 	};
@@ -366,7 +469,6 @@ template<class _Category,
 	typedef _Category iterator_category;
 	typedef _Ty value_type;
 	typedef _Diff difference_type;
-	typedef _Diff distance_type;	// retained
 	typedef _Pointer pointer;
 	typedef _Reference reference;
 	};
@@ -374,16 +476,53 @@ template<class _Category,
 // base for output iterators
 typedef iterator<output_iterator_tag, void, void, void, void> _Outit;
 
+		// TEMPLATE CLASS _Is_iterator
+template<class,
+	class = void>
+	struct _Is_iterator
+		: false_type
+	{	// default definition
+	};
+
+template<class _Ty>
+	struct _Is_iterator<_Ty, typename _Param_tester<
+		typename _Ty::iterator_category,
+		typename _Ty::value_type,
+		typename _Ty::difference_type,
+		typename _Ty::pointer,
+		typename _Ty::reference
+		>::type>
+		: true_type
+	{	// defined if _Ty::* types exist
+	};
+
+template<class _Ty>
+	struct _Is_iterator<_Ty *>
+		: true_type
+	{	// defined for pointers
+	};
+
 		// TEMPLATE CLASS iterator_traits
-template<class _Iter>
-	struct iterator_traits
+template<class _Iter,
+	bool = _Is_iterator<_Iter>::value>
+	struct _Iterator_traits_base
 	{	// get traits from iterator _Iter
 	typedef typename _Iter::iterator_category iterator_category;
 	typedef typename _Iter::value_type value_type;
 	typedef typename _Iter::difference_type difference_type;
-	typedef difference_type distance_type;	// retained
 	typedef typename _Iter::pointer pointer;
 	typedef typename _Iter::reference reference;
+	};
+
+template<class _Iter>
+	struct _Iterator_traits_base<_Iter, false>
+	{	// empty for non-iterators
+	};
+
+template<class _Iter>
+	struct iterator_traits
+		: _Iterator_traits_base<_Iter>
+	{	// get traits from iterator _Iter, if possible
 	};
 
 template<class _Ty>
@@ -392,7 +531,6 @@ template<class _Ty>
 	typedef random_access_iterator_tag iterator_category;
 	typedef _Ty value_type;
 	typedef ptrdiff_t difference_type;
-	typedef ptrdiff_t distance_type;	// retained
 	typedef _Ty *pointer;
 	typedef _Ty& reference;
 	};
@@ -403,7 +541,6 @@ template<class _Ty>
 	typedef random_access_iterator_tag iterator_category;
 	typedef _Ty value_type;
 	typedef ptrdiff_t difference_type;
-	typedef ptrdiff_t distance_type;	// retained
 	typedef const _Ty *pointer;
 	typedef const _Ty& reference;
 	};
@@ -544,10 +681,10 @@ template<class _Pr, class _Ty1, class _Ty2> inline
 		_Ty1&& _Left, _Ty2&& _Right,
 		_Dbfile_t _File, _Dbline_t _Line)
 	{	// test if _Pred(_Left, _Right) and _Pred is strict weak ordering
-	if (!_Pred(_STD forward<_Ty1>(_Left), _STD forward<_Ty2>(_Right)))
+	if (!_Pred(_Left, _Right))
 		return (false);
-	else if (_Pred(_STD forward<_Ty2>(_Right), _STD forward<_Ty1>(_Left)))
-		_DEBUG_ERROR2("invalid operator<", _File, _Line);
+	else if (_Pred(_Right, _Left))
+		_DEBUG_ERROR2("invalid comparator", _File, _Line);
 	return (true);
 	}
 
@@ -1176,8 +1313,6 @@ public:
 	typedef const _Ty *pointer;
 	typedef const _Ty& reference;
 	enum {_EEN_SIZE = _Size};	// helper for expression evaluator
-	enum {_EEN_IDL =
-		_ITERATOR_DEBUG_LEVEL};	// helper for expression evaluator
 
  #if _ITERATOR_DEBUG_LEVEL == 0
 	_Array_const_iterator()
@@ -1561,8 +1696,6 @@ public:
 		{	// construct with pointer and offset
 		}
 	enum {_EEN_SIZE = _Size};	// helper for expression evaluator
-	enum {_EEN_IDL =
-		_ITERATOR_DEBUG_LEVEL};	// helper for expression evaluator
 
 	typedef pointer _Unchecked_type;
 

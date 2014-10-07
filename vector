@@ -489,39 +489,48 @@ public:
 	};
 
 		// TEMPLATE CLASS _Vector_alloc
-template<bool _Al_has_storage,
-	class _Alloc_types>
+template<class _Alloc_types>
 	class _Vector_alloc
-		: public _Vector_val<typename _Alloc_types::_Val_types>
-	{	// base class for vector to hold allocator with storage
+	{	// base class for vector to hold allocator
 public:
-	typename _Alloc_types::_Alty _Alval;	// allocator object
+	typedef _Vector_alloc<_Alloc_types> _Myt;
 
-	typedef _Vector_alloc<_Al_has_storage, _Alloc_types> _Myt;
 	typedef typename _Alloc_types::_Alloc _Alloc;
 	typedef typename _Alloc_types::_Alty _Alty;
+	typedef typename _Alloc_types::_Val_types _Val_types;
+
+	typedef typename _Val_types::value_type value_type;
+	typedef typename _Val_types::size_type size_type;
+	typedef typename _Val_types::difference_type difference_type;
+	typedef typename _Val_types::pointer pointer;
+	typedef typename _Val_types::const_pointer const_pointer;
+	typedef typename _Val_types::reference reference;
+	typedef typename _Val_types::const_reference const_reference;
+
+	typedef _Vector_iterator<_Vector_val<_Val_types> > iterator;
+	typedef _Vector_const_iterator<_Vector_val<_Val_types> > const_iterator;
 
  #if _ITERATOR_DEBUG_LEVEL == 0
 
 	_Vector_alloc(const _Alloc& _Al = _Alloc())
-		: _Alval(_Al)
+		: _Mypair(_One_then_variadic_args_t(), _Al)
 		{	// construct allocator from _Al
 		}
 
 	void _Change_alloc(const _Alty& _Al)
 		{	// replace old allocator
-		this->_Alval = _Al;
+		_Getal() = _Al;
 		}
 
 	void _Swap_alloc(_Myt& _Right)
 		{	// swap allocators
-		_Swap_adl(this->_Alval, _Right._Alval);
+		_Swap_adl(_Getal(), _Right._Getal());
 		}
 
  #else /* _ITERATOR_DEBUG_LEVEL == 0 */
 
 	_Vector_alloc(const _Alty& _Al = _Alty())
-		: _Alval(_Al)
+		: _Mypair(_One_then_variadic_args_t(), _Al)
 		{	// construct allocator from _Al
 		_Alloc_proxy();
 		}
@@ -534,127 +543,124 @@ public:
 	void _Change_alloc(const _Alty& _Al)
 		{	// replace old allocator
 		_Free_proxy();
-		this->_Alval = _Al;
+		_Getal() = _Al;
 		_Alloc_proxy();
 		}
 
 	void _Swap_alloc(_Myt& _Right)
 		{	// swap allocators
-		_Swap_adl(this->_Alval, _Right._Alval);
-		_Swap_adl(this->_Myproxy, _Right._Myproxy);
+		_Swap_adl(_Getal(), _Right._Getal());
+		_Swap_adl(_Myproxy(), _Right._Myproxy());
 		}
 
 	void _Alloc_proxy()
-		{	// construct proxy from _Alval
+		{	// construct proxy
 		typename _Alty::template rebind<_Container_proxy>::other
-			_Alproxy(this->_Alval);
-		this->_Myproxy = _Alproxy.allocate(1);
-		_Alproxy.construct(this->_Myproxy, _Container_proxy());
-		this->_Myproxy->_Mycont = this;
+			_Alproxy(_Getal());
+		_Myproxy() = _Alproxy.allocate(1);
+		_Alproxy.construct(_Myproxy(), _Container_proxy());
+		_Myproxy()->_Mycont = &_Get_data();
 		}
 
 	void _Free_proxy()
 		{	// destroy proxy
 		typename _Alty::template rebind<_Container_proxy>::other
-			_Alproxy(this->_Alval);
-		this->_Orphan_all();
-		_Alproxy.destroy(this->_Myproxy);
-		_Alproxy.deallocate(this->_Myproxy, 1);
-		this->_Myproxy = 0;
+			_Alproxy(_Getal());
+		_Orphan_all();
+		_Alproxy.destroy(_Myproxy());
+		_Alproxy.deallocate(_Myproxy(), 1);
+		_Myproxy() = 0;
+		}
+
+	_Iterator_base12 **_Getpfirst() const
+		{	// get address of iterator chain
+		return (_Get_data()._Getpfirst());
+		}
+
+	_Container_proxy * & _Myproxy() _NOEXCEPT
+		{	// return reference to _Myproxy
+		return (_Get_data()._Myproxy);
+		}
+
+	_Container_proxy * const & _Myproxy() const _NOEXCEPT
+		{	// return const reference to _Myproxy
+		return (_Get_data()._Myproxy);
 		}
  #endif /* _ITERATOR_DEBUG_LEVEL == 0 */
 
-	_Alty& _Getal()
-		{	// get reference to allocator
-		return (this->_Alval);
+	void _Orphan_all()
+		{	// orphan all iterators
+		_Get_data()._Orphan_all();
 		}
 
-	const _Alty& _Getal() const
-		{	// get reference to allocator
-		return (this->_Alval);
-		}
-	};
-
-template<class _Alloc_types>
-	class _Vector_alloc<false, _Alloc_types>
-		: public _Vector_val<typename _Alloc_types::_Val_types>
-	{	// base class for vector to hold allocator with no storage
-public:
-	typedef _Vector_alloc<false, _Alloc_types> _Myt;
-	typedef typename _Alloc_types::_Alloc _Alloc;
-
-	typedef typename _Alloc_types::_Alty _Alty;
-
- #if _ITERATOR_DEBUG_LEVEL == 0
-	_Vector_alloc(const _Alloc& = _Alloc())
-		{	// construct allocator from _Al
+	void _Swap_all(_Myt& _Right)
+		{	// swap all iterators
+		_Get_data()._Swap_all(_Right._Get_data());
 		}
 
-	void _Change_alloc(const _Alty&)
-		{	// replace old allocator
+	_Alty& _Getal() _NOEXCEPT
+		{	// return reference to allocator
+		return (_Mypair._Get_first());
 		}
 
-	void _Swap_alloc(_Myt&)
-		{	// swap allocators
+	const _Alty& _Getal() const _NOEXCEPT
+		{	// return const reference to allocator
+		return (_Mypair._Get_first());
 		}
 
- #else /* _ITERATOR_DEBUG_LEVEL == 0 */
-	_Vector_alloc(const _Alloc& = _Alloc())
-		{	// construct allocator from _Al
-		_Alloc_proxy();
+	_Vector_val<_Val_types>& _Get_data() _NOEXCEPT
+		{	// return reference to _Vector_val
+		return (_Mypair._Get_second());
 		}
 
-	~_Vector_alloc() _NOEXCEPT
-		{	// destroy proxy
-		_Free_proxy();
+	const _Vector_val<_Val_types>& _Get_data() const _NOEXCEPT
+		{	// return const reference to _Vector_val
+		return (_Mypair._Get_second());
 		}
 
-	void _Change_alloc(const _Alty&)
-		{	// replace old allocator
+	pointer& _Myfirst() _NOEXCEPT
+		{	// return reference to _Myfirst
+		return (_Get_data()._Myfirst);
 		}
 
-	void _Swap_alloc(_Myt& _Right)
-		{	// swap allocators
-		_Swap_adl(this->_Myproxy, _Right._Myproxy);
+	const pointer& _Myfirst() const _NOEXCEPT
+		{	// return const reference to _Myfirst
+		return (_Get_data()._Myfirst);
 		}
 
-	void _Alloc_proxy()
-		{	// construct proxy from _Alval
-		typename _Alty::template rebind<_Container_proxy>::other
-			_Alproxy;
-		this->_Myproxy = _Alproxy.allocate(1);
-		_Alproxy.construct(this->_Myproxy, _Container_proxy());
-		this->_Myproxy->_Mycont = this;
+	pointer& _Mylast() _NOEXCEPT
+		{	// return reference to _Mylast
+		return (_Get_data()._Mylast);
 		}
 
-	void _Free_proxy()
-		{	// destroy proxy
-		typename _Alty::template rebind<_Container_proxy>::other
-			_Alproxy;
-		this->_Orphan_all();
-		_Alproxy.destroy(this->_Myproxy);
-		_Alproxy.deallocate(this->_Myproxy, 1);
-		this->_Myproxy = 0;
+	const pointer& _Mylast() const _NOEXCEPT
+		{	// return const reference to _Mylast
+		return (_Get_data()._Mylast);
 		}
- #endif /* _ITERATOR_DEBUG_LEVEL == 0 */
 
-	_Alty _Getal() const
-		{	// get reference to allocator
-		return (_Alty());
+	pointer& _Myend() _NOEXCEPT
+		{	// return reference to _Myend
+		return (_Get_data()._Myend);
 		}
+
+	const pointer& _Myend() const _NOEXCEPT
+		{	// return const reference to _Myend
+		return (_Get_data()._Myend);
+		}
+
+private:
+	_Compressed_pair<_Alty, _Vector_val<_Val_types> > _Mypair;
 	};
 
 		// TEMPLATE CLASS vector
 template<class _Ty,
 	class _Alloc = allocator<_Ty> >
 	class vector
-		: public _Vector_alloc<!is_empty<_Alloc>::value,
-			_Vec_base_types<_Ty, _Alloc> >
+		: public _Vector_alloc<_Vec_base_types<_Ty, _Alloc> >
 	{	// varying size array of values
 public:
 	typedef vector<_Ty, _Alloc> _Myt;
-	typedef _Vector_alloc<!is_empty<_Alloc>::value,
-		_Vec_base_types<_Ty, _Alloc> > _Mybase;
+	typedef _Vector_alloc<_Vec_base_types<_Ty, _Alloc> > _Mybase;
 	typedef _Alloc allocator_type;
 
 	typedef typename _Mybase::_Alty _Alty;
@@ -691,10 +697,9 @@ public:
 		{	// construct from _Count * value_type()
 		if (_Buy(_Count))
 			{	// nonzero, fill it
-			_Alty _Alval0(this->_Getal());
 			_TRY_BEGIN
-			_Uninitialized_default_fill_n(this->_Myfirst, _Count, _Alval0);
-			this->_Mylast += _Count;
+			_Uninitialized_default_fill_n(this->_Myfirst(), _Count, this->_Getal());
+			this->_Mylast() += _Count;
 			_CATCH_ALL
 			_Tidy();
 			_RERAISE;
@@ -722,8 +727,8 @@ public:
 		{	// construct by copying _Right
 		if (_Buy(_Right.size()))
 			_TRY_BEGIN
-			this->_Mylast = _Ucopy(_Right.begin(), _Right.end(),
-				this->_Myfirst);
+			this->_Mylast() = _Ucopy(_Right.begin(), _Right.end(),
+				this->_Myfirst());
 			_CATCH_ALL
 			_Tidy();
 			_RERAISE;
@@ -735,8 +740,8 @@ public:
 		{	// construct by copying _Right, allocator
 		if (_Buy(_Right.size()))
 			_TRY_BEGIN
-			this->_Mylast = _Ucopy(_Right.begin(), _Right.end(),
-				this->_Myfirst);
+			this->_Mylast() = _Ucopy(_Right.begin(), _Right.end(),
+				this->_Myfirst());
 			_CATCH_ALL
 			_Tidy();
 			_RERAISE;
@@ -787,7 +792,7 @@ public:
 		if (_Buy(_STD distance(_First, _Last)))
 			{	// nonzero, fill it
 			_TRY_BEGIN
-			this->_Mylast = _Ucopy(_First, _Last, this->_Myfirst);
+			this->_Mylast() = _Ucopy(_First, _Last, this->_Myfirst());
 			_CATCH_ALL
 			_Tidy();
 			_RERAISE;
@@ -800,7 +805,7 @@ public:
 		if (_Buy(_Count))
 			{	// nonzero, fill it
 			_TRY_BEGIN
-			this->_Mylast = _Ufill(this->_Myfirst, _Count, _Pval);
+			this->_Mylast() = _Ufill(this->_Myfirst(), _Count, _Pval);
 			_CATCH_ALL
 			_Tidy();
 			_RERAISE;
@@ -837,13 +842,13 @@ public:
 	void _Assign_rv(_Myt&& _Right, true_type)
 		{	// move from _Right, stealing its contents
 		this->_Swap_all((_Myt&)_Right);
-		this->_Myfirst = _Right._Myfirst;
-		this->_Mylast = _Right._Mylast;
-		this->_Myend = _Right._Myend;
+		this->_Myfirst() = _Right._Myfirst();
+		this->_Mylast() = _Right._Mylast();
+		this->_Myend() = _Right._Myend();
 
-		_Right._Myfirst = pointer();
-		_Right._Mylast = pointer();
-		_Right._Myend = pointer();
+		_Right._Myfirst() = pointer();
+		_Right._Mylast() = pointer();
+		_Right._Myend() = pointer();
 		}
 
 	void _Assign_rv(_Myt&& _Right, false_type)
@@ -866,22 +871,22 @@ public:
 		{	// insert by moving into element at end
 		if (_Inside(_STD addressof(_Val)))
 			{	// push back an element
-			size_type _Idx = _STD addressof(_Val) - this->_Myfirst;
-			if (this->_Mylast == this->_Myend)
+			size_type _Idx = _STD addressof(_Val) - this->_Myfirst();
+			if (this->_Mylast() == this->_Myend())
 				_Reserve(1);
-			_Orphan_range(this->_Mylast, this->_Mylast);
-			this->_Getal().construct(this->_Mylast,
-				_STD forward<value_type>(this->_Myfirst[_Idx]));
-			++this->_Mylast;
+			_Orphan_range(this->_Mylast(), this->_Mylast());
+			this->_Getal().construct(this->_Mylast(),
+				_STD forward<value_type>(this->_Myfirst()[_Idx]));
+			++this->_Mylast();
 			}
 		else
 			{	// push back a non-element
-			if (this->_Mylast == this->_Myend)
+			if (this->_Mylast() == this->_Myend())
 				_Reserve(1);
-			_Orphan_range(this->_Mylast, this->_Mylast);
-			this->_Getal().construct(this->_Mylast,
+			_Orphan_range(this->_Mylast(), this->_Mylast());
+			this->_Getal().construct(this->_Mylast(),
 				_STD forward<value_type>(_Val));
-			++this->_Mylast;
+			++this->_Mylast();
 			}
 		}
 
@@ -893,18 +898,18 @@ public:
 	template<class... _Valty>
 		void emplace_back(_Valty&&... _Val)
 		{	// insert by moving into element at end
-		if (this->_Mylast == this->_Myend)
+		if (this->_Mylast() == this->_Myend())
 			_Reserve(1);
-		_Orphan_range(this->_Mylast, this->_Mylast);
-		this->_Getal().construct(this->_Mylast,
+		_Orphan_range(this->_Mylast(), this->_Mylast());
+		this->_Getal().construct(this->_Mylast(),
 			_STD forward<_Valty>(_Val)...);
-		++this->_Mylast;
+		++this->_Mylast();
 		}
 
 	template<class... _Valty>
 		iterator emplace(const_iterator _Where, _Valty&&... _Val)
 		{	// insert by moving _Val at _Where
-		size_type _Off = _VIPTR(_Where) - this->_Myfirst;
+		size_type _Off = _VIPTR(_Where) - this->_Myfirst();
 
  #if _ITERATOR_DEBUG_LEVEL == 2
 		if (size() < _Off)
@@ -963,30 +968,30 @@ public:
 				clear();	// new sequence empty, erase existing sequence
 			else if (_Right.size() <= size())
 				{	// enough elements, copy new and destroy old
-				pointer _Ptr = _Copy_impl(_Right._Myfirst,
-					_Right._Mylast, this->_Myfirst);	// copy new
-				_Destroy(_Ptr, this->_Mylast);	// destroy old
-				this->_Mylast = this->_Myfirst + _Right.size();
+				pointer _Ptr = _Copy_impl(_Right._Myfirst(),
+					_Right._Mylast(), this->_Myfirst());	// copy new
+				_Destroy(_Ptr, this->_Mylast());	// destroy old
+				this->_Mylast() = this->_Myfirst() + _Right.size();
 				}
 			else if (_Right.size() <= capacity())
 				{	// enough room, copy and construct new
-				pointer _Ptr = _Right._Myfirst + size();
-				_Copy_impl(_Right._Myfirst,
-					_Ptr, this->_Myfirst);
-				this->_Mylast = _Ucopy(_Ptr, _Right._Mylast, this->_Mylast);
+				pointer _Ptr = _Right._Myfirst() + size();
+				_Copy_impl(_Right._Myfirst(),
+					_Ptr, this->_Myfirst());
+				this->_Mylast() = _Ucopy(_Ptr, _Right._Mylast(), this->_Mylast());
 				}
 			else
 				{	// not enough room, allocate new array and construct new
-				if (this->_Myfirst != pointer())
+				if (this->_Myfirst() != pointer())
 					{	// discard old array
-					_Destroy(this->_Myfirst, this->_Mylast);
-					this->_Getal().deallocate(this->_Myfirst,
-						this->_Myend - this->_Myfirst);
+					_Destroy(this->_Myfirst(), this->_Mylast());
+					this->_Getal().deallocate(this->_Myfirst(),
+						this->_Myend() - this->_Myfirst());
 					}
 				if (_Buy(_Right.size()))
 					_TRY_BEGIN
-					this->_Mylast = _Ucopy(_Right._Myfirst, _Right._Mylast,
-						this->_Myfirst);
+					this->_Mylast() = _Ucopy(_Right._Myfirst(), _Right._Mylast(),
+						this->_Myfirst());
 					_CATCH_ALL
 					_Tidy();
 					_RERAISE;
@@ -1008,42 +1013,42 @@ public:
 
 	size_type capacity() const _NOEXCEPT
 		{	// return current length of allocated storage
-		return (this->_Myend - this->_Myfirst);
+		return (this->_Myend() - this->_Myfirst());
 		}
 
 	size_type _Unused_capacity() const _NOEXCEPT
 		{	// micro-optimization for capacity() - size()
-		return (this->_Myend - this->_Mylast);
+		return (this->_Myend() - this->_Mylast());
 		}
 
 	size_type _Has_unused_capacity() const _NOEXCEPT
 		{	// micro-optimization for capacity() != size()
-		return (this->_Myend != this->_Mylast);
+		return (this->_Myend() != this->_Mylast());
 		}
 
 	iterator begin() _NOEXCEPT
 		{	// return iterator for beginning of mutable sequence
-		return (iterator(this->_Myfirst, this));
+		return (iterator(this->_Myfirst(), &this->_Get_data()));
 		}
 
 	const_iterator begin() const _NOEXCEPT
 		{	// return iterator for beginning of nonmutable sequence
-		return (const_iterator(this->_Myfirst, this));
+		return (const_iterator(this->_Myfirst(), &this->_Get_data()));
 		}
 
 	iterator end() _NOEXCEPT
 		{	// return iterator for end of mutable sequence
-		return (iterator(this->_Mylast, this));
+		return (iterator(this->_Mylast(), &this->_Get_data()));
 		}
 
 	const_iterator end() const _NOEXCEPT
 		{	// return iterator for end of nonmutable sequence
-		return (const_iterator(this->_Mylast, this));
+		return (const_iterator(this->_Mylast(), &this->_Get_data()));
 		}
 
 	iterator _Make_iter(const_iterator _Where) const
 		{	// make iterator from const_iterator
-		return (iterator(_Where._Ptr, this));
+		return (iterator(_Where._Ptr, &this->_Get_data()));
 		}
 
 	reverse_iterator rbegin() _NOEXCEPT
@@ -1103,16 +1108,15 @@ public:
 			_Pop_back_n(size() - _Newsize);
 		else if (size() < _Newsize)
 			{	// pad as needed
-			_Alty _Alval0(this->_Getal());
 			_Reserve(_Newsize - size());
 			_TRY_BEGIN
-			_Uninitialized_default_fill_n(this->_Mylast, _Newsize - size(),
-				_Alval0);
+			_Uninitialized_default_fill_n(this->_Mylast(), _Newsize - size(),
+				this->_Getal());
 			_CATCH_ALL
 			_Tidy();
 			_RERAISE;
 			_CATCH_END
-			this->_Mylast += _Newsize - size();
+			this->_Mylast() += _Newsize - size();
 			}
 		}
 
@@ -1127,26 +1131,26 @@ public:
 			if (_Inside(_Ptr))
 				{	// padding is inside vector, recompute _Ptr after reserve
 				const difference_type _Idx = _Ptr
-					- _STD addressof(*this->_Myfirst);
+					- _STD addressof(*this->_Myfirst());
 				_Reserve(_Newsize - size());
-				_Ptr = _STD addressof(*this->_Myfirst) + _Idx;
+				_Ptr = _STD addressof(*this->_Myfirst()) + _Idx;
 				}
 			else
 				_Reserve(_Newsize - size());
 
 			_TRY_BEGIN
-			_Ufill(this->_Mylast, _Newsize - size(), _Ptr);
+			_Ufill(this->_Mylast(), _Newsize - size(), _Ptr);
 			_CATCH_ALL
 			_Tidy();
 			_RERAISE;
 			_CATCH_END
-			this->_Mylast += _Newsize - size();
+			this->_Mylast() += _Newsize - size();
 			}
 		}
 
 	size_type size() const _NOEXCEPT
 		{	// return length of sequence
-		return (this->_Mylast - this->_Myfirst);
+		return (this->_Mylast() - this->_Myfirst());
 		}
 
 	size_type max_size() const _NOEXCEPT
@@ -1156,7 +1160,7 @@ public:
 
 	bool empty() const _NOEXCEPT
 		{	// test if sequence is empty
-		return (this->_Myfirst == this->_Mylast);
+		return (this->_Myfirst() == this->_Mylast());
 		}
 
 	_Alloc get_allocator() const _NOEXCEPT
@@ -1168,14 +1172,14 @@ public:
 		{	// subscript nonmutable sequence with checking
 		if (size() <= _Pos)
 			_Xran();
-		return (*(this->_Myfirst + _Pos));
+		return (*(this->_Myfirst() + _Pos));
 		}
 
 	reference at(size_type _Pos)
 		{	// subscript mutable sequence with checking
 		if (size() <= _Pos)
 			_Xran();
-		return (*(this->_Myfirst + _Pos));
+		return (*(this->_Myfirst() + _Pos));
 		}
 
 	const_reference operator[](size_type _Pos) const
@@ -1191,7 +1195,7 @@ public:
 		_SCL_SECURE_VALIDATE_RANGE(_Pos < size());
  #endif /* _ITERATOR_DEBUG_LEVEL */
 
-		return (*(this->_Myfirst + _Pos));
+		return (*(this->_Myfirst() + _Pos));
 		}
 
 	reference operator[](size_type _Pos)
@@ -1207,17 +1211,17 @@ public:
 		_SCL_SECURE_VALIDATE_RANGE(_Pos < size());
  #endif /* _ITERATOR_DEBUG_LEVEL */
 
-		return (*(this->_Myfirst + _Pos));
+		return (*(this->_Myfirst() + _Pos));
 		}
 
 	pointer data() _NOEXCEPT
 		{	// return address of first element
-		return (this->_Myfirst);
+		return (this->_Myfirst());
 		}
 
 	const_pointer data() const _NOEXCEPT
 		{	// return address of first element
-		return (this->_Myfirst);
+		return (this->_Myfirst());
 		}
 
 	reference front()
@@ -1244,22 +1248,22 @@ public:
 		{	// insert element at end
 		if (_Inside(_STD addressof(_Val)))
 			{	// push back an element
-			size_type _Idx = _STD addressof(_Val) - this->_Myfirst;
-			if (this->_Mylast == this->_Myend)
+			size_type _Idx = _STD addressof(_Val) - this->_Myfirst();
+			if (this->_Mylast() == this->_Myend())
 				_Reserve(1);
-			_Orphan_range(this->_Mylast, this->_Mylast);
-			this->_Getal().construct(this->_Mylast,
-				this->_Myfirst[_Idx]);
-			++this->_Mylast;
+			_Orphan_range(this->_Mylast(), this->_Mylast());
+			this->_Getal().construct(this->_Mylast(),
+				this->_Myfirst()[_Idx]);
+			++this->_Mylast();
 			}
 		else
 			{	// push back a non-element
-			if (this->_Mylast == this->_Myend)
+			if (this->_Mylast() == this->_Myend())
 				_Reserve(1);
-			_Orphan_range(this->_Mylast, this->_Mylast);
-			this->_Getal().construct(this->_Mylast,
+			_Orphan_range(this->_Mylast(), this->_Mylast());
+			this->_Getal().construct(this->_Mylast(),
 				_Val);
-			++this->_Mylast;
+			++this->_Mylast();
 			}
 		}
 
@@ -1270,17 +1274,17 @@ public:
 			_DEBUG_ERROR("vector empty before pop");
 		else
 			{	// erase last element
-			_Orphan_range(this->_Mylast - 1, this->_Mylast);
-			this->_Getal().destroy(this->_Mylast - 1);
-			--this->_Mylast;
+			_Orphan_range(this->_Mylast() - 1, this->_Mylast());
+			this->_Getal().destroy(this->_Mylast() - 1);
+			--this->_Mylast();
 			}
 		}
 
  #else /* _ITERATOR_DEBUG_LEVEL == 2 */
 	void pop_back()
 		{	// erase element at end
-		this->_Getal().destroy(this->_Mylast - 1);
-		--this->_Mylast;
+		this->_Getal().destroy(this->_Mylast() - 1);
+		--this->_Mylast();
 		}
  #endif /* _ITERATOR_DEBUG_LEVEL == 2 */
 
@@ -1305,9 +1309,6 @@ public:
 		void _Assign(_Iter _First, _Iter _Last,
 			forward_iterator_tag)
 		{	// assign [_First, _Last), forward iterators
-		if (_First == _Last)
-			return;	// nothing to do
-
 		size_type _Newsize = _STD distance(_First, _Last);
 
 		if (capacity() < _Newsize)
@@ -1317,7 +1318,7 @@ public:
 			_Buy(_Newcapacity);
 			}
 
-		this->_Mylast = _Ucopy(_First, _Last, this->_Myfirst);
+		this->_Mylast() = _Ucopy(_First, _Last, this->_Myfirst());
 		}
 
 	void assign(size_type _Count, const value_type& _Val)
@@ -1342,7 +1343,7 @@ public:
 			iterator>::type
 		insert(const_iterator _Where, _Iter _First, _Iter _Last)
 		{	// insert [_First, _Last) at _Where
-		size_type _Off = _VIPTR(_Where) - this->_Myfirst;
+		size_type _Off = _VIPTR(_Where) - this->_Myfirst();
 		_Insert(_Where, _First, _Last, _Iter_cat(_First));
 		return (begin() + _Off);
 		}
@@ -1352,7 +1353,7 @@ public:
 			_Iter _First, _Iter _Last,
 				input_iterator_tag)
 		{	// insert [_First, _Last) at _Where, input iterators
-		size_type _Off = _VIPTR(_Where) - this->_Myfirst;
+		size_type _Off = _VIPTR(_Where) - this->_Myfirst();
 
  #if _ITERATOR_DEBUG_LEVEL == 2
 		if (size() < _Off)
@@ -1382,9 +1383,9 @@ public:
 				forward_iterator_tag)
 		{	// insert [_First, _Last) at _Where, forward iterators
  #if _ITERATOR_DEBUG_LEVEL == 2
-		if (_VICONT(_Where) != this
-			|| _VIPTR(_Where) < this->_Myfirst
-			|| this->_Mylast < _VIPTR(_Where))
+		if (_VICONT(_Where) != &this->_Get_data()
+			|| _VIPTR(_Where) < this->_Myfirst()
+			|| this->_Mylast() < _VIPTR(_Where))
 			_DEBUG_ERROR("vector insert iterator outside range");
 		_DEBUG_RANGE(_First, _Last);
  #endif /* _ITERATOR_DEBUG_LEVEL == 2 */
@@ -1404,10 +1405,10 @@ public:
 			pointer _Ptr = _Newvec;
 
 			_TRY_BEGIN
-			_Ptr = _Umove(this->_Myfirst, _VIPTR(_Where),
+			_Ptr = _Umove(this->_Myfirst(), _VIPTR(_Where),
 				_Newvec);	// copy prefix
 			_Ptr = _Ucopy(_First, _Last, _Ptr);	// add new stuff
-			_Umove(_VIPTR(_Where), this->_Mylast,
+			_Umove(_VIPTR(_Where), this->_Mylast(),
 				_Ptr);	// copy suffix
 			_CATCH_ALL
 			_Destroy(_Newvec, _Ptr);
@@ -1416,49 +1417,49 @@ public:
 			_CATCH_END
 
 			_Count += size();
-			if (this->_Myfirst != pointer())
+			if (this->_Myfirst() != pointer())
 				{	// destroy and deallocate old array
-				_Destroy(this->_Myfirst, this->_Mylast);
-				this->_Getal().deallocate(this->_Myfirst,
-					this->_Myend - this->_Myfirst);
+				_Destroy(this->_Myfirst(), this->_Mylast());
+				this->_Getal().deallocate(this->_Myfirst(),
+					this->_Myend() - this->_Myfirst());
 				}
 
 			this->_Orphan_all();
-			this->_Myend = _Newvec + _Capacity;
-			this->_Mylast = _Newvec + _Count;
-			this->_Myfirst = _Newvec;
+			this->_Myend() = _Newvec + _Capacity;
+			this->_Mylast() = _Newvec + _Count;
+			this->_Myfirst() = _Newvec;
 			}
 		else
 			{	// new stuff fits, append and rotate into place
-			_Ucopy(_First, _Last, this->_Mylast);
-			_STD rotate(_VIPTR(_Where), this->_Mylast,
-				this->_Mylast + _Count);
-			this->_Mylast += _Count;
-			_Orphan_range(_VIPTR(_Where), this->_Mylast);
+			_Ucopy(_First, _Last, this->_Mylast());
+			_STD rotate(_VIPTR(_Where), this->_Mylast(),
+				this->_Mylast() + _Count);
+			this->_Mylast() += _Count;
+			_Orphan_range(_VIPTR(_Where), this->_Mylast());
 			}
 		}
 
  #if _ITERATOR_DEBUG_LEVEL == 2
 	iterator erase(const_iterator _Where)
 		{	// erase element at where
-		if (_VICONT(_Where) != this
-			|| _VIPTR(_Where) < this->_Myfirst
-			|| this->_Mylast <= _VIPTR(_Where))
+		if (_VICONT(_Where) != &this->_Get_data()
+			|| _VIPTR(_Where) < this->_Myfirst()
+			|| this->_Mylast() <= _VIPTR(_Where))
 			_DEBUG_ERROR("vector erase iterator outside range");
-		_Move(_VIPTR(_Where) + 1, this->_Mylast, _VIPTR(_Where));
-		_Destroy(this->_Mylast - 1, this->_Mylast);
-		_Orphan_range(_VIPTR(_Where), this->_Mylast);
-		--this->_Mylast;
+		_Move(_VIPTR(_Where) + 1, this->_Mylast(), _VIPTR(_Where));
+		_Destroy(this->_Mylast() - 1, this->_Mylast());
+		_Orphan_range(_VIPTR(_Where), this->_Mylast());
+		--this->_Mylast();
 		return (_Make_iter(_Where));
 		}
 
  #else /* _ITERATOR_DEBUG_LEVEL == 2 */
 	iterator erase(const_iterator _Where)
 		{	// erase element at where
-		_Move(_VIPTR(_Where) + 1, this->_Mylast,
+		_Move(_VIPTR(_Where) + 1, this->_Mylast(),
 			_VIPTR(_Where));
-		_Destroy(this->_Mylast - 1, this->_Mylast);
-		--this->_Mylast;
+		_Destroy(this->_Mylast() - 1, this->_Mylast());
+		--this->_Mylast();
 		return (_Make_iter(_Where));
 		}
  #endif /* _ITERATOR_DEBUG_LEVEL == 2 */
@@ -1476,21 +1477,21 @@ public:
 			if (_First != _Last)
 				{	// worth doing, copy down over hole
  #if _ITERATOR_DEBUG_LEVEL == 2
-				if (_Last < _First || _VICONT(_First) != this
-					|| _VIPTR(_First) < this->_Myfirst
-					|| this->_Mylast < _VIPTR(_Last))
+				if (_Last < _First || _VICONT(_First) != &this->_Get_data()
+					|| _VIPTR(_First) < this->_Myfirst()
+					|| this->_Mylast() < _VIPTR(_Last))
 					_DEBUG_ERROR("vector erase iterator outside range");
-				pointer _Ptr = _Move(_VIPTR(_Last), this->_Mylast,
+				pointer _Ptr = _Move(_VIPTR(_Last), this->_Mylast(),
 					_VIPTR(_First));
-				_Orphan_range(_VIPTR(_First), this->_Mylast);
+				_Orphan_range(_VIPTR(_First), this->_Mylast());
 
  #else /* _ITERATOR_DEBUG_LEVEL == 2 */
-				pointer _Ptr = _Move(_VIPTR(_Last), this->_Mylast,
+				pointer _Ptr = _Move(_VIPTR(_Last), this->_Mylast(),
 					_VIPTR(_First));
  #endif /* _ITERATOR_DEBUG_LEVEL == 2 */
 
-				_Destroy(_Ptr, this->_Mylast);
-				this->_Mylast = _Ptr;
+				_Destroy(_Ptr, this->_Mylast());
+				this->_Mylast() = _Ptr;
 				}
 			}
 		return (_Make_iter(_First_arg));
@@ -1498,21 +1499,21 @@ public:
 
 	void _Pop_back_n(size_type _Count)
 		{	// erase _Count elements at end
-		pointer _Ptr = this->_Mylast - _Count;
+		pointer _Ptr = this->_Mylast() - _Count;
 
  #if _ITERATOR_DEBUG_LEVEL == 2
-		_Orphan_range(_Ptr, this->_Mylast);
+		_Orphan_range(_Ptr, this->_Mylast());
  #endif /* _ITERATOR_DEBUG_LEVEL == 2 */
 
-		_Destroy(_Ptr, this->_Mylast);
-		this->_Mylast = _Ptr;
+		_Destroy(_Ptr, this->_Mylast());
+		this->_Mylast() = _Ptr;
 		}
 
 	void clear() _NOEXCEPT
 		{	// erase all
 		this->_Orphan_all();
-		_Destroy(this->_Myfirst, this->_Mylast);
-		this->_Mylast = this->_Myfirst;
+		_Destroy(this->_Myfirst(), this->_Mylast());
+		this->_Mylast() = this->_Myfirst();
 		}
 
 	void swap(_Myt& _Right)
@@ -1522,17 +1523,17 @@ public:
 		else if (this->_Getal() == _Right._Getal())
 			{	// same allocator, swap control information
 			this->_Swap_all(_Right);
-			_Swap_adl(this->_Myfirst, _Right._Myfirst);
-			_Swap_adl(this->_Mylast, _Right._Mylast);
-			_Swap_adl(this->_Myend, _Right._Myend);
+			_Swap_adl(this->_Myfirst(), _Right._Myfirst());
+			_Swap_adl(this->_Mylast(), _Right._Mylast());
+			_Swap_adl(this->_Myend(), _Right._Myend());
 			}
 
 		else if (_Alty::propagate_on_container_swap::value)
 			{	// swap allocators and control information
 			this->_Swap_alloc(_Right);
-			_Swap_adl(this->_Myfirst, _Right._Myfirst);
-			_Swap_adl(this->_Mylast, _Right._Mylast);
-			_Swap_adl(this->_Myend, _Right._Myend);
+			_Swap_adl(this->_Myfirst(), _Right._Myfirst());
+			_Swap_adl(this->_Mylast(), _Right._Mylast());
+			_Swap_adl(this->_Myend(), _Right._Myend());
 			}
 
 		else
@@ -1549,9 +1550,9 @@ public:
 protected:
 	bool _Buy(size_type _Capacity)
 		{	// allocate array with _Capacity elements
-		this->_Myfirst = pointer();
-		this->_Mylast = pointer();
-		this->_Myend = pointer();
+		this->_Myfirst() = pointer();
+		this->_Mylast() = pointer();
+		this->_Myend() = pointer();
 
 		if (_Capacity == 0)
 			return (false);
@@ -1559,17 +1560,16 @@ protected:
 			_Xlen();	// result too long
 		else
 			{	// nonempty array, allocate storage
-			this->_Myfirst = this->_Getal().allocate(_Capacity);
-			this->_Mylast = this->_Myfirst;
-			this->_Myend = this->_Myfirst + _Capacity;
+			this->_Myfirst() = this->_Getal().allocate(_Capacity);
+			this->_Mylast() = this->_Myfirst();
+			this->_Myend() = this->_Myfirst() + _Capacity;
 			}
 		return (true);
 		}
 
 	void _Destroy(pointer _First, pointer _Last)
 		{	// destroy [_First, _Last) using allocator
-		_Alty _Alval0(this->_Getal());
-		_Destroy_range(_First, _Last, _Alval0);
+		_Destroy_range(_First, _Last, this->_Getal());
 		}
 
 	size_type _Grow_to(size_type _Count) const
@@ -1585,7 +1585,7 @@ protected:
 
 	bool _Inside(const value_type *_Ptr) const
 		{	// test if _Ptr points inside vector
-		return (_Ptr < this->_Mylast && this->_Myfirst <= _Ptr);
+		return (_Ptr < this->_Mylast() && this->_Myfirst() <= _Ptr);
 		}
 
 	void _Reallocate(size_type _Count)
@@ -1593,24 +1593,24 @@ protected:
 		pointer _Ptr = this->_Getal().allocate(_Count);
 
 		_TRY_BEGIN
-		_Umove(this->_Myfirst, this->_Mylast, _Ptr);
+		_Umove(this->_Myfirst(), this->_Mylast(), _Ptr);
 		_CATCH_ALL
 		this->_Getal().deallocate(_Ptr, _Count);
 		_RERAISE;
 		_CATCH_END
 
 		size_type _Size = size();
-		if (this->_Myfirst != pointer())
+		if (this->_Myfirst() != pointer())
 			{	// destroy and deallocate old array
-			_Destroy(this->_Myfirst, this->_Mylast);
-			this->_Getal().deallocate(this->_Myfirst,
-				this->_Myend - this->_Myfirst);
+			_Destroy(this->_Myfirst(), this->_Mylast());
+			this->_Getal().deallocate(this->_Myfirst(),
+				this->_Myend() - this->_Myfirst());
 			}
 
 		this->_Orphan_all();
-		this->_Myend = _Ptr + _Count;
-		this->_Mylast = _Ptr + _Size;
-		this->_Myfirst = _Ptr;
+		this->_Myend() = _Ptr + _Count;
+		this->_Mylast() = _Ptr + _Size;
+		this->_Myfirst() = _Ptr;
 		}
 
 	void _Reserve(size_type _Count)
@@ -1625,45 +1625,43 @@ protected:
 
 	void _Tidy()
 		{	// free all storage
-		if (this->_Myfirst != pointer())
+		if (this->_Myfirst() != pointer())
 			{	// something to free, destroy and deallocate it
 			this->_Orphan_all();
-			_Destroy(this->_Myfirst, this->_Mylast);
-			this->_Getal().deallocate(this->_Myfirst,
-				this->_Myend - this->_Myfirst);
-			this->_Myfirst = pointer();
-			this->_Mylast = pointer();
-			this->_Myend = pointer();
+			_Destroy(this->_Myfirst(), this->_Mylast());
+			this->_Getal().deallocate(this->_Myfirst(),
+				this->_Myend() - this->_Myfirst());
+			this->_Myfirst() = pointer();
+			this->_Mylast() = pointer();
+			this->_Myend() = pointer();
 			}
 		}
 
 	template<class _Iter>
 		pointer _Ucopy(_Iter _First, _Iter _Last, pointer _Ptr)
 		{	// copy initializing [_First, _Last), using allocator
-		_Alty _Alval0(this->_Getal());
 		return (_Uninitialized_copy(_First, _Last,
-			_Ptr, _Alval0));
+			_Ptr, this->_Getal()));
 		}
 
 	template<class _Iter>
 		pointer _Umove(_Iter _First, _Iter _Last, pointer _Ptr)
 		{	// move initializing [_First, _Last), using allocator
-		_Alty _Alval0(this->_Getal());
 		return (_Uninitialized_move(_First, _Last,
-			_Ptr, _Alval0));
+			_Ptr, this->_Getal()));
 		}
 
 	iterator _Insert_n(const_iterator _Where,
 		size_type _Count, const value_type& _Val)
 		{	// insert _Count * _Val at _Where
  #if _ITERATOR_DEBUG_LEVEL == 2
-		if (_VICONT(_Where) != this
-			|| _VIPTR(_Where) < this->_Myfirst
-			|| this->_Mylast < _VIPTR(_Where))
+		if (_VICONT(_Where) != &this->_Get_data()
+			|| _VIPTR(_Where) < this->_Myfirst()
+			|| this->_Mylast() < _VIPTR(_Where))
 			_DEBUG_ERROR("vector insert iterator outside range");
  #endif /* _ITERATOR_DEBUG_LEVEL == 2 */
 
-		size_type _Off = _VIPTR(_Where) - this->_Myfirst;
+		size_type _Off = _VIPTR(_Where) - this->_Myfirst();
 		if (_Count == 0)
 			;
 		else if (_Unused_capacity() < _Count)
@@ -1673,17 +1671,17 @@ protected:
 
 			size_type _Capacity = _Grow_to(size() + _Count);
 			pointer _Newvec = this->_Getal().allocate(_Capacity);
-			size_type _Whereoff = _VIPTR(_Where) - this->_Myfirst;
+			size_type _Whereoff = _VIPTR(_Where) - this->_Myfirst();
 			int _Ncopied = 0;
 
 			_TRY_BEGIN
 			_Ufill(_Newvec + _Whereoff, _Count,
 				_STD addressof(_Val));	// add new stuff
 			++_Ncopied;
-			_Umove(this->_Myfirst, _VIPTR(_Where),
+			_Umove(this->_Myfirst(), _VIPTR(_Where),
 				_Newvec);	// copy prefix
 			++_Ncopied;
-			_Umove(_VIPTR(_Where), this->_Mylast,
+			_Umove(_VIPTR(_Where), this->_Mylast(),
 				_Newvec + (_Whereoff + _Count));	// copy suffix
 			_CATCH_ALL
 			if (1 < _Ncopied)
@@ -1695,51 +1693,51 @@ protected:
 			_CATCH_END
 
 			_Count += size();
-			if (this->_Myfirst != pointer())
+			if (this->_Myfirst() != pointer())
 				{	// destroy and deallocate old array
-				_Destroy(this->_Myfirst, this->_Mylast);
-				this->_Getal().deallocate(this->_Myfirst,
-					this->_Myend - this->_Myfirst);
+				_Destroy(this->_Myfirst(), this->_Mylast());
+				this->_Getal().deallocate(this->_Myfirst(),
+					this->_Myend() - this->_Myfirst());
 				}
 
 			this->_Orphan_all();
-			this->_Myend = _Newvec + _Capacity;
-			this->_Mylast = _Newvec + _Count;
-			this->_Myfirst = _Newvec;
+			this->_Myend() = _Newvec + _Capacity;
+			this->_Mylast() = _Newvec + _Count;
+			this->_Myfirst() = _Newvec;
 			}
-		else if ((size_type)(this->_Mylast - _VIPTR(_Where))
+		else if ((size_type)(this->_Mylast() - _VIPTR(_Where))
 			< _Count)
 			{	// new stuff spills off end
 			value_type _Tmp = _Val;	// in case _Val is in sequence
 
-			_Umove(_VIPTR(_Where), this->_Mylast,
+			_Umove(_VIPTR(_Where), this->_Mylast(),
 				_VIPTR(_Where) + _Count);	// copy suffix
 
 			_TRY_BEGIN
-			_Ufill(this->_Mylast,
-				_Count - (this->_Mylast - _VIPTR(_Where)),
+			_Ufill(this->_Mylast(),
+				_Count - (this->_Mylast() - _VIPTR(_Where)),
 				_STD addressof(_Tmp));	// insert new stuff off end
 			_CATCH_ALL
 			_Destroy(_VIPTR(_Where) + _Count,
-				this->_Mylast + _Count);
+				this->_Mylast() + _Count);
 			_RERAISE;
 			_CATCH_END
 
-			this->_Mylast += _Count;
-			_Orphan_range(_VIPTR(_Where), this->_Mylast);
-			_STD fill(_VIPTR(_Where), this->_Mylast - _Count,
+			this->_Mylast() += _Count;
+			_Orphan_range(_VIPTR(_Where), this->_Mylast());
+			_STD fill(_VIPTR(_Where), this->_Mylast() - _Count,
 				_Tmp);	// insert up to old end
 			}
 		else
 			{	// new stuff can all be assigned
 			value_type _Tmp = _Val;	// in case _Val is in sequence
 
-			pointer _Oldend = this->_Mylast;
-			this->_Mylast = _Umove(_Oldend - _Count, _Oldend,
-				this->_Mylast);	// copy suffix
+			pointer _Oldend = this->_Mylast();
+			this->_Mylast() = _Umove(_Oldend - _Count, _Oldend,
+				this->_Mylast());	// copy suffix
 
-			_Orphan_range(_VIPTR(_Where), this->_Mylast);
-			_Copy_backward(_VIPTR(_Where), _Oldend - _Count,
+			_Orphan_range(_VIPTR(_Where), this->_Mylast());
+			_Move_backward(_VIPTR(_Where), _Oldend - _Count,
 				_Oldend);	// copy hole
 			_STD fill(_VIPTR(_Where),
 				_VIPTR(_Where) + _Count, _Tmp);	// insert into hole
@@ -1749,8 +1747,7 @@ protected:
 
 	pointer _Ufill(pointer _Ptr, size_type _Count, const value_type *_Pval)
 		{	// copy initializing _Count * _Val, using allocator
-		_Alty _Alval0(this->_Getal());
-		_Uninitialized_fill_n(_Ptr, _Count, _Pval, _Alval0);
+		_Uninitialized_fill_n(_Ptr, _Count, _Pval, this->_Getal());
 		return (_Ptr + _Count);
 		}
 
@@ -1892,7 +1889,7 @@ public:
 
 		_Inc += _Myoff;
 		_Inc += _VBITS * (_Myptr
-			- (((_Mycont *)this->_Getcont())->_Myvec)._Myfirst);
+			- (((_Mycont *)this->_Getcont())->_Myvec)._Myfirst());
 		return (_Inc < _Mysize ? -1 : _Inc == _Mysize ? 0 : +1);
 
  #else /* _ITERATOR_DEBUG_LEVEL == 2 */
@@ -2587,12 +2584,12 @@ public:
 
 	iterator begin() _NOEXCEPT
 		{	// return iterator for beginning of mutable sequence
-		return (iterator((_Vbase *)this->_Myvec._Myfirst, this));
+		return (iterator((_Vbase *)this->_Myvec._Myfirst(), this));
 		}
 
 	const_iterator begin() const _NOEXCEPT
 		{	// return iterator for beginning of nonmutable sequence
-		return (const_iterator((_Vbase *)this->_Myvec._Myfirst, this));
+		return (const_iterator((_Vbase *)this->_Myvec._Myfirst(), this));
 		}
 
 	iterator end() _NOEXCEPT
@@ -2963,7 +2960,7 @@ public:
 		typedef _Vb_iter_base<_Alty> _Myiterbase;
 
 		_Lockit _Lock(_LOCK_DEBUG);
-		_Vbase *_Base = (_Vbase *)this->_Myvec._Myfirst;
+		_Vbase *_Base = (_Vbase *)this->_Myvec._Myfirst();
 
 		const_iterator **_Pnext = (const_iterator **)this->_Getpfirst();
 		if (_Pnext != 0)

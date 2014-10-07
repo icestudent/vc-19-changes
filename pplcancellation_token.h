@@ -33,8 +33,6 @@
 #define _PPLCANCELLATION_TOKEN_H
 
 #include <pplinterface.h>
-#include <algorithm> 
-#include <list>
 
 #pragma pack(push,_CRT_PACKING)
 // All header files are required to be protected from the macro new
@@ -213,8 +211,110 @@ namespace details
     // The base implementation of a cancellation token.
     class _CancellationTokenState : public _RefCounter
     {
-    public:
+    protected:
+        class TokenRegistrationContainer
+        {
+        private:
+            typedef struct _Node {
+                _CancellationTokenRegistration* _M_token;
+                _Node *_M_next;
 
+                _Node(_CancellationTokenRegistration* token) : _M_token(token), _M_next(nullptr)
+                {
+                }
+            } Node;
+
+        public:
+            TokenRegistrationContainer() : _M_begin(nullptr), _M_last(nullptr)
+            {
+            }
+
+            ~TokenRegistrationContainer()
+            {
+                auto node = _M_begin;
+                while (node != nullptr) 
+                {
+                    Node* tmp = node;
+                    node = node->_M_next;
+                    delete tmp;
+                }
+            }
+
+            void swap(TokenRegistrationContainer& list)
+            {
+                std::swap(list._M_begin, _M_begin);
+                std::swap(list._M_last, _M_last);
+            }
+
+            bool empty()
+            {
+                return _M_begin == nullptr;
+            }
+
+            template<typename T>
+            void for_each(T lambda)
+            {
+                Node* node = _M_begin;
+
+                while (node != nullptr) 
+                {
+                    lambda(node->_M_token);
+                    node = node->_M_next;
+                }
+            }
+
+            void push_back(_CancellationTokenRegistration* token)
+            {
+                auto node = new Node(token);
+                if (_M_begin == nullptr) 
+                {
+                    _M_begin = node;
+                }
+                else
+                {
+                    _M_last->_M_next = node;
+                }
+
+                _M_last = node;
+            }
+
+            void remove(_CancellationTokenRegistration* token)
+            {
+                Node* node = _M_begin;
+                Node* prev = nullptr;
+
+                while (node != nullptr) 
+                {
+                    if (node->_M_token == token) {
+                        if (prev == nullptr)
+                        {
+                            _M_begin = node->_M_next;
+                        }
+                        else
+                        {
+                            prev->_M_next = node->_M_next;
+                        }
+
+                        if (node->_M_next == nullptr)
+                        {
+                            _M_last = prev;
+                        }
+
+                        delete node;
+                        break;
+                    }
+                    
+                    prev = node;
+                    node = node->_M_next;
+                }
+            }
+
+        private:
+            Node *_M_begin;
+            Node *_M_last;
+        };
+
+    public:   
         static _CancellationTokenState * _NewTokenState()
         {
             return new _CancellationTokenState();
@@ -237,13 +337,13 @@ namespace details
 
         ~_CancellationTokenState()
         {
-            std::list<_CancellationTokenRegistration*> rundownList;
+            TokenRegistrationContainer rundownList;
             {
                 extensibility::scoped_critical_section_t _Lock(_M_listLock);
                 _M_registrations.swap(rundownList);
             }
 
-            std::for_each(rundownList.begin(), rundownList.end(), [](_CancellationTokenRegistration * pRegistration)
+            rundownList.for_each([](_CancellationTokenRegistration * pRegistration)
             {
                 pRegistration->_M_state = _CancellationTokenRegistration::_STATE_SYNCHRONIZE;
                 pRegistration->_Release();
@@ -259,13 +359,13 @@ namespace details
         {
             if (atomic_compare_exchange(_M_stateFlag, 1l, 0l) == 0)
             {
-                std::list<_CancellationTokenRegistration*> rundownList;
+                TokenRegistrationContainer rundownList;
                 {
                     extensibility::scoped_critical_section_t _Lock(_M_listLock);
                     _M_registrations.swap(rundownList);
                 }
 
-                std::for_each(rundownList.begin(), rundownList.end(), [](_CancellationTokenRegistration * pRegistration)
+                rundownList.for_each([](_CancellationTokenRegistration * pRegistration)
                 {
                     pRegistration->_Invoke();
                 });
@@ -395,7 +495,7 @@ namespace details
         extensibility::critical_section_t _M_listLock;
 
         // The protected list of registrations
-        std::list<_CancellationTokenRegistration*> _M_registrations;
+        TokenRegistrationContainer _M_registrations;
     };
 
 } // namespace details

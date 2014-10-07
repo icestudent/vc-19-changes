@@ -18,6 +18,10 @@
 extern "C" {
 #endif
 
+#if !defined _W64
+#define _W64
+#endif
+
 #ifndef _UINTPTR_T_DEFINED
     #define _UINTPTR_T_DEFINED
     #ifdef _WIN64
@@ -55,7 +59,7 @@ extern "C" {
     #define _APALIGN(t,ap)  (__alignof(t))
 #endif
 
-#if defined _M_CEE_PURE || (defined _M_CEE && !defined _M_ARM)
+#if defined _M_CEE_PURE || (defined _M_CEE && !defined _M_ARM && !defined _M_CRT_UNSUPPORTED)
 
     void  __cdecl __va_start(va_list*, ...);
     void* __cdecl __va_arg(va_list*, ...);

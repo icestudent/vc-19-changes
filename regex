@@ -2187,9 +2187,6 @@ public:
 	typedef typename _RxTraits::string_type string_type;
 	typedef regex_constants::syntax_option_type flag_type;
 
-	enum {_EEN_VIS =
-		_ENHANCED_REGEX_VISUALIZER};	// helper for expression evaluator
-
 	static const flag_type icase = regex_constants::icase;
 	static const flag_type nosubs = regex_constants::nosubs;
 	static const flag_type optimize = regex_constants::optimize;

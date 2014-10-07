@@ -246,32 +246,6 @@ template<class _Alty,
 	typedef void *type;
 	};
 
-		// TEMPLATE CLASS _Is_iterator
-template<class,
-	class = void>
-	struct _Is_iterator
-		: false_type
-	{	// default definition
-	};
-
-template<class _Ty>
-	struct _Is_iterator<_Ty, typename _Param_tester<
-		typename _Ty::iterator_category,
-		typename _Ty::value_type,
-		typename _Ty::difference_type,
-		typename _Ty::pointer,
-		typename _Ty::reference
-		>::type>
-		: true_type
-	{	// defined if _Ty::* types exist
-	};
-
-template<class _Ty>
-	struct _Is_iterator<_Ty *>
-		: true_type
-	{	// defined for pointers
-	};
-
 		// TEMPLATE STRUCT _Get_first_parameter
 template<class _Ty>
 	struct _Get_first_parameter;

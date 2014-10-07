@@ -3,6 +3,14 @@
 #ifndef _HASH_SET_
 #define _HASH_SET_
 #ifndef RC_INVOKED
+
+ #ifndef _SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS
+static_assert(false, "<hash_set> is deprecated and will be REMOVED. "
+	"Please use <unordered_set>. You can define "
+	"_SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS "
+	"to acknowledge that you have received this warning.");
+ #endif /* _SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS */
+
 #include <xhash>
 
  #pragma pack(push,_CRT_PACKING)
@@ -42,7 +50,7 @@ public:
 		_Multi = _Mfl};
 
 	_Hset_traits(const _Tr& _Traits = _Tr())
-		: _Tr(_Traits)
+		: _Tr(_Traits), _Max_buckets(0.0f)
 		{	// construct with specified comparator
 		}
 
@@ -57,6 +65,18 @@ public:
 		{	// extract "non-key" from element value (for container equality)
 		return (0);
 		}
+
+	float& _Get_max_bucket_size() _NOEXCEPT
+		{	// return reference to current maximum bucket size
+		return (_Max_buckets);
+		}
+
+	const float& _Get_max_bucket_size() const _NOEXCEPT
+		{	// return const reference to current maximum bucket size
+		return (_Max_buckets);
+		}
+
+	float _Max_buckets;	// current maximum bucket size
 	};
 
 		// TEMPLATE CLASS hash_set
@@ -82,9 +102,6 @@ public:
 	typedef typename _Mybase::const_reference const_reference;
 	typedef typename _Mybase::iterator iterator;
 	typedef typename _Mybase::const_iterator const_iterator;
-	typedef typename _Mybase::reverse_iterator reverse_iterator;
-	typedef typename _Mybase::const_reverse_iterator
-		const_reverse_iterator;
 	typedef typename _Mybase::value_type value_type;
 
 	hash_set()
@@ -227,6 +244,39 @@ public:
 		{	// insert [_First, _Last), arbitrary iterators
 		_Mybase::insert(_First, _Last);
 		}
+
+	typedef _STD reverse_iterator<iterator> reverse_iterator;
+	typedef _STD reverse_iterator<const_iterator> const_reverse_iterator;
+
+	reverse_iterator rbegin() _NOEXCEPT
+		{	// return iterator for beginning of reversed mutable sequence
+		return (reverse_iterator(this->end()));
+		}
+
+	const_reverse_iterator rbegin() const _NOEXCEPT
+		{	// return iterator for beginning of reversed nonmutable sequence
+		return (const_reverse_iterator(this->end()));
+		}
+
+	reverse_iterator rend() _NOEXCEPT
+		{	// return iterator for end of reversed mutable sequence
+		return (reverse_iterator(this->begin()));
+		}
+
+	const_reverse_iterator rend() const _NOEXCEPT
+		{	// return iterator for end of reversed nonmutable sequence
+		return (const_reverse_iterator(this->begin()));
+		}
+
+	const_reverse_iterator crbegin() const _NOEXCEPT
+		{	// return iterator for beginning of reversed nonmutable sequence
+		return (rbegin());
+		}
+
+	const_reverse_iterator crend() const _NOEXCEPT
+		{	// return iterator for end of reversed nonmutable sequence
+		return (rend());
+		}
 	};
 
 template<class _Kty,
@@ -280,9 +330,6 @@ public:
 	typedef typename _Mybase::const_reference const_reference;
 	typedef typename _Mybase::iterator iterator;
 	typedef typename _Mybase::const_iterator const_iterator;
-	typedef typename _Mybase::reverse_iterator reverse_iterator;
-	typedef typename _Mybase::const_reverse_iterator
-		const_reverse_iterator;
 	typedef typename _Mybase::value_type value_type;
 
 	hash_multiset()
@@ -424,6 +471,39 @@ public:
 		void insert(_Iter _First, _Iter _Last)
 		{	// insert [_First, _Last), arbitrary iterators
 		_Mybase::insert(_First, _Last);
+		}
+
+	typedef _STD reverse_iterator<iterator> reverse_iterator;
+	typedef _STD reverse_iterator<const_iterator> const_reverse_iterator;
+
+	reverse_iterator rbegin() _NOEXCEPT
+		{	// return iterator for beginning of reversed mutable sequence
+		return (reverse_iterator(this->end()));
+		}
+
+	const_reverse_iterator rbegin() const _NOEXCEPT
+		{	// return iterator for beginning of reversed nonmutable sequence
+		return (const_reverse_iterator(this->end()));
+		}
+
+	reverse_iterator rend() _NOEXCEPT
+		{	// return iterator for end of reversed mutable sequence
+		return (reverse_iterator(this->begin()));
+		}
+
+	const_reverse_iterator rend() const _NOEXCEPT
+		{	// return iterator for end of reversed nonmutable sequence
+		return (const_reverse_iterator(this->begin()));
+		}
+
+	const_reverse_iterator crbegin() const _NOEXCEPT
+		{	// return iterator for beginning of reversed nonmutable sequence
+		return (rbegin());
+		}
+
+	const_reverse_iterator crend() const _NOEXCEPT
+		{	// return iterator for end of reversed nonmutable sequence
+		return (rend());
 		}
 	};
 

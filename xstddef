@@ -36,7 +36,7 @@ _STD_BEGIN
  #define _RAISE(x)	throw x
  #define _RERAISE	throw
 
-  #define _THROW0()		throw ()
+  #define _THROW0()		noexcept
 
   #if defined(MRTDLL) && defined(_M_CEE) && !defined(_M_CEE_PURE) \
 	&& defined(_CRTBLD)
@@ -57,10 +57,10 @@ _STD_BEGIN
   #endif /* defined(MRTDLL) etc. */
 
  #else /* _HAS_EXCEPTIONS */
- #define _TRY_BEGIN	{{
- #define _CATCH(x)	} if (0) {
- #define _CATCH_ALL	} if (0) {
- #define _CATCH_END	}}
+ #define _TRY_BEGIN	{ if (1) {
+ #define _CATCH(x)	} else if (0) {
+ #define _CATCH_ALL	} else if (0) {
+ #define _CATCH_END	} }
 
  #if defined(_DEBUG)
   #define _RAISE(x)	\
@@ -328,7 +328,7 @@ _STD_END
 _STD_BEGIN
 	// FUNCTION _Hash_seq
 inline size_t _Hash_seq(const unsigned char *_First, size_t _Count)
-	{	// FNV-1a hash function for bytes in [_First, _First+_Count)
+	{	// FNV-1a hash function for bytes in [_First, _First + _Count)
  #if defined(_WIN64)
 	static_assert(sizeof(size_t) == 8, "This code is for 64-bit size_t.");
 	const size_t _FNV_offset_basis = 14695981039346656037ULL;
@@ -346,14 +346,6 @@ inline size_t _Hash_seq(const unsigned char *_First, size_t _Count)
 		_Val ^= (size_t)_First[_Next];
 		_Val *= _FNV_prime;
 		}
-
- #if defined(_WIN64)
-	static_assert(sizeof(size_t) == 8, "This code is for 64-bit size_t.");
-	_Val ^= _Val >> 32;
-
- #else /* defined(_WIN64) */
-	static_assert(sizeof(size_t) == 4, "This code is for 32-bit size_t.");
- #endif /* defined(_WIN64) */
 
 	return (_Val);
 	}

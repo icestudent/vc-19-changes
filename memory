@@ -47,8 +47,8 @@ public:
 class _Ref_count_base
 	{	// common code for reference counting
 private:
-	virtual void _Destroy() = 0;
-	virtual void _Delete_this() = 0;
+	virtual void _Destroy() _NOEXCEPT = 0;
+	virtual void _Delete_this() _NOEXCEPT = 0;
 
 private:
 	_Atomic_counter_t _Uses;
@@ -95,11 +95,6 @@ public:
 			}
 		}
 
-	unsigned int _Get_uses() const
-		{	// return use count
-		return (_Get_atomic_count(_Uses));
-		}
-
 	void _Incref()
 		{	// increment use count
 		_MT_INCR(_Mtx, _Uses);
@@ -125,17 +120,17 @@ public:
 			_Delete_this();
 		}
 
-	long _Use_count() const
+	long _Use_count() const _NOEXCEPT
 		{	// return use count
-		return (_Get_uses());
+		return (_Get_atomic_count(_Uses));
 		}
 
-	bool _Expired() const
+	bool _Expired() const _NOEXCEPT
 		{	// return true if _Uses == 0
-		return (_Get_uses() == 0);
+		return (_Use_count() == 0);
 		}
 
-	virtual void *_Get_deleter(const _XSTD2 type_info&) const
+	virtual void *_Get_deleter(const _XSTD2 type_info&) const _NOEXCEPT
 		{	// return address of deleter object
 		return (0);
 		}
@@ -153,12 +148,12 @@ public:
 		}
 
 private:
-	virtual void _Destroy()
+	virtual void _Destroy() _NOEXCEPT
 		{	// destroy managed resource
 		delete _Ptr;
 		}
 
-	virtual void _Delete_this()
+	virtual void _Delete_this() _NOEXCEPT
 		{	// destroy self
 		delete this;
 		}
@@ -174,28 +169,28 @@ template<class _Ty,
 	{	// handle reference counting for object with deleter
 public:
 	_Ref_count_del(_Ty *_Px, _Dx _Dt)
-		: _Ref_count_base(), _Ptr(_Px), _Dtor(_Dt)
+		: _Ref_count_base(), _Mypair(_One_then_variadic_args_t(), _Dt, _Px)
 		{	// construct
 		}
 
-	virtual void *_Get_deleter(const _XSTD2 type_info& _Typeid) const
+	virtual void *_Get_deleter(const _XSTD2 type_info& _Typeid) const _NOEXCEPT
 		{	// return address of deleter object
-		return ((void *)(_Typeid == typeid(_Dx) ? _STD addressof(_Dtor) : 0));
+		return ((void *)(_Typeid == typeid(_Dx)
+			? _STD addressof(_Mypair._Get_first()) : 0));
 		}
 
 private:
-	virtual void _Destroy()
+	virtual void _Destroy() _NOEXCEPT
 		{	// destroy managed resource
-		_Dtor(_Ptr);
+		_Mypair._Get_first()(_Mypair._Get_second());
 		}
 
-	virtual void _Delete_this()
+	virtual void _Delete_this() _NOEXCEPT
 		{	// destroy self
 		delete this;
 		}
 
-	_Ty * _Ptr;
-	_Dx _Dtor;	// the stored destructor for the controlled object
+	_Compressed_pair<_Dx, _Ty *> _Mypair;
 	};
 
 	// TEMPLATE CLASS _Ref_count_del_alloc
@@ -211,31 +206,31 @@ public:
 	typedef typename _Myalty0::template rebind<_Myt>::other _Myalty;
 
 	_Ref_count_del_alloc(_Ty *_Px, _Dx _Dt, const _Alloc& _Ax)
-		: _Ref_count_base(), _Ptr(_Px), _Dtor(_Dt), _Myal(_Ax)
+		: _Ref_count_base(), _Mypair(_One_then_variadic_args_t(), _Dt,
+			_One_then_variadic_args_t(), _Ax, _Px)
 		{	// construct
 		}
 
-	virtual void *_Get_deleter(const _XSTD2 type_info& _Typeid) const
+	virtual void *_Get_deleter(const _XSTD2 type_info& _Typeid) const _NOEXCEPT
 		{	// return address of deleter object
-		return ((void *)(_Typeid == typeid(_Dx) ? _STD addressof(_Dtor) : 0));
+		return ((void *)(_Typeid == typeid(_Dx)
+			? _STD addressof(_Mypair._Get_first()) : 0));
 		}
 
 private:
-	virtual void _Destroy()
+	virtual void _Destroy() _NOEXCEPT
 		{	// destroy managed resource
-		_Dtor(_Ptr);
+		_Mypair._Get_first()(_Mypair._Get_second()._Get_second());
 		}
 
-	virtual void _Delete_this()
+	virtual void _Delete_this() _NOEXCEPT
 		{	// destroy self
-		_Myalty _Al = _Myal;
+		_Myalty _Al = _Mypair._Get_second()._Get_first();
 		_Al.destroy(this);
 		_Al.deallocate(this, 1);
 		}
 
-	_Ty * _Ptr;
-	_Dx _Dtor;	// the stored destructor for the controlled object
-	_Myalty _Myal;	// the stored allocator for this
+	_Compressed_pair<_Dx, _Compressed_pair<_Myalty, _Ty *> > _Mypair;
 	};
 
 	// DECLARATIONS
@@ -308,7 +303,7 @@ public:
 		return (_Rep ? _Rep->_Use_count() : 0);
 		}
 
-	void _Swap(_Ptr_base& _Right)
+	void _Swap(_Ptr_base& _Right) _NOEXCEPT
 		{	// swap pointers
 		_STD swap(_Rep, _Right._Rep);
 		_STD swap(_Ptr, _Right._Ptr);
@@ -320,17 +315,17 @@ public:
 		return (_Rep < _Right._Rep);
 		}
 
-	void *_Get_deleter(const _XSTD2 type_info& _Typeid) const
+	void *_Get_deleter(const _XSTD2 type_info& _Typeid) const _NOEXCEPT
 		{	// return pointer to deleter object if its type is _Typeid
 		return (_Rep ? _Rep->_Get_deleter(_Typeid) : 0);
 		}
 
-	_Ty *_Get() const
+	_Ty *_Get() const _NOEXCEPT
 		{	// return pointer to resource
 		return (_Ptr);
 		}
 
-	bool _Expired() const
+	bool _Expired() const _NOEXCEPT
 		{	// test if expired
 		return (!_Rep || _Rep->_Expired());
 		}
@@ -907,12 +902,12 @@ public:
 		}
 
 private:
-	virtual void _Destroy()
+	virtual void _Destroy() _NOEXCEPT
 		{	// destroy managed resource
 		_Getptr()->~_Ty();
 		}
 
-	virtual void _Delete_this()
+	virtual void _Delete_this() _NOEXCEPT
 		{	// destroy self
 		delete this;
 		}
@@ -930,35 +925,35 @@ public:
 	typedef _Ref_count_obj_alloc<_Ty, _Alloc> _Myt;
 	typedef _Wrap_alloc<_Alloc> _Myalty0;
 	typedef typename _Myalty0::template rebind<_Myt>::other _Myalty;
+	typedef typename aligned_union<1, _Ty>::type _Mystoragety;
 
 	template<class... _Types>
 		_Ref_count_obj_alloc(const _Alloc& _Al_arg, _Types&&... _Args)
-		: _Ref_count_base(), _Myal(_Al_arg)
+		: _Ref_count_base(), _Mypair(_One_then_variadic_args_t(), _Al_arg)
 		{	// construct from argument list, allocator
-		::new ((void *)&_Storage) _Ty(_STD forward<_Types>(_Args)...);
+		::new ((void *)_Getptr()) _Ty(_STD forward<_Types>(_Args)...);
 		}
 
 
 	_Ty *_Getptr() const
 		{	// get pointer
-		return ((_Ty *)&_Storage);
+		return ((_Ty *)&_Mypair._Get_second());
 		}
 
 private:
-	virtual void _Destroy()
+	virtual void _Destroy() _NOEXCEPT
 		{	// destroy managed resource
 		_Getptr()->~_Ty();
 		}
 
-	virtual void _Delete_this()
+	virtual void _Delete_this() _NOEXCEPT
 		{	// destroy self
-		_Myalty _Al = _Myal;
+		_Myalty _Al = _Mypair._Get_first();
 		_Al.destroy(this);
 		_Al.deallocate(this, 1);
 		}
 
-	typename aligned_union<1, _Ty>::type _Storage;
-	_Myalty _Myal;	// the stored allocator for this
+	_Compressed_pair<_Myalty, _Mystoragety> _Mypair;
 	};
 
 	// TEMPLATE FUNCTION make_shared
@@ -1224,115 +1219,61 @@ template<class _Val,
 
 	// TEMPLATE CLASS _Unique_ptr_base
 template<class _Ty,
-	class _Dx,
-	bool _Empty_deleter>
+	class _Dx>
 	class _Unique_ptr_base
 	{	// stores pointer and deleter
 public:
 	typedef typename remove_reference<_Dx>::type _Dx_noref;
 	typedef typename _Get_deleter_pointer_type<_Ty, _Dx_noref>::type pointer;
 
-	_Unique_ptr_base(pointer _Ptr, _Dx _Dt)
-		: _Myptr(_Ptr), _Mydel(_Dt)
-		{	// construct with pointer and deleter
-		}
-
-	_Unique_ptr_base(pointer _Ptr)
-		: _Myptr(_Ptr)
-		{	// construct with pointer and deleter
-		}
-
 	template<class _Ptr2,
 		class _Dx2>
-		_Unique_ptr_base(_Ptr2 _Ptr, _Dx2 _Dt)
-		: _Myptr(_Ptr), _Mydel(_Dt)
+		_Unique_ptr_base(_Ptr2 _Ptr, _Dx2&& _Dt)
+		: _Mypair(_One_then_variadic_args_t(), _STD forward<_Dx2>(_Dt), _Ptr)
 		{	// construct with compatible pointer and deleter
 		}
 
 	template<class _Ptr2>
 		_Unique_ptr_base(_Ptr2 _Ptr)
-		: _Myptr(_Ptr)
-		{	// construct with compatible pointer and deleter
+		: _Mypair(_Zero_then_variadic_args_t(), _Ptr)
+		{	// construct with compatible pointer
 		}
 
-	_Dx_noref& get_deleter()
+	_Dx& get_deleter() _NOEXCEPT
 		{	// return reference to deleter
-		return (_Mydel);
+		return (_Mypair._Get_first());
 		}
 
-	const _Dx_noref& get_deleter() const
+	const _Dx& get_deleter() const _NOEXCEPT
 		{	// return const reference to deleter
-		return (_Mydel);
+		return (_Mypair._Get_first());
 		}
 
-	pointer _Myptr;	// the managed pointer
-	_Dx _Mydel;		// the deleter
-	};
-
-template<class _Ty,
-	class _Dx>
-	class _Unique_ptr_base<_Ty, _Dx, true>
-		: public _Dx
-	{	// store pointer and empty deleter
-public:
-	typedef _Dx _Mybase;
-	typedef typename remove_reference<_Dx>::type _Dx_noref;
-	typedef typename _Get_deleter_pointer_type<_Ty, _Dx_noref>::type pointer;
-
-	_Unique_ptr_base(pointer _Ptr, _Dx _Dt) _NOEXCEPT
-		: _Myptr(_Ptr), _Mybase(_Dt)
-		{	// construct with pointer and deleter
+	pointer& _Myptr() _NOEXCEPT
+		{	// return reference to pointer
+		return (_Mypair._Get_second());
 		}
 
-	_Unique_ptr_base(pointer _Ptr) _NOEXCEPT
-		: _Myptr(_Ptr)
-		{	// construct with pointer and deleter
+	const pointer& _Myptr() const _NOEXCEPT
+		{	// return const reference to pointer
+		return (_Mypair._Get_second());
 		}
 
-	template<class _Ptr2,
-		class _Dx2>
-		_Unique_ptr_base(_Ptr2 _Ptr, _Dx2 _Dt) _NOEXCEPT
-		: _Myptr(_Ptr), _Mybase(_Dt)
-		{	// construct with compatible pointer and deleter
-		}
-
-	template<class _Ptr2>
-		_Unique_ptr_base(_Ptr2 _Ptr) _NOEXCEPT
-		: _Myptr(_Ptr)
-		{	// construct with compatible pointer and deleter
-		}
-
-	_Dx_noref& get_deleter() _NOEXCEPT
-		{	// return reference to deleter
-		return (*this);
-		}
-
-	const _Dx_noref& get_deleter() const _NOEXCEPT
-		{	// return const reference to deleter
-		return (*this);
-		}
-
-	pointer _Myptr;	// the managed pointer
+	_Compressed_pair<_Dx, pointer> _Mypair;
 	};
 
 	// TEMPLATE CLASS unique_ptr SCALAR
 template<class _Ty,
 	class _Dx>	// = default_delete<_Ty>
 	class unique_ptr
-		: private _Unique_ptr_base<_Ty, _Dx,
-			is_empty<_Dx>::value
-				|| is_same<default_delete<_Ty>, _Dx>::value>
+		: public _Unique_ptr_base<_Ty, _Dx>
 	{	// non-copyable pointer to an object
 public:
 	typedef unique_ptr<_Ty, _Dx> _Myt;
-	typedef _Unique_ptr_base<_Ty, _Dx,
-		is_empty<_Dx>::value
-			|| is_same<default_delete<_Ty>, _Dx>::value> _Mybase;
+	typedef _Unique_ptr_base<_Ty, _Dx> _Mybase;
 	typedef typename _Mybase::pointer pointer;
 	typedef _Ty element_type;
 	typedef _Dx deleter_type;
-
-	using _Mybase::get_deleter;
 
 	unique_ptr() _NOEXCEPT
 		: _Mybase(pointer())
@@ -1431,20 +1372,20 @@ public:
 
 	void swap(_Myt& _Right) _NOEXCEPT
 		{	// swap elements
-		_Swap_adl(this->_Myptr, _Right._Myptr);
+		_Swap_adl(this->_Myptr(), _Right._Myptr());
 		_Swap_adl(this->get_deleter(),
 			_Right.get_deleter());
 		}
 
 	~unique_ptr() _NOEXCEPT
 		{	// destroy the object
-		if (this->_Myptr != pointer())
-			this->get_deleter()(this->_Myptr);
+		if (get() != pointer())
+			this->get_deleter()(get());
 		}
 
 	typename add_lvalue_reference<_Ty>::type operator*() const
 		{	// return reference to object
-		return (*this->_Myptr);
+		return (*get());
 		}
 
 	pointer operator->() const _NOEXCEPT
@@ -1454,25 +1395,25 @@ public:
 
 	pointer get() const _NOEXCEPT
 		{	// return pointer to object
-		return (this->_Myptr);
+		return (this->_Myptr());
 		}
 
 	explicit operator bool() const _NOEXCEPT
 		{	// test for non-null pointer
-		return (this->_Myptr != pointer());
+		return (get() != pointer());
 		}
 
 	pointer release() _NOEXCEPT
 		{	// yield ownership of pointer
-		pointer _Ans = this->_Myptr;
-		this->_Myptr = pointer();
+		pointer _Ans = get();
+		this->_Myptr() = pointer();
 		return (_Ans);
 		}
 
 	void reset(pointer _Ptr = pointer()) _NOEXCEPT
 		{	// establish new pointer
-		pointer _Old = this->_Myptr;
-		this->_Myptr = _Ptr;
+		pointer _Old = get();
+		this->_Myptr() = _Ptr;
 		if (_Old != pointer())
 			this->get_deleter()(_Old);
 		}
@@ -1485,20 +1426,14 @@ public:
 template<class _Ty,
 	class _Dx>
 	class unique_ptr<_Ty[], _Dx>
-		: private _Unique_ptr_base<_Ty, _Dx,
-			is_empty<_Dx>::value
-				|| is_same<default_delete<_Ty[]>, _Dx>::value>
+		: public _Unique_ptr_base<_Ty, _Dx>
 	{	// non-copyable pointer to an array object
 public:
 	typedef unique_ptr<_Ty[], _Dx> _Myt;
-	typedef _Unique_ptr_base<_Ty, _Dx,
-		is_empty<_Dx>::value
-			|| is_same<default_delete<_Ty[]>, _Dx>::value> _Mybase;
+	typedef _Unique_ptr_base<_Ty, _Dx> _Mybase;
 	typedef typename _Mybase::pointer pointer;
 	typedef _Ty element_type;
 	typedef _Dx deleter_type;
-
-	using _Mybase::get_deleter;
 
 	unique_ptr() _NOEXCEPT
 		: _Mybase(pointer())
@@ -1565,7 +1500,7 @@ public:
 
 	void swap(_Myt& _Right) _NOEXCEPT
 		{	// swap elements
-		_Swap_adl(this->_Myptr, _Right._Myptr);
+		_Swap_adl(this->_Myptr(), _Right._Myptr());
 		_Swap_adl(this->get_deleter(), _Right.get_deleter());
 		}
 
@@ -1574,32 +1509,32 @@ public:
 		_Delete();
 		}
 
-	typename add_lvalue_reference<_Ty>::type operator[](size_t _Idx) const
+	_Ty& operator[](size_t _Idx) const
 		{	// return reference to object
-		return (this->_Myptr[_Idx]);
+		return (get()[_Idx]);
 		}
 
 	pointer get() const _NOEXCEPT
 		{	// return pointer to object
-		return (this->_Myptr);
+		return (this->_Myptr());
 		}
 
 	explicit operator bool() const _NOEXCEPT
 		{	// test for non-null pointer
-		return (this->_Myptr != pointer());
+		return (get() != pointer());
 		}
 
 	pointer release() _NOEXCEPT
 		{	// yield ownership of pointer
-		pointer _Ans = this->_Myptr;
-		this->_Myptr = pointer();
+		pointer _Ans = get();
+		this->_Myptr() = pointer();
 		return (_Ans);
 		}
 
 	void reset(pointer _Ptr = pointer()) _NOEXCEPT
 		{	// establish new pointer
 		_Delete();
-		this->_Myptr = _Ptr;
+		this->_Myptr() = _Ptr;
 		}
 
 	template<class _Ptr2>
@@ -1619,8 +1554,8 @@ public:
 private:
 	void _Delete()
 		{	// delete the pointer
-		if (this->_Myptr != pointer())
-			this->get_deleter()(this->_Myptr);
+		if (get() != pointer())
+			this->get_deleter()(get());
 		}
 	};
 

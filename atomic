@@ -653,6 +653,9 @@ template<class _Ty>
 	struct atomic
 		: _Atomic_base<_Ty, sizeof (_Ty)>
 	{	// template that manages values of _Ty atomically
+	static_assert(is_trivially_copyable<_Ty>::value,
+		"atomic<T> requires T to be trivially copyable.");
+
 	typedef _Atomic_base<_Ty, sizeof (_Ty)> _My_base;
 
 	atomic() _NOEXCEPT = default;
@@ -699,31 +702,19 @@ template<class _Ty>
 #define _ATOMIC_HAS_ARITHMETIC_OPS
 #include <xxatomic>
 
+ #if _HAS_CHAR16_T_LANGUAGE_SUPPORT
 #define _ATOMIC_ITYPE	_Atomic_char16_t
 #define _ITYPE char16_t
 #define _ISIZE 2
 #define _ATOMIC_HAS_ARITHMETIC_OPS
-
- #if _HAS_CHAR16_T_LANGUAGE_SUPPORT
-
- #else /* _HAS_CHAR16_T_LANGUAGE_SUPPORT */
- #define _ATOMIC_HAS_NO_SPECIALIZATION
- #endif /* _HAS_CHAR16_T_LANGUAGE_SUPPORT */
-
 #include <xxatomic>
 
 #define _ATOMIC_ITYPE	_Atomic_char32_t
 #define _ITYPE char32_t
 #define _ISIZE 4
 #define _ATOMIC_HAS_ARITHMETIC_OPS
-
- #if _HAS_CHAR16_T_LANGUAGE_SUPPORT
-
- #else /* _HAS_CHAR16_T_LANGUAGE_SUPPORT */
- #define _ATOMIC_HAS_NO_SPECIALIZATION
- #endif /* _HAS_CHAR16_T_LANGUAGE_SUPPORT */
-
 #include <xxatomic>
+ #endif /* _HAS_CHAR16_T_LANGUAGE_SUPPORT */
 
 #define _ATOMIC_ITYPE	_Atomic_wchar_t
 #define _ITYPE wchar_t
@@ -1052,11 +1043,11 @@ typedef atomic<long> atomic_long;
 typedef atomic<unsigned long> atomic_ulong;
 typedef atomic<long long> atomic_llong;
 typedef atomic<unsigned long long> atomic_ullong;
+ #if _HAS_CHAR16_T_LANGUAGE_SUPPORT
 typedef atomic<char16_t> atomic_char16_t;
 typedef atomic<char32_t> atomic_char32_t;
+ #endif /* _HAS_CHAR16_T_LANGUAGE_SUPPORT */
 typedef atomic<wchar_t> atomic_wchar_t;
-
-typedef atomic<void *> atomic_address;
 
 typedef atomic<int8_t> atomic_int8_t;
 typedef atomic<uint8_t> atomic_uint8_t;

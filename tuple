@@ -127,7 +127,7 @@ template<>
 public:
 	typedef tuple<> _Myt;
 
-	tuple()
+	tuple() _NOEXCEPT
 		{	// default construct
 		}
 
@@ -418,10 +418,6 @@ public:
 	template<class _First,
 		class _Second>
 		_Myt& operator=(pair<_First, _Second>&& _Right)
-		_NOEXCEPT_OP(
-			_NOEXCEPT_OP(_Myfirst._Val = _STD forward<_First>(_Right.first))
-			&& _NOEXCEPT_OP((_Mybase&)*this =
-				tuple<_Second>(_STD forward<_Second>(_Right.second))))
 		{	// assign by moving pair
 		static_assert(_Mysize == 2,
 			"assigning to tuple from object with different size");
@@ -838,8 +834,6 @@ template<class _Ty1,
 		pair<_Ty1, _Ty2>::pair(piecewise_construct_t,
 			tuple<_Types1...> _Val1,
 			tuple<_Types2...> _Val2)
-			_NOEXCEPT_OP((is_nothrow_constructible<_Ty1, _Types1&&...>::value
-				&& is_nothrow_constructible<_Ty2, _Types2&&...>::value))
 		: pair(_Val1, _Val2,
 			make_integer_sequence<size_t, sizeof...(_Types1)>(),
 			make_integer_sequence<size_t, sizeof...(_Types2)>())

@@ -23,8 +23,8 @@
 #define _HAS_CPP0X     1
 #define _HAS_CPP1X     1
 
-#define _NOEXCEPT	throw ()
-#define _NOEXCEPT_OP(x)
+#define _NOEXCEPT	noexcept
+#define _NOEXCEPT_OP(x)	noexcept(x)
 
 /* Note on use of "deprecate":
  * Various places in this header and other headers use __declspec(deprecate) or macros that have the term DEPRECATE in them.
@@ -173,7 +173,7 @@ clients and process-global for mixed clients.
 #ifndef __EDG__ /* TRANSITION */
 #ifdef __cplusplus
 	#ifndef _ALLOW_MSC_VER_MISMATCH
-		#pragma detect_mismatch("_MSC_VER", "1800")
+		#pragma detect_mismatch("_MSC_VER", "1900")
 	#endif /* _ALLOW_MSC_VER_MISMATCH */
 
 	#ifndef _ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH
@@ -524,19 +524,8 @@ typedef _ULONGLONG _ULonglong;
 #define _IOPTR	_ptr
 #define _IOCNT	_cnt
 
-#ifndef _HAS_CHAR16_T_LANGUAGE_SUPPORT
+ #undef _HAS_CHAR16_T_LANGUAGE_SUPPORT
  #define _HAS_CHAR16_T_LANGUAGE_SUPPORT 0
-#endif /* _HAS_CHAR16_T_LANGUAGE_SUPPORT */
-
-		/* uchar PROPERTIES */
- #if _HAS_CHAR16_T_LANGUAGE_SUPPORT
- #else /* _HAS_CHAR16_T_LANGUAGE_SUPPORT */
- #if !defined(_CHAR16T)
-  #define _CHAR16T
-typedef unsigned short char16_t;
-typedef unsigned int char32_t;
- #endif /* !defined(_CHAR16T) */
- #endif /* _HAS_CHAR16_T_LANGUAGE_SUPPORT */
 
 		/* MULTITHREAD PROPERTIES */
 		/* LOCK MACROS */

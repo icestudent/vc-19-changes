@@ -1311,7 +1311,6 @@ template<class _Ty,
 	return (_Ostr << _Str.c_str());
 	}
 
- #if _MSC_FULL_VER >= 190021510 /* TRANSITION */
 	// complex LITERALS
 inline namespace literals {
 inline namespace complex_literals {
@@ -1335,7 +1334,6 @@ inline complex<double> operator""i(unsigned long long _Val)
 	return (complex<double>(0.0, static_cast<double>(_Val)));
 	}
 
- #if 0	/* TRANSITION */
 inline complex<float> operator""if(long double _Val)
 	{	// return imaginary _Val
 	return (complex<float>(0.0f, static_cast<float>(_Val)));
@@ -1345,10 +1343,8 @@ inline complex<float> operator""if(unsigned long long _Val)
 	{	// return imaginary _Val
 	return (complex<float>(0.0f, static_cast<float>(_Val)));
 	}
- #endif /* 0 */
 }	// inline namespace complex_literals
 }	// inline namespace literals
- #endif /* _MSC_FULL_VER >= 190021510 */
 _STD_END
 
  #pragma pop_macro("new")

@@ -366,8 +366,6 @@ public:
 		value_type;
 	typedef typename iterator_traits<_Iterator>::difference_type
 		difference_type;
-	typedef typename iterator_traits<_Iterator>::difference_type
-		distance_type;	// retained
 	typedef typename iterator_traits<_Iterator>::pointer
 		pointer;
 	typedef typename iterator_traits<_Iterator>::reference
@@ -563,8 +561,6 @@ public:
 		value_type;
 	typedef typename iterator_traits<_Iterator>::difference_type
 		difference_type;
-	typedef typename iterator_traits<_Iterator>::difference_type
-		distance_type;	// retained
 	typedef typename iterator_traits<_Iterator>::pointer
 		pointer;
 	typedef typename iterator_traits<_Iterator>::reference
