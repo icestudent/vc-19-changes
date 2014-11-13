@@ -2551,7 +2551,7 @@ namespace Platform
 						int __hr = e->HResult;
 						if (__hr == 0x800706BA /* HRESULT_FROM_WIN32(RPC_S_SERVER_UNAVAILABLE) */ 
 								|| __hr == 0x80010108 /* RPC_E_DISCONNECTED */
-									|| __hr == 0x800A1393L /* SCRIPT_E_CANTEXECUTE */) 
+									|| __hr == 0x89020001 /* JSCRIPT_E_CANTEXECUTE */) 
 						{
 							Details::EventSourceRemove(&__targets, __lockArg, __token);
 						}
@@ -2610,7 +2610,7 @@ namespace Platform
 						int __hr = e->HResult;
 						if (__hr == 0x800706BA /* HRESULT_FROM_WIN32(RPC_S_SERVER_UNAVAILABLE) */ 
 								|| __hr == 0x80010108 /* RPC_E_DISCONNECTED */
-									|| __hr == 0x800A1393L /* SCRIPT_E_CANTEXECUTE */)
+									|| __hr == 0x89020001 /* JSCRIPT_E_CANTEXECUTE */)
 						{
 							Details::EventSourceRemove(&__targets, __lockArg, __token);
 						}

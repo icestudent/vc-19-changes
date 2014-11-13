@@ -30,6 +30,7 @@
 #include <utility>
 #include <exception>
 #include <algorithm>
+#include <mutex>
 
 #if defined (__cplusplus_winrt)
 #include <agile.h>
@@ -150,7 +151,7 @@ template <> class task<void>;
 #endif
 
 /// <summary>
-/// Helper macro to determine how many stack frames need to be saved. When any number less or equal to 1 is specified, 
+/// Helper macro to determine how many stack frames need to be saved. When any number less or equal to 1 is specified,
 /// only one frame is captured and no stackwalk will be involved. Otherwise, the number of callstack frames will be captured.
 /// </summary>
 /// <ramarks>
@@ -219,7 +220,7 @@ namespace details
             if (_CaptureFrames > 1)
             {
             _csc._M_frames.resize(_CaptureFrames);
-            // skip 2 frames to make sure callstack starts from user code 
+            // skip 2 frames to make sure callstack starts from user code
             _csc._M_frames.resize(::Concurrency::details::platform::CaptureCallstack(&_csc._M_frames[0], 2, _CaptureFrames));
             }
             return _csc;
@@ -574,7 +575,7 @@ namespace details
             }
         }
 
-        
+
 
         _ContextCallback(const _ContextCallback& _Src)
         {
@@ -1019,7 +1020,7 @@ public:
     ///     The synchronous execution context.
     /// </returns>
     /// <remarks>
-    ///     This method will force the continuation task synchronously running on the context causing its antecedent task's completion; 
+    ///     This method will force the continuation task synchronously running on the context causing its antecedent task's completion;
     ///     if the antecedent task has completed when the continuation is attached, the continuation will synchronously run on the context
     ///     that attachs the continuation.
     /// </remarks>
@@ -1165,7 +1166,7 @@ public:
           _M_CancellationToken(_TaskOptions.get_cancellation_token()),
           _M_ContinuationContext(_TaskOptions.get_continuation_context()),
           _M_HasCancellationToken(_TaskOptions.has_cancellation_token()),
-          _M_HasScheduler(_TaskOptions.has_scheduler())        
+          _M_HasScheduler(_TaskOptions.has_scheduler())
     {
     }
 
@@ -1273,10 +1274,10 @@ namespace details
 
         // This field gives inlining scheduling policy for current chore.
         _TaskInliningMode_t _M_inliningMode;
-        
+
         virtual _Task_ptr_base _GetTaskImplBase() const = 0;
 
-        _ContinuationTaskHandleBase() : 
+        _ContinuationTaskHandleBase() :
             _M_next(nullptr), _M_continuationContext(task_continuation_context::use_default()), _M_isTaskBasedContinuation(false), _M_inliningMode(details::_NoInline)
         {
         }
@@ -1286,7 +1287,7 @@ namespace details
 
 #if _PPLTASK_ASYNC_LOGGING
 
-    // Stateful logger rests inside task_impl_base. 
+    // Stateful logger rests inside task_impl_base.
     struct _TaskEventLogger
     {
         _Task_impl_base *_M_task;
@@ -1313,7 +1314,7 @@ namespace details
 
         // Log right after user lambda being invoked
         _CRTIMP2 void __thiscall _LogWorkItemCompleted();
-        
+
         _TaskEventLogger(_Task_impl_base *_task): _M_task(_task)
         {
             _M_scheduled = false;
@@ -1378,7 +1379,7 @@ namespace details
         {
         }
 
-        virtual ~_PPLTaskHandle() 
+        virtual ~_PPLTaskHandle()
         {
             // Here is the sink of all task completion code paths
             _M_pTask->_M_taskEventLogger._LogTaskCompleted();
@@ -1445,11 +1446,11 @@ namespace details
             _Canceled
         };
 
-        _Task_impl_base(_CancellationTokenState * _PTokenState, scheduler_ptr _Scheduler_arg) 
+        _Task_impl_base(_CancellationTokenState * _PTokenState, scheduler_ptr _Scheduler_arg)
                           : _M_TaskState(_Created),
                             _M_fFromAsync(false), _M_fUnwrappedTask(false),
                             _M_pRegistration(nullptr), _M_Continuations(nullptr), _M_TaskCollection(_Scheduler_arg),
-                            _M_taskEventLogger(this)                           
+                            _M_taskEventLogger(this)
         {
             // Set cancelation token
             _M_pTokenState = _PTokenState;
@@ -1764,7 +1765,7 @@ namespace details
         // Schedule a continuation to run
         void _ScheduleContinuationTask(_ContinuationTaskHandleBase * _PTaskHandle)
         {
-            
+
             _M_taskEventLogger._LogScheduleTask(true);
             // Ensure that the continuation runs in proper context (this might be on a Concurrency Runtime thread or in a different Windows Runtime apartment)
             if (_PTaskHandle->_M_continuationContext._HasCapturedContext())
@@ -1834,7 +1835,7 @@ namespace details
             // If the task has canceled, cancel the continuation. If the task has completed, execute the continuation right away.
             // Otherwise, add it to the list of pending continuations
             {
-                ::Concurrency::extensibility::scoped_critical_section_t _LockHolder(_M_ContinuationsCritSec);
+                ::std::lock_guard<std::mutex> _LockHolder(_M_ContinuationsCritSec);
                 if (_IsCompleted() || (_IsCanceled() && _PTaskHandle->_M_isTaskBasedContinuation))
                 {
                     _Do = _Schedule;
@@ -1968,7 +1969,7 @@ namespace details
         static void _AsyncInit(const typename _Task_ptr<_ReturnType>::_Type& _OuterTask, const task<_InternalReturnType> & _UnwrappedTask)
         {
             _ASSERTE(_OuterTask->_M_fUnwrappedTask && !_OuterTask->_IsCanceled());
-                       
+
             //
             // We must ensure that continuations off _OuterTask (especially exception handling ones) continue to function in the
             // presence of an exception flowing out of the inner task _UnwrappedTask. This requires an exception handling continuation
@@ -2020,7 +2021,7 @@ namespace details
 
         typedef _ContinuationTaskHandleBase * _ContinuationList;
 
-        ::Concurrency::extensibility::critical_section_t _M_ContinuationsCritSec;
+        std::mutex _M_ContinuationsCritSec;
         _ContinuationList _M_Continuations;
 
         // The cancellation token state.
@@ -2068,9 +2069,9 @@ namespace details
 
         virtual bool _CancelAndRunContinuations(bool _SynchronousCancel, bool _UserException, bool _PropagatedFromAncestor, const std::shared_ptr<_ExceptionHolder> & _ExceptionHolder_arg)
         {
-            enum { _Nothing, _RunContinuations, _Cancel } _Do = _Nothing; 
+            enum { _Nothing, _RunContinuations, _Cancel } _Do = _Nothing;
             {
-                ::Concurrency::extensibility::scoped_critical_section_t _LockHolder(_M_ContinuationsCritSec);
+                ::std::lock_guard<std::mutex> _LockHolder(_M_ContinuationsCritSec);
                 if (_UserException)
                 {
                     _ASSERTE(_SynchronousCancel && !_IsCompleted());
@@ -2106,7 +2107,7 @@ namespace details
                 if (_SynchronousCancel)
                 {
                     // Be aware that this set must be done BEFORE _M_Scheduled being set, or race will happen between this and wait()
-                    _M_TaskState = _Canceled;                    
+                    _M_TaskState = _Canceled;
                     // Cancellation completes the task, so all dependent tasks must be run to cancel them
                     // They are canceled when they begin running (see _RunContinuation) and see that their
                     // ancestor has been canceled.
@@ -2128,10 +2129,10 @@ namespace details
                     _M_TaskState = _PendingCancel;
 
                     _M_taskEventLogger._LogCancelTask();
-                }                
+                }
             }
 
-            switch (_Do) 
+            switch (_Do)
             {
                 case _Cancel:
                 {
@@ -2169,7 +2170,7 @@ namespace details
                 // Hold this lock to ensure continuations being concurrently either get added
                 // to the _M_Continuations vector or wait for the result
                 //
-                ::Concurrency::extensibility::scoped_critical_section_t _LockHolder(_M_ContinuationsCritSec);
+                ::std::lock_guard<std::mutex> _LockHolder(_M_ContinuationsCritSec);
 
                 // A task could still be in the _Created state if it was created with a task_completion_event.
                 // It could also be in the _Canceled state for the same reason.
@@ -2191,7 +2192,7 @@ namespace details
         //
         bool _TransitionedToStarted()
         {
-            ::Concurrency::extensibility::scoped_critical_section_t _LockHolder(_M_ContinuationsCritSec);
+            ::std::lock_guard<std::mutex> _LockHolder(_M_ContinuationsCritSec);
             // Canceled state could only result from antecedent task's canceled state, but that code path will not reach here.
             _ASSERT(!_IsCanceled());
             if (_IsPendingCancel())
@@ -2205,7 +2206,7 @@ namespace details
 #if defined (__cplusplus_winrt)
         void _SetUnwrappedAsyncOp(Windows::Foundation::IAsyncOperation<typename details::_ValueTypeOrRefType<_ReturnType>::_Value>^ _AsyncOp)
         {
-            ::Concurrency::extensibility::scoped_critical_section_t _LockHolder(_M_ContinuationsCritSec);
+            ::std::lock_guard<std::mutex> _LockHolder(_M_ContinuationsCritSec);
             // Cancel the async operation if the task itself is canceled, since the thread that canceled the task missed it.
             if (_IsPendingCancel())
             {
@@ -2224,7 +2225,7 @@ namespace details
 
         // Return true if the task has reached a terminal state
         bool _IsDone()
-        {     
+        {
             return _IsCompleted() || _IsCanceled();
         }
 
@@ -2270,8 +2271,8 @@ namespace details
 
         // We need to protect the loop over the array, so concurrent_vector would not have helped
         _TaskList                           _M_tasks;
-        ::Concurrency::extensibility::critical_section_t             _M_taskListCritSec;
-        _ResultHolder<_ResultType>         _M_value;
+        std::mutex                          _M_taskListCritSec;
+        _ResultHolder<_ResultType>          _M_value;
         std::shared_ptr<_ExceptionHolder>   _M_exceptionHolder;
         bool                                _M_fHasValue;
         bool                                _M_fIsCanceled;
@@ -2326,8 +2327,8 @@ public:
     ///     Constructs a <c>task_completion_event</c> object.
     /// </summary>
     /**/
-    task_completion_event() 
-        : _M_Impl(std::make_shared<details::_Task_completion_event_impl<_ResultType>>()) 
+    task_completion_event()
+        : _M_Impl(std::make_shared<details::_Task_completion_event_impl<_ResultType>>())
     {
     }
 
@@ -2358,7 +2359,7 @@ public:
         _TaskList _Tasks;
         bool _RunContinuations = false;
         {
-            ::Concurrency::extensibility::scoped_critical_section_t _LockHolder(_M_Impl->_M_taskListCritSec);
+            ::std::lock_guard<std::mutex> _LockHolder(_M_Impl->_M_taskListCritSec);
 
             if (!_IsTriggered())
             {
@@ -2452,7 +2453,7 @@ public:
     template<typename _ExHolderType>
     bool _StoreException(_ExHolderType _ExHolder, const details::_TaskCreationCallstack &_SetExceptionAddressHint = details::_TaskCreationCallstack ()) const
     {
-        ::Concurrency::extensibility::scoped_critical_section_t _LockHolder(_M_Impl->_M_taskListCritSec);
+        ::std::lock_guard<std::mutex> _LockHolder(_M_Impl->_M_taskListCritSec);
         if (!_IsTriggered() && !_M_Impl->_HasUserException())
         {
             // Create the exception holder only if we have ensured there we will be successful in setting it onto the
@@ -2463,12 +2464,12 @@ public:
         return false;
     }
     /// <summary>
-    ///     Internal method that observe and clear the exception stored in the task completion event. 
+    ///     Internal method that observe and clear the exception stored in the task completion event.
     ///     This is used internally by when_any.
-    /// </summary>    
+    /// </summary>
     void _ClearStoredException() const
     {
-        ::Concurrency::extensibility::scoped_critical_section_t _LockHolder(_M_Impl->_M_taskListCritSec);
+        ::std::lock_guard<std::mutex> _LockHolder(_M_Impl->_M_taskListCritSec);
         if (_M_Impl->_M_exceptionHolder)
         {
             details::atomic_exchange(_M_Impl->_M_exceptionHolder->_M_exceptionObserved, 1l);
@@ -2518,7 +2519,7 @@ private:
         _TaskList _Tasks;
         bool _Cancel = false;
         {
-            ::Concurrency::extensibility::scoped_critical_section_t _LockHolder(_M_Impl->_M_taskListCritSec);
+            ::std::lock_guard<std::mutex> _LockHolder(_M_Impl->_M_taskListCritSec);
             _ASSERTE(!_M_Impl->_M_fHasValue);
             if (!_M_Impl->_M_fIsCanceled)
             {
@@ -2554,7 +2555,7 @@ private:
     /// </summary>
     void _RegisterTask(const typename details::_Task_ptr<_ResultType>::_Type & _TaskParam)
     {
-        ::Concurrency::extensibility::scoped_critical_section_t _LockHolder(_M_Impl->_M_taskListCritSec);
+        ::std::lock_guard<std::mutex> _LockHolder(_M_Impl->_M_taskListCritSec);
 
         //If an exception was already set on this event, then cancel the task with the stored exception.
         if(_M_Impl->_HasUserException())
@@ -2660,9 +2661,9 @@ public:
     }
 
     /// <summary>
-    ///     Internal method that observe and clear the exception stored in the task completion event. 
+    ///     Internal method that observe and clear the exception stored in the task completion event.
     ///     This is used internally by when_any.
-    /// </summary>    
+    /// </summary>
     void _ClearStoredException() const
     {
         _M_unitEvent._ClearStoredException();
@@ -2919,7 +2920,7 @@ public:
     explicit task(_Ty _Param)
     {
         task_options _TaskOptions;
-		details::_ValidateTaskConstructorArgs<_ReturnType,_Ty>(_Param);
+        details::_ValidateTaskConstructorArgs<_ReturnType,_Ty>(_Param);
 
         _CreateImpl(_TaskOptions.get_cancellation_token()._GetImplValue(), _TaskOptions.get_scheduler());
         // Do not move the next line out of this function. It is important that _CAPTURE_CALLSTACK() evaluate to the the call site of the task constructor.
@@ -2971,7 +2972,7 @@ public:
         _CreateImpl(_TaskOptions.get_cancellation_token()._GetImplValue(), _TaskOptions.get_scheduler());
         // Do not move the next line out of this function. It is important that _CAPTURE_CALLSTACK() evaluate to the the call site of the task constructor.
         _SetTaskCreationCallstack(details::_get_internal_task_options(_TaskOptions)._M_hasPresetCreationCallstack ? details::_get_internal_task_options(_TaskOptions)._M_presetCreationCallstack : _CAPTURE_CALLSTACK());
-        
+
         _TaskInitMaybeFunctor(_Param, decltype(details::_IsCallable(_Param,0))());
     }
 
@@ -3207,7 +3208,7 @@ public:
 
         if (_M_Impl->_Wait() == canceled)
         {
-            throw task_canceled();  
+            throw task_canceled();
         }
 
         return _M_Impl->_GetResult();
@@ -3349,7 +3350,7 @@ public:
     ///     This function is Used for runtime internal continuations only.
     /// </summary>
     template<typename _Function>
-    auto _Then(const _Function& _Func, details::_CancellationTokenState *_PTokenState, 
+    auto _Then(const _Function& _Func, details::_CancellationTokenState *_PTokenState,
         details::_TaskInliningMode_t _InliningMode = details::_ForceInline) const -> typename details::_ContinuationTypeTraits<_Function, _ReturnType>::_TaskOfType
     {
         // inherit from antecedent
@@ -3361,23 +3362,23 @@ public:
 private:
     template <typename T> friend class task;
 
-     
+
     // The task handle type used to construct an 'initial task' - a task with no dependents.
     template <typename _InternalReturnType, typename _Function, typename _TypeSelection>
-    struct _InitialTaskHandle : 
+    struct _InitialTaskHandle :
         details::_PPLTaskHandle<_ReturnType, _InitialTaskHandle<_InternalReturnType, _Function, _TypeSelection>, details::_UnrealizedChore_t>
     {
         _Function _M_function;
-        _InitialTaskHandle(const typename details::_Task_ptr<_ReturnType>::_Type & _TaskImpl, _Function& _func)
+        _InitialTaskHandle(const typename details::_Task_ptr<_ReturnType>::_Type & _TaskImpl, const _Function & _func)
             : details::_PPLTaskHandle<_ReturnType, _InitialTaskHandle<_InternalReturnType, _Function, _TypeSelection>, details::_UnrealizedChore_t>::_PPLTaskHandle(_TaskImpl)
-			, _M_function(_func)
+            , _M_function(_func)
         {
         }
 
         virtual ~_InitialTaskHandle() {}
 
         template <typename _Func>
-        auto _LogWorkItemAndInvokeUserLambda(_Func && _func) const -> decltype(_func())
+        auto _LogWorkItemAndInvokeUserLambda(_Func _func) const -> decltype(_func())
         {
             details::_TaskWorkItemRAIILogger _LogWorkItem(this->_M_pTask->_M_taskEventLogger);
             return _func();
@@ -3449,7 +3450,7 @@ private:
         {
             typedef details::_GetProgressType<decltype(_M_function())>::_Value _ProgressType;
 
-            details::_Task_impl_base::_AsyncInit<_ReturnType, _InternalReturnType>(this->_M_pTask, 
+            details::_Task_impl_base::_AsyncInit<_ReturnType, _InternalReturnType>(this->_M_pTask,
                 ref new details::_IAsyncActionWithProgressToAsyncOperationConverter<_ProgressType>(_LogWorkItemAndInvokeUserLambda(_M_function)));
         }
 #endif  /* defined (__cplusplus_winrt) */
@@ -3538,7 +3539,7 @@ private:
             typedef typename details::_FunctionTypeTraits<_Function, _InternalReturnType>::_FuncRetType _FuncOutputType;
 
             details::_Task_impl_base::_AsyncInit<_NormalizedContinuationReturnType, _ContinuationReturnType>(
-                this->_M_pTask, 
+                this->_M_pTask,
                 _LogWorkItemAndInvokeUserLambda(_Continuation_func_transformer<_InternalReturnType, _FuncOutputType>::_Perform(_M_function), _M_ancestorTaskImpl->_GetResult())
             );
         }
@@ -3623,7 +3624,7 @@ private:
             // The continuation takes a parameter of type task<_Input>, which is the same as the ancestor task.
             task<_InternalReturnType> _ResultTask;
             _ResultTask._SetImpl(std::move(_M_ancestorTaskImpl));
-            details::_Task_impl_base::_AsyncInit<_NormalizedContinuationReturnType, _ContinuationReturnType>(this->_M_pTask, 
+            details::_Task_impl_base::_AsyncInit<_NormalizedContinuationReturnType, _ContinuationReturnType>(this->_M_pTask,
                 _LogWorkItemAndInvokeUserLambda(_M_function, std::move(_ResultTask)));
         }
 
@@ -3690,9 +3691,9 @@ private:
     ///     Initializes a task using a lambda, function pointer or function object.
     /// </summary>
     template<typename _InternalReturnType, typename _Function>
-    void _TaskInitWithFunctor(_Function& _Func)
+    void _TaskInitWithFunctor(const _Function& _Func)
     {
-        typedef typename details::_InitFunctorTypeTraits<_InternalReturnType, decltype(_Func())> _Async_type_traits;
+        typedef typename details::_InitFunctorTypeTraits<_InternalReturnType, std::result_of_t<_Function()>> _Async_type_traits;
 
         _M_Impl->_M_fFromAsync = _Async_type_traits::_IsAsyncTask;
         _M_Impl->_M_fUnwrappedTask = _Async_type_traits::_IsUnwrappedTaskOrAsync;
@@ -4218,7 +4219,7 @@ public:
     ///     An internal version of then that takes additional flags and executes the continuation inline. Used for runtime internal continuations only.
     /// </summary>
     template<typename _Function>
-    auto _Then(const _Function& _Func, details::_CancellationTokenState *_PTokenState, 
+    auto _Then(const _Function& _Func, details::_CancellationTokenState *_PTokenState,
         details::_TaskInliningMode_t _InliningMode = details::_ForceInline) const -> typename details::_ContinuationTypeTraits<_Function, void>::_TaskOfType
     {
         // inherit from antecedent
@@ -5271,6 +5272,20 @@ namespace details
         typedef typename _TaskTypeTraits<_ReturnType> _TaskTraits;
         typedef typename _AsyncAttributes<_Function, _ProgressType, typename _TaskTraits::_TaskRetType, _TaskTraits, _TakesToken, _TakesProgress> _AsyncAttributes;
     };
+    
+    inline void ValidateIfCOMDisconnectedOrRethrow(int __hr)
+    {
+        if ((__hr == 0x800706BA) || /* HRESULT_FROM_WIN32(RPC_S_SERVER_UNAVAILABLE) */ 
+            (__hr == 0x80010108) || /* RPC_E_DISCONNECTED */
+            (__hr == 0x89020001)    /* JSCRIPT_E_CANTEXECUTE */)
+        {
+            // Swallow the above set of "COM disconnect" HRESULTs since there are valid scenarios where these can get returned
+        }
+        else
+        {
+            throw;
+        }
+    }
 
     // ***************************************************************************
     // AsyncInfo (and completion) Layer:
@@ -5284,8 +5299,8 @@ namespace details
     {
     internal:
 
-        _AsyncInfoBase() : 
-            _M_currentStatus(_AsyncStatusInternal::_AsyncCreated), 
+        _AsyncInfoBase() :
+            _M_currentStatus(_AsyncStatusInternal::_AsyncCreated),
             _M_errorCode(S_OK),
             _M_completeDelegate(nullptr),
             _M_CompleteDelegateAssigned(0),
@@ -5458,8 +5473,17 @@ namespace details
             if (_M_completeDelegate != nullptr && InterlockedIncrement(&_M_CallbackMade) == 1)
             {
                 _M_completeDelegateContext._CallInContext([=] {
-                    _M_completeDelegate((_Attributes::_AsyncBaseType^)this, this->Status);
-                    _M_completeDelegate = nullptr;
+                    try
+                    {
+                        _M_completeDelegate((_Attributes::_AsyncBaseType^)this, this->Status);
+                        _M_completeDelegate = nullptr;
+                    }
+                    catch(::Platform::Exception^ _ex)
+                    {
+                        // Null out the delegate since something went wrong when calling it
+                        _M_completeDelegate = nullptr;
+                        ValidateIfCOMDisconnectedOrRethrow( _ex->HResult);                      
+                    }
                 });
             }
         }
@@ -5692,7 +5716,16 @@ namespace details
             if (_M_progressDelegate != nullptr)
             {
                 _M_progressDelegateContext._CallInContext([=] {
-                    _M_progressDelegate((_Attributes::_AsyncBaseType^)this, _ProgressValue);
+                    try 
+                    {
+                        _M_progressDelegate((_Attributes::_AsyncBaseType^)this, _ProgressValue);
+                    } 
+                    catch(::Platform::Exception^ _ex) 
+                    {
+                        // Null out the delegate since something went wrong when calling it
+                        _M_progressDelegate = nullptr;
+                        ValidateIfCOMDisconnectedOrRethrow(_ex->HResult);
+                    }
                 });
             }
         }
@@ -5929,7 +5962,7 @@ namespace details
         void _Resize(size_t _Len, bool _SkipVector = false)
         {
             _M_numTasks = _Len;
-            
+
             if (!_SkipVector)
             {
                 _M_vector.resize(_Len);
@@ -6071,7 +6104,7 @@ namespace details
                         };
 
                         _WhenAllContinuationWrapper(_PParam, _Func, _ResultTask);
-                    }, _CancellationTokenState::_None()); 
+                    }, _CancellationTokenState::_None());
 
                     _Index++;
                 }
@@ -6237,7 +6270,7 @@ namespace details
             auto _mergeVal = _PParam->_M_mergeVal.Get();
 
             if (_OutputVectorFirst == true)
-            {                
+            {
                 _Result.push_back(_mergeVal);
             }
             else
@@ -6309,7 +6342,7 @@ namespace details
 /// <seealso cref="Task Parallelism (Concurrency Runtime)"/>
 /**/
 template <typename _Iterator>
-auto when_all(_Iterator _Begin, _Iterator _End, const task_options& _TaskOptions = task_options()) 
+auto when_all(_Iterator _Begin, _Iterator _End, const task_options& _TaskOptions = task_options())
     -> decltype (details::_WhenAllImpl<typename std::iterator_traits<_Iterator>::value_type::result_type, _Iterator>::_Perform(_TaskOptions, _Begin, _End))
 {
     typedef typename std::iterator_traits<_Iterator>::value_type::result_type _ElementType;
@@ -6530,7 +6563,7 @@ namespace details
                     atomic_exchange(_Task._GetImpl()->_GetExceptionHolder()->_M_exceptionObserved, 1l);
                 }
             }
-            
+
             if (atomic_increment(_PParam->_M_completeCount) == _PParam->_M_numTasks)
             {
                 // If no one has be completed so far, we need to make some final cancellation decision.
@@ -6571,16 +6604,16 @@ namespace details
             }
             _CancellationTokenState *_PTokenState = _TaskOptions.has_cancellation_token() ? _TaskOptions.get_cancellation_token()._GetImplValue() : nullptr;
             auto _PParam = new _RunAnyParam<std::pair<std::pair<_ElementType, size_t>, _CancellationTokenState *>>();
-            
+
             if (_PTokenState)
             {
                 _JoinAllTokens_Add(_PParam->_M_cancellationSource, _PTokenState);
                 _PParam->_M_fHasExplicitToken = true;
             }
-            
+
             task_options _Options(_TaskOptions);
             _Options.set_cancellation_token(_PParam->_M_cancellationSource.get_token());
-            task<std::pair<std::pair<_ElementType, size_t>, _CancellationTokenState *>> _Any_tasks_completed(_PParam->_M_Completed, _Options); 
+            task<std::pair<std::pair<_ElementType, size_t>, _CancellationTokenState *>> _Any_tasks_completed(_PParam->_M_Completed, _Options);
 
             // Keep a copy ref to the token source
             auto _CancellationSource = _PParam->_M_cancellationSource;
@@ -6631,7 +6664,7 @@ namespace details
 
             _CancellationTokenState *_PTokenState = _TaskOptions.has_cancellation_token() ? _TaskOptions.get_cancellation_token()._GetImplValue() : nullptr;
             auto _PParam = new _RunAnyParam<std::pair<size_t, _CancellationTokenState *>>();
-            
+
             if (_PTokenState)
             {
                 _JoinAllTokens_Add(_PParam->_M_cancellationSource, _PTokenState);
@@ -6857,8 +6890,8 @@ task<std::vector<_ReturnType>> operator||(const task<std::vector<_ReturnType>> &
         _WhenAnyContinuationWrapper(_PParam, _Func, _ResultTask);
     }, details::_CancellationTokenState::_None());
 
-    
-    _Rhs._Then([_PParam](task<_ReturnType> _ResultTask) 
+
+    _Rhs._Then([_PParam](task<_ReturnType> _ResultTask)
     {
         //  Dev10 compiler bug
         typedef _ReturnType _ReturnTypeDev10;
@@ -6941,7 +6974,7 @@ inline task<void> operator||(const task<void> & _Lhs, const task<void> & _Rhs)
     task<std::pair<details::_Unit_type, details::_CancellationTokenState *>> _Any_task_completed(_PParam->_M_Completed, _PParam->_M_cancellationSource.get_token());
     // Chain the return continuation task here to ensure it will get inline execution when _M_Completed.set is called,
     // So that _PParam can be used before it getting deleted.
-    auto _ReturnTask = _Any_task_completed._Then([=](std::pair<details::_Unit_type, details::_CancellationTokenState *> _Ret) { 
+    auto _ReturnTask = _Any_task_completed._Then([=](std::pair<details::_Unit_type, details::_CancellationTokenState *> _Ret) {
         _ASSERTE(_Ret.second);
         details::_JoinAllTokens_Add(_PParam->_M_cancellationSource, _Ret.second);
     }, nullptr);
@@ -7005,7 +7038,7 @@ namespace details
     /// A convenient extension to Concurrency: loop until a condition is no longer met
     /// </summary>
     /// <param name="func">
-    ///   A function representing the body of the loop. It will be invoked at least once and 
+    ///   A function representing the body of the loop. It will be invoked at least once and
     ///   then repetitively as long as it returns true.
     /// </param>
     inline

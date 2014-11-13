@@ -46,12 +46,12 @@ typedef unsigned int (_STDCALL *_Thrd_callback_t)(void *);
  /* Size and alignment for _Mtx_internal_imp_t and _Cnd_internal_imp_t */
  #ifdef _CRT_WINDOWS
   #ifdef _WIN64
-  #define _Mtx_internal_imp_size		64
+  #define _Mtx_internal_imp_size		32
   #define _Mtx_internal_imp_alignment	8
   #define _Cnd_internal_imp_size		16
   #define _Cnd_internal_imp_alignment	8
   #else /* _WIN64 */
-  #define _Mtx_internal_imp_size		40
+  #define _Mtx_internal_imp_size		20
   #define _Mtx_internal_imp_alignment	4
   #define _Cnd_internal_imp_size		8
   #define _Cnd_internal_imp_alignment	4

@@ -1,12 +1,12 @@
 /***
 * ==++==
 *
-* Copyright (c) Microsoft Corporation. All rights reserved. 
+* Copyright (c) Microsoft Corporation. All rights reserved.
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
 * You may obtain a copy of the License at
 * http://www.apache.org/licenses/LICENSE-2.0
-* 
+*
 * Unless required by applicable law or agreed to in writing, software
 * distributed under the License is distributed on an "AS IS" BASIS,
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,6 +33,8 @@
 #define _PPLCANCELLATION_TOKEN_H
 
 #include <pplinterface.h>
+#include <mutex>
+#include <condition_variable>
 
 #pragma pack(push,_CRT_PACKING)
 // All header files are required to be protected from the macro new
@@ -159,7 +161,7 @@ namespace details
         }
 
         atomic_long _M_state;
-        extensibility::condition_variable_t *_M_pSyncBlock;
+        std::condition_variable *_M_pSyncBlock;
         _CancellationTokenState *_M_pTokenState;
     };
 
@@ -232,7 +234,7 @@ namespace details
             ~TokenRegistrationContainer()
             {
                 auto node = _M_begin;
-                while (node != nullptr) 
+                while (node != nullptr)
                 {
                     Node* tmp = node;
                     node = node->_M_next;
@@ -256,7 +258,7 @@ namespace details
             {
                 Node* node = _M_begin;
 
-                while (node != nullptr) 
+                while (node != nullptr)
                 {
                     lambda(node->_M_token);
                     node = node->_M_next;
@@ -266,7 +268,7 @@ namespace details
             void push_back(_CancellationTokenRegistration* token)
             {
                 auto node = new Node(token);
-                if (_M_begin == nullptr) 
+                if (_M_begin == nullptr)
                 {
                     _M_begin = node;
                 }
@@ -283,7 +285,7 @@ namespace details
                 Node* node = _M_begin;
                 Node* prev = nullptr;
 
-                while (node != nullptr) 
+                while (node != nullptr)
                 {
                     if (node->_M_token == token) {
                         if (prev == nullptr)
@@ -303,7 +305,7 @@ namespace details
                         delete node;
                         break;
                     }
-                    
+
                     prev = node;
                     node = node->_M_next;
                 }
@@ -314,12 +316,12 @@ namespace details
             Node *_M_last;
         };
 
-    public:   
+    public:
         static _CancellationTokenState * _NewTokenState()
         {
             return new _CancellationTokenState();
         }
- 
+
         static _CancellationTokenState *_None()
         {
             return reinterpret_cast<_CancellationTokenState *>(2);
@@ -329,7 +331,7 @@ namespace details
         {
             return (_PToken != NULL && _PToken != _None());
         }
-        
+
         _CancellationTokenState() :
             _M_stateFlag(0)
         {
@@ -339,7 +341,7 @@ namespace details
         {
             TokenRegistrationContainer rundownList;
             {
-                extensibility::scoped_critical_section_t _Lock(_M_listLock);
+                std::lock_guard<std::mutex> _Lock(_M_listLock);
                 _M_registrations.swap(rundownList);
             }
 
@@ -361,7 +363,7 @@ namespace details
             {
                 TokenRegistrationContainer rundownList;
                 {
-                    extensibility::scoped_critical_section_t _Lock(_M_listLock);
+                    std::lock_guard<std::mutex> _Lock(_M_listLock);
                     _M_registrations.swap(rundownList);
                 }
 
@@ -391,7 +393,7 @@ namespace details
 
             if (!_IsCanceled())
             {
-                extensibility::scoped_critical_section_t _Lock(_M_listLock);
+                std::lock_guard<std::mutex> _Lock(_M_listLock);
 
                 if (!_IsCanceled())
                 {
@@ -411,7 +413,7 @@ namespace details
             bool synchronize = false;
 
             {
-                extensibility::scoped_critical_section_t _Lock(_M_listLock);
+                std::lock_guard<std::mutex> _Lock(_M_listLock);
 
                 //
                 // If a cancellation has occurred, the registration list is guaranteed to be empty if we've observed it under the auspices of the
@@ -430,7 +432,7 @@ namespace details
                 }
             }
 
-            // 
+            //
             // If the list is empty, we are in one of several situations:
             //
             // - The callback has already been made         --> do nothing
@@ -441,8 +443,8 @@ namespace details
             if (synchronize)
             {
                 long result = atomic_compare_exchange(
-                    _PRegistration->_M_state, 
-                    _CancellationTokenRegistration::_STATE_DEFER_DELETE, 
+                    _PRegistration->_M_state,
+                    _CancellationTokenRegistration::_STATE_DEFER_DELETE,
                     _CancellationTokenRegistration::_STATE_CLEAR
                     );
 
@@ -467,8 +469,8 @@ namespace details
                             break;
                         }
 
-                        extensibility::condition_variable_t cv;
-                        extensibility::critical_section_t cs;
+                        std::condition_variable cv;
+
 
                         _PRegistration->_M_pSyncBlock = &cv;
 
@@ -476,7 +478,9 @@ namespace details
 
                         if (result_1 != _CancellationTokenRegistration::_STATE_CALLED)
                         {
-                            extensibility::scoped_critical_section_t _lock;
+                            // use condition_variable as an event
+                            std::mutex cs;
+                            std::unique_lock<std::mutex> _lock(cs);
                             _PRegistration->_M_pSyncBlock->wait(_lock);
                         }
 
@@ -492,7 +496,7 @@ namespace details
         atomic_long _M_stateFlag;
 
         // Lock to protect the registrations list
-        extensibility::critical_section_t _M_listLock;
+        std::mutex _M_listLock;
 
         // The protected list of registrations
         TokenRegistrationContainer _M_registrations;
@@ -508,7 +512,7 @@ class cancellation_token;
 ///     The <c>cancellation_token_registration</c> class represents a callback notification from a <c>cancellation_token</c>.  When the <c>register</c>
 ///     method on a <c>cancellation_token</c> is used to receive notification of when cancellation occurs, a <c>cancellation_token_registration</c>
 ///     object is returned as a handle to the callback so that the caller can request a specific callback no longer be made through use of
-///     the <c>deregister</c> method. 
+///     the <c>deregister</c> method.
 /// </summary>
 class cancellation_token_registration
 {
@@ -567,7 +571,7 @@ public:
 private:
 
     friend class cancellation_token;
-    
+
     cancellation_token_registration(_In_ details::_CancellationTokenRegistration *_PRegistration) :
         _M_pRegistration(_PRegistration)
     {
@@ -692,7 +696,7 @@ public:
 
     /// <summary>
     ///     Registers a callback function with the token.  If and when the token is canceled, the callback will be made.  Note that if the token
-    ///     is already canceled at the point where this method is called, the callback will be made immediately and synchronously.  
+    ///     is already canceled at the point where this method is called, the callback will be made immediately and synchronously.
     /// </summary>
     /// <typeparam name="_Function">
     ///     The type of the function object that will be called back when this <c>cancellation_token</c> is canceled.
@@ -811,7 +815,7 @@ public:
     ///     Constructs a new <c>cancellation_token_source</c>.  The source can be used to flag cancellation of some cancelable operation.
     /// </summary>
     cancellation_token_source()
-    { 
+    {
         _M_Impl = new ::Concurrency::details::_CancellationTokenState;
     }
 
@@ -885,7 +889,7 @@ public:
     /// <returns>
     ///     A <c>cancellation_token_source</c> which is canceled when the token provided by the <paramref name="_Src"/> parameter is canceled.
     /// </returns>
-    static cancellation_token_source create_linked_source(cancellation_token& _Src) 
+    static cancellation_token_source create_linked_source(cancellation_token& _Src)
     {
         cancellation_token_source newSource;
         _Src.register_callback( [newSource](){ newSource.cancel(); } );
@@ -918,7 +922,7 @@ public:
     }
 
     /// <summary>
-    ///     Cancels the token.  Any <c>task_group</c>, <c>structured_task_group</c>, or <c>task</c> which utilizes the token will be 
+    ///     Cancels the token.  Any <c>task_group</c>, <c>structured_task_group</c>, or <c>task</c> which utilizes the token will be
     ///     canceled upon this call and throw an exception at the next interruption point.
     /// </summary>
     void cancel() const

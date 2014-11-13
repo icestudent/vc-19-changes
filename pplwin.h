@@ -32,15 +32,6 @@
 
 namespace Concurrency
 {
-// The extensibility namespace contains the type definitions that are used by ppltasks implementation
-namespace extensibility
-{
-    typedef ::std::condition_variable condition_variable_t;
-    typedef ::std::mutex critical_section_t;
-    typedef ::std::unique_lock< ::std::mutex> scoped_critical_section_t;
-}  // namespace Concurrency::extensibility
-
-
 namespace details
 {
 
@@ -59,7 +50,7 @@ public:
             auto _Chore = ::std::unique_ptr<_PPLTaskChore>(static_cast<_PPLTaskChore*>(_Args));
             _Chore->_M_proc(_Chore->_M_param);
         }
-        
+
     public:
         ~_PPLTaskChore()
         {
@@ -109,7 +100,7 @@ namespace details
     // Used to report unobserved task exceptions in ppltasks.h
     _CRTIMP2 void __cdecl _ReportUnobservedException();
 
-    namespace platform 
+    namespace platform
     {
         _CRTIMP2 unsigned int __cdecl GetNextAsyncId();
         _CRTIMP2 size_t __cdecl CaptureCallstack(void **, size_t, size_t);
@@ -139,7 +130,7 @@ namespace details
 
 #endif
 
-    struct _TaskProcHandle 
+    struct _TaskProcHandle
     {
         _TaskProcHandle() {}
         virtual ~_TaskProcHandle() {}
@@ -168,8 +159,8 @@ namespace details
         void _SetCollectionState(_TaskCollectionState _NewState)
         {
             _ASSERTE(_NewState != _New);
-            extensibility::scoped_critical_section_t _Lock(_M_Cs);
-            if (_M_State < _NewState) 
+            std::lock_guard<std::mutex> _Lock(_M_Cs);
+            if (_M_State < _NewState)
             {
                 _M_State = _NewState;
             }
@@ -179,7 +170,7 @@ namespace details
 
         void WaitUntilStateChangedTo(_TaskCollectionState _State)
         {
-            extensibility::scoped_critical_section_t _Lock(_M_Cs);
+            std::unique_lock<std::mutex> _Lock(_M_Cs);
 
             while(_M_State < _State)
             {
@@ -190,7 +181,7 @@ namespace details
 
         typedef _TaskProcHandle _TaskProcHandle_t;
 
-        _TaskCollectionBaseImpl(::Concurrency::scheduler_ptr _PScheduler) 
+        _TaskCollectionBaseImpl(::Concurrency::scheduler_ptr _PScheduler)
             : _M_pScheduler(_PScheduler), _M_State(_New)
         {
         }
@@ -262,8 +253,8 @@ namespace details
             }
         }
     protected:
-        ::Concurrency::extensibility::condition_variable_t _M_StateChanged;
-        ::Concurrency::extensibility::critical_section_t _M_Cs;
+        ::std::condition_variable _M_StateChanged;
+        ::std::mutex _M_Cs;
         ::Concurrency::scheduler_ptr _M_pScheduler;
         _TaskCollectionState _M_State;
     };

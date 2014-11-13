@@ -524,9 +524,6 @@ typedef _ULONGLONG _ULonglong;
 #define _IOPTR	_ptr
 #define _IOCNT	_cnt
 
- #undef _HAS_CHAR16_T_LANGUAGE_SUPPORT
- #define _HAS_CHAR16_T_LANGUAGE_SUPPORT 0
-
 		/* MULTITHREAD PROPERTIES */
 		/* LOCK MACROS */
 #define _LOCK_LOCALE			0

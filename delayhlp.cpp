@@ -26,6 +26,9 @@
 
 #include "DelayImp.h"
 
+#define DLOAD_UNLOAD 1
+#include "dloadsup.h"
+
 //
 // Local copies of strlen, memcmp, and memcpy to make sure we do not need the CRT
 //
@@ -209,6 +212,8 @@ __delayLoadHelper2(
     FARPROC *           ppfnIATEntry
     ) {
 
+    DloadAcquireSectionWriteAccess();
+
     // Set up some data we use for the hook procs but also useful for
     // our own use
     //
@@ -236,6 +241,8 @@ __delayLoadHelper2(
 
     if (0 == (idd.grAttrs & dlattrRva)) {
         PDelayLoadInfo  rgpdli[1] = { &dli };
+
+        DloadReleaseSectionWriteAccess();
 
         RaiseException(
             VcppException(ERROR_SEVERITY_ERROR, ERROR_INVALID_PARAMETER),
@@ -301,6 +308,7 @@ __delayLoadHelper2(
             if (hmod == 0) {
                 PDelayLoadInfo  rgpdli[1] = { &dli };
 
+                DloadReleaseSectionWriteAccess();
                 RaiseException(
                     VcppException(ERROR_SEVERITY_ERROR, ERROR_MOD_NOT_FOUND),
                     0,
@@ -366,12 +374,16 @@ __delayLoadHelper2(
         if (pfnRet == 0) {
             PDelayLoadInfo  rgpdli[1] = { &dli };
 
+            DloadReleaseSectionWriteAccess();
+
             RaiseException(
                 VcppException(ERROR_SEVERITY_ERROR, ERROR_PROC_NOT_FOUND),
                 0,
                 1,
                 PULONG_PTR(rgpdli)
                 );
+
+            DloadAcquireSectionWriteAccess();
 
             // If we get to here, we blindly assume that the handler of the exception
             // has magically fixed everything up and left the function pointer in 
@@ -391,6 +403,9 @@ HookBypass:
         dli.pfnCur = pfnRet;
         (*__pfnDliNotifyHook2)(dliNoteEndProcessing, &dli);
         }
+
+    DloadReleaseSectionWriteAccess();
+
     return pfnRet;
     }
 
@@ -405,12 +420,18 @@ __FUnloadDelayLoadedDLL2(LPCSTR szDll) {
         HMODULE *           phmod = PFromRva<HMODULE*>(pidd->rvaHmod);
         HMODULE             hmod = *phmod;
         if (hmod != NULL) {
+
+            DloadAcquireSectionWriteAccess();
+
             OverlayIAT(
                 PFromRva<PImgThunkData>(pidd->rvaIAT),
                 PFromRva<PCImgThunkData>(pidd->rvaUnloadIAT)
                 );
             ::FreeLibrary(hmod);
             *phmod = NULL;
+
+            DloadReleaseSectionWriteAccess();
+
             fRet = TRUE;
             }
 

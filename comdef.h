@@ -182,10 +182,25 @@ inline void __stdcall _set_com_error_handler(void (__stdcall *pHandler)(HRESULT,
 #include <olectl.h>
 
 #ifdef _NATIVE_WCHAR_T_DEFINED
+#if defined(_GUARDED_CRT)
+# ifdef _DEBUG
+# pragma comment(lib, "comsuppwgd.lib")
+# else
+# pragma comment(lib, "comsuppwg.lib")
+# endif
+#else
 # ifdef _DEBUG
 # pragma comment(lib, "comsuppwd.lib")
 # else
 # pragma comment(lib, "comsuppw.lib")
+# endif
+#endif
+#else
+#if defined(_GUARDED_CRT)
+# ifdef _DEBUG
+# pragma comment(lib, "comsuppgd.lib")
+# else
+# pragma comment(lib, "comsuppg.lib")
 # endif
 #else
 # ifdef _DEBUG
@@ -193,6 +208,7 @@ inline void __stdcall _set_com_error_handler(void (__stdcall *pHandler)(HRESULT,
 # else
 # pragma comment(lib, "comsupp.lib")
 # endif
+#endif
 #endif
 
 #pragma comment(lib, "user32.lib")

@@ -8,6 +8,10 @@
   #error <future> is not supported when compiling with /clr or /clr:pure.
  #endif /* _M_CEE */
 
+ #ifdef _RESUMABLE_FUNCTIONS_SUPPORTED
+  #include <experimental/resumable>
+ #endif /* _RESUMABLE_FUNCTIONS_SUPPORTED */
+
 #include <functional>
 #include <system_error>
 #include <utility>
@@ -1704,19 +1708,19 @@ template<class _Ty> inline
 	}
 
 	// TEMPLATE CLASS packaged_task
-template <class _Fret>
+template<class _Fret>
 	struct _P_arg_type
 	{	// type for function
 	typedef _Fret type;
 	};
 
-template <class _Fret>
+template<class _Fret>
 	struct _P_arg_type<_Fret&>
 	{	// type for ref to function
 	typedef _Fret *type;
 	};
 
-template <>
+template<>
 	struct _P_arg_type<void>
 	{	// type for void function
 	typedef int type;
@@ -1918,6 +1922,85 @@ template<class _Policy_type,
 	return (_Async(_Policy, _Decay_copy(_STD forward<_Fty>(_Fnarg)),
 		_Decay_copy(_STD forward<_ArgTypes>(_Args))...));
 	}
+
+ #ifdef _RESUMABLE_FUNCTIONS_SUPPORTED
+
+namespace experimental {
+
+template<class _Ty,
+	class... _ArgTypes>
+	struct resumable_traits<future<_Ty>, _ArgTypes...>
+	{	// defines resumable traits for functions returning future<_Ty>
+	struct promise_type
+		{
+		promise<_Ty> _MyPromise;
+
+		future<_Ty> get_return_object()
+			{
+			return (_MyPromise.get_future());
+			}
+
+		suspend_never initial_suspend()
+			{
+			return{};
+			}
+
+		suspend_never final_suspend()
+			{
+			return{};
+			}
+
+		template<class _Ut = _Ty,
+			class = enable_if_t<is_void<_Ut>::value>>
+			void set_result()
+			{
+			_MyPromise.set_value();
+			}
+
+		template<class _Ut,
+			class _Ty2 = _Ty,
+			class = enable_if_t<!is_void<_Ty2>::value>>
+			void set_result(_Ut&& _Value)
+			{
+			_MyPromise.set_value(_STD forward<_Ut>(_Value));
+			}
+
+		void set_exception(exception_ptr _Exc)
+			{
+			_MyPromise.set_exception(_STD move(_Exc));
+			}
+
+		bool cancellation_requested() const
+			{
+			return (false);
+			}
+		};
+	};
+}	// namespace experimental
+
+template<class _Ty>
+	bool await_ready(future<_Ty>& _Fut)
+	{
+	return (_Fut._Is_ready());
+	}
+
+template<class _Ty>
+	void await_suspend(future<_Ty>& _Fut, experimental::resumable_handle<> _ResumeCb)
+	{	// change to .then when future gets .then
+	thread _WaitingThread([&_Fut, _ResumeCb]{
+		_Fut.wait();
+		_ResumeCb();
+	});
+	_WaitingThread.detach();
+	}
+
+template<class _Ty>
+	auto await_resume(future<_Ty>& _Fut)
+	{
+	return (_Fut.get());
+	}
+
+ #endif /* _RESUMABLE_FUNCTIONS_SUPPORTED */
 
 _STD_END
 

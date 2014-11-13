@@ -94,6 +94,9 @@ _CRT_BEGIN_C_HEADER
 #define _CRT_CONCATENATE_(a, b) a ## b
 #define _CRT_CONCATENATE(a, b)  _CRT_CONCATENATE_(a, b)
 
+#define _CRT_UNPARENTHESIZE_(...) __VA_ARGS__
+#define _CRT_UNPARENTHESIZE(...)  _CRT_UNPARENTHESIZE_ __VA_ARGS__
+
 
 
 #ifndef _VCRTIMP
