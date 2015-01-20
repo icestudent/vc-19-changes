@@ -639,7 +639,6 @@ inline wstring operator "" s(const wchar_t *_Str, size_t _Len)
 	}
  #endif /* defined(_NATIVE_WCHAR_T_DEFINED) || !defined(__EDG__) */
 
- #if _HAS_CHAR16_T_LANGUAGE_SUPPORT
 inline u16string operator "" s(const char16_t *_Str, size_t _Len)
 	{	// construct literal from [_Str, _Str + _Len)
 	return (u16string(_Str, _Len));
@@ -649,10 +648,8 @@ inline u32string operator "" s(const char32_t *_Str, size_t _Len)
 	{	// construct literal from [_Str, _Str + _Len)
 	return (u32string(_Str, _Len));
 	}
- #endif /* _HAS_CHAR16_T_LANGUAGE_SUPPORT */
 }	// inline namespace string_literals
 }	// inline namespace literals
-
 _STD_END
 
  #pragma pop_macro("new")
@@ -662,6 +659,6 @@ _STD_END
 #endif /* _STRING */
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.00:0009 */
+V6.50:0009 */

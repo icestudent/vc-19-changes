@@ -37,7 +37,6 @@ typedef struct
 	unsigned int _Id;
 	} _Thrd_imp_t;
 
-#define _Thr_val(thr) thr._Id
 #define _Thr_set_null(thr) (thr._Hnd = 0, thr._Id = 0)
 #define _Thr_is_null(thr) (thr._Id == 0)
 
@@ -128,6 +127,6 @@ _END_EXTERN_C
  */
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.00:0009 */
+V6.50:0009 */

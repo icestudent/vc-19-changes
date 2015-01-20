@@ -239,7 +239,6 @@ template<>
 	{	// determine whether _Ty is integral
 	};
 
- #if _HAS_CHAR16_T_LANGUAGE_SUPPORT
 template<>
 	struct _Is_integral<char16_t>
 		: true_type
@@ -251,7 +250,6 @@ template<>
 		: true_type
 	{	// determine whether _Ty is integral
 	};
- #endif /* _HAS_CHAR16_T_LANGUAGE_SUPPORT */
 
  #ifdef _LONGLONG
 template<>
@@ -432,6 +430,6 @@ _STD_END
 #endif /* _TR1_COMMON_ */
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.00:0009 */
+V6.50:0009 */

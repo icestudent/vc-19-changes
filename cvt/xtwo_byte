@@ -248,6 +248,6 @@ unsigned short test_table::_Wtb[5] = {0xfd02, 0xfd03, 0xfd05,
 #endif /* _CVT_XTWO_BYTE_ */
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.00:0009 */
+V6.50:0009 */

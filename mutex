@@ -390,6 +390,7 @@ template<class _Lock0> inline
 		return (-1);
 	}
 
+
 template<class _Lock0,
 	class _Lock1,
 	class... _LockN> inline
@@ -500,6 +501,6 @@ _STD_END
 #endif /* _MUTEX_ */
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.00:0009 */
+V6.50:0009 */

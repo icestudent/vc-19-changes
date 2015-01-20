@@ -3,6 +3,12 @@
 #ifndef _HASH_SET_
 #define _HASH_SET_
 #ifndef RC_INVOKED
+#include <xhash>
+
+ #pragma pack(push,_CRT_PACKING)
+ #pragma warning(push,3)
+ #pragma push_macro("new")
+ #undef new
 
  #ifndef _SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS
 static_assert(false, "<hash_set> is deprecated and will be REMOVED. "
@@ -10,13 +16,6 @@ static_assert(false, "<hash_set> is deprecated and will be REMOVED. "
 	"_SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS "
 	"to acknowledge that you have received this warning.");
  #endif /* _SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS */
-
-#include <xhash>
-
- #pragma pack(push,_CRT_PACKING)
- #pragma warning(push,3)
- #pragma push_macro("new")
- #undef new
 
 namespace stdext {
 using _STD allocator;
@@ -50,7 +49,7 @@ public:
 		_Multi = _Mfl};
 
 	_Hset_traits(const _Tr& _Traits = _Tr())
-		: _Tr(_Traits), _Max_buckets(0.0f)
+		: _Tr(_Traits), _Max_buckets(0.0F)
 		{	// construct with specified comparator
 		}
 
@@ -548,6 +547,6 @@ _STD_END
 #endif /* _HASH_SET_ */
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.00:0009 */
+V6.50:0009 */

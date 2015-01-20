@@ -85,39 +85,6 @@ _CRTIMP2_PURE float __CLRCALL_PURE_OR_CDECL _XLgamma(float);
 _CRTIMP2_PURE double __CLRCALL_PURE_OR_CDECL _XLgamma(double);
 _CRTIMP2_PURE long double __CLRCALL_PURE_OR_CDECL _XLgamma(long double);
 
-	// TEMPLATE FUNCTION _Nrand
-#define _NRAND(eng, resty)	_Nrand(eng, (eng.min)(), (resty)1)
-
-template<class _Engine,
-	class _Ety,
-	class _Rty>
-	_Rty _Nrand(_Engine& _Eng, _Ety _Emin, _Rty _Inc)
-	{	// scale random value to [0, 1), integer engine
-	return ((_Eng() - _Emin)
-		/ ((_Rty)(_Eng.max)() - (_Rty)_Emin + _Inc));
-	}
-
-template<class _Engine,
-	class _Rty>
-	_Rty _Nrand(_Engine& _Eng, float _Emin, _Rty)
-	{	// scale random value to [0, 1), float engine
-	return ((_Eng() - _Emin) / ((_Eng.max)() - _Emin));
-	}
-
-template<class _Engine,
-	class _Rty>
-	_Rty _Nrand(_Engine& _Eng, double _Emin, _Rty)
-	{	// scale random value to [0, 1), double engine
-	return ((_Eng() - _Emin) / ((_Eng.max)() - _Emin));
-	}
-
-template<class _Engine,
-	class _Rty>
-	_Rty _Nrand(_Engine& _Eng, long double _Emin, _Rty)
-	{	// scale random value to [0, 1), long double engine
-	return ((_Eng() - _Emin) / ((_Eng.max)() - _Emin));
-	}
-
 	// I/O HELPERS FOR FLOATING-POINT VALUES
 static const int _Nwords = 4;
 
@@ -330,19 +297,31 @@ template<class _Real,
 	static_assert(_Is_RealType<_Real>::value,
 		"invalid template argument for generate_canonical");
 
-	int _Minbits = _Bits < 1 ? 1 : _Bits;
-	if (numeric_limits<_Real>::digits < _Minbits)
-		_Minbits = numeric_limits<_Real>::digits;
+	const size_t _Digits = static_cast<size_t>(numeric_limits<_Real>::digits);
+	const size_t _Minbits = _Digits < _Bits ? _Digits : _Bits;
 
-	_Real _Gxmin = (_Real)(_Gx.min)();
-	_Real _Ans = (_Real)_Gx() - _Gxmin;
-	_Real _Base = (_Real)(_Gx.max)() + (_Real)1 - _Gxmin;
-	double _Basen = _CSTD ldexp(1.0, _Minbits);
+	const _Real _Gxmin = static_cast<_Real>((_Gx.min)());
+	const _Real _Gxmax = static_cast<_Real>((_Gx.max)());
+	const _Real _Rx = (_Gxmax - _Gxmin) + static_cast<_Real>(1);
 
-	for (; 1.0 < _Basen; _Basen /= _Base)
-		_Ans = _Ans * _Base + (_Real)_Gx() - _Gxmin;
-	return (_Ans);
+	const int _Ceil = static_cast<int>(_STD ceil(
+		static_cast<_Real>(_Minbits) / _STD log2(_Rx)));
+	const int _Kx = _Ceil < 1 ? 1 : _Ceil;
+
+	_Real _Ans = static_cast<_Real>(0);
+	_Real _Factor = static_cast<_Real>(1);
+
+	for (int _Idx = 0; _Idx < _Kx; ++_Idx)
+		{	// add in another set of bits
+		_Ans += (static_cast<_Real>(_Gx()) - _Gxmin) * _Factor;
+		_Factor *= _Rx;
+		}
+
+	return (_Ans / _Factor);
 	}
+
+#define _NRAND(eng, resty) \
+	(_STD generate_canonical<resty, static_cast<size_t>(-1)>(eng))
 
 	// MULTIPLE PRECISION MATH FUNCTIONS
 
@@ -1311,7 +1290,7 @@ public:
 
 	static const _Ty default_seed = 5489U;
 
-	explicit mersenne_twister(unsigned long _X0 = default_seed,
+	explicit mersenne_twister(_Ty _X0 = default_seed,
 		_Ty _Dxarg = _WMSK,
 		_Ty _Fxarg = (_Ty)1812433253)
 		: _Dxval(_Dxarg)
@@ -1327,7 +1306,7 @@ public:
 		seed(_Gx);
 		}
 
-	void seed(unsigned long _X0 = default_seed,
+	void seed(_Ty _X0 = default_seed,
 		_Ty _Fx = (_Ty)1812433253)
 		{	// set initial values from specified value
 		_Ty _Prev = this->_Ax[0] = _X0 & _WMSK;
@@ -1533,19 +1512,19 @@ public:
 	static const result_type default_seed = 5489U;
 
 	explicit mersenne_twister_engine(result_type _X0 = default_seed)
-		: _Mybase((unsigned long)_X0, _Dx, _Fx)
+		: _Mybase(_X0, _Dx, _Fx)
 		{	// construct with default seed
 		}
 
 	template<class _Seed_seq,
 		class = typename _Enable_if_seed_seq<_Seed_seq, _Myt>::type>
 		explicit mersenne_twister_engine(_Seed_seq& _Seq)
-		: _Mybase((unsigned long)default_seed, _Dx, _Fx)
+		: _Mybase(default_seed, _Dx, _Fx)
 		{	// construct from seed sequence
 		seed(_Seq);
 		}
 
-	void seed(unsigned long _X0 = default_seed)
+	void seed(result_type _X0 = default_seed)
 		{	// set initial values from specified value
 		_Mybase::seed(_X0, _Fx);
 		}
@@ -2476,7 +2455,7 @@ public:
 		{	// construct from parameters
 		}
 
-	explicit uniform_int(param_type _Par0)
+	explicit uniform_int(const param_type& _Par0)
 		: _Par(_Par0)
 		{	// construct from parameter package
 		}
@@ -2636,7 +2615,7 @@ public:
 		{	// parameter package
 		typedef _Myt distribution_type;
 
-		param_type(result_type _Min0 = 0,
+		explicit param_type(result_type _Min0 = 0,
 			result_type _Max0 = (numeric_limits<_Ty>::max)())
 			: _Mypbase(_Min0, _Max0)
 			{	// construct from parameters
@@ -2654,7 +2633,7 @@ public:
 		{	// construct from parameters
 		}
 
-	explicit uniform_int_distribution(param_type _Par0)
+	explicit uniform_int_distribution(const param_type& _Par0)
 		: _Mybase(_Par0)
 		{	// construct from parameter package
 		}
@@ -2672,7 +2651,7 @@ public:
 		{	// parameter package
 		typedef _Myt distribution_type;
 
-		param_type(double _P0 = 0.5)
+		explicit param_type(double _P0 = 0.5)
 			{	// construct from parameters
 			_Init(_P0);
 			}
@@ -2708,7 +2687,7 @@ public:
 		{	// construct
 		}
 
-	explicit bernoulli_distribution(param_type _Par0)
+	explicit bernoulli_distribution(const param_type& _Par0)
 		: _Par(_Par0)
 		{	// construct from parameter package
 		}
@@ -2803,23 +2782,25 @@ template<class _Elem,
 	}
 
 	// TEMPLATE CLASS geometric_distribution
+
 template<class _Ty0 = int>
 	class geometric_distribution
 	{	// template class for geometric distribution
 public:
-	static_assert(_Is_IntType<_Ty0>::value,
-		"invalid template argument for geometric_distribution");
-
 	typedef geometric_distribution<_Ty0> _Myt;
 	typedef double _Ty1;
+
+
 	typedef _Ty1 input_type;	// retained
 	typedef _Ty0 result_type;
+	static_assert(_Is_IntType<_Ty0>::value,
+		"invalid template argument for geometric_distribution");
 
 	struct param_type
 		{	// parameter package
 		typedef _Myt distribution_type;
 
-		param_type(_Ty1 _P0 = _Ty1(0.5))
+		explicit param_type(_Ty1 _P0 = _Ty1(0.5))
 			{	// construct from parameters
 			_Init(_P0);
 			}
@@ -2856,7 +2837,7 @@ public:
 		{	// construct
 		}
 
-	explicit geometric_distribution(param_type _Par0)
+	explicit geometric_distribution(const param_type& _Par0)
 		: _Par(_Par0)
 		{	// construct from parameter package
 		}
@@ -2953,12 +2934,16 @@ template<class _Elem,
 	return (_Dist._Write(_Ostr));
 	}
 
+
 	// TEMPLATE CLASS poisson_distribution AND HELPER
-template<class _Ty0 = int,
-	class _Ty1 = double>
+
+template<class _Ty0 = int>
 	class _Small_poisson_distribution
 	{	//template class for poisson distribution with small mean
 public:
+	typedef double _Ty1;
+
+
 	template<class _Engine>
 		_Ty0 operator()(_Engine& _Eng) const
 		{	// return next value
@@ -2986,19 +2971,20 @@ template<class _Ty0 = int>
 	class poisson_distribution
 	{	// template class for poisson distribution
 public:
-	static_assert(_Is_IntType<_Ty0>::value,
-		"invalid template argument for poisson_distribution");
-
 	typedef poisson_distribution<_Ty0> _Myt;
 	typedef double _Ty1;
+
+
 	typedef _Ty1 input_type;	// retained
 	typedef _Ty0 result_type;
+	static_assert(_Is_IntType<_Ty0>::value,
+		"invalid template argument for poisson_distribution");
 
 	struct param_type
 		{	// parameter package
 		typedef _Myt distribution_type;
 
-		param_type(_Ty1 _Mean0 = _Ty1(1))
+		explicit param_type(_Ty1 _Mean0 = _Ty1(1))
 			{	// construct from parameters
 			_Init(_Mean0);
 			}
@@ -3033,7 +3019,9 @@ public:
 		_Ty1 _Sqrt;
 		_Ty1 _Logm;
 		_Ty1 _G1;
-		_Small_poisson_distribution<_Ty0, _Ty1> _Small;
+
+		_Small_poisson_distribution<_Ty0> _Small;
+
 		};
 
 	explicit poisson_distribution(_Ty1 _Mean0 = _Ty1(1))
@@ -3041,7 +3029,7 @@ public:
 		{	// construct
 		}
 
-	explicit poisson_distribution(param_type _Par0)
+	explicit poisson_distribution(const param_type& _Par0)
 		: _Par(_Par0)
 		{	// construct from parameter package
 		}
@@ -3155,24 +3143,27 @@ template<class _Elem,
 	return (_Dist._Write(_Ostr));
 	}
 
+
 	// TEMPLATE CLASS binomial_distribution
+
 template<class _Ty0 = int>
 	class binomial_distribution
 	{	// template class for binomial distribution
 public:
-	static_assert(_Is_IntType<_Ty0>::value,
-		"invalid template argument for binomial_distribution");
-
 	typedef binomial_distribution<_Ty0> _Myt;
 	typedef double _Ty1;
+
+
 	typedef _Ty1 input_type;	// retained
 	typedef _Ty0 result_type;
+	static_assert(_Is_IntType<_Ty0>::value,
+		"invalid template argument for binomial_distribution");
 
 	struct param_type
 		{	// parameter package
 		typedef _Myt distribution_type;
 
-		param_type(_Ty0 _T0 = 1, _Ty1 _P0 = _Ty1(0.5))
+		explicit param_type(_Ty0 _T0 = 1, _Ty1 _P0 = _Ty1(0.5))
 			{	// construct from parameters
 			_Init(_T0, _P0);
 			}
@@ -3222,7 +3213,9 @@ public:
 		_Ty1 _Sqrt;
 		_Ty1 _Logp;
 		_Ty1 _Logp1;
-		_Small_poisson_distribution<_Ty0, _Ty1> _Small;
+
+		_Small_poisson_distribution<_Ty0> _Small;
+
 		};
 
 	explicit binomial_distribution(_Ty0 _T0 = 1,
@@ -3231,7 +3224,7 @@ public:
 		{	// construct
 		}
 
-	explicit binomial_distribution(param_type _Par0)
+	explicit binomial_distribution(const param_type& _Par0)
 		: _Par(_Par0)
 		{	// construct from parameter package
 		}
@@ -3369,6 +3362,7 @@ template<class _Elem,
 	return (_Dist._Write(_Ostr));
 	}
 
+
 	// TEMPLATE CLASS uniform_real
 template<class _Ty = double>
 	class uniform_real
@@ -3426,7 +3420,7 @@ public:
 		{	// construct
 		}
 
-	explicit uniform_real(param_type _Par0)
+	explicit uniform_real(const param_type& _Par0)
 		: _Par(_Par0)
 		{	// construct from parameter package
 		}
@@ -3546,7 +3540,7 @@ public:
 		{	// parameter package
 		typedef _Myt distribution_type;
 
-		param_type(_Ty _Min0 = _Ty(0),
+		explicit param_type(_Ty _Min0 = _Ty(0),
 			_Ty _Max0 = _Ty(1))
 			: _Mypbase(_Min0, _Max0)
 			{	// construct from parameters
@@ -3564,7 +3558,7 @@ public:
 		{	// construct from parameters
 		}
 
-	explicit uniform_real_distribution(param_type _Par0)
+	explicit uniform_real_distribution(const param_type& _Par0)
 		: _Mybase(_Par0)
 		{	// construct from parameter package
 		}
@@ -3586,7 +3580,7 @@ public:
 		{	// parameter package
 		typedef _Myt distribution_type;
 
-		param_type(_Ty _Lambda0 = _Ty(1))
+		explicit param_type(_Ty _Lambda0 = _Ty(1))
 			{	// construct from parameters
 			_Init(_Lambda0);
 			}
@@ -3621,7 +3615,7 @@ public:
 		{	// construct
 		}
 
-	explicit exponential_distribution(param_type _Par0)
+	explicit exponential_distribution(const param_type& _Par0)
 		: _Par(_Par0)
 		{	// construct from parameter package
 		}
@@ -3733,7 +3727,7 @@ public:
 		{	// parameter package
 		typedef _Myt distribution_type;
 
-		param_type(_Ty _Mean0 = 0.0, _Ty _Sigma0 = 1.0)
+		explicit param_type(_Ty _Mean0 = 0.0, _Ty _Sigma0 = 1.0)
 			{	// construct from parameters
 			_Init(_Mean0, _Sigma0);
 			}
@@ -3780,7 +3774,7 @@ public:
 		{	// construct
 		}
 
-	explicit normal_distribution(param_type _Par0)
+	explicit normal_distribution(const param_type& _Par0)
 		: _Par(_Par0), _Valid(false), _X2(0)
 		{	// construct from parameter package
 		}
@@ -3943,7 +3937,7 @@ public:
 		{	// parameter package
 		typedef _Myt distribution_type;
 
-		param_type(_Ty _Alpha0 = _Ty(1), _Ty _Beta0 = _Ty(1))
+		explicit param_type(_Ty _Alpha0 = _Ty(1), _Ty _Beta0 = _Ty(1))
 			{	// construct from parameters
 			_Init(_Alpha0, _Beta0);
 			}
@@ -3992,7 +3986,7 @@ public:
 		{	// construct
 		}
 
-	explicit gamma_distribution(param_type _Par0)
+	explicit gamma_distribution(const param_type& _Par0)
 		: _Par(_Par0)
 		{	// construct from parameter package
 		}
@@ -4163,7 +4157,7 @@ public:
 		{	// parameter package
 		typedef _Myt distribution_type;
 
-		param_type(_Ty _A0 = _Ty(1),
+		explicit param_type(_Ty _A0 = _Ty(1),
 			_Ty _B0 = _Ty(1))
 			{	// construct from parameters
 			_Init(_A0, _B0);
@@ -4209,7 +4203,7 @@ public:
 		{	// construct
 		}
 
-	explicit weibull_distribution(param_type _Par0)
+	explicit weibull_distribution(const param_type& _Par0)
 		: _Par(_Par0)
 		{	// construct from parameter package
 		}
@@ -4329,7 +4323,7 @@ public:
 		{	// parameter package
 		typedef _Myt distribution_type;
 
-		param_type(_Ty _A0 = _Ty(0),
+		explicit param_type(_Ty _A0 = _Ty(0),
 			_Ty _B0 = _Ty(1))
 			{	// construct from parameters
 			_Init(_A0, _B0);
@@ -4373,7 +4367,7 @@ public:
 		{	// construct
 		}
 
-	explicit extreme_value_distribution(param_type _Par0)
+	explicit extreme_value_distribution(const param_type& _Par0)
 		: _Par(_Par0)
 		{	// construct from parameter package
 		}
@@ -4493,7 +4487,7 @@ public:
 		{	// parameter package
 		typedef _Myt distribution_type;
 
-		param_type(_Ty _M0 = _Ty(0),
+		explicit param_type(_Ty _M0 = _Ty(0),
 			_Ty _S0 = _Ty(1))
 			{	// construct from parameters
 			_Init(_M0, _S0);
@@ -4537,7 +4531,7 @@ public:
 		{	// construct
 		}
 
-	explicit lognormal_distribution(param_type _Par0)
+	explicit lognormal_distribution(const param_type& _Par0)
 		: _Par(_Par0)
 		{	// construct from parameter package
 		}
@@ -4657,7 +4651,7 @@ public:
 		{	// parameter package
 		typedef _Myt distribution_type;
 
-		param_type(_Ty _N0 = _Ty(1))
+		explicit param_type(_Ty _N0 = _Ty(1))
 			{	// construct from parameters
 			_Init(_N0);
 			}
@@ -4692,7 +4686,7 @@ public:
 		{	// construct
 		}
 
-	explicit chi_squared_distribution(param_type _Par0)
+	explicit chi_squared_distribution(const param_type& _Par0)
 		: _Par(_Par0)
 		{	// construct from parameter package
 		}
@@ -4803,7 +4797,7 @@ public:
 		{	// parameter package
 		typedef _Myt distribution_type;
 
-		param_type(_Ty _A0 = _Ty(0),
+		explicit param_type(_Ty _A0 = _Ty(0),
 			_Ty _B0 = _Ty(1))
 			{	// construct from parameters
 			_Init(_A0, _B0);
@@ -4847,7 +4841,7 @@ public:
 		{	// construct
 		}
 
-	explicit cauchy_distribution(param_type _Par0)
+	explicit cauchy_distribution(const param_type& _Par0)
 		: _Par(_Par0)
 		{	// construct from parameter package
 		}
@@ -5025,7 +5019,7 @@ public:
 		{	// parameter package
 		typedef _Myt distribution_type;
 
-		param_type(_Ty _M0 = _Ty(1), _Ty _N0 = _Ty(1))
+		explicit param_type(_Ty _M0 = _Ty(1), _Ty _N0 = _Ty(1))
 			{	// construct from parameters
 			_Init(_M0, _N0);
 			}
@@ -5070,7 +5064,7 @@ public:
 		{	// construct
 		}
 
-	explicit fisher_f_distribution(param_type _Par0)
+	explicit fisher_f_distribution(const param_type& _Par0)
 		: _Par(_Par0)
 		{	// construct from parameter package
 		}
@@ -5193,7 +5187,7 @@ public:
 		{	// parameter package
 		typedef _Myt distribution_type;
 
-		param_type(_Ty _N0 = _Ty(1))
+		explicit param_type(_Ty _N0 = _Ty(1))
 			{	// construct from parameters
 			_Init(_N0);
 			}
@@ -5228,7 +5222,7 @@ public:
 		{	// construct
 		}
 
-	explicit student_t_distribution(param_type _Par0)
+	explicit student_t_distribution(const param_type& _Par0)
 		: _Par(_Par0)
 		{	// construct from parameter package
 		}
@@ -5352,7 +5346,7 @@ public:
 		{	// parameter package
 		typedef _Myt distribution_type;
 
-		param_type(_Ty _K0 = 1,
+		explicit param_type(_Ty _K0 = 1,
 			double _P0 = 0.5)
 			{	// construct from parameters
 			_Init(_K0, _P0);
@@ -5400,7 +5394,7 @@ public:
 		{	// construct
 		}
 
-	explicit negative_binomial_distribution(param_type _Par0)
+	explicit negative_binomial_distribution(const param_type& _Par0)
 		: _Par(_Par0)
 		{	// construct from parameter package
 		}
@@ -5795,8 +5789,8 @@ public:
 			}
 
 		template<class _InIt1,
-			class _Init2>
-			param_type(_InIt1 _First1, _InIt1 _Last1, _Init2 _First2)
+			class _InIt2>
+			param_type(_InIt1 _First1, _InIt1 _Last1, _InIt2 _First2)
 				: _Mypbase(_Noinit())
 			{	// construct from [_First1, _Last1) and [_First2, ...)
 			for (; _First1 != _Last1; ++_First1)
@@ -5883,9 +5877,9 @@ public:
 		}
 
 	template<class _InIt1,
-		class _Init2>
+		class _InIt2>
 		piecewise_constant_distribution(_InIt1 _First1, _InIt1 _Last1,
-			_Init2 _First2)
+			_InIt2 _First2)
 			: _Par(_First1, _Last1, _First2)
 		{	// construct from [_First1, _Last1) and [_First2, ...)
 		}
@@ -6042,8 +6036,8 @@ public:
 			}
 
 		template<class _InIt1,
-			class _Init2>
-			param_type(_InIt1 _First1, _InIt1 _Last1, _Init2 _First2)
+			class _InIt2>
+			param_type(_InIt1 _First1, _InIt1 _Last1, _InIt2 _First2)
 				: _Mypbase(_Noinit())
 			{	// construct from [_First1, _Last1) and [_First2, ...)
 			for (; _First1 != _Last1; ++_First1)
@@ -6165,9 +6159,9 @@ public:
 		}
 
 	template<class _InIt1,
-		class _Init2>
+		class _InIt2>
 		piecewise_linear_distribution(_InIt1 _First1, _InIt1 _Last1,
-			_Init2 _First2)
+			_InIt2 _First2)
 			: _Par(_First1, _Last1, _First2)
 		{	// construct from [_First1, _Last1) and [_First2, ...)
 		}
@@ -6282,19 +6276,14 @@ public:
 		size_t _Px = (*(_Mybase *)this)(_Eng, _Par0);
 		double _P0 = _Par0._Pvec[_Px];
 		double _P1 = _Par0._Pvec[_Px + 1];
-		double _Sum = _P0 + _P1;
+		uniform_real<_Ty> _Dist;
+		result_type _X0 = _Dist(_Eng);
 
-		if (_Sum <= 0.0)
-			return (_Par0._Bvec[_Px + 1]);
-		else
-			{	// distribute result between (Bx, Px) and (Bx+1, Px+1)
-			uniform_real<_Ty> _Dist;
-			result_type _X0 = _Dist(_Eng);
-
-			_X0 = ((_P1 - _P0) * _X0 + (_P0 + _P0)) * _X0 / _Sum;
-			return (_Par0._Bvec[_Px]
-				+ _X0 * (_Par0._Bvec[_Px + 1] - _Par0._Bvec[_Px]));
-			}
+		if (_P0 != _P1)
+			_X0 = (_STD sqrt(_P0 * _P0 * (1.0 - _X0)
+				+ _P1 * _P1 * _X0) - _P0) / (_P1 - _P0);
+		return (_Par0._Bvec[_Px]
+			+ _X0 * (_Par0._Bvec[_Px + 1] - _Par0._Bvec[_Px]));
 		}
 
 	param_type _Par;
@@ -6450,6 +6439,8 @@ using _STD weibull_distribution;
 }	// namespace tr1
 _STD_END
 
+#undef _NRAND
+
  #pragma pop_macro("new")
  #pragma warning(pop)
  #pragma pack(pop)
@@ -6457,6 +6448,6 @@ _STD_END
 #endif /* _RANDOM_ */
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.00:0009 */
+V6.50:0009 */

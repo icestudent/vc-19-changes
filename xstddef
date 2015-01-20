@@ -346,7 +346,6 @@ inline size_t _Hash_seq(const unsigned char *_First, size_t _Count)
 		_Val ^= (size_t)_First[_Next];
 		_Val *= _FNV_prime;
 		}
-
 	return (_Val);
 	}
 
@@ -394,7 +393,6 @@ template<>
 	{	// hash functor for unsigned char
 	};
 
- #if _HAS_CHAR16_T_LANGUAGE_SUPPORT
 template<>
 	struct hash<char16_t>
 		: public _Bitwise_hash<char16_t>
@@ -406,7 +404,6 @@ template<>
 		: public _Bitwise_hash<char32_t>
 	{	// hash functor for char32_t
 	};
- #endif /* _HAS_CHAR16_T_LANGUAGE_SUPPORT */
 
  #ifdef _NATIVE_WCHAR_T_DEFINED
 template<>
@@ -611,6 +608,6 @@ _STD_END
 #endif /* _XSTDDEF_ */
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.00:0009 */
+V6.50:0009 */

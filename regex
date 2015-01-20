@@ -430,17 +430,17 @@ template<>
 	: public _Regex_traits<char>
 	{	// specialization for char
 public:
-	int value(char ch, int base) const
+	int value(char _Ch, int _Base) const
 		{	// map character value to numeric value
-		if ((base != 8 && '0' <= ch && ch <= '9')
-			|| (base == 8 && '0' <= ch && ch <= '7'))
-			return (ch - '0');
-		else if (base != 16)
+		if ((_Base != 8 && '0' <= _Ch && _Ch <= '9')
+			|| (_Base == 8 && '0' <= _Ch && _Ch <= '7'))
+			return (_Ch - '0');
+		else if (_Base != 16)
 			;
-		else if ('a' <= ch && ch <= 'f')
-			return (ch - 'a' + 10);
-		else if ('A' <= ch && ch <= 'F')
-			return (ch - 'A' + 10);
+		else if ('a' <= _Ch && _Ch <= 'f')
+			return (_Ch - 'a' + 10);
+		else if ('A' <= _Ch && _Ch <= 'F')
+			return (_Ch - 'A' + 10);
 		return (-1);
 		}
 	};
@@ -451,17 +451,17 @@ template<>
 	: public _Regex_traits<wchar_t>
 	{	// specialization for wchar_t
 public:
-	int value(wchar_t ch, int base) const
+	int value(wchar_t _Ch, int _Base) const
 		{	// map character value to numeric value
-		if ((base != 8 && L'0' <= ch && ch <= L'9')
-			|| (base == 8 && L'0' <= ch && ch <= L'7'))
-			return (ch - L'0');
-		else if (base != 16)
+		if ((_Base != 8 && L'0' <= _Ch && _Ch <= L'9')
+			|| (_Base == 8 && L'0' <= _Ch && _Ch <= L'7'))
+			return (_Ch - L'0');
+		else if (_Base != 16)
 			;
-		else if (L'a' <= ch && ch <= L'f')
-			return (ch - L'a' + 10);
-		else if (L'A' <= ch && ch <= L'F')
-			return (ch - L'A' + 10);
+		else if (L'a' <= _Ch && _Ch <= L'f')
+			return (_Ch - L'a' + 10);
+		else if (L'A' <= _Ch && _Ch <= L'F')
+			return (_Ch - L'A' + 10);
 		return (-1);
 		}
 	};
@@ -1535,7 +1535,7 @@ struct _Bitmap
 	{	// accelerator table for small character values
 	_Bitmap()
 		{	// construct
-		memset(_Chrs, '\0', _Bmp_size);
+		_CSTD memset(_Chrs, '\0', _Bmp_size);
 		}
 
 	void _Mark(unsigned int _Ch)
@@ -4212,7 +4212,7 @@ template<class _BidIt,
 		_Elem _Ch = (_Offset ? *--_Ch0 : *_Ch0);
 
 		return (_Ch == (char)_Ch	// assume L'x' == 'x'
-			&& strchr("abcdefghijklmnopqrstuvwxyz"
+			&& _CSTD strchr("abcdefghijklmnopqrstuvwxyz"
 				"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 				"0123456789_", _Ch) != 0);
 		}
@@ -5624,6 +5624,6 @@ _STD_END
 #endif /*_REGEX_ */
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.00:0009 */
+V6.50:0009 */

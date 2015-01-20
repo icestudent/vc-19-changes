@@ -3333,7 +3333,7 @@ struct _Reduce_functor_helper
     const _Sub_function &_Sub_fun;
     const _Reduce_type &_Identity_value;
 
-    mutable _Combinable_type &_Combinable;
+    _Combinable_type &_Combinable;
 
     typedef _Reduce_type _Reduce_type;
     typedef typename _Combinable_type::_Bucket Bucket_type;

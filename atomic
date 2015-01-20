@@ -9,6 +9,7 @@
   #error <atomic> is not supported when compiling with /clr or /clr:pure.
  #endif /* _M_CEE */
 
+ #include <type_traits>
 
 
 #include <stddef.h>
@@ -702,7 +703,6 @@ template<class _Ty>
 #define _ATOMIC_HAS_ARITHMETIC_OPS
 #include <xxatomic>
 
- #if _HAS_CHAR16_T_LANGUAGE_SUPPORT
 #define _ATOMIC_ITYPE	_Atomic_char16_t
 #define _ITYPE char16_t
 #define _ISIZE 2
@@ -714,7 +714,6 @@ template<class _Ty>
 #define _ISIZE 4
 #define _ATOMIC_HAS_ARITHMETIC_OPS
 #include <xxatomic>
- #endif /* _HAS_CHAR16_T_LANGUAGE_SUPPORT */
 
 #define _ATOMIC_ITYPE	_Atomic_wchar_t
 #define _ITYPE wchar_t
@@ -1043,10 +1042,10 @@ typedef atomic<long> atomic_long;
 typedef atomic<unsigned long> atomic_ulong;
 typedef atomic<long long> atomic_llong;
 typedef atomic<unsigned long long> atomic_ullong;
- #if _HAS_CHAR16_T_LANGUAGE_SUPPORT
+
 typedef atomic<char16_t> atomic_char16_t;
 typedef atomic<char32_t> atomic_char32_t;
- #endif /* _HAS_CHAR16_T_LANGUAGE_SUPPORT */
+
 typedef atomic<wchar_t> atomic_wchar_t;
 
 typedef atomic<int8_t> atomic_int8_t;
@@ -1090,6 +1089,6 @@ _STD_END
 #endif /* _ATOMIC_ */
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.00:0009 */
+V6.50:0009 */

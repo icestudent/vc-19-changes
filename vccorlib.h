@@ -927,11 +927,7 @@ namespace Platform
 		__TArg* begin() const;
 		__TArg* end() const;
 
-#if defined(_PREFIX_) || defined(_PREFAST_)
-        __TArg& operator[](unsigned int __indexArg) const;
-#endif // defined(_PREFIX_) || defined(_PREFAST_)
-    
-    protected private:
+	protected private:
 		WriteOnlyArray();
 		WriteOnlyArray(unsigned int __sizeArg);
 		WriteOnlyArray(__TArg* __dataArg, unsigned int __sizeArg);

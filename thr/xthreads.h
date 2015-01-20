@@ -23,6 +23,7 @@ enum {	/* return codes */
 
 	/* threads */
 typedef _Thrd_imp_t _Thrd_t;
+typedef unsigned int _Thrd_id_t;
 typedef int (*_Thrd_start_t)(void *);
 
 _CRTIMP2_PURE int __cdecl _Thrd_create(_Thrd_t *, _Thrd_start_t, void *);
@@ -34,8 +35,8 @@ _CRTIMP2_PURE void __cdecl _Thrd_sleep(const xtime*);
 _CRTIMP2_PURE void __cdecl _Thrd_yield(void);
 _CRTIMP2_PURE unsigned int __cdecl _Thrd_hardware_concurrency(void);
 _CRTIMP2_PURE int __cdecl _Thrd_equal(_Thrd_t, _Thrd_t);
-_CRTIMP2_PURE int __cdecl _Thrd_lt(_Thrd_t, _Thrd_t);
 _CRTIMP2_PURE _Thrd_t __cdecl _Thrd_current(void);
+_CRTIMP2_PURE _Thrd_id_t __cdecl _Thrd_id(void);
 
 	/* mutexes */
 typedef _Mtx_imp_t _Mtx_t;
@@ -134,6 +135,6 @@ _END_C_LIB_DECL
  */
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.00:0009 */
+V6.50:0009 */

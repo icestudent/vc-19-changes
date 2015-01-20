@@ -28,192 +28,198 @@ _STD_BEGIN
 
 namespace experimental {
 
-        template <typename _Ty, typename _Alloc = allocator<char> >
-        struct generator
-	{
-		struct promise_type
-		{
-			_Ty const * _CurrentValue;
+    template <typename _Ty, typename _Alloc = allocator<char> >
+    struct generator
+    {
+        struct promise_type
+        {
+            _Ty const * _CurrentValue;
 
 #if _HAS_EXCEPTIONS
-			exception_ptr _Error;
+            exception_ptr _Error;
 #endif
 
-			enum class _StateT {_Active, _Cancelling, _Closed};
+            enum class _StateT {_Active, _Cancelling, _Closed};
 
-			_StateT _State = _StateT::_Active;
+            _StateT _State = _StateT::_Active;
 
-			promise_type& get_return_object()
-			{
-				return *this;
-			}
+            promise_type& get_return_object()
+            {
+                return *this;
+            }
 
-			suspend_always initial_suspend()
-			{
-				return {};
-			}
+            suspend_always initial_suspend()
+            {
+                return {};
+            }
 
-			suspend_always final_suspend()
-			{
-				_State = _StateT::_Closed;
-				return {};
-			}
+            suspend_always final_suspend()
+            {
+                _State = _StateT::_Closed;
+                return {};
+            }
 
-			bool cancellation_requested() const
-			{
-				return _State == _StateT::_Cancelling;
-			}
+            bool cancellation_requested() const
+            {
+                return _State == _StateT::_Cancelling;
+            }
 
-			void set_result()
-			{
-			}
+            void set_result()
+            {
+            }
 
 #if _HAS_EXCEPTIONS
-			void set_exception(exception_ptr _Exc)
-			{
-				_Error = _STD move(_Exc);
-			}
+            void set_exception(exception_ptr _Exc)
+            {
+                _Error = _STD move(_Exc);
+            }
 #endif
 
-			suspend_always yield_value(_Ty const& _Value)
-			{
-				_CurrentValue = _STD addressof(_Value);
-				return {};
-			}
-		};
+            suspend_always yield_value(_Ty const& _Value)
+            {
+                _CurrentValue = _STD addressof(_Value);
+                return {};
+            }
+        };
 
-		struct iterator
-			: _STD iterator<input_iterator_tag, _Ty>
-		{
-			resumable_handle<promise_type> _Coro;
+        struct iterator
+            : _STD iterator<input_iterator_tag, _Ty>
+        {
+            resumable_handle<promise_type> _Coro;
 
-			iterator(nullptr_t)
-				: _Coro(nullptr)
-			{
-			}
+            iterator(nullptr_t)
+                : _Coro(nullptr)
+            {
+            }
 
-			iterator(resumable_handle<promise_type> _CoroArg)
-				: _Coro(_CoroArg)
-			{
-			}
+            iterator(resumable_handle<promise_type> _CoroArg)
+                : _Coro(_CoroArg)
+            {
+            }
 
-			iterator& operator++()
-			{
-				_Coro();
-				if (_Coro.promise()._State == promise_type::_StateT::_Closed)
-					_Coro = nullptr;
-				return *this;
-			}
+            iterator& operator++()
+            {
+                _Coro();
+                if (_Coro.promise()._State == promise_type::_StateT::_Closed)
+                    _Coro = nullptr;
+                return *this;
+            }
 
-			iterator operator++(int) = delete;
-			// generator iterator current_value
-			// is a reference to a temporary on the coroutine frame
-			// implementing postincrement will require storing a copy
-			// of the value in the iterator.
-			//{
-			//	auto _Result = *this;
-			//	++(*this);
-			//	return _Result;
-			//}
+            iterator operator++(int) = delete;
+            // generator iterator current_value
+            // is a reference to a temporary on the coroutine frame
+            // implementing postincrement will require storing a copy
+            // of the value in the iterator.
+            //{
+            //	auto _Result = *this;
+            //	++(*this);
+            //	return _Result;
+            //}
 
-			bool operator==(iterator const& _Right) const
-			{
-				return _Coro == _Right._Coro;
-			}
+            bool operator==(iterator const& _Right) const
+            {
+                return _Coro == _Right._Coro;
+            }
 
-			bool operator!=(iterator const& _Right) const
-			{
-				return !(*this == _Right);
-			}
+            bool operator!=(iterator const& _Right) const
+            {
+                return !(*this == _Right);
+            }
 
-			_Ty const& operator*() const
-			{
-				auto& _Prom = _Coro.promise();
-				if (_Prom._Error)
-					_STD rethrow_exception(_Prom._Error);
-				return *_Prom._CurrentValue;
-			}
+            _Ty const& operator*() const
+            {
+                auto& _Prom = _Coro.promise();
+                if (_Prom._Error)
+                    _STD rethrow_exception(_Prom._Error);
+                return *_Prom._CurrentValue;
+            }
 
-			_Ty const* operator->() const
-			{
-				return _STD addressof(operator*());
-			}
+            _Ty const* operator->() const
+            {
+                return _STD addressof(operator*());
+            }
 
-		};
+        };
 
-		iterator begin()
-		{
-			if (_Coro)
-			{
-				_Coro();
+        iterator begin()
+        {
+            if (_Coro)
+            {
+                _Coro();
 #if _HAS_EXCEPTIONS
-				if (_Coro.promise()._Error)
-					_STD rethrow_exception(_Coro.promise()._Error);
+                if (_Coro.promise()._Error)
+                    _STD rethrow_exception(_Coro.promise()._Error);
 #endif
-				if (_Coro.promise()._State == promise_type::_StateT::_Closed)
-					return {nullptr};
-			}
+                if (_Coro.promise()._State == promise_type::_StateT::_Closed)
+                    return {nullptr};
+            }
 
-			return {_Coro};
-		}
+            return {_Coro};
+        }
 
-		iterator end()
-		{
-			return {nullptr};
-		}
+        iterator end()
+        {
+            return {nullptr};
+        }
 
-		explicit generator(promise_type& _Prom)
-			: _Coro(resumable_handle<promise_type>::from_promise(_STD addressof(_Prom)))
-		{
-		}
+        explicit generator(promise_type& _Prom)
+            : _Coro(resumable_handle<promise_type>::from_promise(_STD addressof(_Prom)))
+        {
+        }
 
-		generator() = default;
+        generator() = default;
 
-		generator(generator const&) = delete;
+        generator(generator const&) = delete;
 
-		generator& operator = (generator const&) = delete;
+        generator& operator = (generator const&) = delete;
 
-		generator(generator && _Right)
-			: _Coro(_Right._Coro)
-		{
-			_Right._Coro = nullptr;
-		}
+        generator(generator && _Right)
+            : _Coro(_Right._Coro)
+        {
+            _Right._Coro = nullptr;
+        }
 
-		generator& operator = (generator && _Right)
-		{
-			if (&_Right != this)
-			{
-				_Coro = _Right._Coro;
-				_Right._Coro = nullptr;
-			}
-		}
+        generator& operator = (generator && _Right)
+        {
+            if (&_Right != this)
+            {
+                _Coro = _Right._Coro;
+                _Right._Coro = nullptr;
+            }
+        }
 
-		~generator()
-		{
-			if (_Coro)
-			{
-				auto& _Prom = _Coro.promise();
-				if (_Prom._State == promise_type::_StateT::_Active)
-				{
-					// Note: on the cancel path, we resume the coroutine twice.
-					// Once to resume at the current point and force cancellation.
-					// Second, to move beyond the final_suspend point.
-					//
-					// Alternative design would be to check in final_suspend whether
-					// the state is being cancelled and return true from "await_ready",
-					// thus bypassing the final suspend.
-					//
-					// Current design favors normal path. Alternative, cancel path.
+        ~generator()
+        {
+            if (_Coro)
+            {
+                auto& _Prom = _Coro.promise();
+                if (_Prom._State == promise_type::_StateT::_Active)
+                {
+                    // Note: on the cancel path, we resume the coroutine twice.
+                    // Once to resume at the current point and force cancellation.
+                    // Second, to move beyond the final_suspend point.
+                    //
+                    // Alternative design would be to check in final_suspend whether
+                    // the state is being cancelled and return true from "await_ready",
+                    // thus bypassing the final suspend.
+                    //
+                    // Current design favors normal path. Alternative, cancel path.
 
-					_Prom._State = promise_type::_StateT::_Cancelling;
-					_Coro();
-				}
-				_Coro();
-			}
-		}
-	private:
-		resumable_handle<promise_type> _Coro = nullptr;
-	};
+                    _Prom._State = promise_type::_StateT::_Cancelling;
+                    _Coro();
+                }
+                _Coro();
+            }
+        }
+    private:
+        resumable_handle<promise_type> _Coro = nullptr;
+    };
+
+    template <typename _Ty, typename _Alloc, typename... _Whatever>
+    struct resumable_traits<generator<_Ty, _Alloc>, _Whatever...> {
+        using allocator_type = _Alloc;
+        using promise_type = typename generator<_Ty, _Alloc>::promise_type;
+    };
 
         template <typename _Ty, typename _Alloc, typename... _Whatever>
         struct resumable_traits<generator<_Ty, _Alloc>, _Whatever...> {

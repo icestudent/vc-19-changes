@@ -11,13 +11,17 @@
 #pragma push_macro("new")
 #undef new
 
-#define _CPPLIB_VER	610
+#define _CPPLIB_VER	650
 #define _HAS_DECLTYPE	1
+#define _HAS_EXCEPTION_POINTERS	1
+#define _HAS_FUNCTION_DELETE	1
 #define _HAS_INITIALIZER_LISTS	1
+#define _HAS_NULLPTR_T	1
 #define _HAS_REF_QUALIFIER	0
 #define _HAS_RVALUE_REFERENCES	1
 #define _HAS_SCOPED_ENUM	1
 #define _HAS_TEMPLATE_ALIAS	1
+#define _HAS_TEMPLATE_TEMPLATE	1
 #define _HAS_VARIADIC_TEMPLATES	1
 
 #define _HAS_CPP0X     1
@@ -34,12 +38,6 @@
  *
  * Full details can be found in our documentation by searching for "Checked Iterators".
 */
-
-#ifdef _USE_32BIT_TIME_T
-	#ifndef _USING_32BIT_TIME_T_IS_STRONGLY_DEPRECATED
-		#error 32-bit time_t is strongly deprecated and can trigger crashes in the C++ Standard Library.
-	#endif /* _USING_32BIT_TIME_T_IS_STRONGLY_DEPRECATED */
-#endif /* _USE_32BIT_TIME_T */
 
 #if defined(MRTDLL) && defined(_CRTBLD)
 /*
@@ -748,6 +746,6 @@ _C_STD_END
 #endif /* _YVALS */
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
- V6.00:0009 */
+V6.50:0009 */

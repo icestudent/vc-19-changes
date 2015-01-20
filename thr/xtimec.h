@@ -17,7 +17,7 @@ extern "C" {	// C linkage
 
 typedef struct xtime
 	{	/* store time with nanosecond resolution */
-	time_t sec;
+	__time64_t sec;
 	long nsec;
 	} xtime;
 
@@ -58,6 +58,6 @@ _CRTIMP2_PURE long long __cdecl _Query_perf_frequency(void);
  */
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.00:0009 */
+V6.50:0009 */

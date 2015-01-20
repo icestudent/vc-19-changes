@@ -24,6 +24,10 @@
   #define _Memory_barrier()     __dmb(_ARM_BARRIER_ISH)
   #endif /* defined(_M_ARM) */
 
+  #if defined(_M_ARM64)
+  #define _Memory_barrier()     __dmb(0xB)	/* TRANSITION */
+  #endif /* defined(_M_ARM64) */
+
  #ifndef _CONCAT
   #define _CONCATX(x, y)	x ## y
   #define _CONCAT(x, y)		_CONCATX(x, y)
@@ -51,17 +55,17 @@
 	(_ADDR_SIZE <= _ATOMIC_MAXBYTES_LOCK_FREE ? 2 : 0)
 
  /* Interlocked intrinsic mapping for _nf/_acq/_rel */
- #if defined(_M_ARM)
+ #if defined(_M_ARM) || defined(_M_ARM64)
   #define _INTRIN_RELAXED(x)	_CONCAT(x, _nf)
   #define _INTRIN_ACQUIRE(x)	_CONCAT(x, _acq)
   #define _INTRIN_RELEASE(x)	_CONCAT(x, _rel)
   #define _INTRIN_SEQ_CST(x)	x
- #else /* defined(_M_ARM) */
+ #else /* defined(_M_ARM) || defined(_M_ARM64) */
   #define _INTRIN_RELAXED(x)	x
   #define _INTRIN_ACQUIRE(x)	x
   #define _INTRIN_RELEASE(x)	x
   #define _INTRIN_SEQ_CST(x)	x
- #endif /* defined(_M_ARM) */
+ #endif /* defined(_M_ARM) || defined(_M_ARM64) */
 
  #if defined(_M_IX86)
 #pragma push_macro("_InterlockedExchange64")
@@ -260,7 +264,7 @@ inline void _Validate_compare_exchange_memory_order(
 inline void _Store_relaxed_1(volatile _Uint1_t *_Tgt, _Uint1_t _Value)
 	{	/* store _Value atomically with relaxed memory order */
 
- #if defined(_M_ARM)
+ #if defined(_M_ARM) || defined(_M_ARM64)
 	__iso_volatile_store8((volatile char *)_Tgt, _Value);
 
  #else
@@ -271,7 +275,7 @@ inline void _Store_relaxed_1(volatile _Uint1_t *_Tgt, _Uint1_t _Value)
 inline void _Store_release_1(volatile _Uint1_t *_Tgt, _Uint1_t _Value)
 	{	/* store _Value atomically with release memory order */
 
- #if defined(_M_ARM)
+ #if defined(_M_ARM) || defined(_M_ARM64)
 	_Memory_barrier();
 	__iso_volatile_store8((volatile char *)_Tgt, _Value);
 
@@ -285,7 +289,7 @@ inline void _Store_seq_cst_1(volatile _Uint1_t *_Tgt, _Uint1_t _Value)
 	{	/* store _Value atomically with
 			sequentially consistent memory order */
 
- #if defined(_M_ARM)
+ #if defined(_M_ARM) || defined(_M_ARM64)
 	_Memory_barrier();
 	__iso_volatile_store8((volatile char *)_Tgt, _Value);
 	_Memory_barrier();
@@ -324,7 +328,7 @@ inline _Uint1_t _Load_seq_cst_1(volatile _Uint1_t *_Tgt)
 			sequentially consistent memory order */
 	_Uint1_t _Value;
 
- #if defined(_M_ARM)
+ #if defined(_M_ARM) || defined(_M_ARM64)
 	_Value = __iso_volatile_load8((volatile char *)_Tgt);
 	_Memory_barrier();
 
@@ -341,7 +345,7 @@ inline _Uint1_t _Load_relaxed_1(volatile _Uint1_t *_Tgt)
 			relaxed memory order */
 	_Uint1_t _Value;
 
- #if defined(_M_ARM)
+ #if defined(_M_ARM) || defined(_M_ARM64)
 	_Value = __iso_volatile_load8((volatile char *)_Tgt);
 
  #else
@@ -405,7 +409,11 @@ inline _Uint1_t _Exchange_release_1(volatile _Uint1_t *_Tgt, _Uint1_t _Value)
 	{	/* exchange _Value and *_Tgt atomically with
 			release memory order */
 
+ #if defined(_M_ARM64) /* TRANSITION */
+	return (_INTRIN_SEQ_CST(_InterlockedExchange8)((volatile char *)_Tgt, _Value));
+ #else /* defined(_M_ARM64) */
 	return (_INTRIN_RELEASE(_InterlockedExchange8)((volatile char *)_Tgt, _Value));
+ #endif /* defined(_M_ARM64) */
 	}
 
 inline _Uint1_t _Atomic_exchange_1(
@@ -438,81 +446,72 @@ inline int _Compare_exchange_seq_cst_1(volatile _Uint1_t *_Tgt,
 	_Uint1_t *_Exp, _Uint1_t _Value)
 	{	/* compare and exchange values atomically with
 			sequentially consistent memory order */
-
-	int _Res;
+	_Uint1_t _Old_exp = *_Exp;	/* read before atomic operation */
 
 	_Uint1_t _Prev = _INTRIN_SEQ_CST(_InterlockedCompareExchange8)((volatile char *)_Tgt,
-		_Value, *_Exp);
+		_Value, _Old_exp);
 
-	if (_Prev == *_Exp)
-		_Res = 1;
+	if (_Prev == _Old_exp)
+		return (1);
 	else
 		{	/* copy old value */
-		_Res = 0;
 		*_Exp = _Prev;
+		return (0);
 		}
-
-	return (_Res);
 	}
 
 inline int _Compare_exchange_relaxed_1(volatile _Uint1_t *_Tgt,
 	_Uint1_t *_Exp, _Uint1_t _Value)
 	{	/* compare and exchange values atomically with
 			relaxed memory order */
-	int _Res;
+	_Uint1_t _Old_exp = *_Exp;	/* read before atomic operation */
 
 	_Uint1_t _Prev = _INTRIN_RELAXED(_InterlockedCompareExchange8)((volatile char *)_Tgt,
-		_Value, *_Exp);
+		_Value, _Old_exp);
 
-	if (_Prev == *_Exp)
-		_Res = 1;
+	if (_Prev == _Old_exp)
+		return (1);
 	else
 		{	/* copy old value */
-		_Res = 0;
 		*_Exp = _Prev;
+		return (0);
 		}
-
-	return (_Res);
 	}
 
 inline int _Compare_exchange_acquire_1(volatile _Uint1_t *_Tgt,
 	_Uint1_t *_Exp, _Uint1_t _Value)
 	{	/* compare and exchange values atomically with
 			acquire memory order */
-	int _Res;
+	_Uint1_t _Old_exp = *_Exp;	/* read before atomic operation */
 
 	_Uint1_t _Prev = _INTRIN_ACQUIRE(_InterlockedCompareExchange8)((volatile char *)_Tgt,
-		_Value, *_Exp);
+		_Value, _Old_exp);
 
-	if (_Prev == *_Exp)
-		_Res = 1;
+	if (_Prev == _Old_exp)
+		return (1);
 	else
 		{	/* copy old value */
-		_Res = 0;
 		*_Exp = _Prev;
+		return (0);
 		}
-
-	return (_Res);
 	}
 
 inline int _Compare_exchange_release_1(volatile _Uint1_t *_Tgt,
 	_Uint1_t *_Exp, _Uint1_t _Value)
 	{	/* compare and exchange values atomically with
 			release memory order */
-	int _Res;
+	_Uint1_t _Old_exp = *_Exp;	/* read before atomic operation */
 
 	_Uint1_t _Prev = _INTRIN_RELEASE(_InterlockedCompareExchange8)((volatile char *)_Tgt,
-		_Value, *_Exp);
+		_Value, _Old_exp);
 
-	if (_Prev == *_Exp)
-		_Res = 1;
+	if (_Prev == _Old_exp)
+		return (1);
 	else
 		{	/* copy old value */
-		_Res = 0;
 		*_Exp = _Prev;
+		return (0);
 		}
-
-	return (_Res);
 	}
 
 inline int _Atomic_compare_exchange_strong_1(
@@ -779,7 +778,7 @@ inline _Uint1_t _Atomic_fetch_xor_1(
 inline void _Store_relaxed_2(volatile _Uint2_t *_Tgt, _Uint2_t _Value)
 	{	/* store _Value atomically with relaxed memory order */
 
- #if defined(_M_ARM)
+ #if defined(_M_ARM) || defined(_M_ARM64)
 	__iso_volatile_store16((volatile short *)_Tgt, _Value);
 
  #else
@@ -790,7 +789,7 @@ inline void _Store_relaxed_2(volatile _Uint2_t *_Tgt, _Uint2_t _Value)
 inline void _Store_release_2(volatile _Uint2_t *_Tgt, _Uint2_t _Value)
 	{	/* store _Value atomically with release memory order */
 
- #if defined(_M_ARM)
+ #if defined(_M_ARM) || defined(_M_ARM64)
 	_Memory_barrier();
 	__iso_volatile_store16((volatile short *)_Tgt, _Value);
 
@@ -804,7 +803,7 @@ inline void _Store_seq_cst_2(volatile _Uint2_t *_Tgt, _Uint2_t _Value)
 	{	/* store _Value atomically with
 			sequentially consistent memory order */
 
- #if defined(_M_ARM)
+ #if defined(_M_ARM) || defined(_M_ARM64)
 	_Memory_barrier();
 	__iso_volatile_store16((volatile short *)_Tgt, _Value);
 	_Memory_barrier();
@@ -843,7 +842,7 @@ inline _Uint2_t _Load_seq_cst_2(volatile _Uint2_t *_Tgt)
 			sequentially consistent memory order */
 	_Uint2_t _Value;
 
- #if defined(_M_ARM)
+ #if defined(_M_ARM) || defined(_M_ARM64)
 	_Value = __iso_volatile_load16((volatile short *)_Tgt);
 	_Memory_barrier();
 
@@ -860,7 +859,7 @@ inline _Uint2_t _Load_relaxed_2(volatile _Uint2_t *_Tgt)
 			relaxed memory order */
 	_Uint2_t _Value;
 
- #if defined(_M_ARM)
+ #if defined(_M_ARM) || defined(_M_ARM64)
 	_Value = __iso_volatile_load16((volatile short *)_Tgt);
 
  #else
@@ -924,7 +923,11 @@ inline _Uint2_t _Exchange_release_2(volatile _Uint2_t *_Tgt, _Uint2_t _Value)
 	{	/* exchange _Value and *_Tgt atomically with
 			release memory order */
 
+ #if defined(_M_ARM64) /* TRANSITION */
+	return (_INTRIN_SEQ_CST(_InterlockedExchange16)((volatile short *)_Tgt, _Value));
+ #else /* defined(_M_ARM64) */
 	return (_INTRIN_RELEASE(_InterlockedExchange16)((volatile short *)_Tgt, _Value));
+ #endif /* defined(_M_ARM64) */
 	}
 
 inline _Uint2_t _Atomic_exchange_2(
@@ -957,81 +960,72 @@ inline int _Compare_exchange_seq_cst_2(volatile _Uint2_t *_Tgt,
 	_Uint2_t *_Exp, _Uint2_t _Value)
 	{	/* compare and exchange values atomically with
 			sequentially consistent memory order */
-
-	int _Res;
+	_Uint2_t _Old_exp = *_Exp;	/* read before atomic operation */
 
 	_Uint2_t _Prev = _INTRIN_SEQ_CST(_InterlockedCompareExchange16)((volatile short *)_Tgt,
-		_Value, *_Exp);
+		_Value, _Old_exp);
 
-	if (_Prev == *_Exp)
-		_Res = 1;
+	if (_Prev == _Old_exp)
+		return (1);
 	else
 		{	/* copy old value */
-		_Res = 0;
 		*_Exp = _Prev;
+		return (0);
 		}
-
-	return (_Res);
 	}
 
 inline int _Compare_exchange_relaxed_2(volatile _Uint2_t *_Tgt,
 	_Uint2_t *_Exp, _Uint2_t _Value)
 	{	/* compare and exchange values atomically with
 			relaxed memory order */
-	int _Res;
+	_Uint2_t _Old_exp = *_Exp;	/* read before atomic operation */
 
 	_Uint2_t _Prev = _INTRIN_RELAXED(_InterlockedCompareExchange16)((volatile short *)_Tgt,
-		_Value, *_Exp);
+		_Value, _Old_exp);
 
-	if (_Prev == *_Exp)
-		_Res = 1;
+	if (_Prev == _Old_exp)
+		return (1);
 	else
 		{	/* copy old value */
-		_Res = 0;
 		*_Exp = _Prev;
+		return (0);
 		}
-
-	return (_Res);
 	}
 
 inline int _Compare_exchange_acquire_2(volatile _Uint2_t *_Tgt,
 	_Uint2_t *_Exp, _Uint2_t _Value)
 	{	/* compare and exchange values atomically with
 			acquire memory order */
-	int _Res;
+	_Uint2_t _Old_exp = *_Exp;	/* read before atomic operation */
 
 	_Uint2_t _Prev = _INTRIN_ACQUIRE(_InterlockedCompareExchange16)((volatile short *)_Tgt,
-		_Value, *_Exp);
+		_Value, _Old_exp);
 
-	if (_Prev == *_Exp)
-		_Res = 1;
+	if (_Prev == _Old_exp)
+		return (1);
 	else
 		{	/* copy old value */
-		_Res = 0;
 		*_Exp = _Prev;
+		return (0);
 		}
-
-	return (_Res);
 	}
 
 inline int _Compare_exchange_release_2(volatile _Uint2_t *_Tgt,
 	_Uint2_t *_Exp, _Uint2_t _Value)
 	{	/* compare and exchange values atomically with
 			release memory order */
-	int _Res;
+	_Uint2_t _Old_exp = *_Exp;	/* read before atomic operation */
 
 	_Uint2_t _Prev = _INTRIN_RELEASE(_InterlockedCompareExchange16)((volatile short *)_Tgt,
-		_Value, *_Exp);
+		_Value, _Old_exp);
 
-	if (_Prev == *_Exp)
-		_Res = 1;
+	if (_Prev == _Old_exp)
+		return (1);
 	else
 		{	/* copy old value */
-		_Res = 0;
 		*_Exp = _Prev;
+		return (0);
 		}
-
-	return (_Res);
 	}
 
 inline int _Atomic_compare_exchange_strong_2(
@@ -1298,7 +1292,7 @@ inline _Uint2_t _Atomic_fetch_xor_2(
 inline void _Store_relaxed_4(volatile _Uint4_t *_Tgt, _Uint4_t _Value)
 	{	/* store _Value atomically with relaxed memory order */
 
- #if defined(_M_ARM)
+ #if defined(_M_ARM) || defined(_M_ARM64)
 	__iso_volatile_store32((volatile int *)_Tgt, _Value);
 
  #else
@@ -1309,7 +1303,7 @@ inline void _Store_relaxed_4(volatile _Uint4_t *_Tgt, _Uint4_t _Value)
 inline void _Store_release_4(volatile _Uint4_t *_Tgt, _Uint4_t _Value)
 	{	/* store _Value atomically with release memory order */
 
- #if defined(_M_ARM)
+ #if defined(_M_ARM) || defined(_M_ARM64)
 	_Memory_barrier();
 	__iso_volatile_store32((volatile int *)_Tgt, _Value);
 
@@ -1323,7 +1317,7 @@ inline void _Store_seq_cst_4(volatile _Uint4_t *_Tgt, _Uint4_t _Value)
 	{	/* store _Value atomically with
 			sequentially consistent memory order */
 
- #if defined(_M_ARM)
+ #if defined(_M_ARM) || defined(_M_ARM64)
 	_Memory_barrier();
 	__iso_volatile_store32((volatile int *)_Tgt, _Value);
 	_Memory_barrier();
@@ -1362,7 +1356,7 @@ inline _Uint4_t _Load_seq_cst_4(volatile _Uint4_t *_Tgt)
 			sequentially consistent memory order */
 	_Uint4_t _Value;
 
- #if defined(_M_ARM)
+ #if defined(_M_ARM) || defined(_M_ARM64)
 	_Value = __iso_volatile_load32((volatile int *)_Tgt);
 	_Memory_barrier();
 
@@ -1379,7 +1373,7 @@ inline _Uint4_t _Load_relaxed_4(volatile _Uint4_t *_Tgt)
 			relaxed memory order */
 	_Uint4_t _Value;
 
- #if defined(_M_ARM)
+ #if defined(_M_ARM) || defined(_M_ARM64)
 	_Value = __iso_volatile_load32((volatile int *)_Tgt);
 
  #else
@@ -1443,7 +1437,11 @@ inline _Uint4_t _Exchange_release_4(volatile _Uint4_t *_Tgt, _Uint4_t _Value)
 	{	/* exchange _Value and *_Tgt atomically with
 			release memory order */
 
+ #if defined(_M_ARM64) /* TRANSITION */
+	return (_INTRIN_SEQ_CST(_InterlockedExchange)((volatile long *)_Tgt, _Value));
+ #else /* defined(_M_ARM64) */
 	return (_INTRIN_RELEASE(_InterlockedExchange)((volatile long *)_Tgt, _Value));
+ #endif /* defined(_M_ARM64) */
 	}
 
 inline _Uint4_t _Atomic_exchange_4(
@@ -1476,81 +1474,72 @@ inline int _Compare_exchange_seq_cst_4(volatile _Uint4_t *_Tgt,
 	_Uint4_t *_Exp, _Uint4_t _Value)
 	{	/* compare and exchange values atomically with
 			sequentially consistent memory order */
-
-	int _Res;
+	_Uint4_t _Old_exp = *_Exp;	/* read before atomic operation */
 
 	_Uint4_t _Prev = _INTRIN_SEQ_CST(_InterlockedCompareExchange)((volatile long *)_Tgt,
-		_Value, *_Exp);
+		_Value, _Old_exp);
 
-	if (_Prev == *_Exp)
-		_Res = 1;
+	if (_Prev == _Old_exp)
+		return (1);
 	else
 		{	/* copy old value */
-		_Res = 0;
 		*_Exp = _Prev;
+		return (0);
 		}
-
-	return (_Res);
 	}
 
 inline int _Compare_exchange_relaxed_4(volatile _Uint4_t *_Tgt,
 	_Uint4_t *_Exp, _Uint4_t _Value)
 	{	/* compare and exchange values atomically with
 			relaxed memory order */
-	int _Res;
+	_Uint4_t _Old_exp = *_Exp;	/* read before atomic operation */
 
 	_Uint4_t _Prev = _INTRIN_RELAXED(_InterlockedCompareExchange)((volatile long *)_Tgt,
-		_Value, *_Exp);
+		_Value, _Old_exp);
 
-	if (_Prev == *_Exp)
-		_Res = 1;
+	if (_Prev == _Old_exp)
+		return (1);
 	else
 		{	/* copy old value */
-		_Res = 0;
 		*_Exp = _Prev;
+		return (0);
 		}
-
-	return (_Res);
 	}
 
 inline int _Compare_exchange_acquire_4(volatile _Uint4_t *_Tgt,
 	_Uint4_t *_Exp, _Uint4_t _Value)
 	{	/* compare and exchange values atomically with
 			acquire memory order */
-	int _Res;
+	_Uint4_t _Old_exp = *_Exp;	/* read before atomic operation */
 
 	_Uint4_t _Prev = _INTRIN_ACQUIRE(_InterlockedCompareExchange)((volatile long *)_Tgt,
-		_Value, *_Exp);
+		_Value, _Old_exp);
 
-	if (_Prev == *_Exp)
-		_Res = 1;
+	if (_Prev == _Old_exp)
+		return (1);
 	else
 		{	/* copy old value */
-		_Res = 0;
 		*_Exp = _Prev;
+		return (0);
 		}
-
-	return (_Res);
 	}
 
 inline int _Compare_exchange_release_4(volatile _Uint4_t *_Tgt,
 	_Uint4_t *_Exp, _Uint4_t _Value)
 	{	/* compare and exchange values atomically with
 			release memory order */
-	int _Res;
+	_Uint4_t _Old_exp = *_Exp;	/* read before atomic operation */
 
 	_Uint4_t _Prev = _INTRIN_RELEASE(_InterlockedCompareExchange)((volatile long *)_Tgt,
-		_Value, *_Exp);
+		_Value, _Old_exp);
 
-	if (_Prev == *_Exp)
-		_Res = 1;
+	if (_Prev == _Old_exp)
+		return (1);
 	else
 		{	/* copy old value */
-		_Res = 0;
 		*_Exp = _Prev;
+		return (0);
 		}
-
-	return (_Res);
 	}
 
 inline int _Atomic_compare_exchange_strong_4(
@@ -1817,8 +1806,11 @@ inline _Uint4_t _Atomic_fetch_xor_4(
 inline void _Store_relaxed_8(volatile _Uint8_t *_Tgt, _Uint8_t _Value)
 	{	/* store _Value atomically with relaxed memory order */
 
- #if _MS_64
+ #if defined(_M_X64)
 	*_Tgt = _Value;
+
+ #elif defined(_M_ARM64)
+	__iso_volatile_store64((volatile _LONGLONG *)_Tgt, _Value);
 
  #else
 	_INTRIN_RELAXED(_InterlockedExchange64)((volatile _LONGLONG *)_Tgt, _Value);
@@ -1828,9 +1820,13 @@ inline void _Store_relaxed_8(volatile _Uint8_t *_Tgt, _Uint8_t _Value)
 inline void _Store_release_8(volatile _Uint8_t *_Tgt, _Uint8_t _Value)
 	{	/* store _Value atomically with release memory order */
 
- #if _MS_64
+ #if defined(_M_X64)
 	_Compiler_barrier();
 	*_Tgt = _Value;
+
+ #elif defined(_M_ARM64)
+	_Memory_barrier();
+	__iso_volatile_store64((volatile _LONGLONG *)_Tgt, _Value);
 
  #else
 	_INTRIN_RELEASE(_InterlockedExchange64)((volatile _LONGLONG *)_Tgt, _Value);
@@ -1840,7 +1836,15 @@ inline void _Store_release_8(volatile _Uint8_t *_Tgt, _Uint8_t _Value)
 inline void _Store_seq_cst_8(volatile _Uint8_t *_Tgt, _Uint8_t _Value)
 	{	/* store _Value atomically with
 			sequentially consistent memory order */
+
+ #if defined(_M_ARM64)
+	_Memory_barrier();
+	__iso_volatile_store64((volatile _LONGLONG *)_Tgt, _Value);
+	_Memory_barrier();
+
+ #else
 	_INTRIN_SEQ_CST(_InterlockedExchange64)((volatile _LONGLONG *)_Tgt, _Value);
+ #endif
 	}
 
 inline void _Atomic_store_8(
@@ -1872,12 +1876,16 @@ inline _Uint8_t _Load_seq_cst_8(volatile _Uint8_t *_Tgt)
 			sequentially consistent memory order */
 	_Uint8_t _Value;
 
- #if _MS_64
+ #if defined(_M_X64)
 	_Value = *_Tgt;
 	_Compiler_barrier();
 
  #elif defined(_M_ARM)
 	_Value = __ldrexd((volatile _LONGLONG *)_Tgt);
+	_Memory_barrier();
+
+ #elif defined(_M_ARM64)
+	_Value = __iso_volatile_load64((volatile _LONGLONG *)_Tgt);
 	_Memory_barrier();
 
  #else
@@ -1892,11 +1900,14 @@ inline _Uint8_t _Load_relaxed_8(volatile _Uint8_t *_Tgt)
 			relaxed memory order */
 	_Uint8_t _Value;
 
- #if _MS_64
+ #if defined(_M_X64)
 	_Value = *_Tgt;
 
  #elif defined(_M_ARM)
 	_Value = __ldrexd((volatile _LONGLONG *)_Tgt);
+
+ #elif defined(_M_ARM64)
+	_Value = __iso_volatile_load64((volatile _LONGLONG *)_Tgt);
 
  #else
 	_Value = _InterlockedOr64((volatile _LONGLONG *)_Tgt, 0);
@@ -1959,7 +1970,11 @@ inline _Uint8_t _Exchange_release_8(volatile _Uint8_t *_Tgt, _Uint8_t _Value)
 	{	/* exchange _Value and *_Tgt atomically with
 			release memory order */
 
+ #if defined(_M_ARM64) /* TRANSITION */
+	return (_INTRIN_SEQ_CST(_InterlockedExchange64)((volatile _LONGLONG *)_Tgt, _Value));
+ #else /* defined(_M_ARM64) */
 	return (_INTRIN_RELEASE(_InterlockedExchange64)((volatile _LONGLONG *)_Tgt, _Value));
+ #endif /* defined(_M_ARM64) */
 	}
 
 inline _Uint8_t _Atomic_exchange_8(
@@ -1992,81 +2007,72 @@ inline int _Compare_exchange_seq_cst_8(volatile _Uint8_t *_Tgt,
 	_Uint8_t *_Exp, _Uint8_t _Value)
 	{	/* compare and exchange values atomically with
 			sequentially consistent memory order */
-
-	int _Res;
+	_Uint8_t _Old_exp = *_Exp;	/* read before atomic operation */
 
 	_Uint8_t _Prev = _INTRIN_SEQ_CST(_InterlockedCompareExchange64)((volatile _LONGLONG *)_Tgt,
-		_Value, *_Exp);
+		_Value, _Old_exp);
 
-	if (_Prev == *_Exp)
-		_Res = 1;
+	if (_Prev == _Old_exp)
+		return (1);
 	else
 		{	/* copy old value */
-		_Res = 0;
 		*_Exp = _Prev;
+		return (0);
 		}
-
-	return (_Res);
 	}
 
 inline int _Compare_exchange_relaxed_8(volatile _Uint8_t *_Tgt,
 	_Uint8_t *_Exp, _Uint8_t _Value)
 	{	/* compare and exchange values atomically with
 			relaxed memory order */
-	int _Res;
+	_Uint8_t _Old_exp = *_Exp;	/* read before atomic operation */
 
 	_Uint8_t _Prev = _INTRIN_RELAXED(_InterlockedCompareExchange64)((volatile _LONGLONG *)_Tgt,
-		_Value, *_Exp);
+		_Value, _Old_exp);
 
-	if (_Prev == *_Exp)
-		_Res = 1;
+	if (_Prev == _Old_exp)
+		return (1);
 	else
 		{	/* copy old value */
-		_Res = 0;
 		*_Exp = _Prev;
+		return (0);
 		}
-
-	return (_Res);
 	}
 
 inline int _Compare_exchange_acquire_8(volatile _Uint8_t *_Tgt,
 	_Uint8_t *_Exp, _Uint8_t _Value)
 	{	/* compare and exchange values atomically with
 			acquire memory order */
-	int _Res;
+	_Uint8_t _Old_exp = *_Exp;	/* read before atomic operation */
 
 	_Uint8_t _Prev = _INTRIN_ACQUIRE(_InterlockedCompareExchange64)((volatile _LONGLONG *)_Tgt,
-		_Value, *_Exp);
+		_Value, _Old_exp);
 
-	if (_Prev == *_Exp)
-		_Res = 1;
+	if (_Prev == _Old_exp)
+		return (1);
 	else
 		{	/* copy old value */
-		_Res = 0;
 		*_Exp = _Prev;
+		return (0);
 		}
-
-	return (_Res);
 	}
 
 inline int _Compare_exchange_release_8(volatile _Uint8_t *_Tgt,
 	_Uint8_t *_Exp, _Uint8_t _Value)
 	{	/* compare and exchange values atomically with
 			release memory order */
-	int _Res;
+	_Uint8_t _Old_exp = *_Exp;	/* read before atomic operation */
 
 	_Uint8_t _Prev = _INTRIN_RELEASE(_InterlockedCompareExchange64)((volatile _LONGLONG *)_Tgt,
-		_Value, *_Exp);
+		_Value, _Old_exp);
 
-	if (_Prev == *_Exp)
-		_Res = 1;
+	if (_Prev == _Old_exp)
+		return (1);
 	else
 		{	/* copy old value */
-		_Res = 0;
 		*_Exp = _Prev;
+		return (0);
 		}
-
-	return (_Res);
 	}
 
 inline int _Atomic_compare_exchange_strong_8(
@@ -2376,7 +2382,7 @@ inline void _Atomic_flag_clear(volatile _Atomic_flag_t *_Flag,
 
 inline void _Atomic_thread_fence(memory_order _Order)
 	{	/* force memory visibility and inhibit compiler reordering */
- #if defined(_M_ARM)
+ #if defined(_M_ARM) || defined(_M_ARM64)
 	if (_Order != memory_order_relaxed)
 		{
 		_Memory_barrier();
@@ -2398,7 +2404,7 @@ inline void _Atomic_signal_fence(memory_order _Order)
 	_Compiler_barrier();
 	}
 
- #if defined(_M_ARM)
+ #if defined(_M_ARM) || defined(_M_ARM64)
  #define _YIELD_PROCESSOR __yield()
 
  #else
@@ -2431,7 +2437,7 @@ inline void _Atomic_copy(
 			memory_order _Order)
 	{	/* atomically copy *_Src to *_Tgt with memory ordering */
 	_Lock_spin_lock(_Flag);
-	memcpy((void *)_Tgt, (void *)_Src, _Size);
+	_CSTD memcpy((void *)_Tgt, (void *)_Src, _Size);
 	_Unlock_spin_lock(_Flag);
 	}
 
@@ -2461,11 +2467,11 @@ inline int _Atomic_compare_exchange_weak(
 	int _Result;
 
 	_Lock_spin_lock(_Flag);
-	_Result = memcmp((const void *)_Tgt, (const void *)_Exp, _Size) == 0;
+	_Result = _CSTD memcmp((const void *)_Tgt, (const void *)_Exp, _Size) == 0;
 	if (_Result != 0)
-		memcpy((void *)_Tgt, (void *)_Src, _Size);
+		_CSTD memcpy((void *)_Tgt, (void *)_Src, _Size);
 	else
-		memcpy((void *)_Exp, (void *)_Tgt, _Size);
+		_CSTD memcpy((void *)_Exp, (void *)_Tgt, _Size);
 	_Unlock_spin_lock(_Flag);
 	return (_Result);
 	}
@@ -2516,6 +2522,6 @@ _STD_END
 #endif /* _XATOMIC_H */
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.00:0009 */
+V6.50:0009 */

@@ -18,8 +18,8 @@
     #error ERROR: C++ AMP runtime is not supported for applications where WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP.
 #endif
 
-#if !(defined (_M_X64) || defined (_M_IX86) || defined (_M_ARM) || defined (_M_CRT_UNSUPPORTED) )
-    #error ERROR: C++ AMP runtime is supported only on X64, X86, ARM, and _M_CRT_UNSUPPORTED architectures.
+#if !(defined (_M_X64) || defined (_M_IX86) || defined (_M_ARM) || defined (_M_ARM64) )
+    #error ERROR: C++ AMP runtime is supported only on X64, X86, ARM, and _M_ARM64 architectures.
 #endif  
 
 #if defined (_M_CEE)

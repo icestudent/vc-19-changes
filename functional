@@ -249,7 +249,7 @@ private:
 	virtual _Mybase *_Move(void *_Where)
 		{	// return clone of *this
 		_Myalty _Al = _Myal();
-		_Myt * _Ptr = static_cast<_Myt *>(_Where);
+		_Myt *_Ptr = static_cast<_Myt *>(_Where);
 		_Al.construct(_Ptr, _STD move(_Callee()), _STD move(_Myal()));
 		return (_Ptr);
 		}
@@ -545,9 +545,7 @@ private:
 		};
 
 	_Storage _Mystorage;
-
 	enum {_EEN_IMPL = _Num_ptrs - 1};	// helper for expression evaluator
-
 	_Ptrt *_Getimpl() const _NOEXCEPT
 		{	// get pointer to object
 		return (_Mystorage._Ptrs[_Num_ptrs - 1]);
@@ -1479,6 +1477,6 @@ template<class _Fty,
 #endif /* _FUNCTIONAL_ */
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.00:0009 */
+V6.50:0009 */

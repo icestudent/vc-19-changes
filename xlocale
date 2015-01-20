@@ -259,7 +259,7 @@ public:
 			const basic_string<_Elem, _Traits, _Alloc>& _Right) const
 		{	// compare _Left and _Right strings using collate facet in locale
 		const _STD collate<_Elem>& _Coll_fac =
-			use_facet<_STD collate<_Elem> >(*this);
+			use_facet< _STD collate<_Elem> >(*this);
 
 		return (_Coll_fac.compare(_Left.c_str(), _Left.c_str() + _Left.size(),
 			_Right.c_str(), _Right.c_str() + _Right.size()) < 0);
@@ -993,7 +993,6 @@ template<class _Elem,
 	class _Statype>
 	__PURE_APPDOMAIN_GLOBAL locale::id codecvt<_Elem, _Byte, _Statype>::id;
 
- #if _HAS_CHAR16_T_LANGUAGE_SUPPORT
 		// ENUM _Codecvt_mode
 enum _Codecvt_mode {
 	_Consume_header = 4,
@@ -1590,7 +1589,6 @@ private:
 	unsigned long _Maxcode;	// default: 0xffffffff
 	_Codecvt_mode _Mode;	// default: _Consume_header
 	};
- #endif /* _HAS_CHAR16_T_LANGUAGE_SUPPORT */
 
 		// CLASS codecvt<wchar_t, char, _Mbstatet>
 template<>
@@ -3074,6 +3072,6 @@ _STD_END
 #endif /* _XLOCALE_ */
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.00:0009 */
+V6.50:0009 */

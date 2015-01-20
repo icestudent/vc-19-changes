@@ -23,7 +23,7 @@ _CRT_BEGIN_C_HEADER
 
 #if defined _M_IX86
     #define _CRT_INTERNAL_STDIO_SYMBOL_PREFIX "_"
-#elif defined _M_AMD64 || defined _M_ARM || defined _M_CRT_UNSUPPORTED
+#elif defined _M_AMD64 || defined _M_ARM || defined _M_ARM64
     #define _CRT_INTERNAL_STDIO_SYMBOL_PREFIX ""
 #else
     #error Unsupported architecture

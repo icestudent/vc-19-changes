@@ -50,7 +50,7 @@ extern "C" {
     #define _VA_ALIGN       4
     #define _SLOTSIZEOF(t)  ((sizeof(t) + _VA_ALIGN - 1) & ~(_VA_ALIGN - 1))
     #define _APALIGN(t,ap)  (((va_list)0 - (ap)) & (__alignof(t) - 1))
-#elif defined _M_CRT_UNSUPPORTED && !defined _M_CEE_PURE
+#elif defined _M_ARM64 && !defined _M_CEE_PURE
     #define _VA_ALIGN       8
     #define _SLOTSIZEOF(t)  ((sizeof(t) + _VA_ALIGN - 1) & ~(_VA_ALIGN - 1))
     #define _APALIGN(t,ap)  (((va_list)0 - (ap)) & (__alignof(t) - 1))
@@ -59,7 +59,7 @@ extern "C" {
     #define _APALIGN(t,ap)  (__alignof(t))
 #endif
 
-#if defined _M_CEE_PURE || (defined _M_CEE && !defined _M_ARM && !defined _M_CRT_UNSUPPORTED)
+#if defined _M_CEE_PURE || (defined _M_CEE && !defined _M_ARM && !defined _M_ARM64)
 
     void  __cdecl __va_start(va_list*, ...);
     void* __cdecl __va_arg(va_list*, ...);
@@ -89,7 +89,7 @@ extern "C" {
     #define __crt_va_arg(ap, t) (*(t*)((ap += _SLOTSIZEOF(t) + _APALIGN(t,ap)) - _SLOTSIZEOF(t)))
     #define __crt_va_end(ap)    ((void)(ap = (va_list)0))
 
-#elif defined _M_CRT_UNSUPPORTED
+#elif defined _M_ARM64
 
     void __cdecl __va_start(va_list*, ...);
 

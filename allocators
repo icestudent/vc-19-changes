@@ -12,13 +12,13 @@
  #pragma push_macro("new")
  #undef new
 
-#if !defined(_DECLSPEC_ALLOCATOR)
-#if _MSC_VER >= 1900 && !defined(__EDG__)
-#define _DECLSPEC_ALLOCATOR __declspec(allocator)
-#else
-#define _DECLSPEC_ALLOCATOR
-#endif
-#endif
+ #if !defined(_DECLSPEC_ALLOCATOR)
+  #if 1900 <= _MSC_VER && !defined(__EDG__)
+   #define _DECLSPEC_ALLOCATOR	__declspec(allocator)
+  #else /* 1900 <= _MSC_VER, etc. */
+   #define _DECLSPEC_ALLOCATOR
+  #endif /* 1900 <= _MSC_VER, etc. */
+ #endif /* !defined(_DECLSPEC_ALLOCATOR) */
 
  #if !defined(_ALLOCATORS_NO_REBIND)
   #define _ALLOCATORS_NO_REBIND  0
@@ -767,6 +767,7 @@ public:
 		::new ((void *)_Ptr) _Objty(_STD forward<_Types>(_Args)...);
 		}
 
+
 	template<class _Other>
 		void destroy(_Other *_Ptr)
 		{	// destroy *_Ptr
@@ -900,6 +901,6 @@ _STD_END
 #endif /* _ALLOCATORS_ */
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.00:0009 */
+V6.50:0009 */

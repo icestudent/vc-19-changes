@@ -668,10 +668,10 @@ private:
 			_NUMGET_SIGNOFF = 22,
 			_NUMGET_XOFF = 24};
 		static const char _Src[] = {"0123456789ABCDEFabcdef-+Xx"};
-		_Elem _Atoms[sizeof (_Src) - 1];
+		_Elem _Atoms[sizeof (_Src)];
 		const ctype<_Elem>& _Ctype_fac =
 			_USE(_Loc, ctype<_Elem>);
-		_Ctype_fac.widen(&_Src[0], &_Src[sizeof (_Src) - 1], _Atoms);
+		_Ctype_fac.widen(&_Src[0], &_Src[sizeof (_Src)], _Atoms);
 
 		char *_Ptr = _Ac;
 
@@ -766,15 +766,16 @@ private:
 		const string _Grouping = _Punct_fac.grouping();
 		char *_Ptr = _Ac;
 		bool _Bad = false;
+		bool _Sticky = false;
 
 		enum {
 			_NUMGET_SIGNOFF = 10,
 			_NUMGET_EOFF = 12};
 		static const char _Src[] = {"0123456789-+Ee"};
-		_Elem _Atoms[sizeof (_Src) - 1];
+		_Elem _Atoms[sizeof (_Src)];
 		const ctype<_Elem>& _Ctype_fac =
 			_USE(_Iosbase.getloc(), ctype<_Elem>);
-		_Ctype_fac.widen(&_Src[0], &_Src[sizeof (_Src) - 1], _Atoms);
+		_Ctype_fac.widen(&_Src[0], &_Src[sizeof (_Src)], _Atoms);
 
 		if (_First == _Last)
 			;	// empty field
@@ -782,6 +783,9 @@ private:
 			*_Ptr++ = '+', ++_First;	// gather plus sign
 		else if (*_First == _Atoms[_NUMGET_SIGNOFF])
 			*_Ptr++ = '-', ++_First;	// gather minus sign
+
+		char *_Leading = _Ptr;	// remember backstop
+		*_Ptr++ = '0';	// backstop carries from sticky bit
 
 		bool _Seendigit = false;	// seen a digit in input
 		int _Significant = 0;	// number of significant digits
@@ -794,7 +798,11 @@ private:
 				&& (_Idx = _Find_elem(_Atoms, *_First)) < 10;
 					_Seendigit = true, ++_First)
 				if (_MAX_SIG_DIG <= _Significant)
-					++_Pten;	// just scale by 10
+					{	// enough digits, scale by 10 and update _Sticky
+					++_Pten;
+					if (0 < _Idx)
+						_Sticky = true;
+					}
 				else if (_Idx == 0 && _Significant == 0)
 					;	// drop leading zeros
 				else
@@ -814,7 +822,11 @@ private:
 					{	// got a digit, add to group size
 					_Seendigit = true;
 					if (_MAX_SIG_DIG <= _Significant)
-						++_Pten;	// just scale by 10
+						{	// enough digits, scale by 10 and update _Sticky
+						++_Pten;
+						if (0 < _Idx)
+							_Sticky = true;
+						}
 					else if (_Idx == 0 && _Significant == 0)
 						;	// drop leading zeros
 					else
@@ -851,9 +863,6 @@ private:
 					++_Pg;	// group size okay, advance to next test
 			}
 
-		if (_Seendigit && _Significant == 0)
-			*_Ptr++ = '0';	// save at least one leading digit
-
 		if (_First != _Last && *_First == _Punct_fac.decimal_point())
 			*_Ptr++ = localeconv()->decimal_point[0], ++_First;	// add .
 
@@ -874,6 +883,31 @@ private:
 				*_Ptr++ = _Src[_Idx];
 				++_Significant;
 				}
+			else if (0 < _Idx)
+				_Sticky = true;	// just update _Sticky
+
+		if (_Sticky)
+			{	// increment ls digit in memory of those lost
+			char *_Px = _Ptr;
+			for (; --_Px != _Leading; )
+				{	// add in carry
+				if (*_Px == localeconv()->decimal_point[0])
+					;	// skip over decimal point
+				else if (*_Px != '9')
+					{	// carry stops here
+					++*_Px;
+					break;
+					}
+				else
+					*_Px = '0';	// propagate carry
+				}
+
+			if (_Px == _Leading)
+				{	// change "999..." to "1000..." and scale _Pten
+				*_Px = '1';
+				++_Pten;
+				}
+			}
 
 		if (_Seendigit && _First != _Last
 			&& (*_First == _Atoms[_NUMGET_EOFF + 1]
@@ -920,10 +954,10 @@ private:
 			_NUMGET_XOFF = 24,
 			_NUMGET_POFF = 26};
 		static const char _Src[] = {"0123456789ABCDEFabcdef-+XxPp"};
-		_Elem _Atoms[sizeof (_Src) - 1];
+		_Elem _Atoms[sizeof (_Src)];
 		const ctype<_Elem>& _Ctype_fac =
 			_USE(_Iosbase.getloc(), ctype<_Elem>);
-		_Ctype_fac.widen(&_Src[0], &_Src[sizeof (_Src) - 1], _Atoms);
+		_Ctype_fac.widen(&_Src[0], &_Src[sizeof (_Src)], _Atoms);
 
 		char *_Ptr = _Ac;
 		bool _Bad = false;
@@ -1254,84 +1288,49 @@ protected:
 	virtual _OutIt __CLR_OR_THIS_CALL do_put(_OutIt _Dest,
 		ios_base& _Iosbase, _Elem _Fill, double _Val) const
 		{	// put formatted double to _Dest
-		char _Buf[_MAX_EXP_DIG + _MAX_SIG_DIG + 64], _Fmt[8];
-		streamsize _Precision = _Iosbase.precision() <= 0
-			&& !(_Iosbase.flags() & ios_base::fixed)
-				? 6 : _Iosbase.precision();	// desired precision
-		int _Significance = _MAX_SIG_DIG < _Precision
-			? _MAX_SIG_DIG : (int)_Precision;	// actual sprintf precision
-		_Precision -= _Significance;
-		size_t _Beforepoint = 0;	// zeros to add before decimal point
-		size_t _Afterpoint = 0;	// zeros to add after decimal point
-
-		if ((_Iosbase.flags() & ios_base::floatfield) == ios_base::fixed
-			&& _Val * 0.5 != _Val)	// skip -Inf, 0, Inf
-			{	// scale silly fixed-point value
-			bool _Signed = _Val < 0;
-			if (_Signed)
-				_Val = -_Val;
-
-			for (; 1e35 <= _Val && _Beforepoint < 5000; _Beforepoint += 10)
-				_Val /= 1e10;	// drop 10 zeros before decimal point
-
-			if (0 < _Val)
-				for (; 10 <= _Precision && _Val <= 1e-35
-					&& _Afterpoint < 5000; _Afterpoint += 10)
-					{	// drop 10 zeros after decimal point
-					_Val *= 1e10;
-					_Precision -= 10;
-					}
-
-			if (_Signed)
-				_Val = -_Val;
+		string _Buf;
+		char _Fmt[8];
+		bool _Isfixed = (_Iosbase.flags() & ios_base::floatfield)
+			== ios_base::fixed;
+		streamsize _Precision = _Iosbase.precision() <= 0 && !_Isfixed
+			? 6 : _Iosbase.precision();	// desired precision
+		size_t _Bufsize = (size_t)_Precision;
+		if (_Isfixed && 1e10 < _CSTD fabs(_Val))
+			{	// f or F format
+			int _Ptwo;
+			_CSTD frexp(_Val, &_Ptwo);
+			_Bufsize += _CSTD abs(_Ptwo) * 30103L / 100000L;
 			}
+		_Buf.resize(_Bufsize + 50);	// add fudge factor
 
-		return (_Fput(_Dest, _Iosbase, _Fill, _Buf,
-			_Beforepoint, _Afterpoint, (size_t)_Precision,
-				_CSTD sprintf_s(_Buf, sizeof (_Buf),
-					_Ffmt(_Fmt, 0, _Iosbase.flags()),
-					_Significance, _Val)));	// convert and put
+		int _Ngen = _CSTD sprintf_s((char *)_Buf.c_str(), _Buf.size(),
+			_Ffmt(_Fmt, 0, _Iosbase.flags()), (int)_Precision, _Val);
+
+		return (_Fput(_Dest, _Iosbase, _Fill, _Buf.c_str(), _Ngen));
 		}
 
 	virtual _OutIt __CLR_OR_THIS_CALL do_put(_OutIt _Dest,
 		ios_base& _Iosbase, _Elem _Fill, long double _Val) const
 		{	// put formatted long double to _Dest
-		char _Buf[_MAX_EXP_DIG + _MAX_SIG_DIG + 64], _Fmt[8];
-		streamsize _Precision = _Iosbase.precision() <= 0
-			&& !(_Iosbase.flags() & ios_base::fixed)
-				? 6 : _Iosbase.precision();	// desired precision
-		int _Significance = _MAX_SIG_DIG < _Precision
-			? _MAX_SIG_DIG : (int)_Precision;	// actual sprintf precision
-		_Precision -= _Significance;
-		size_t _Beforepoint = 0;	// zeros to add before decimal point
-		size_t _Afterpoint = 0;	// zeros to add after decimal point
-
-		if ((_Iosbase.flags() & ios_base::floatfield) == ios_base::fixed)
-			{	// scale silly fixed-point value
-			bool _Signed = _Val < 0;
-			if (_Signed)
-				_Val = -_Val;
-
-			for (; 1e35 <= _Val && _Beforepoint < 5000; _Beforepoint += 10)
-				_Val /= 1e10;	// drop 10 zeros before decimal point
-
-			if (0 < _Val)
-				for (; 10 <= _Precision && _Val <= 1e-35
-					&& _Afterpoint < 5000; _Afterpoint += 10)
-					{	// drop 10 zeros after decimal point
-					_Val *= 1e10;
-					_Precision -= 10;
-					}
-
-			if (_Signed)
-				_Val = -_Val;
+		string _Buf;
+		char _Fmt[8];
+		bool _Isfixed = (_Iosbase.flags() & ios_base::floatfield)
+			== ios_base::fixed;
+		streamsize _Precision = _Iosbase.precision() <= 0 && !_Isfixed
+			? 6 : _Iosbase.precision();	// desired precision
+		size_t _Bufsize = (size_t)_Precision;
+		if (_Isfixed && 1e10 < _CSTD fabsl(_Val))
+			{	// f or F format
+			int _Ptwo;
+			_CSTD frexpl(_Val, &_Ptwo);
+			_Bufsize += _CSTD abs(_Ptwo) * 30103L / 100000L;
 			}
+		_Buf.resize(_Bufsize + 50);	// add fudge factor
 
-		return (_Fput(_Dest, _Iosbase, _Fill, _Buf,
-			_Beforepoint, _Afterpoint, (size_t)_Precision,
-				_CSTD sprintf_s(_Buf, sizeof (_Buf),
-					_Ffmt(_Fmt, 'L', _Iosbase.flags()),
-					_Significance, _Val)));	// convert and put
+		int _Ngen = _CSTD sprintf_s((char *)_Buf.c_str(), _Buf.size(),
+			_Ffmt(_Fmt, 'L', _Iosbase.flags()), (int)_Precision, _Val);
+
+		return (_Fput(_Dest, _Iosbase, _Fill, _Buf.c_str(), _Ngen));
 		}
 
 	virtual _OutIt __CLR_OR_THIS_CALL do_put(_OutIt _Dest,
@@ -1375,8 +1374,7 @@ private:
 
 	_OutIt __CLRCALL_OR_CDECL _Fput(_OutIt _Dest,
 		ios_base& _Iosbase, _Elem _Fill, const char *_Buf,
-			size_t _Beforepoint, size_t _Afterpoint,
-				size_t _Trailing, size_t _Count) const
+			size_t _Count) const
 		{	// put formatted floating-point to _Dest
 		_DEBUG_POINTER(_Dest);
 		size_t _Prefix = 0 < _Count && (*_Buf == '+' || *_Buf == '-')
@@ -1401,7 +1399,6 @@ private:
 
 		const ctype<_Elem>& _Ctype_fac =
 			_USE(_Iosbase.getloc(), ctype<_Elem>);
-		const _Elem _E0 = _Ctype_fac.widen('0');
 		_Mystr _Groupstring(_Count, _Elem(0));	// reserve space
 		_Ctype_fac.widen(&_Buf[0], &_Buf[_Count], &_Groupstring[0]);
 
@@ -1409,21 +1406,10 @@ private:
 		const string _Grouping = _Punct_fac.grouping();
 		const _Elem _Kseparator = _Punct_fac.thousands_sep();
 
-		size_t _Off = _Beforepoint;	// offset of (effective) decimal point
-		if (_Poff == _Count)
-			{	// no decimal point, ignore _Afterpoint and _Trailing
-			_Off += _Eoff;
-			_Groupstring.insert(_Eoff, _Beforepoint, _E0);
-			}
-		else
-			{	// fill in zeros around decimal point
-			_Off += _Poff;
-			_Groupstring.insert(_Eoff, _Trailing, _E0);
-			_Groupstring.insert(_Poff + 1, _Afterpoint, _E0);
+		if (_Poff != _Count)
 			_Groupstring[_Poff] = _Punct_fac.decimal_point();
-			_Groupstring.insert(_Poff, _Beforepoint, _E0);
-			}
 
+		size_t _Off = _Poff == _Count ? _Eoff : _Poff;
 		const char *_Pg = &_Grouping[0];
 		while (*_Pg != CHAR_MAX && '\0' < *_Pg
 			&& (size_t)*_Pg < _Off - _Prefix)
@@ -1603,6 +1589,6 @@ _STD_END
 #endif /* _XLOCNUM_ */
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.00:0009 */
+V6.50:0009 */

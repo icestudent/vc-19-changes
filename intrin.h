@@ -34,8 +34,9 @@
         #include <arm_neon.h>
     #endif
 
-    #if defined (_M_CRT_UNSUPPORTED)
-        #include <intrin_unsupported.h>
+    #if defined (_M_ARM64)
+        #include <arm64intr.h>
+        #include <arm64_neon.h>
     #endif
 #endif
 
@@ -111,22 +112,22 @@ extern "C" {
 #define __MACHINECALL_CDECL_OR_DEFAULT __cdecl
 #endif
 
-#if !defined(_M_CRT_UNSUPPORTED)
+#if !defined(_M_ARM64)
 #undef  __MACHINECRT_UNSUPPORTED
 #define __MACHINECRT_UNSUPPORTED      __MACHINEZ
 #endif
 
-#if !(defined(_M_ARM) || defined(_M_CRT_UNSUPPORTED))
+#if !(defined(_M_ARM) || defined(_M_ARM64))
 #undef __MACHINEARM_CRT_UNSUPPORTED
 #define __MACHINEARM_CRT_UNSUPPORTED  __MACHINEZ
 #endif
 
-#if !(defined(_M_ARM) || defined(_M_X64) || defined(_M_CRT_UNSUPPORTED))
+#if !(defined(_M_ARM) || defined(_M_X64) || defined(_M_ARM64))
 #undef __MACHINEARM_CRT_UNSUPPORTED_X64
 #define __MACHINEARM_CRT_UNSUPPORTED_X64     __MACHINEZ
 #endif
 
-#if !(defined(_M_X64) || defined(_M_CRT_UNSUPPORTED))
+#if !(defined(_M_X64) || defined(_M_ARM64))
 #undef __MACHINECRT_UNSUPPORTED_X64
 #define __MACHINECRT_UNSUPPORTED_X64     __MACHINEZ
 #endif
@@ -230,15 +231,15 @@ __MACHINEWVMPURE(long __MACHINECALL_CDECL_OR_DEFAULT _InterlockedExchange(long v
 __MACHINE(short _InterlockedExchange16(short volatile * _Target, short _Value))
 __MACHINEARM_CRT_UNSUPPORTED(short _InterlockedExchange16_acq(short volatile * _Target, short _Value))
 __MACHINEARM_CRT_UNSUPPORTED(short _InterlockedExchange16_nf(short volatile * _Target, short _Value))
-__MACHINEARM(short _InterlockedExchange16_rel(short volatile * _Target, short _Value))
+__MACHINEARM_CRT_UNSUPPORTED(short _InterlockedExchange16_rel(short volatile * _Target, short _Value))
 __MACHINEARM_CRT_UNSUPPORTED_X64(__int64 _InterlockedExchange64(__int64 volatile * _Target, __int64 _Value))
 __MACHINEARM_CRT_UNSUPPORTED(__int64 _InterlockedExchange64_acq(__int64 volatile * _Target, __int64 _Value))
 __MACHINEARM_CRT_UNSUPPORTED(__int64 _InterlockedExchange64_nf(__int64 volatile * _Target, __int64 _Value))
-__MACHINEARM(__int64 _InterlockedExchange64_rel(__int64 volatile * _Target, __int64 _Value))
+__MACHINEARM_CRT_UNSUPPORTED(__int64 _InterlockedExchange64_rel(__int64 volatile * _Target, __int64 _Value))
 __MACHINE(char _InterlockedExchange8(char volatile * _Target, char _Value))
 __MACHINEARM_CRT_UNSUPPORTED(char _InterlockedExchange8_acq(char volatile * _Target, char _Value))
 __MACHINEARM_CRT_UNSUPPORTED(char _InterlockedExchange8_nf(char volatile * _Target, char _Value))
-__MACHINEARM(char _InterlockedExchange8_rel(char volatile * _Target, char _Value))
+__MACHINEARM_CRT_UNSUPPORTED(char _InterlockedExchange8_rel(char volatile * _Target, char _Value))
 __MACHINE(long __MACHINECALL_CDECL_OR_DEFAULT _InterlockedExchangeAdd(long volatile * _Addend, long _Value))
 __MACHINE(short _InterlockedExchangeAdd16(short volatile * _Addend, short _Value))
 __MACHINEARM_CRT_UNSUPPORTED(short _InterlockedExchangeAdd16_acq(short volatile * _Addend, short _Value))
@@ -261,7 +262,7 @@ __MACHINEARM_CRT_UNSUPPORTED(void * _InterlockedExchangePointer_nf(void * volati
 __MACHINEARM(void * _InterlockedExchangePointer_rel(void * volatile * _Target, void * _Value))
 __MACHINEARM_CRT_UNSUPPORTED(long _InterlockedExchange_acq(long volatile * _Target, long _Value))
 __MACHINEARM_CRT_UNSUPPORTED(long _InterlockedExchange_nf(long volatile * _Target, long _Value))
-__MACHINEARM(long _InterlockedExchange_rel(long volatile * _Target, long _Value))
+__MACHINEARM_CRT_UNSUPPORTED(long _InterlockedExchange_rel(long volatile * _Target, long _Value))
 __MACHINE(long __MACHINECALL_CDECL_OR_DEFAULT _InterlockedIncrement(long volatile * _Addend))
 __MACHINEWVMPURE(long _InterlockedIncrement(long volatile * _Addend))
 __MACHINE(short _InterlockedIncrement16(short volatile * _Addend))

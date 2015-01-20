@@ -37,12 +37,10 @@ typedef _Uint4_t _Atomic_integral_t;
   #define _LONGLONG_SIZE	8
 
   #if defined(_WIN64)
-   #define _ADDR_SIZE		8
-   #define _MS_64	1
+   #define _ADDR_SIZE	8
 
   #else /* defined(_WIN64) */
-   #define _ADDR_SIZE		4
-   #define _MS_64	0
+   #define _ADDR_SIZE	4
   #endif /* defined(_WIN64) */
 
 		/* TYPEDEF _Atomic_flag_t */
@@ -173,6 +171,6 @@ _STD_END
 #endif /* _XATOMIC0_H */
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.00:0009 */
+V6.50:0009 */

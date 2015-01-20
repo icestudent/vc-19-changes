@@ -56,7 +56,8 @@ template<class _Ty> inline \
 	}
 
 #define _GENERIC_MATH2_CALL(FUN, CRTTYPE, CALL_OPT) \
-extern "C" _Check_return_ CRTTYPE double CALL_OPT FUN(_In_ double, _In_ double); \
+extern "C" _Check_return_ CRTTYPE double CALL_OPT FUN( \
+	_In_ double, _In_ double); \
 template<class _Ty1, \
 	class _Ty2> inline \
 	typename _STD enable_if< _STD is_arithmetic<_Ty1>::value \
@@ -92,7 +93,9 @@ _GENERIC_MATH1(ceil, _CRTSPECIAL)
 _GENERIC_MATH1(cos, _CRTDEFAULT)
 _GENERIC_MATH1(cosh, _CRTDEFAULT)
 _GENERIC_MATH1(exp, _CRTDEFAULT)
+
 _GENERIC_MATH1(fabs, _CRT_JIT_INTRINSIC)
+
 _GENERIC_MATH1(floor, _CRTSPECIAL)
 _GENERIC_MATH2(fmod, _CRTDEFAULT)
 _GENERIC_MATH1X(frexp, _Out_ int *, _CRTSPECIAL)
@@ -216,6 +219,6 @@ _C_STD_END
  #endif /* defined(__cplusplus) */
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.00:0009 */
+V6.50:0009 */

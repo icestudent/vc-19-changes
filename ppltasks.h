@@ -424,10 +424,30 @@ namespace details
         typedef decltype(_VoidIsTaskHelper(stdx::declval<_Function>(), 0, 0)) _Takes_task;
     };
 
+#ifndef _PPLTASKS_NO_STDFUNC
+    template<typename _Ty, typename _IsTaskType>
+    struct _ContinuationArgTypeHelper
+    {
+        static_assert(std::is_same<_IsTaskType, std::false_type>::value,  "_IsTaskType template parameter must be std::true_type or std::false_type");
+        typedef _Ty _ArgType;
+    };
+
+    template<typename _Ty>
+    struct _ContinuationArgTypeHelper<_Ty, std::true_type>
+    {
+        typedef task<_Ty> _ArgType;
+    };
+#endif
+
     template<typename _Function, typename _ReturnType>
     struct _ContinuationTypeTraits
     {
         typedef task<typename _TaskTypeTraits<typename _FunctionTypeTraits<_Function, _ReturnType>::_FuncRetType>::_TaskRetType> _TaskOfType;
+#ifndef _PPLTASKS_NO_STDFUNC
+        typedef typename _ContinuationArgTypeHelper<_ReturnType, typename details::_FunctionTypeTraits<_Function, _ReturnType>::_Takes_task>::_ArgType _ArgTypeT;
+        typedef typename _FunctionTypeTraits<_Function, _ReturnType>::_FuncRetType _RetTypeT;
+        typedef std::function<_RetTypeT __cdecl(_ArgTypeT)> _StdFuncT;
+#endif
     };
 
     // _InitFunctorTypeTraits is used to decide whether a task constructed with a lambda should be unwrapped. Depending on how the variable is
@@ -3096,7 +3116,12 @@ public:
     {
         task_options _TaskOptions;
         details::_get_internal_task_options(_TaskOptions)._set_creation_callstack(_CAPTURE_CALLSTACK());
+
+#ifndef _PPLTASKS_NO_STDFUNC
+        return _ThenImpl<_ReturnType>(typename details::_ContinuationTypeTraits<_Function, _ReturnType>::_StdFuncT(_Func), _TaskOptions);
+#else
         return _ThenImpl<_ReturnType, _Function>(_Func, _TaskOptions);
+#endif
     }
 
     /// <summary>
@@ -3128,7 +3153,12 @@ public:
     auto then(const _Function& _Func, task_options _TaskOptions) const -> typename details::_ContinuationTypeTraits<_Function, _ReturnType>::_TaskOfType
     {
         details::_get_internal_task_options(_TaskOptions)._set_creation_callstack(_CAPTURE_CALLSTACK());
+
+#ifndef _PPLTASKS_NO_STDFUNC
+        return _ThenImpl<_ReturnType>(typename details::_ContinuationTypeTraits<_Function, _ReturnType>::_StdFuncT(_Func), _TaskOptions);
+#else
         return _ThenImpl<_ReturnType, _Function>(_Func, _TaskOptions);
+#endif
     }
 
     /// <summary>
@@ -3165,7 +3195,12 @@ public:
     {
         task_options _TaskOptions(_CancellationToken, _ContinuationContext);
         details::_get_internal_task_options(_TaskOptions)._set_creation_callstack(_CAPTURE_CALLSTACK());
+
+#ifndef _PPLTASKS_NO_STDFUNC
+        return _ThenImpl<_ReturnType>(typename details::_ContinuationTypeTraits<_Function, _ReturnType>::_StdFuncT(_Func), _TaskOptions);
+#else
         return _ThenImpl<_ReturnType, _Function>(_Func, _TaskOptions);
+#endif
     }
 
     /// <summary>
@@ -3356,7 +3391,11 @@ public:
         // inherit from antecedent
         auto _Scheduler = _GetImpl()->_GetScheduler();
 
+#ifndef _PPLTASKS_NO_STDFUNC
+        return _ThenImpl<_ReturnType>(typename details::_ContinuationTypeTraits<_Function, _ReturnType>::_StdFuncT(_Func), _PTokenState, task_continuation_context::use_default(), _Scheduler, _CAPTURE_CALLSTACK(), _InliningMode);
+#else
         return _ThenImpl<_ReturnType, _Function>(_Func, _PTokenState, task_continuation_context::use_default(), _Scheduler, _CAPTURE_CALLSTACK(), _InliningMode);
+#endif
     }
 
 private:
@@ -4038,7 +4077,12 @@ public:
     auto then(const _Function& _Func, task_options _TaskOptions = task_options()) const -> typename details::_ContinuationTypeTraits<_Function, void>::_TaskOfType
     {
         details::_get_internal_task_options(_TaskOptions)._set_creation_callstack(_CAPTURE_CALLSTACK());
+
+#ifndef _PPLTASKS_NO_STDFUNC
+        return _M_unitTask._ThenImpl<void>(typename details::_ContinuationTypeTraits<_Function, void>::_StdFuncT(_Func), _TaskOptions);
+#else
         return _M_unitTask._ThenImpl<void, _Function>(_Func, _TaskOptions);
+#endif
     }
 
     /// <summary>
@@ -4075,7 +4119,12 @@ public:
     {
         task_options _TaskOptions(_CancellationToken, _ContinuationContext);
         details::_get_internal_task_options(_TaskOptions)._set_creation_callstack(_CAPTURE_CALLSTACK());
+
+#ifndef _PPLTASKS_NO_STDFUNC
+        return _M_unitTask._ThenImpl<void>(typename details::_ContinuationTypeTraits<_Function, void>::_StdFuncT(_Func), _TaskOptions);
+#else
         return _M_unitTask._ThenImpl<void, _Function>(_Func, _TaskOptions);
+#endif
     }
 
     /// <summary>
@@ -4225,7 +4274,11 @@ public:
         // inherit from antecedent
         auto _Scheduler = _GetImpl()->_GetScheduler();
 
+#ifndef _PPLTASKS_NO_STDFUNC
+        return _M_unitTask._ThenImpl<void>(typename details::_ContinuationTypeTraits<_Function, void>::_StdFuncT(_Func), _PTokenState, task_continuation_context::use_default(), _Scheduler, _CAPTURE_CALLSTACK(), _InliningMode);
+#else
         return _M_unitTask._ThenImpl<void, _Function>(_Func, _PTokenState, task_continuation_context::use_default(), _Scheduler, _CAPTURE_CALLSTACK(), _InliningMode);
+#endif
     }
 
 private:
@@ -5109,7 +5162,13 @@ namespace details
         static auto _GenerateTask(const _Function& _Func, _ClassPtr _Ptr, cancellation_token_source _Cts, const _TaskCreationCallstack & _callstack)
             -> decltype(_Generator::_GenerateTask_0(_Func, _Cts, _callstack))
         {
+#ifndef _PPLTASKS_NO_STDFUNC
+            typedef decltype(_Func()) _ReturnType;
+            typedef std::function<_ReturnType __cdecl()> _StdFunction;
+            return _Generator::_GenerateTask_0(_StdFunction(_Func), _Cts, _callstack);
+#else
             return _Generator::_GenerateTask_0(_Func, _Cts, _callstack);
+#endif
         }
     };
 
@@ -5120,7 +5179,12 @@ namespace details
         static auto _GenerateTask(const _Function& _Func, _ClassPtr _Ptr, cancellation_token_source _Cts, const _TaskCreationCallstack & _callstack)
             -> decltype(_Generator::_GenerateTask_0(_Func, _Cts, _callstack))
         {
+#ifndef _PPLTASKS_NO_STDFUNC
+            typedef decltype(_Func(stdx::declval<cancellation_token>())) _ReturnType;
+            return _Generator::_GenerateTask_1C(std::function<_ReturnType __cdecl(cancellation_token)>(_Func), _Cts, _callstack);
+#else
             return _Generator::_GenerateTask_1C(_Func, _Cts, _callstack);
+#endif
         }
     };
 
@@ -5131,7 +5195,12 @@ namespace details
         static auto _GenerateTask(const _Function& _Func, _ClassPtr _Ptr, cancellation_token_source _Cts, const _TaskCreationCallstack & _callstack)
             -> decltype(_Generator::_GenerateTask_0(_Func, _Cts, _callstack))
         {
+#ifndef _PPLTASKS_NO_STDFUNC
+            typedef decltype(_Func(stdx::declval<const progress_reporter<_ProgressType>&>())) _ReturnType;
+            return _Generator::_GenerateTask_1P(std::function<_ReturnType __cdecl(const progress_reporter<_ProgressType>&)>(_Func), progress_reporter<_ProgressType>::_CreateReporter(_Ptr), _Cts, _callstack);
+#else
             return _Generator::_GenerateTask_1P(_Func, progress_reporter<_ProgressType>::_CreateReporter(_Ptr), _Cts, _callstack);
+#endif
         }
     };
 
@@ -5142,7 +5211,12 @@ namespace details
         static auto _GenerateTask(const _Function& _Func, _ClassPtr _Ptr, cancellation_token_source _Cts, const _TaskCreationCallstack & _callstack)
             -> decltype(_Generator::_GenerateTask_0(_Func, _Cts, _callstack))
         {
+#ifndef _PPLTASKS_NO_STDFUNC
+            typedef decltype(_Func(stdx::declval<const progress_reporter<_ProgressType>&>(), stdx::declval<cancellation_token>())) _ReturnType;
+            return _Generator::_GenerateTask_2PC(std::function<_ReturnType __cdecl(const progress_reporter<_ProgressType>&, cancellation_token)>(_Func), progress_reporter<_ProgressType>::_CreateReporter(_Ptr), _Cts, _callstack);
+#else
             return _Generator::_GenerateTask_2PC(_Func, progress_reporter<_ProgressType>::_CreateReporter(_Ptr), _Cts, _callstack);
+#endif
         }
     };
 
@@ -5162,101 +5236,78 @@ namespace details
     //
     // _TakesProgress           : An indication as to whether or not
     //
-    // _Generate_Task           : A function adapting the user's function into what's necessary to produce the appropriate task
     //
     // Optional:
     // -------------------------
     //
 
-    template<typename _Function, typename _ProgressType, typename _ReturnType, typename _TaskTraits, bool _TakesToken, bool _TakesProgress>
+    template<typename _ProgressType, typename _ReturnType, typename _TaskTraits, bool _TakesToken, bool _TakesProgress>
     struct _AsyncAttributes
     {
     };
 
-    template<typename _Function, typename _ProgressType, typename _ReturnType, typename _TaskTraits, bool _TakesToken>
-    struct _AsyncAttributes<_Function, _ProgressType, _ReturnType, _TaskTraits, _TakesToken, true>
+    template<typename _ProgressType, typename _ReturnType, typename _TaskTraits, bool _TakesToken>
+    struct _AsyncAttributes<_ProgressType, _ReturnType, _TaskTraits, _TakesToken, true>
     {
-        typedef typename Windows::Foundation::IAsyncOperationWithProgress<_ReturnType, _ProgressType> _AsyncBaseType;
-        typedef typename Windows::Foundation::AsyncOperationProgressHandler<_ReturnType, _ProgressType> _ProgressDelegateType;
-        typedef typename Windows::Foundation::AsyncOperationWithProgressCompletedHandler<_ReturnType, _ProgressType> _CompletionDelegateType;
-        typedef typename _ReturnType _ReturnType;
-        typedef typename _ProgressType _ProgressType;
+        typedef Windows::Foundation::IAsyncOperationWithProgress<_ReturnType, _ProgressType> _AsyncBaseType;
+        typedef Windows::Foundation::AsyncOperationProgressHandler<_ReturnType, _ProgressType> _ProgressDelegateType;
+        typedef Windows::Foundation::AsyncOperationWithProgressCompletedHandler<_ReturnType, _ProgressType> _CompletionDelegateType;
+        typedef _ReturnType _ReturnType;
+        typedef _ProgressType _ProgressType;
         typedef typename _TaskTraits::_AsyncKind _AsyncKind;
-        typedef typename _SelectorTaskGenerator<_AsyncKind, _ReturnType> _SelectorTaskGenerator;
-        typedef typename _TaskGenerator<_SelectorTaskGenerator, _TakesToken, true> _TaskGenerator;
+        typedef _SelectorTaskGenerator<_AsyncKind, _ReturnType> _SelectorTaskGenerator;
+        typedef _TaskGenerator<_SelectorTaskGenerator, _TakesToken, true> _TaskGenerator;
 
         static const bool _TakesProgress = true;
         static const bool _TakesToken = _TakesToken;
-
-        template<typename _Function, typename _ClassPtr>
-        static task<_ReturnType> _Generate_Task(const _Function& _Func, _ClassPtr _Ptr, cancellation_token_source _Cts, const _TaskCreationCallstack & _callstack)
-        {
-            return _TaskGenerator::_GenerateTask<_Function, _ClassPtr, _ProgressType>(_Func, _Ptr, _Cts, _callstack);
-        }
     };
 
-    template<typename _Function, typename _ProgressType, typename _ReturnType, typename _TaskTraits, bool _TakesToken>
-    struct _AsyncAttributes<_Function, _ProgressType, _ReturnType, _TaskTraits, _TakesToken, false>
+    template<typename _ProgressType, typename _ReturnType, typename _TaskTraits, bool _TakesToken>
+    struct _AsyncAttributes<_ProgressType, _ReturnType, _TaskTraits, _TakesToken, false>
     {
-        typedef typename Windows::Foundation::IAsyncOperation<_ReturnType> _AsyncBaseType;
+        typedef Windows::Foundation::IAsyncOperation<_ReturnType> _AsyncBaseType;
         typedef _Zip _ProgressDelegateType;
-        typedef typename Windows::Foundation::AsyncOperationCompletedHandler<_ReturnType> _CompletionDelegateType;
-        typedef typename _ReturnType _ReturnType;
+        typedef Windows::Foundation::AsyncOperationCompletedHandler<_ReturnType> _CompletionDelegateType;
+        typedef _ReturnType _ReturnType;
+        typedef _ProgressType _ProgressType;
         typedef typename _TaskTraits::_AsyncKind _AsyncKind;
-        typedef typename _SelectorTaskGenerator<_AsyncKind, _ReturnType> _SelectorTaskGenerator;
-        typedef typename _TaskGenerator<_SelectorTaskGenerator, _TakesToken, false> _TaskGenerator;
+        typedef _SelectorTaskGenerator<_AsyncKind, _ReturnType> _SelectorTaskGenerator;
+        typedef _TaskGenerator<_SelectorTaskGenerator, _TakesToken, false> _TaskGenerator;
 
         static const bool _TakesProgress = false;
         static const bool _TakesToken = _TakesToken;
-
-        template<typename _Function, typename _ClassPtr>
-        static task<_ReturnType> _Generate_Task(const _Function& _Func, _ClassPtr _Ptr, cancellation_token_source _Cts, const _TaskCreationCallstack & _callstack)
-        {
-            return _TaskGenerator::_GenerateTask<_Function, _ClassPtr, _ProgressType>(_Func, _Ptr, _Cts, _callstack);
-        }
     };
 
-    template<typename _Function, typename _ProgressType, typename _TaskTraits, bool _TakesToken>
-    struct _AsyncAttributes<_Function, _ProgressType, void, _TaskTraits, _TakesToken, true>
+    template<typename _ProgressType, typename _TaskTraits, bool _TakesToken>
+    struct _AsyncAttributes<_ProgressType, void, _TaskTraits, _TakesToken, true>
     {
-        typedef typename Windows::Foundation::IAsyncActionWithProgress<_ProgressType> _AsyncBaseType;
-        typedef typename Windows::Foundation::AsyncActionProgressHandler<_ProgressType> _ProgressDelegateType;
-        typedef typename Windows::Foundation::AsyncActionWithProgressCompletedHandler<_ProgressType> _CompletionDelegateType;
+        typedef Windows::Foundation::IAsyncActionWithProgress<_ProgressType> _AsyncBaseType;
+        typedef Windows::Foundation::AsyncActionProgressHandler<_ProgressType> _ProgressDelegateType;
+        typedef Windows::Foundation::AsyncActionWithProgressCompletedHandler<_ProgressType> _CompletionDelegateType;
         typedef void _ReturnType;
-        typedef typename _ProgressType _ProgressType;
+        typedef _ProgressType _ProgressType;
         typedef typename _TaskTraits::_AsyncKind _AsyncKind;
-        typedef typename _SelectorTaskGenerator<_AsyncKind, _ReturnType> _SelectorTaskGenerator;
-        typedef typename _TaskGenerator<_SelectorTaskGenerator, _TakesToken, true> _TaskGenerator;
+        typedef _SelectorTaskGenerator<_AsyncKind, _ReturnType> _SelectorTaskGenerator;
+        typedef _TaskGenerator<_SelectorTaskGenerator, _TakesToken, true> _TaskGenerator;
 
         static const bool _TakesProgress = true;
         static const bool _TakesToken = _TakesToken;
-
-        template<typename _Function, typename _ClassPtr>
-        static task<_ReturnType> _Generate_Task(const _Function& _Func, _ClassPtr _Ptr, cancellation_token_source _Cts, const _TaskCreationCallstack & _callstack)
-        {
-            return _TaskGenerator::_GenerateTask<_Function, _ClassPtr, _ProgressType>(_Func, _Ptr, _Cts, _callstack);
-        }
     };
 
-    template<typename _Function, typename _ProgressType, typename _TaskTraits, bool _TakesToken>
-    struct _AsyncAttributes<_Function, _ProgressType, void, _TaskTraits, _TakesToken, false>
+    template<typename _ProgressType, typename _TaskTraits, bool _TakesToken>
+    struct _AsyncAttributes<_ProgressType, void, _TaskTraits, _TakesToken, false>
     {
-        typedef typename Windows::Foundation::IAsyncAction _AsyncBaseType;
+        typedef Windows::Foundation::IAsyncAction _AsyncBaseType;
         typedef _Zip _ProgressDelegateType;
-        typedef typename Windows::Foundation::AsyncActionCompletedHandler _CompletionDelegateType;
+        typedef Windows::Foundation::AsyncActionCompletedHandler _CompletionDelegateType;
         typedef void _ReturnType;
+        typedef _ProgressType _ProgressType;
         typedef typename _TaskTraits::_AsyncKind _AsyncKind;
-        typedef typename _SelectorTaskGenerator<_AsyncKind, _ReturnType> _SelectorTaskGenerator;
-        typedef typename _TaskGenerator<_SelectorTaskGenerator, _TakesToken, false> _TaskGenerator;
+        typedef _SelectorTaskGenerator<_AsyncKind, _ReturnType> _SelectorTaskGenerator;
+        typedef _TaskGenerator<_SelectorTaskGenerator, _TakesToken, false> _TaskGenerator;
 
         static const bool _TakesProgress = false;
         static const bool _TakesToken = _TakesToken;
-
-        template<typename _Function, typename _ClassPtr>
-        static task<_ReturnType> _Generate_Task(const _Function& _Func, _ClassPtr _Ptr, cancellation_token_source _Cts, const _TaskCreationCallstack & _callstack)
-        {
-            return _TaskGenerator::_GenerateTask<_Function, _ClassPtr, _ProgressType>(_Func, _Ptr, _Cts, _callstack);
-        }
     };
 
     template<typename _Function>
@@ -5269,10 +5320,20 @@ namespace details
         static const bool _TakesProgress = _CAFunctorOptions<_Function>::_TakesProgress;
         static const bool _TakesToken = _CAFunctorOptions<_Function>::_TakesToken;
 
-        typedef typename _TaskTypeTraits<_ReturnType> _TaskTraits;
-        typedef typename _AsyncAttributes<_Function, _ProgressType, typename _TaskTraits::_TaskRetType, _TaskTraits, _TakesToken, _TakesProgress> _AsyncAttributes;
+        typedef _TaskTypeTraits<_ReturnType> _TaskTraits;
+        typedef _AsyncAttributes<_ProgressType, typename _TaskTraits::_TaskRetType, _TaskTraits, _TakesToken, _TakesProgress> _AsyncAttributes;
     };
     
+    struct _AsyncAttributesTaskGenerator
+    {
+        // _Generate_Task           : A function adapting the user's function into what's necessary to produce the appropriate task
+        template<typename _Function, typename _ClassPtr, typename _AsyncAttributesT>
+        static task<typename _AsyncAttributesT::_ReturnType> _Generate_Task(const _Function& _Func, _ClassPtr _Ptr, cancellation_token_source _Cts, const _TaskCreationCallstack & _callstack)
+        {
+            return _AsyncAttributesT::_TaskGenerator::_GenerateTask<_Function, _ClassPtr, _AsyncAttributesT::_ProgressType>(_Func, _Ptr, _Cts, _callstack);
+        }
+    };
+
     inline void ValidateIfCOMDisconnectedOrRethrow(int __hr)
     {
         if ((__hr == 0x800706BA) || /* HRESULT_FROM_WIN32(RPC_S_SERVER_UNAVAILABLE) */ 
@@ -5860,7 +5921,7 @@ namespace details
             // Call the appropriate task generator to actually produce a task of the expected type. This might adapt the user lambda for progress reports,
             // wrap the return result in a task, or allow for direct return of a task depending on the form of the lambda.
             //
-            _M_task = _Attributes::_Generate_Task(_M_func, this, _M_cts, _M_creationCallstack);
+            _M_task = _AsyncAttributesTaskGenerator::_Generate_Task<_Function, _AsyncTaskGeneratorThunk<_Function>^, _Attributes>(_M_func, this, _M_cts, _M_creationCallstack);
             _Base::_OnStart();
         }
 

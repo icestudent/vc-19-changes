@@ -106,7 +106,7 @@ _CRT_BEGIN_C_HEADER
         unsigned long long D[8]; // D8-D15 VFP/NEON regs
     } _JUMP_BUFFER;
 
-#elif defined _M_CRT_UNSUPPORTED
+#elif defined _M_ARM64
 
     #define _JBLEN  24
     #define _JBTYPE unsigned __int64

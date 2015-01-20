@@ -94,7 +94,7 @@ public:
 
 	wide_string from_bytes(const char *_Ptr)
 		{	// convert a NTBS to a wide string
-		return (from_bytes(_Ptr, _Ptr + strlen(_Ptr)));
+		return (from_bytes(_Ptr, _Ptr + _CSTD strlen(_Ptr)));
 		}
 
 	wide_string from_bytes(const byte_string& _Bstr)
@@ -235,6 +235,6 @@ private:
 #endif /* _CVT_WSTRING_ */
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.00:0009 */
+V6.50:0009 */

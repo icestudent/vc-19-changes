@@ -3,13 +3,13 @@
 #ifndef _FILESYSTEM_
 #define _FILESYSTEM_
 #ifndef RC_INVOKED
+#include <algorithm>	// for replace
 #include <chrono>	// for chrono::time_point
 #include <codecvt>	// for codecvt_utf8_*
-#include <ctime>	// for time_t
+#include <ctime>	// for __time64_t
 #include <list>		// for recursive_directory_iterator stack
 #include <locale>	// for wstring_convert
 #include <memory>	// for shared_ptr
-#include <random>	// for random_device
 
  #pragma pack(push,_CRT_PACKING)
  #pragma warning(push,3)
@@ -19,7 +19,7 @@
 
 
  #ifndef _FS_DLL
-  #define _FS_DLL	_CRTIMP2_PURE
+  #define _FS_DLL	extern "C" _CRTIMP2_PURE
  #endif /* _FS_DLL */
 
  #define _MAX_FILESYS_NAME	260	/* longest Windows or Posix filename + 1 */
@@ -28,16 +28,13 @@ _STD_BEGIN
 namespace tr2 {
 	namespace sys {
 typedef wchar_t _Pchar;	// UTF16
-#define _Litchars	L":%./\\"
-#define _FS_HEXITS	L"0123456789abcdef"
 #define _FS_ISSEP(x)	((x) == L'/' || (x) == L'\\')
 #define _FS_PREF	L'\\'
 
-#define _FS_COLON	_Litchars[0]
-#define _FS_PERCENT	_Litchars[1]
-#define _FS_PERIOD	_Litchars[2]
-#define _FS_SLASH	_Litchars[3]
-#define _FS_BSLASH	_Litchars[4]
+#define _FS_COLON	L':'
+#define _FS_PERIOD	L'.'
+#define _FS_SLASH	L'/'
+#define _FS_BSLASH	L'\\'
 
 #define _FSPFX	_STD tr2::sys::
 
@@ -117,11 +114,11 @@ public:
 		}
 
 	file_status(const file_status&) _NOEXCEPT = default;
-//	file_status(file_status&&) _NOEXCEPT = default;
+	file_status(file_status&&) _NOEXCEPT = default;
 	~file_status() _NOEXCEPT = default;
 
 	file_status& operator=(const file_status&) _NOEXCEPT = default;
-//	file_status& operator=(file_status&&) _NOEXCEPT = default;
+	file_status& operator=(file_status&&) _NOEXCEPT = default;
 
 	_File_type type() const _NOEXCEPT
 		{	// get file type
@@ -176,8 +173,8 @@ _FS_DLL _File_type __CLRCALL_PURE_OR_CDECL _Stat(const wchar_t *, _Perms *);
 _FS_DLL _File_type __CLRCALL_PURE_OR_CDECL _Lstat(const wchar_t *, _Perms *);
 _FS_DLL uintmax_t __CLRCALL_PURE_OR_CDECL _File_size(const wchar_t *);
 _FS_DLL uintmax_t __CLRCALL_PURE_OR_CDECL _Hard_links(const wchar_t *);
-_FS_DLL time_t __CLRCALL_PURE_OR_CDECL _Last_write_time(const wchar_t *);
-_FS_DLL int __CLRCALL_PURE_OR_CDECL _Last_write_time(const wchar_t *, time_t);
+_FS_DLL __time64_t __CLRCALL_PURE_OR_CDECL _Last_write_time(const wchar_t *);
+_FS_DLL int __CLRCALL_PURE_OR_CDECL _Set_last_write_time(const wchar_t *, __time64_t);
 _FS_DLL space_info __CLRCALL_PURE_OR_CDECL _Statvfs(const wchar_t *);
 _FS_DLL int __CLRCALL_PURE_OR_CDECL _Equivalent(const wchar_t *, const wchar_t *);
 
@@ -221,7 +218,6 @@ template<class _Outchar,
 		}
 	};
 
- #if _HAS_CHAR16_T_LANGUAGE_SUPPORT
 template<class _Outtraits,
 	class _Outalloc>
 	struct _Path_cvt<char, char16_t, _Outtraits, _Outalloc>
@@ -289,7 +285,6 @@ template<class _Outtraits,
 			_Str.append(_Wcvt.to_bytes(_First, _First + _Size))));
 		}
 	};
- #endif /* _HAS_CHAR16_T_LANGUAGE_SUPPORT */
 
 _FS_DLL int __CLRCALL_PURE_OR_CDECL _To_byte(const wchar_t *, char *);
 _FS_DLL int __CLRCALL_PURE_OR_CDECL _To_wide(const char *, wchar_t *);
@@ -432,7 +427,6 @@ template<class _Outtraits,
 //	struct _Path_cvt<wchar_t, char16_t, _Outtraits, _Outalloc> Windows (copy)
 //	struct _Path_cvt<char16_t, wchar_t, _Outtraits, _Outalloc> Windows (copy)
 
- #if _HAS_CHAR16_T_LANGUAGE_SUPPORT
 template<class _Outtraits,
 	class _Outalloc>
 	struct _Path_cvt<wchar_t, char32_t, _Outtraits, _Outalloc>
@@ -472,7 +466,6 @@ template<class _Outtraits,
 			_Str.append(_Wcvt.from_bytes(_Str0))));
 		}
 	};
- #endif /* _HAS_CHAR16_T_LANGUAGE_SUPPORT */
 
 		// FORWARD REFERENCES
 class path;
@@ -649,10 +642,6 @@ path system_complete(const path&,
 path temp_directory_path();
 path temp_directory_path(
 	error_code&);
-
-//path unique_path(const path& = "%%%%-%%%%-%%%%-%%%%");
-//path unique_path(const path&,
-//	error_code&);
 
 		// TEMPLATE CLASS _Path_iterator
 template<class _Path_type>
@@ -1231,7 +1220,6 @@ public:
 			_Cvt(_Str, _Mystr.c_str(), _Mystr.size()));
 		}
 
- #if _HAS_CHAR16_T_LANGUAGE_SUPPORT
 	_STD u16string u16string() const
 		{	// return path as basic_string<char16_t> UTF16
 		_STD u16string _Str;
@@ -1245,17 +1233,14 @@ public:
 		return (_Path_cvt<value_type, char32_t>::
 			_Cvt(_Str, _Mystr.c_str(), _Mystr.size()));
 		}
- #endif /* _HAS_CHAR16_T_LANGUAGE_SUPPORT */
 
 	// GENERIC FORMAT OBSERVERS
 
-	path _Make_generic() const
+	string_type _Make_generic() const
 		{	// copy and convert any '\' to '/'
 		string_type _Str = _Mystr;
-		for (size_t _Idx = 0; _Idx < _Str.size(); ++_Idx)
-			if (_Str[_Idx] == _FS_BSLASH)
-				_Str[_Idx] = _FS_SLASH;
-		return (path(_Str));
+		_STD replace(_Str.begin(), _Str.end(), _FS_BSLASH, _FS_SLASH);
+		return (_Str);
 		}
 
 	template<class _Elem,
@@ -1264,35 +1249,52 @@ public:
 		basic_string<_Elem, _Traits, _Alloc>
 			generic_string(const _Alloc& _Al = _Alloc()) const
 		{	// return path as basic_string<_Elem, _Traits, _Alloc>
-		return (_Make_generic().string<_Elem, _Traits, _Alloc>(_Al));
+		basic_string<_Elem, _Traits, _Alloc> _Str(_Al);
+		const string_type _Generic = _Make_generic();
+		return (_Path_cvt<value_type, _Elem>::
+			_Cvt(_Str, _Generic.c_str(), _Generic.size()));
 		}
 
 	_STD string generic_string() const
 		{	// return path as basic_string<char> native
-		return (_Make_generic().string());
+		_STD string _Str;
+		const string_type _Generic = _Make_generic();
+		return (_Path_cvt<value_type, char>::
+			_Cvt(_Str, _Generic.c_str(), _Generic.size()));
 		}
 
 	_STD wstring generic_wstring() const
 		{	// return path as basic_string<wchar_t> native
-		return (_Make_generic().wstring());
+		_STD wstring _Str;
+		const string_type _Generic = _Make_generic();
+		return (_Path_cvt<value_type, wchar_t>::
+			_Cvt(_Str, _Generic.c_str(), _Generic.size()));
 		}
 
 	_STD string generic_u8string() const
 		{	// return path as basic_string<char> UTF8
-		return (_Make_generic().u8string());
+		_STD string _Str;
+		const string_type _Generic = _Make_generic();
+		return (_Path_cvt<value_type, char8_t,
+			char_traits<char>, allocator<char> >::
+			_Cvt(_Str, _Generic.c_str(), _Generic.size()));
 		}
 
- #if _HAS_CHAR16_T_LANGUAGE_SUPPORT
 	_STD u16string generic_u16string() const
 		{	// return path as basic_string<char16_t> UTF16
-		return (_Make_generic().u16string());
+		_STD u16string _Str;
+		const string_type _Generic = _Make_generic();
+		return (_Path_cvt<value_type, char16_t>::
+			_Cvt(_Str, _Generic.c_str(), _Generic.size()));
 		}
 
 	_STD u32string generic_u32string() const
 		{	// return path as basic_string<char32_t> UTF32
-		return (_Make_generic().u32string());
+		_STD u32string _Str;
+		const string_type _Generic = _Make_generic();
+		return (_Path_cvt<value_type, char32_t>::
+			_Cvt(_Str, _Generic.c_str(), _Generic.size()));
 		}
- #endif /* _HAS_CHAR16_T_LANGUAGE_SUPPORT */
 
 	// PATH COMPARISON
 	int compare(const path& _Path) const _NOEXCEPT
@@ -1674,11 +1676,11 @@ public:
 		}
 
 	directory_entry(const directory_entry&) = default;
-//	directory_entry(directory_entry&&) _NOEXCEPT = default;
+	directory_entry(directory_entry&&) _NOEXCEPT = default;
 	~directory_entry() _NOEXCEPT = default;
 
 	directory_entry& operator=(const directory_entry&) = default;
-//	directory_entry& operator=(directory_entry&&) _NOEXCEPT = default;
+	directory_entry& operator=(directory_entry&&) _NOEXCEPT = default;
 
 	explicit directory_entry(const _FSPFX path& _Path,
 		file_status _Statarg = file_status(),
@@ -1832,11 +1834,11 @@ public:
 		}
 
 	_Directory_iterator(const _Myt&) = default;
-//	_Directory_iterator(_Myt&&) = default;
+	_Directory_iterator(_Myt&&) = default;
 	~_Directory_iterator() _NOEXCEPT = default;
 
 	_Myt& operator=(const _Myt&) = default;
-//	_Myt& operator=(_Myt&&) = default;
+	_Myt& operator=(_Myt&&) = default;
 
 	const value_type& operator*() const
 		{	// return designated value
@@ -2821,7 +2823,7 @@ inline bool is_symlink(const path& _Path,
 
 inline file_time_type last_write_time(const path& _Path)
 	{	// get last write time
-	time_t _Ticks = _Last_write_time(_Path.c_str());
+	__time64_t _Ticks = _Last_write_time(_Path.c_str());
 	if (_Ticks == -1)
 		_THROW_NCEE(filesystem_error,
 			"last_write_time(p): invalid argument");
@@ -2831,7 +2833,7 @@ inline file_time_type last_write_time(const path& _Path)
 inline file_time_type last_write_time(const path& _Path,
 	error_code& _Code) _NOEXCEPT
 	{	// get last write time
-	time_t _Ticks = _Last_write_time(_Path.c_str());
+	__time64_t _Ticks = _Last_write_time(_Path.c_str());
 
 	_Code = error_code();
 	if (_Ticks == -1)
@@ -2841,7 +2843,7 @@ inline file_time_type last_write_time(const path& _Path,
 
 inline void last_write_time(const path& _Path, file_time_type _Newtime)
 	{	// set last write time
-	if (_Last_write_time(_Path.c_str(),
+	if (_Set_last_write_time(_Path.c_str(),
 		chrono::system_clock::to_time_t(_Newtime)) == 0)
 		_THROW_NCEE(filesystem_error,
 			"last_write_time(p, new_time): invalid arguments");
@@ -2851,7 +2853,7 @@ inline void last_write_time(const path& _Path, file_time_type _Newtime,
 	error_code& _Code) _NOEXCEPT
 	{	// set last write time
 	_Code = error_code();
-	if (_Last_write_time(_Path.c_str(),
+	if (_Set_last_write_time(_Path.c_str(),
 		chrono::system_clock::to_time_t(_Newtime)) == 0)
 		_Code = make_error_code(errc::operation_not_permitted);
 	}
@@ -3005,8 +3007,23 @@ inline void rename(const path& _Oldpval, const path& _Newpval,
 	error_code& _Code) _NOEXCEPT
 	{	// rename _Oldpval as _Newpval
 	_Code = error_code();
-	if ((exists(_Newpval) && !remove(_Newpval))
-		|| _Rename(_Oldpval.c_str(), _Newpval.c_str()) != 0)
+
+	if (!exists(_Oldpval))
+		{	// fail immediately without modifying the filesystem
+		_Code = make_error_code(errc::operation_not_permitted);
+		return;
+		}
+
+	if (exists(_Newpval))
+		{	// both exist; there can be only one
+		if (equivalent(_Oldpval, _Newpval, _Code) || _Code != error_code())
+			return;	// successful no-op, or report equivalent() failure
+
+		if (!remove(_Newpval, _Code))
+			return;	// report remove() failure
+		}
+
+	if (_Rename(_Oldpval.c_str(), _Newpval.c_str()) != 0)
 		_Code = make_error_code(errc::operation_not_permitted);
 	}
 
@@ -3125,29 +3142,6 @@ inline path temp_directory_path(
 		_Code = make_error_code(errc::no_such_file_or_directory);
 	return (_Ans);
 	}
-
-inline path unique_path(const path& _Path = "%%%%-%%%%-%%%%-%%%%")
-	{	// replace each % in path with random hexit
-	random_device _Dev;
-	path::string_type _Str = _Path.native();
-	for (path::string_type::iterator _Next = _Str.begin(),
-		_Last = _Str.end(); _Next != _Last; ++_Next)
-		if (*_Next == _FS_PERCENT)
-			*_Next = _FS_HEXITS[_Dev() & 0xF];
-	return (path(_Str));
-	}
-
-inline path unique_path(const path& _Path,
-	error_code& _Code)
-	{	// replace each % in path with random hexit
-	_Code = error_code();
-	_TRY_BEGIN
-	return (unique_path(_Path));
-	_CATCH_ALL
-	_Code = make_error_code(errc::operation_not_permitted);
-	return (path());
-	_CATCH_END
-	}
 	}	// namespace sys
 }	// namespace tr2
 _STD_END
@@ -3158,6 +3152,6 @@ _STD_END
 #endif /* _FILESYSTEM_ */
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.00:0009 */
+V6.50:0009 */

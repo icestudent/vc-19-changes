@@ -568,7 +568,6 @@ public:
 		}
 
  #if _ITERATOR_DEBUG_LEVEL == 0
-
 	_String_alloc(const _Alloc& _Al = _Alloc())
 		: _Mypair(_One_then_variadic_args_t(), _Al)
 		{	// construct allocator from _Al
@@ -585,7 +584,6 @@ public:
 		}
 
  #else /* _ITERATOR_DEBUG_LEVEL == 0 */
-
 	_String_alloc(const _Alloc& _Al = _Alloc())
 		: _Mypair(_One_then_variadic_args_t(), _Al)
 		{	// construct allocator from _Al
@@ -721,6 +719,7 @@ template<class _Elem,
 public:
 	typedef basic_string<_Elem, _Traits, _Alloc> _Myt;
 	typedef _String_alloc<_String_base_types<_Elem, _Alloc> > _Mybase;
+
 	typedef _Traits traits_type;
 	typedef _Alloc allocator_type;
 
@@ -858,7 +857,6 @@ public:
 		size_type _Count = 0;
 		_Distance(_First, _Last, _Count);
 		reserve(_Count);
-
 		_Construct(_First, _Last, input_iterator_tag());
 		}
 
@@ -1834,9 +1832,10 @@ public:
 
 		else if (_Alty::propagate_on_container_swap::value)
 			{	// swap allocators and control information
+				// assumes pointer is bitwise copyable
 			this->_Swap_alloc(_Right);
 			_Swap_bx(_Right);
-			_STD swap(this->_Bx(), _Right._Bx());	// pointer bitwise copyable?
+			_STD swap(this->_Bx(), _Right._Bx());
 			_STD swap(this->_Mysize(), _Right._Mysize());
 			_STD swap(this->_Myres(), _Right._Myres());
 			}
@@ -2595,13 +2594,10 @@ template<class _Elem,
 		}
 	};
 
- #if _HAS_CHAR16_T_LANGUAGE_SUPPORT
 typedef basic_string<char16_t, char_traits<char16_t>, allocator<char16_t> >
 	u16string;
 typedef basic_string<char32_t, char_traits<char32_t>, allocator<char32_t> >
 	u32string;
- #endif /* _HAS_CHAR16_T_LANGUAGE_SUPPORT */
-
 _STD_END
 
  #pragma pop_macro("new")
@@ -2611,6 +2607,6 @@ _STD_END
 #endif /* _XSTRING */
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.00:0009 */
+V6.50:0009 */

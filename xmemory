@@ -697,10 +697,6 @@ template<class _OutIt,
 		: public _Outit
 	{	// wrap stores to raw buffer as output iterator
 public:
-	typedef _OutIt iterator_type;	// retained
-	typedef _OutIt iter_type;	// retained
-	typedef _Ty element_type;	// retained
-
 	explicit raw_storage_iterator(_OutIt _First)
 		: _Next(_First)
 		{	// construct with iterator
@@ -1000,6 +996,6 @@ _STD_END
 #endif /* _XMEMORY_ */
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.00:0009 */
+V6.50:0009 */

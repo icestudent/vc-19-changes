@@ -87,7 +87,6 @@ public:
 	typedef _Hasher hasher;
 	typedef _Kty key_type;
 	typedef _Ty mapped_type;
-	typedef _Ty referent_type;	// extra
 	typedef _Keyeq key_equal;
 	typedef _Mytraits key_compare;	// extra
 
@@ -384,7 +383,6 @@ public:
 	typedef _Hasher hasher;
 	typedef _Kty key_type;
 	typedef _Ty mapped_type;
-	typedef _Ty referent_type;	// extra
 	typedef _Keyeq key_equal;
 	typedef _Mytraits key_compare;	// extra
 
@@ -674,6 +672,6 @@ _STD_END
 #endif /* _UNORDERED_MAP_ */
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.00:0009 */
+V6.50:0009 */

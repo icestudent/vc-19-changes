@@ -1020,7 +1020,8 @@ template<class _Elem,
 		const _Ctype& _Ctype_fac = _USE(_Istr.getloc(), _Ctype);
 
 		_TRY_IO_BEGIN
-		streamsize _Count = 0 < _Istr.width() ? _Istr.width() : INT_MAX;
+		streamsize _Count = 0 < _Istr.width() ? _Istr.width()
+			: (numeric_limits<streamsize>::max)();
 		typename _Myis::int_type _Meta = _Istr.rdbuf()->sgetc();
 		_Elem _Ch;
 		for (; 0 < --_Count; _Meta = _Istr.rdbuf()->snextc())
@@ -1259,6 +1260,6 @@ _STD_END
 #endif /* _ISTREAM_ */
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.00:0009 */
+V6.50:0009 */

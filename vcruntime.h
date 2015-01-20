@@ -228,7 +228,7 @@ _CRT_BEGIN_C_HEADER
     #endif
 #endif
 
-#if defined _M_X64 || defined _M_ARM || defined _M_CRT_UNSUPPORTED
+#if defined _M_X64 || defined _M_ARM || defined _M_ARM64
     #define _UNALIGNED __unaligned
 #else
     #define _UNALIGNED

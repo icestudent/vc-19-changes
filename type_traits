@@ -31,7 +31,7 @@
   #define _IS_ABSTRACT(_Ty)	\
 	: _Cat_base<__is_abstract(_Ty)>
   #define _IS_FINAL(_Ty)	\
-	: _Cat_base<(__is_class(_Ty) || __is_union(_Ty)) && __is_final(_Ty)>
+	: _Cat_base<__is_final(_Ty)>
   #define _IS_STANDARD_LAYOUT(_Ty)	\
 	: _Cat_base<__is_standard_layout(_Ty)>
   #define _IS_TRIVIAL(_Ty)	\
@@ -193,7 +193,6 @@ _CLASS_DEFINE_CV(_ADD_LVALUE_REFERENCE_VOID)
 #undef _ADD_LVALUE_REFERENCE_VOID
 
 	// TEMPLATE CLASS add_rvalue_reference
-
 template<class _Ty>
 	struct add_rvalue_reference
 	{	// add rvalue reference
@@ -548,7 +547,6 @@ template<class _Ty>
 	};
 
 	// TEMPLATE CLASS is_pod
-
 template<class _Ty>
 	struct is_pod _IS_POD(_Ty)
 	{	// determine whether _Ty is a POD type
@@ -622,7 +620,6 @@ template<class _Ty,
 
 
 	// TEMPLATE CLASS is_copy_constructible
-
 template<class _Ty>
 	struct is_copy_constructible
 		: is_constructible<
@@ -644,8 +641,8 @@ template<class _Ty>
 	// TEMPLATE CLASS is_move_constructible
 template<class _Ty>
 	struct is_move_constructible
-		: is_constructible<
 
+		: is_constructible<
 			_Ty,
 
 			typename add_rvalue_reference<_Ty>::type
@@ -654,7 +651,6 @@ template<class _Ty>
 	};
 
 	// TEMPLATE CLASS is_assignable
-
 template<class _To,
 	class _From>
 	struct _Is_assignable
@@ -662,7 +658,7 @@ template<class _To,
 	template<class _Dest,
 		class _Src>
 		static auto _Fn(int)
-			-> decltype((void) (_STD declval<_Dest>() = _STD declval<_Src>()),
+			-> decltype((void)(_STD declval<_Dest>() = _STD declval<_Src>()),
 				true_type());
 
 	template<class _Dest,
@@ -681,7 +677,6 @@ template<class _To,
 	};
 
 	// TEMPLATE CLASS is_copy_assignable
-
 template<class _Ty>
 	struct is_copy_assignable
 		: is_assignable<
@@ -694,7 +689,6 @@ template<class _Ty>
 	};
 
 	// TEMPLATE CLASS is_move_assignable
-
 template<class _Ty>
 	struct is_move_assignable
 		: is_assignable<
@@ -705,7 +699,6 @@ template<class _Ty>
 	};
 
 	// TEMPLATE CLASS is_destructible
-
 template<class _Ty>
 	struct is_destructible
 		_IS_DESTRUCTIBLE(_Ty)
@@ -727,14 +720,12 @@ template<class _Ty,
 	// TEMPLATE CLASS is_trivially_copy_constructible
 template<class _Ty>
 	struct is_trivially_copy_constructible
-
 		: is_trivially_constructible<
 			_Ty,
 			typename add_lvalue_reference<
 				typename add_const<_Ty>::type
 			>::type
 		>::type
-
 	{	// determine whether _Ty has a trivial copy constructor
 	};
 
@@ -813,7 +804,6 @@ template<class _Ty,
 
 
 	// TEMPLATE CLASS is_nothrow_copy_constructible
-
 template<class _Ty>
 	struct is_nothrow_copy_constructible
 		: is_nothrow_constructible<
@@ -833,7 +823,6 @@ template<class _Ty>
 	};
 
 	// TEMPLATE CLASS is_nothrow_move_constructible
-
 template<class _Ty>
 	struct is_nothrow_move_constructible
 		: is_nothrow_constructible<
@@ -880,7 +869,6 @@ template<class _Ty>
 	};
 
 	// TEMPLATE CLASS is_nothrow_destructible
-
 template<class _Ty>
 	struct is_nothrow_destructible
 		_IS_NOTHROW_DESTRUCTIBLE(_Ty)
@@ -993,6 +981,7 @@ template<class _Ty>
 	};
 
 	// TEMPLATE CLASS alignment_of
+
 template<class _Ty>
 	struct alignment_of
 		: integral_constant<size_t, alignof(_Ty)>
@@ -2229,6 +2218,6 @@ _STD_END
 #endif /* _TYPE_TRAITS_ */
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.00:0009 */
+V6.50:0009 */

@@ -22,9 +22,9 @@
 #error Must not be included during CRT build with _CRT_WINDOWS flag enabled
 #endif
 
-#if !(defined (_M_X64) || defined (_M_IX86) || defined (_M_ARM) || defined (_M_CRT_UNSUPPORTED))
+#if !(defined (_M_X64) || defined (_M_IX86) || defined (_M_ARM) || defined (_M_ARM64))
     #error ERROR: Concurrency Runtime is supported only on X64, X86, ARM, and CRT_UNSUPPORTED architectures.
-#endif  /* !(defined (_M_X64) || defined (_M_IX86) || defined (_M_ARM) || defined (_M_CRT_UNSUPPORTED)) */
+#endif  /* !(defined (_M_X64) || defined (_M_IX86) || defined (_M_ARM) || defined (_M_ARM64)) */
 
 #if defined (_M_CEE)
     #error ERROR: Concurrency Runtime is not supported when compiling /clr.
@@ -71,9 +71,7 @@ typedef _Return_type_success_(return >= 0) long HRESULT;
 #endif  /* _HRESULT_DEFINED */
 typedef void * HANDLE;
 
-// Undefine Yield that is possibly defined by windows.h, and _YieldProcessor
-
-#undef Yield
+#pragma push_macro("_YieldProcessor")
 #undef _YieldProcessor
 
 #if (defined (_M_IX86) || defined (_M_X64))
@@ -3389,7 +3387,23 @@ public:
     /// <seealso cref="Context::Block Method"/>
     /// <seealso cref="Context::Unblock Method"/>
     /**/
-    _CONCRTIMP static void __cdecl Yield();
+    _CONCRTIMP static void (__cdecl Yield)();
+
+    /// <summary>
+    ///     Yields execution so that another context can execute. If no other context is available to yield to, the scheduler can yield to
+    ///     another operating system thread.
+    /// </summary>
+    /// <remarks>
+    ///     Yield is defined as a function-like macro in the Windows SDK headers, thus requiring the unfamiliar (Yield)() construct to call
+    ///     the function as opposed to using the macro. This alias is provided to avoid it.
+    /// </remarks>
+    /// <seealso cref="Context::Block Method"/>
+    /// <seealso cref="Context::Unblock Method"/>
+    /**/
+    static inline void __cdecl YieldExecution()
+    {
+        (Yield)();
+    }
 
     /// <summary>
     ///     Returns an indication of whether the task collection which is currently executing inline on the current context
@@ -4074,7 +4088,9 @@ namespace details
 
         // Constructor for _NonReentrantPPLLock
         _CONCRTIMP _NonReentrantPPLLock();
+        _NonReentrantPPLLock(const _NonReentrantPPLLock&) = delete;
 
+        _NonReentrantPPLLock& operator=(const _NonReentrantPPLLock&) = delete;
         // Acquire the lock, spin if necessary
         _CONCRTIMP void _Acquire(void * _Lock_node);
 
@@ -4088,15 +4104,15 @@ namespace details
             // Constructs a holder and acquires the specified lock
             _CONCRTIMP explicit _Scoped_lock(_NonReentrantPPLLock& _Lock);
 
+            _Scoped_lock(const _Scoped_lock&) = delete;
+            _Scoped_lock& operator=(const _Scoped_lock&) = delete;
+
             // Destroys the holder and releases the lock
             _CONCRTIMP ~_Scoped_lock();
 
         private:
             _NonReentrantPPLLock& _M_lock;
             _CONCRT_BUFFER  _M_lockNode[(4 * sizeof(void *) + 2 * sizeof(unsigned int) + sizeof(_CONCRT_BUFFER) - 1) / sizeof(_CONCRT_BUFFER)];
-
-            _Scoped_lock(const _Scoped_lock&);                    // no copy constructor
-            _Scoped_lock const & operator=(const _Scoped_lock&);  // no assignment operator
         };
 
     private:
@@ -4110,6 +4126,9 @@ namespace details
     public:
         // Constructor for _ReentrantPPLLock
         _CONCRTIMP _ReentrantPPLLock();
+        _ReentrantPPLLock(const _ReentrantPPLLock&) = delete;
+
+        _ReentrantPPLLock& operator=(const _ReentrantPPLLock&) = delete;
 
         // Acquire the lock, spin if necessary
         _CONCRTIMP void _Acquire(void * _Lock_node);
@@ -4295,6 +4314,7 @@ namespace details
             _M_inliningDepth(_S_notInlined)
         {
         }
+        _TaskCollectionBase(const _TaskCollectionBase&) = delete;
 
         // Constructs a new task collection based on a given cancellation token.
         _TaskCollectionBase(_CancellationTokenState *_PTokenState) :
@@ -4305,6 +4325,8 @@ namespace details
             _M_inliningDepth(_S_notInlined)
         {
         }
+
+        _TaskCollectionBase& operator=(const _TaskCollectionBase&) = delete;
 
         // Returns the owning context of the task collection.
         void * _OwningContext() const
@@ -4459,12 +4481,6 @@ namespace details
         static const int _S_structured = 0x00000001;
         static const int _S_localCancel = 0x00000002;
         static const int _S_reserved = 0x0000000C;
-
-    private:
-
-        // Prevent bad usage of copy-constructor and copy-assignment
-        _TaskCollectionBase(const _TaskCollectionBase& _Collection);
-        _TaskCollectionBase& operator=(const _TaskCollectionBase& _Collection);
     };
 
     /// <summary>
@@ -4486,6 +4502,8 @@ namespace details
             _M_pTokenState = NULL;
         }
 
+        _StructuredTaskCollection(const _StructuredTaskCollection&) = delete;
+        _StructuredTaskCollection& operator=(const _StructuredTaskCollection&) = delete;
         /// <summary>
         ///     Construct a new structured task collection whose cancellation is goverened by the supplied cancellation token.
         /// </summary>
@@ -4503,7 +4521,7 @@ namespace details
         /// </summary>
         /**/
         _CONCRTIMP ~_StructuredTaskCollection();
-   
+
         /// <summary>
         ///     Schedules a chore that can potentially run in parallel. The chore is pushed onto the associated workstealing queue, and
         ///     will be executed in a LIFO order. Note that the specified chore can be scheduled only on a single task collection at a given time.
@@ -4686,7 +4704,9 @@ namespace details
         /// </summary>
         /**/
         _CONCRTIMP _TaskCollection();
+        _TaskCollection(const _TaskCollection&) = delete;
 
+        _TaskCollection& operator=(const _TaskCollection&) = delete;
         /// <summary>
         ///     Constructs a new task collection whose cancellation is governed by the specified cancellation token state.
         /// </summary>
@@ -5119,6 +5139,10 @@ namespace details
             // _Depth is the reference to the depth slot on context.
             ++_Depth;
         }
+        _StackGuard(const _StackGuard&) = delete;
+
+        _StackGuard& operator=(const _StackGuard&) = delete;
+
         ~_StackGuard()
         {
             // _Depth is the reference to the depth slot on context.
@@ -5133,7 +5157,6 @@ namespace details
         }
     private:
         size_t & _Depth;
-        _StackGuard & operator =(const _StackGuard &);
 
         /// <summary>
         ///     Return a reference to the ppltask inline schedule depth slot on current context
@@ -5151,7 +5174,8 @@ namespace details
     class _AsyncTaskCollection : public _RefCounterBase
     {
     public:
-
+        _AsyncTaskCollection(const _AsyncTaskCollection&) = delete;
+        _AsyncTaskCollection& operator=(const _AsyncTaskCollection&) = delete;
         /// <summary>
         ///     Constructs a new task collection whose cancellation is governed by the specified cancellation token state.
         /// </summary>
@@ -5724,5 +5748,6 @@ _CONCRTIMP void __cdecl _Trace_agents(Agents_EventType _Type, __int64 agentId, .
 
 namespace concurrency = Concurrency;
 
+#pragma pop_macro("_YieldProcessor")
 #pragma pop_macro("new")
 #pragma pack(pop)

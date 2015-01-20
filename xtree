@@ -541,7 +541,6 @@ template<class _Ty,
 	};
 
 		// TEMPLATE CLASS _Tree_val
-
 template<class _Val_types>
 	class _Tree_val
 		: public _Container_base
@@ -699,13 +698,13 @@ public:
 		}
 
 	_Tree_comp_alloc(const key_compare& _Parg, const allocator_type& _Al)
-		: _Mypair(_One_then_variadic_args_t(), _Parg, _One_then_variadic_args_t(), _Al)
+		: _Mypair(_One_then_variadic_args_t(), _Parg,
+			_One_then_variadic_args_t(), _Al)
 		{	// construct from comparator, allocator
 		_Construct();
 		}
 
  #if _ITERATOR_DEBUG_LEVEL == 0
-
 	void _Construct()
 		{	// construct head node
 		_Myhead() = _Buyheadnode();
@@ -727,7 +726,6 @@ public:
 		}
 
  #else /* _ITERATOR_DEBUG_LEVEL == 0 */
-
 	void _Construct()
 		{	// construct head node, proxy
 		_Myhead() = _Buyheadnode();
@@ -791,7 +789,6 @@ public:
 		{	// return const reference to _Myproxy
 		return (_Get_data()._Myproxy);
 		}
-
  #endif /* _ITERATOR_DEBUG_LEVEL == 0 */
 
 	void _Orphan_all()
@@ -871,11 +868,11 @@ public:
 		{	// allocate a node with defaults and set links and value
 		_Nodeptr _Pnode = _Buynode0();
 
-		_Color(_Pnode) = _Red;
-		_Isnil(_Pnode) = false;
+		this->_Color(_Pnode) = _Red;
+		this->_Isnil(_Pnode) = false;
 
 		_TRY_BEGIN
-		_Getal().construct(
+		this->_Getal().construct(
 			_STD addressof(_Myval(_Pnode)),
 				_STD forward<_Valty>(_Val)...);
 		_CATCH_ALL
@@ -885,6 +882,7 @@ public:
 
 		return (_Pnode);
 		}
+
 
 	key_compare& _Getcomp() _NOEXCEPT
 		{	// return reference to ordering predicate
@@ -1245,7 +1243,8 @@ public:
 	iterator erase(const_iterator _Where)
 		{	// erase element at _Where
  #if _ITERATOR_DEBUG_LEVEL == 2
-		if (_Where._Getcont() != &this->_Get_data() || this->_Isnil(_Where._Mynode()))
+		if (_Where._Getcont() != &this->_Get_data()
+			|| this->_Isnil(_Where._Mynode()))
 			_DEBUG_ERROR("map/set erase iterator outside range");
 		_Nodeptr _Erasednode = _Where._Mynode();	// node to erase
 		++_Where;	// save successor iterator for return
@@ -1422,7 +1421,8 @@ public:
 		if (0 < this->_Mysize())
 			--this->_Mysize();
 
-		return (iterator(_Where._Ptr, &this->_Get_data()));	// return successor iterator
+		return (iterator(_Where._Ptr,
+			&this->_Get_data()));	// return successor iterator
 		}
 
 	iterator erase(const_iterator _First, const_iterator _Last)
@@ -2235,6 +2235,6 @@ _STD_END
 #endif /* _XTREE_ */
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.00:0009 */
+V6.50:0009 */

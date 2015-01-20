@@ -1130,7 +1130,8 @@ public:
 			_Nodeptr _Pnode = _Where._Mynode();	// subject node
 			++_Where;	// point past subject node
 
-			this->_Nextnode(_Pnodeb) = this->_Nextnode(_Pnode);	// link past it
+			this->_Nextnode(_Pnodeb) =
+				this->_Nextnode(_Pnode);	// link past it
 
 			this->_Freenode(_Pnode);
 			}
@@ -1390,7 +1391,7 @@ public:
 		_Sort(_Before_mid, _Last, _Pred, _Size - _Size / 2);
 		_Mid = _STD next(_Before_mid);
 
-		for (;;)
+		for (; ; )
 			{	// [_First, _Mid) and [_Mid, _Last) are sorted and non-empty
 			if (_DEBUG_LT_PRED(_Pred, *_Mid, *_First))
 				{	// consume _Mid
@@ -1591,6 +1592,6 @@ _STD_END
 #endif /* _FORWARD_LIST_ */
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.00:0009 */
+V6.50:0009 */

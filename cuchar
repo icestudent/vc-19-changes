@@ -1,4 +1,5 @@
 // cuchar standard header
+#pragma once
 #ifndef _CUCHAR_
 #define _CUCHAR_
 #include <yvals.h>
@@ -19,10 +20,9 @@ using _CSTD mbrtoc16; using _CSTD c16rtomb;
 using _CSTD mbrtoc32; using _CSTD c32rtomb;
 _STD_END
  #endif /* _GLOBAL_USING */
-
 #endif /* _CUCHAR_ */
 
 /*
- * Copyright (c) 1992-2013 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.40:0009 */
+V6.50:0009 */

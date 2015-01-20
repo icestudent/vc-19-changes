@@ -578,7 +578,7 @@ _Check_return_ _ACRTIMP float     __cdecl truncf(_In_ float _X);
 
     _Check_return_ _ACRTIMP int   __cdecl _set_FMA3_enable(_In_ int _Flag);
 
-#elif defined _M_ARM || defined _M_CRT_UNSUPPORTED
+#elif defined _M_ARM || defined _M_ARM64
 
     _Check_return_ _ACRTIMP int   __cdecl _finitef(_In_ float _X);
     _Check_return_ _ACRTIMP float __cdecl _logbf(_In_ float _X);
@@ -587,7 +587,7 @@ _Check_return_ _ACRTIMP float     __cdecl truncf(_In_ float _X);
 
 
 
-#if defined _M_X64 || defined _M_ARM || defined _M_CRT_UNSUPPORTED
+#if defined _M_X64 || defined _M_ARM || defined _M_ARM64
 
     _Check_return_ _ACRTIMP float __cdecl acosf(_In_ float _X);
     _Check_return_ _ACRTIMP float __cdecl asinf(_In_ float _X);
@@ -642,7 +642,7 @@ _Check_return_ _ACRTIMP float     __cdecl truncf(_In_ float _X);
 
 #endif
 
-#if defined _M_ARM || defined _M_CRT_UNSUPPORTED
+#if defined _M_ARM || defined _M_ARM64
 
     _Check_return_ _CRT_JIT_INTRINSIC _ACRTIMP float __cdecl fabsf(_In_ float  _X);
 
@@ -655,7 +655,7 @@ _Check_return_ _ACRTIMP float     __cdecl truncf(_In_ float _X);
 
 #endif
 
-#if defined _M_X64 || defined _M_ARM || defined _M_CRT_UNSUPPORTED
+#if defined _M_X64 || defined _M_ARM || defined _M_ARM64
 
     _Check_return_ _ACRTIMP float __cdecl floorf(_In_ float _X);
     _Check_return_ _ACRTIMP float __cdecl fmodf(_In_ float _X, _In_ float _Y);
@@ -689,7 +689,7 @@ _Check_return_ __inline float __CRTDECL ldexpf(_In_ float _X, _In_ int _Y)
     return (float)ldexp(_X, _Y);
 }
 
-#if defined _M_X64 || defined _M_ARM || defined _M_CRT_UNSUPPORTED
+#if defined _M_X64 || defined _M_ARM || defined _M_ARM64
 
     _Check_return_ _ACRTIMP float  __cdecl log10f(_In_ float _X);
     _Check_return_ _ACRTIMP float  __cdecl logf(_In_ float _X);

@@ -30,7 +30,7 @@ _CRT_BEGIN_C_HEADER
 
     #if defined _M_IX86 || defined _M_ARM
         #define va_start(ap)    ((void)(ap = (va_list)&va_alist))
-    #elif defined _M_X64 || defined _M_CRT_UNSUPPORTED
+    #elif defined _M_X64 || defined _M_ARM64
         #define va_start(ap, v) ((void)(__va_start(&ap, 0)))
     #else
         #error Unsupported architecture

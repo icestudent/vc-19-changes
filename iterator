@@ -68,7 +68,7 @@ template<class _Container>
 template<class _Container> inline
 	back_insert_iterator<_Container> back_inserter(_Container& _Cont)
 	{	// return a back_insert_iterator
-	return (_STD back_insert_iterator<_Container>(_Cont));
+	return (back_insert_iterator<_Container>(_Cont));
 	}
 
 		// TEMPLATE CLASS front_insert_iterator
@@ -127,7 +127,7 @@ template<class _Container>
 template<class _Container> inline
 	front_insert_iterator<_Container> front_inserter(_Container& _Cont)
 	{	// return front_insert_iterator
-	return (_STD front_insert_iterator<_Container>(_Cont));
+	return (front_insert_iterator<_Container>(_Cont));
 	}
 
 		// TEMPLATE CLASS insert_iterator
@@ -190,7 +190,7 @@ template<class _Container> inline
 	insert_iterator<_Container> inserter(_Container& _Cont,
 		typename _Container::iterator _Where)
 	{	// return insert_iterator
-	return (_STD insert_iterator<_Container>(_Cont, _Where));
+	return (insert_iterator<_Container>(_Cont, _Where));
 	}
 
 		// TEMPLATE CLASS istream_iterator
@@ -736,6 +736,6 @@ _STDEXT_END
 #endif /* _ITERATOR_ */
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.00:0009 */
+V6.50:0009 */

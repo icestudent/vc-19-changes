@@ -322,6 +322,7 @@ public:
 		}
 
 	tuple(const _Myt&) = default;
+	tuple(_Myt&&) = default;
 
 	template<class _First,
 		class _Second,
@@ -507,6 +508,7 @@ template<class... _Types> inline
 	{	// swap _Left and _Right
 	return (_Left.swap(_Right));
 	}
+
 
 	// CLASS _Tuple_element (find element by type)
 template<class _Ty,
@@ -871,6 +873,6 @@ _STD_END
 #endif /* _TUPLE_ */
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.00:0009 */
+V6.50:0009 */

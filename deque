@@ -962,6 +962,7 @@ template<class _Ty,
 public:
 	typedef deque<_Ty, _Alloc> _Myt;
 	typedef _Deque_alloc<_Deque_base_types<_Ty, _Alloc> > _Mybase;
+
 	typedef _Alloc allocator_type;
 
 	typedef typename _Mybase::_Alty _Alty;
@@ -981,7 +982,6 @@ public:
 
 	typedef _STD reverse_iterator<iterator> reverse_iterator;
 	typedef _STD reverse_iterator<const_iterator> const_reverse_iterator;
-
 	enum {_EEN_DS = _DEQUESIZ};	// helper for expression evaluator
 	deque()
 		: _Mybase()
@@ -1295,12 +1295,14 @@ public:
 
 	iterator end() _NOEXCEPT
 		{	// return iterator for end of mutable sequence
-		return (iterator(this->_Myoff() + this->_Mysize(), &this->_Get_data()));
+		return (iterator(this->_Myoff() + this->_Mysize(),
+			&this->_Get_data()));
 		}
 
 	const_iterator end() const _NOEXCEPT
 		{	// return iterator for end of nonmutable sequence
-		return (const_iterator(this->_Myoff() + this->_Mysize(), &this->_Get_data()));
+		return (const_iterator(this->_Myoff() + this->_Mysize(),
+			&this->_Get_data()));
 		}
 
 	iterator _Make_iter(const_iterator _Where) const
@@ -1813,7 +1815,8 @@ protected:
 		typedef typename _Alpty::pointer _Blockptr;
 		_Alpty _Almap(this->_Getal());
 		size_type _Newsize = 0 < this->_Mapsize() ? this->_Mapsize() : 1;
-		while (_Newsize - this->_Mapsize() < _Count || _Newsize < _DEQUEMAPSIZ)
+		while (_Newsize - this->_Mapsize() < _Count
+			|| _Newsize < _DEQUEMAPSIZ)
 			{	// scale _Newsize to 2^N >= _Mapsize() + _Count
 			if (max_size() / _DEQUESIZ - _Newsize < _Newsize)
 				_Xlen();	// result too long
@@ -1850,8 +1853,8 @@ protected:
 				_Almap);	// clear rest to initial block
 			}
 
-		_Destroy_range(this->_Map() + _Myboff, this->_Map() + this->_Mapsize(),
-			_Almap);
+		_Destroy_range(this->_Map() + _Myboff,
+			this->_Map() + this->_Mapsize(), _Almap);
 		if (this->_Map() != _Mapptr())
 			_Almap.deallocate(this->_Map(),
 				this->_Mapsize());	// free storage for old
@@ -1972,6 +1975,6 @@ _STD_END
 #endif /* _DEQUE_ */
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.00:0009 */
+V6.50:0009 */

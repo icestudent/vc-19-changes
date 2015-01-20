@@ -262,7 +262,6 @@ template<class _Elem>
 	{	// properties of a string or stream unknown element
 	};
 
- #if _HAS_CHAR16_T_LANGUAGE_SUPPORT
 		// STRUCT char_traits<char16_t>
 template<>
 	struct char_traits<char16_t>
@@ -280,7 +279,6 @@ template<>
 	};
 
 typedef streampos u32streampos;
- #endif /* _HAS_CHAR16_T_LANGUAGE_SUPPORT */
 
 		// STRUCT char_traits<wchar_t>
 template<>
@@ -753,6 +751,6 @@ _STD_END
 #endif /* _IOSFWD_ */
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.00:0009 */
+V6.50:0009 */

@@ -24,8 +24,8 @@ enum {	// constants for error codes
 	_RESOURCE_UNAVAILABLE_TRY_AGAIN
 	};
 
-_CRTIMP2_PURE void __cdecl _Throw_C_error(int code);
-_CRTIMP2_PURE void __cdecl _Throw_Cpp_error(int code);
+_CRTIMP2_PURE void __cdecl _Throw_C_error(int _Code);
+_CRTIMP2_PURE void __cdecl _Throw_Cpp_error(int _Code);
 
 inline int _Check_C_return(int _Res)
 	{	// throw exception on failure
@@ -214,6 +214,6 @@ _STD_END
 #endif /* _THR_XTHREAD_ */
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.00:0009 */
+V6.50:0009 */

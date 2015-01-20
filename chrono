@@ -715,14 +715,14 @@ struct system_clock
 		return (time_point(duration(_Xtime_get_ticks())));
 		}
 
-	static time_t to_time_t(const time_point& _Time) _NOEXCEPT
-		{	// convert to time_t
-		return ((time_t)(_Time.time_since_epoch().count()
+	static __time64_t to_time_t(const time_point& _Time) _NOEXCEPT
+		{	// convert to __time64_t
+		return ((__time64_t)(_Time.time_since_epoch().count()
 			/ _XTIME_TICKS_PER_TIME_T));
 		}
 
-	static time_point from_time_t(time_t _Tm) _NOEXCEPT
-		{	// convert from time_t
+	static time_point from_time_t(__time64_t _Tm) _NOEXCEPT
+		{	// convert from __time64_t
 		return (time_point(duration(_Tm * _XTIME_TICKS_PER_TIME_T)));
 		}
 	};
@@ -851,6 +851,6 @@ _STD_END
 #endif /* _CHRONO */
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.00:0009 */
+V6.50:0009 */

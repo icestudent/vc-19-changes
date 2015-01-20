@@ -38,6 +38,7 @@ public:
 		_Thr_set_null(_Thr);
 		}
 
+
 	template<class _Fn,
 		class... _Args,
 		class = typename enable_if<
@@ -155,8 +156,8 @@ class thread::id
 	{	// thread id
 public:
 	id() _NOEXCEPT
+		: _Id(0)
 		{	// id for no thread
-		_Thr_set_null(_Thr);
 		}
 
 	template<class _Ch,
@@ -164,31 +165,27 @@ public:
 		basic_ostream<_Ch, _Tr>& _To_text(
 			basic_ostream<_Ch, _Tr>& _Str)
 		{	// insert representation into stream
-		return (_Str << _Thr_val(_Thr));
-		}
-
-	size_t hash() const
-		{	// hash bits to size_t value by pseudorandomizing transform
-		return (_STD hash<size_t>()((size_t)_Thr_val(_Thr)));
+		return (_Str << _Id);
 		}
 
 private:
-	id(const thread& _Thrd)
-		: _Thr(_Thrd._Thr)
-		{	// construct from thread object
+	id(_Thrd_id_t _Other_id)
+		: _Id(_Other_id)
+		{	// construct from unique id
 		}
 
-	id(_Thrd_t _Thrd)
-		: _Thr(_Thrd)
-		{	// construct from thread identifier
+	size_t _Hash_id() const
+		{	// hash bits to size_t value by pseudorandomizing transform
+		return (hash<_Thrd_id_t>()(_Id));
 		}
 
-	_Thrd_t _Thr;
+	_Thrd_id_t _Id;
 
 	friend thread::id thread::get_id() const _NOEXCEPT;
 	friend thread::id this_thread::get_id() _NOEXCEPT;
 	friend bool operator==(thread::id _Left, thread::id _Right) _NOEXCEPT;
 	friend bool operator<(thread::id _Left, thread::id _Right) _NOEXCEPT;
+	friend struct hash<thread::id>;
 	};
 
 inline void thread::join()
@@ -206,12 +203,12 @@ inline void thread::join()
 
 inline thread::id thread::get_id() const _NOEXCEPT
 	{	// return id for this thread
-	return (id(*this));
+	return (id(_Thr._Id));
 	}
 
 inline thread::id this_thread::get_id() _NOEXCEPT
 	{	// return id for current thread
-	return (_Thrd_current());
+	return (_Thrd_id());
 	}
 
 inline void swap(thread& _Left, thread& _Right) _NOEXCEPT
@@ -221,7 +218,7 @@ inline void swap(thread& _Left, thread& _Right) _NOEXCEPT
 
 inline bool operator==(thread::id _Left, thread::id _Right) _NOEXCEPT
 	{	// return true if _Left and _Right identify the same thread
-	return (_Thrd_equal(_Left._Thr, _Right._Thr));
+	return (_Left._Id == _Right._Id);
 	}
 
 inline bool operator!=(thread::id _Left, thread::id _Right) _NOEXCEPT
@@ -231,7 +228,7 @@ inline bool operator!=(thread::id _Left, thread::id _Right) _NOEXCEPT
 
 inline bool operator<(thread::id _Left, thread::id _Right) _NOEXCEPT
 	{	// return true if _Left precedes _Right
-	return (_Thrd_lt(_Left._Thr, _Right._Thr));
+	return (_Left._Id < _Right._Id);
 	}
 
 inline bool operator<=(thread::id _Left, thread::id _Right) _NOEXCEPT
@@ -265,7 +262,7 @@ template<>
 
 	size_t operator()(const _Kty& _Keyval) const
 		{	// hash _Keyval to size_t value by pseudorandomizing transform
-		return (_Keyval.hash());
+		return (_Keyval._Hash_id());
 		}
 	};
 _STD_END
@@ -277,6 +274,6 @@ _STD_END
 #endif /* _THREAD_ */
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.00:0009 */
+V6.50:0009 */

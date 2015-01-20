@@ -99,6 +99,8 @@ public:
 		_DEBUG_RANGE(_Fmtfirst, _Fmtlast);
 		const _Ctype& _Ctype_fac = _USE(_Iosbase.getloc(), _Ctype);
 
+		_State = ios_base::goodbit;
+
 		for (; _Fmtfirst != _Fmtlast; ++_Fmtfirst)
 			if (_Ctype_fac.narrow(*_Fmtfirst) != '%')
 				{	// match literal element
@@ -397,17 +399,18 @@ protected:
 		const _Ctype& _Ctype_fac = _USE(_Iosbase.getloc(), _Ctype);
 
 		int _Ans = 0;
-		_State |= _Getint(_First, _Last, 0, 2035,
+		ios_base::iostate _Res = _Getint(_First, _Last, 0, 9999,
 			_Ans, _Ctype_fac);
 
-		if (!(_State & ios_base::failbit))
-			{	// valid input, convert to year
-			if (1900 <= _Ans)
-				_Ans -= 1900;	// [1900, ...) as is
-			else if (2035 - 1900 < _Ans)
-				_State |= ios_base::failbit;
-			_Pt->tm_year = _Ans;	// set year
-			}
+		if (_Res & ios_base::failbit)
+			_State |= ios_base::failbit;	// invalid input
+		else if (_Ans < 69)
+			_Pt->tm_year = _Ans + 100;	// [0, 68] parsed as [2000, 2068]
+		else if (_Ans < 100)
+			_Pt->tm_year = _Ans;		// [69, 99] parsed as [1969, 1999]
+		else
+			_Pt->tm_year = _Ans - 1900;	// [100, 9999] parsed literally
+
 		return (_First);
 		}
 
@@ -417,6 +420,8 @@ protected:
 		{	// get formatted time for _Specifier (_Modifier ignored)
 		const _Ctype& _Ctype_fac = _USE(_Iosbase.getloc(), _Ctype);
 		int _Ans = 0;
+
+		_State = ios_base::goodbit;
 
 		switch (_Specifier)
 			{	// process format specifier
@@ -1146,6 +1151,6 @@ _STD_END
 #endif /* _XLOCTIME_ */
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.00:0009 */
+V6.50:0009 */

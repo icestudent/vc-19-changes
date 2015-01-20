@@ -1711,7 +1711,7 @@ private:
         _LockHolder _Lock(_M_lock);
         _M_iteratorCount++;
 
-        for(_LinkRegistry::iterator _Link = _M_links.begin(); *_Link != NULL; _Link++)
+        for(_LinkRegistry::iterator _Link = _M_links.begin(); *_Link != NULL; ++_Link)
         {
             _Array._Push_back(*_Link);
         }
@@ -8440,11 +8440,6 @@ protected:
     /**/
     void _Initialize_order_node(ISource<_Type> * _PSource, size_t _Index, ITarget<size_t> * _PTarget, Scheduler * _PScheduler = NULL, ScheduleGroup * _PScheduleGroup = NULL)
     {
-        if (_Index < 0)
-        {
-            throw std::invalid_argument("_Index");
-        }
-
         if (_PSource == NULL)
         {
             throw std::invalid_argument("_PSource");

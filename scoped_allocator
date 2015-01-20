@@ -23,7 +23,7 @@ template<class _Outer,
 	struct _Scoped_propagate_on_container_copy
 	{	// determines scoped_allocator_adaptor<_Outer, _Inner...>
 		// ::propagate_on_container_copy_assignment
-	typedef typename _If<_STD allocator_traits<_Outer>
+	typedef typename _If<allocator_traits<_Outer>
 		::propagate_on_container_copy_assignment::value,
 		true_type,
 		_Scoped_propagate_on_container_copy<_Inner...> >::type
@@ -34,7 +34,7 @@ template<class _Outer>
 	struct _Scoped_propagate_on_container_copy<_Outer>
 	{	// determines scoped_allocator_adaptor<_Outer, _Inner...>
 		// ::propagate_on_container_copy_assignment
-	typedef typename _STD allocator_traits<_Outer>
+	typedef typename allocator_traits<_Outer>
 		::propagate_on_container_copy_assignment::type type;
 	};
 
@@ -44,7 +44,7 @@ template<class _Outer,
 	struct _Scoped_propagate_on_container_move
 	{	// determines scoped_allocator_adaptor<_Outer, _Inner...>
 		// ::propagate_on_container_move_assignment
-	typedef typename _If<_STD allocator_traits<_Outer>
+	typedef typename _If<allocator_traits<_Outer>
 		::propagate_on_container_move_assignment::value,
 		true_type,
 		_Scoped_propagate_on_container_move<_Inner...> >::type
@@ -55,7 +55,7 @@ template<class _Outer>
 	struct _Scoped_propagate_on_container_move<_Outer>
 	{	// determines scoped_allocator_adaptor<_Outer, _Inner...>
 		// ::propagate_on_container_move_assignment
-	typedef typename _STD allocator_traits<_Outer>
+	typedef typename allocator_traits<_Outer>
 		::propagate_on_container_move_assignment::type type;
 	};
 
@@ -65,7 +65,7 @@ template<class _Outer,
 	struct _Scoped_propagate_on_container_swap
 	{	// determines scoped_allocator_adaptor<_Outer, _Inner...>
 		// ::propagate_on_container_swap
-	typedef typename _If<_STD allocator_traits<_Outer>
+	typedef typename _If<allocator_traits<_Outer>
 		::propagate_on_container_swap::value,
 		true_type,
 		_Scoped_propagate_on_container_swap<_Inner...> >::type
@@ -76,7 +76,7 @@ template<class _Outer>
 	struct _Scoped_propagate_on_container_swap<_Outer>
 	{	// determines scoped_allocator_adaptor<_Outer, _Inner...>
 		// ::propagate_on_container_swap
-	typedef typename _STD allocator_traits<_Outer>
+	typedef typename allocator_traits<_Outer>
 		::propagate_on_container_swap::type type;
 	};
 
@@ -571,6 +571,6 @@ _STD_END
 #endif /* _SCOPED_ALLOCATOR_ */
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.00:0009 */
+V6.50:0009 */

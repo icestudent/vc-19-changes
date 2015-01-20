@@ -176,8 +176,8 @@ protected:
 
 		if (_Isdef)
 			{	// apply defaults for required facets
-			memcpy(&_Plusformat, "$+xv", 4);
-			memcpy(&_Minusformat, "$+xv", 4);
+			_CSTD memcpy(&_Plusformat, "$+xv", 4);
+			_CSTD memcpy(&_Minusformat, "$+xv", 4);
 			}
 		}
 
@@ -409,7 +409,7 @@ protected:
 		bool _Intl, ios_base& _Iosbase, ios_base::iostate& _State,
 			long double& _Val) const
 		{	// get long double from [_First, _Last) into _Val
-		_Elem _Atoms[sizeof ("0123456789-") - 1];
+		_Elem _Atoms[sizeof ("0123456789-")];
 		string _Str = _Getmfld(_First, _Last, _Intl, _Iosbase, _Atoms);
 
 		if (_First == _Last)
@@ -436,7 +436,7 @@ protected:
 		bool _Intl, ios_base& _Iosbase, ios_base::iostate& _State,
 			string_type& _Val) const
 		{	// get string_type from [_First, _Last) into _Val
-		_Elem _Atoms[sizeof ("0123456789-") - 1];
+		_Elem _Atoms[sizeof ("0123456789-")];
 		string _Str = _Getmfld(_First, _Last, _Intl, _Iosbase, _Atoms);
 		size_t _Len = _Str.size();
 
@@ -477,7 +477,7 @@ private:
 		static const char _Src[] = {"0123456789-"};
 		const ctype<_Elem>& _Ctype_fac =
 			_USE(_Iosbase.getloc(), ctype<_Elem>);
-		_Ctype_fac.widen(&_Src[0], &_Src[sizeof (_Src) - 1], _Atoms);
+		_Ctype_fac.widen(&_Src[0], &_Src[sizeof (_Src)], _Atoms);
 
 		for (size_t _Off = 0; !_Bad && _Off < 4; ++_Off)
 			switch (_Pattern.field[_Off])
@@ -742,10 +742,10 @@ protected:
 			const string_type& _Val) const
 		{	// put string_type to _Dest
 		static const char _Src[] = {"0123456789-"};
-		_Elem _Atoms[sizeof (_Src) - 1];
+		_Elem _Atoms[sizeof (_Src)];
 		const ctype<_Elem>& _Ctype_fac =
 			_USE(_Iosbase.getloc(), ctype<_Elem>);
-		_Ctype_fac.widen(&_Src[0], &_Src[sizeof (_Src) - 1], _Atoms);
+		_Ctype_fac.widen(&_Src[0], &_Src[sizeof (_Src)], _Atoms);
 
 		bool _Negative = false;
 		size_t _Idx0 = 0;
@@ -988,6 +988,6 @@ _STD_END
 #endif /* _XLOCMON_ */
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.00:0009 */
+V6.50:0009 */

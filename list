@@ -496,7 +496,6 @@ template<class _Ty,
 	};
 
 		// TEMPLATE CLASS _List_val
-
 template<class _Val_types>
 	class _List_val
 		: public _Container_base
@@ -593,7 +592,6 @@ public:
 		}
 
  #if _ITERATOR_DEBUG_LEVEL == 0
-
 	_List_alloc(const _Alloc& _Al = _Alloc())
 		: _Mypair(_One_then_variadic_args_t(), _Al)
 		{	// construct head node, allocator from _Al
@@ -616,7 +614,6 @@ public:
 		}
 
  #else /* _ITERATOR_DEBUG_LEVEL == 0 */
-
 	_List_alloc(const _Alloc& _Al = _Alloc())
 		: _Mypair(_One_then_variadic_args_t(), _Al)
 		{	// construct head node, allocator from _Al
@@ -1080,12 +1077,14 @@ public:
 
 	iterator begin() _NOEXCEPT
 		{	// return iterator for beginning of mutable sequence
-		return (iterator(this->_Nextnode(this->_Myhead()), &this->_Get_data()));
+		return (iterator(this->_Nextnode(this->_Myhead()),
+			&this->_Get_data()));
 		}
 
 	const_iterator begin() const _NOEXCEPT
 		{	// return iterator for beginning of nonmutable sequence
-		return (const_iterator(this->_Nextnode(this->_Myhead()), &this->_Get_data()));
+		return (const_iterator(this->_Nextnode(this->_Myhead()),
+			&this->_Get_data()));
 		}
 
 	iterator end() _NOEXCEPT
@@ -1117,7 +1116,8 @@ public:
 
 	_Unchecked_const_iterator _Unchecked_end() const
 		{	// return unchecked iterator for end of nonmutable sequence
-		return (_Unchecked_const_iterator(this->_Myhead(), &this->_Get_data()));
+		return (_Unchecked_const_iterator(this->_Myhead(),
+			&this->_Get_data()));
 		}
 
 	iterator _Make_iter(const_iterator _Where) const _NOEXCEPT
@@ -1403,7 +1403,8 @@ public:
 	_Nodeptr _Unlinknode(const_iterator _Where)
 		{	// unlink node at _Where from the list
  #if _ITERATOR_DEBUG_LEVEL == 2
-		if (_Where._Getcont() != &this->_Get_data() || _Where._Ptr == this->_Myhead())
+		if (_Where._Getcont() != &this->_Get_data()
+			|| _Where._Ptr == this->_Myhead())
 			_DEBUG_ERROR("list erase iterator outside range");
 		_Nodeptr _Pnode = (_Where)._Mynode();
 		_Orphan_ptr(_Pnode);
@@ -1879,6 +1880,7 @@ public:
 		const_iterator **_Pnext = (const_iterator **)this->_Getpfirst();
 		if (_Pnext != 0)
 			while (*_Pnext != 0)
+				{	// test an iterator
 				if ((*_Pnext)->_Ptr == this->_Myhead()
 					|| (_Ptr != 0 && (*_Pnext)->_Ptr != _Ptr))
 					_Pnext = (const_iterator **)(*_Pnext)->_Getpnext();
@@ -1887,6 +1889,7 @@ public:
 					(*_Pnext)->_Clrcont();
 					*_Pnext = *(const_iterator **)(*_Pnext)->_Getpnext();
 					}
+				}
 		}
  #endif /* _ITERATOR_DEBUG_LEVEL == 2 */
 	};
@@ -1957,6 +1960,6 @@ _STD_END
 #endif /* _LIST_ */
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.00:0009 */
+V6.50:0009 */

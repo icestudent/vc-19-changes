@@ -193,17 +193,20 @@ public:
 	_Hash(const key_compare& _Parg,
 		const allocator_type& _Al)
 		: _Traitsobj(_Parg),
+
 			_List(_Al),
 			_Vec(_Al)
+
 		{	// construct empty hash table
 		_Max_bucket_size() = _Bucket_size;
 		_Init();
 		}
-
 	_Hash(const _Myt& _Right, const allocator_type& _Al)
 		: _Traitsobj(),
+
 			_List(_Al),
 			_Vec(_Al)
+
 		{	// construct hash table by copying right
 		_Max_bucket_size() = _Bucket_size;
 		_Copy(_Right);
@@ -211,8 +214,10 @@ public:
 
 	_Hash(_Myt&& _Right, const allocator_type& _Al)
 		: _Traitsobj(),
+
 			_List(_Al),
 			_Vec(_Al)
+
 		{	// construct hash table by moving _Right, allocator
 		_Max_bucket_size() = _Bucket_size;
 		_Assign_rv(_STD forward<_Myt>(_Right));
@@ -664,6 +669,7 @@ public:
 		if (this != &_Right)
 			{	// different, worth swapping
 			_Swap_adl(_Traitsobj, _Right._Traitsobj);
+
 			this->_List.swap(_Right._List);
 			this->_Vec.swap(_Right._Vec);
 			_STD swap(this->_Mask, _Right._Mask);
@@ -707,10 +713,12 @@ protected:
 		_Bucket = _Hashval(_Traits::_Kfn(_Val));
 		_Where = _End(_Bucket);
 		for (; _Where != _Begin(_Bucket); )
-			if (_Traitsobj(_Traits::_Kfn(_Val), _Traits::_Kfn(*--_Where)))
+			if (_Traitsobj(_Traits::_Kfn(_Val),
+				_Traits::_Kfn(*--_Where)))
 				;	// still too high in bucket list
 			else if (_Multi
-				|| _Traitsobj(_Traits::_Kfn(*_Where), _Traits::_Kfn(_Val)))
+				|| _Traitsobj(_Traits::_Kfn(*_Where),
+						_Traits::_Kfn(_Val)))
 				{	// found insertion point, back up to it
 				++_Where;
 				break;
@@ -832,7 +840,9 @@ protected:
 		_List.clear();
 
 		_TRY_BEGIN
+
 		_Traitsobj = _Right._Traitsobj;
+
 		_Vec.assign(_Right._Vec.size(), _Unchecked_end());
 		insert(_Right.begin(), _Right.end());
 		_CATCH_ALL
@@ -895,6 +905,7 @@ protected:
 		}
 
 	_Traits _Traitsobj;	// traits to customize behavior
+
 	_Mylist _List;	// list of elements, must initialize before _Vec
 	_Myvec _Vec;	// vector of list iterators, begin() then end()-1
 	size_type _Mask;	// the key mask
@@ -958,6 +969,6 @@ _STD_END
 #endif /* _XHASH_ */
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.00:0009 */
+V6.50:0009 */

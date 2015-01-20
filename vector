@@ -494,7 +494,6 @@ template<class _Alloc_types>
 	{	// base class for vector to hold allocator
 public:
 	typedef _Vector_alloc<_Alloc_types> _Myt;
-
 	typedef typename _Alloc_types::_Alloc _Alloc;
 	typedef typename _Alloc_types::_Alty _Alty;
 	typedef typename _Alloc_types::_Val_types _Val_types;
@@ -511,7 +510,6 @@ public:
 	typedef _Vector_const_iterator<_Vector_val<_Val_types> > const_iterator;
 
  #if _ITERATOR_DEBUG_LEVEL == 0
-
 	_Vector_alloc(const _Alloc& _Al = _Alloc())
 		: _Mypair(_One_then_variadic_args_t(), _Al)
 		{	// construct allocator from _Al
@@ -528,8 +526,7 @@ public:
 		}
 
  #else /* _ITERATOR_DEBUG_LEVEL == 0 */
-
-	_Vector_alloc(const _Alty& _Al = _Alty())
+	_Vector_alloc(const _Alloc& _Al = _Alloc())
 		: _Mypair(_One_then_variadic_args_t(), _Al)
 		{	// construct allocator from _Al
 		_Alloc_proxy();
@@ -661,6 +658,7 @@ template<class _Ty,
 public:
 	typedef vector<_Ty, _Alloc> _Myt;
 	typedef _Vector_alloc<_Vec_base_types<_Ty, _Alloc> > _Mybase;
+
 	typedef _Alloc allocator_type;
 
 	typedef typename _Mybase::_Alty _Alty;
@@ -698,7 +696,8 @@ public:
 		if (_Buy(_Count))
 			{	// nonzero, fill it
 			_TRY_BEGIN
-			_Uninitialized_default_fill_n(this->_Myfirst(), _Count, this->_Getal());
+			_Uninitialized_default_fill_n(this->_Myfirst(), _Count,
+				this->_Getal());
 			this->_Mylast() += _Count;
 			_CATCH_ALL
 			_Tidy();
@@ -773,7 +772,8 @@ public:
 		}
 
 	template<class _Iter>
-		void _Construct(_Iter _First, _Iter _Last, input_iterator_tag)
+		void _Construct(_Iter _First, _Iter _Last,
+			input_iterator_tag)
 		{	// initialize with [_First, _Last), input iterators
 		_TRY_BEGIN
 
@@ -787,7 +787,8 @@ public:
 		}
 
 	template<class _Iter>
-		void _Construct(_Iter _First, _Iter _Last, forward_iterator_tag)
+		void _Construct(_Iter _First, _Iter _Last,
+			forward_iterator_tag)
 		{	// initialize with [_First, _Last), forward iterators
 		if (_Buy(_STD distance(_First, _Last)))
 			{	// nonzero, fill it
@@ -978,7 +979,8 @@ public:
 				pointer _Ptr = _Right._Myfirst() + size();
 				_Copy_impl(_Right._Myfirst(),
 					_Ptr, this->_Myfirst());
-				this->_Mylast() = _Ucopy(_Ptr, _Right._Mylast(), this->_Mylast());
+				this->_Mylast() = _Ucopy(_Ptr, _Right._Mylast(),
+					this->_Mylast());
 				}
 			else
 				{	// not enough room, allocate new array and construct new
@@ -990,7 +992,8 @@ public:
 					}
 				if (_Buy(_Right.size()))
 					_TRY_BEGIN
-					this->_Mylast() = _Ucopy(_Right._Myfirst(), _Right._Mylast(),
+					this->_Mylast() =
+						_Ucopy(_Right._Myfirst(), _Right._Mylast(),
 						this->_Myfirst());
 					_CATCH_ALL
 					_Tidy();
@@ -1767,6 +1770,7 @@ protected:
 		_Lockit _Lock(_LOCK_DEBUG);
 		const_iterator **_Pnext = (const_iterator **)this->_Getpfirst();
 		if (_Pnext != 0)
+			{	// test an iterator
 			while (*_Pnext != 0)
 				if ((*_Pnext)->_Ptr < _First || _Last < (*_Pnext)->_Ptr)
 					_Pnext = (const_iterator **)(*_Pnext)->_Getpnext();
@@ -1775,6 +1779,7 @@ protected:
 					(*_Pnext)->_Clrcont();
 					*_Pnext = *(const_iterator **)(*_Pnext)->_Getpnext();
 					}
+			}
 		}
 
  #else /* _VECTOR_ORPHAN_RANGE */
@@ -2316,7 +2321,7 @@ template<class _Alloc>
 		: public _Container_base
 	{	// base class for vector<bool> to hold data
 public:
-	typedef _STD vector<_Vbase, _Alloc> _Vectype;
+	typedef vector<_Vbase, _Alloc> _Vectype;
 	typedef typename _Vectype::_Alty _Alty;
 	typedef typename _Alty::size_type size_type;
 
@@ -2417,7 +2422,7 @@ template<class _Alloc>
 		: public _Vb_val<_Alloc>
 	{	// varying size array of bits
 public:
-	typedef _STD vector<bool, _Alloc> _Myt;
+	typedef vector<bool, _Alloc> _Myt;
 	typedef _Vb_val<_Alloc> _Mybase;
 	typedef typename _Mybase::_Alty _Alty;
 	typedef typename _Mybase::_Vectype _Vectype;
@@ -3047,6 +3052,6 @@ _STD_END
 #endif /* _VECTOR_ */
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.00:0009 */
+V6.50:0009 */

@@ -173,7 +173,8 @@ public:
 		{	// construct
 		}
 
-	virtual void *_Get_deleter(const _XSTD2 type_info& _Typeid) const _NOEXCEPT
+	virtual void *_Get_deleter(
+		const _XSTD2 type_info& _Typeid) const _NOEXCEPT
 		{	// return address of deleter object
 		return ((void *)(_Typeid == typeid(_Dx)
 			? _STD addressof(_Mypair._Get_first()) : 0));
@@ -211,7 +212,8 @@ public:
 		{	// construct
 		}
 
-	virtual void *_Get_deleter(const _XSTD2 type_info& _Typeid) const _NOEXCEPT
+	virtual void *_Get_deleter(
+		const _XSTD2 type_info& _Typeid) const _NOEXCEPT
 		{	// return address of deleter object
 		return ((void *)(_Typeid == typeid(_Dx)
 			? _STD addressof(_Mypair._Get_first()) : 0));
@@ -1275,6 +1277,8 @@ public:
 	typedef _Ty element_type;
 	typedef _Dx deleter_type;
 
+	using _Mybase::get_deleter;
+
 	unique_ptr() _NOEXCEPT
 		: _Mybase(pointer())
 		{	// default construct
@@ -1948,9 +1952,8 @@ template <class _Ty> inline
 		memory_order)
 	{	// copy _Other to *_Ptr and return previous value of *_Ptr atomically
 	_Shared_ptr_spin_lock _Lock;
-	shared_ptr<_Ty> _Result = *_Ptr;
 	_Ptr->swap(_Other);
-	return (_Result);
+	return (_Other);
 	}
 
 template <class _Ty> inline
@@ -1965,12 +1968,16 @@ template <class _Ty> inline
 		shared_ptr<_Ty> *_Ptr, shared_ptr<_Ty> *_Exp, shared_ptr<_Ty> _Value,
 		memory_order, memory_order)
 	{	// atomically compare and exchange
+	shared_ptr<_Ty> _Old_exp;	// destroyed outside spin lock
 	_Shared_ptr_spin_lock _Lock;
-	bool _Success = _Ptr->get() == _Exp->get();
+	bool _Success = _Ptr->get() == _Exp->get()
+		&& !_Ptr->owner_before(*_Exp)
+		&& !_Exp->owner_before(*_Ptr);
 	if (_Success)
-		*_Ptr = _Value;
+		_Ptr->swap(_Value);
 	else
 		{	// match failed
+		_Exp->swap(_Old_exp);
 		*_Exp = *_Ptr;
 		}
 	return (_Success);
@@ -2010,6 +2017,6 @@ _STD_END
 #endif /* _MEMORY_ */
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.00:0009 */
+V6.50:0009 */

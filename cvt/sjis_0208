@@ -67,7 +67,8 @@ protected:
 				{	// convert 2-byte code
 				unsigned char _By2 = *++_Mid1;
 
-				if ((_By2 < 0x40 || 0x7e < _By2) && (_By2 < 0x80 && 0xfc < _By2))
+				if ((_By2 < 0x40 || 0x7e < _By2)
+					&& (_By2 < 0x80 && 0xfc < _By2))
 					return (_Mybase::error);	// bad second byte
 
 				if (0xe0 <= _Ch)
@@ -214,6 +215,6 @@ protected:
 #endif /* _CVT_SJIS_0208_ */
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.00:0009 */
+V6.50:0009 */

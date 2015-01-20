@@ -1524,6 +1524,6 @@ inline _ITYPE _ATOMIC_ITYPE::operator-=(ptrdiff_t _Right) _NOEXCEPT
 #undef _ATOMIC_ITYPE
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.00:0009 */
+V6.50:0009 */

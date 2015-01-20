@@ -585,7 +585,6 @@ public:
 	};
  #endif /* _NATIVE_WCHAR_T_DEFINED */
 
- #if _HAS_CHAR16_T_LANGUAGE_SUPPORT
 		// CLASS numeric_limits<char16_t>
 template<> class numeric_limits<char16_t>
 	: public _Num_int_base
@@ -643,7 +642,6 @@ public:
 	_STCONS(int, digits10, CHAR_BIT * sizeof (char16_t)
 		* 301L / 1000);
 	};
- #endif /* _HAS_CHAR16_T_LANGUAGE_SUPPORT */
 
 		// CLASS numeric_limits<int>
 template<> class numeric_limits<int>
@@ -877,7 +875,6 @@ public:
 		* 301L / 1000);
 	};
 
- #if _HAS_CHAR16_T_LANGUAGE_SUPPORT
 		// CLASS numeric_limits<char32_t>
 template<> class numeric_limits<char32_t>
 	: public _Num_int_base
@@ -935,7 +932,6 @@ public:
 	_STCONS(int, digits10, CHAR_BIT * sizeof (char32_t)
 		* 301L / 1000);
 	};
- #endif /* _HAS_CHAR16_T_LANGUAGE_SUPPORT */
 
  #ifdef _LONGLONG
 		// CLASS numeric_limits<_LONGLONG>
@@ -1353,14 +1349,12 @@ public:
 	_STCONS(int, digits10, (CHAR_BIT * sizeof (unsigned short) - 1)
 		* 301L / 1000);
 
- #if _HAS_CHAR16_T_LANGUAGE_SUPPORT
   #undef _STCLASS
   #define _STCLASS	numeric_limits<char16_t>
 	_STCONS(bool, is_signed, false);
 	_STCONS(int, digits, CHAR_BIT * sizeof (char16_t));
 	_STCONS(int, digits10, (CHAR_BIT * sizeof (char16_t) - 1)
 		* 301L / 1000);
- #endif /* _HAS_CHAR16_T_LANGUAGE_SUPPORT */
 
   #undef _STCLASS
   #define _STCLASS	numeric_limits<int>
@@ -1390,14 +1384,12 @@ public:
 	_STCONS(int, digits10, (CHAR_BIT * sizeof (unsigned long) - 1)
 		* 301L / 1000);
 
- #if _HAS_CHAR16_T_LANGUAGE_SUPPORT
   #undef _STCLASS
   #define _STCLASS	numeric_limits<char32_t>
 	_STCONS(bool, is_signed, false);
 	_STCONS(int, digits, CHAR_BIT * sizeof (char32_t));
 	_STCONS(int, digits10, (CHAR_BIT * sizeof (char32_t) - 1)
 		* 301L / 1000);
- #endif /* _HAS_CHAR16_T_LANGUAGE_SUPPORT */
 
  #ifdef _LONGLONG
   #undef _STCLASS
@@ -1459,6 +1451,6 @@ _STD_END
 #endif /* _LIMITS_ */
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.00:0009 */
+V6.50:0009 */

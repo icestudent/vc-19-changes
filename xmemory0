@@ -14,13 +14,15 @@
  #pragma push_macro("new")
  #undef new
 
-#if !defined(_DECLSPEC_ALLOCATOR)
-#if _MSC_VER >= 1900 && !defined(__EDG__)
-#define _DECLSPEC_ALLOCATOR __declspec(allocator)
-#else
-#define _DECLSPEC_ALLOCATOR
-#endif
-#endif
+ #if !defined(_DECLSPEC_ALLOCATOR)
+
+  #if 1900 <= _MSC_VER && !defined(__EDG__)
+   #define _DECLSPEC_ALLOCATOR	__declspec(allocator)
+
+  #else /* 1900 <= _MSC_VER, etc. */
+   #define _DECLSPEC_ALLOCATOR
+  #endif /* 1900 <= _MSC_VER, etc. */
+ #endif /* !defined(_DECLSPEC_ALLOCATOR) */
 
  #pragma warning(disable: 4100)
 
@@ -589,6 +591,10 @@ template<class _Ty>
 	class allocator
 	{	// generic allocator for objects of class _Ty
 public:
+	static_assert(!is_const<_Ty>::value,
+		"The C++ Standard forbids containers of const elements "
+		"because allocator<const T> is ill-formed.");
+
 	typedef _Ty value_type;
 
 	typedef value_type *pointer;
@@ -977,6 +983,6 @@ _STD_END
 #endif /* _XMEMORY0_ */
 
 /*
- * Copyright (c) 1992-2012 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Copyright (c) by P.J. Plauger. All rights reserved.
  * Consult your license regarding permissions and restrictions.
-V6.00:0009 */
+V6.50:0009 */
