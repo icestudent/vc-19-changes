@@ -162,23 +162,6 @@ template<class _Ty> inline
 	_Ptr->~_Ty();
 	}
 
-template<> inline
-	void _Destroy(char *)
-	{	// destroy a char (do nothing)
-	}
-
-template<> inline
-	void _Destroy(wchar_t *)
-	{	// destroy a wchar_t (do nothing)
-	}
-
- #ifdef _NATIVE_WCHAR_T_DEFINED
-template<> inline
-	void _Destroy(unsigned short *)
-	{	// destroy a unsigned short (do nothing)
-	}
- #endif /* _NATIVE_WCHAR_T_DEFINED */
-
 		// TEMPLATE FUNCTION _Destroy_range
 template<class _Alloc> inline
 	void _Destroy_range(typename _Alloc::pointer _First,
@@ -186,7 +169,7 @@ template<class _Alloc> inline
 		_Nonscalar_ptr_iterator_tag)
 	{	// destroy [_First, _Last), arbitrary type
 	for (; _First != _Last; ++_First)
-		_Al.destroy(_First);
+		_Al.destroy(_STD addressof(*_First));
 	}
 
 template<class _Alloc> inline

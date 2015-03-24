@@ -256,11 +256,11 @@ template<class _Ch,
 	// TEMPLATE STRUCT SPECIALIZATION hash
 template<>
 	struct hash<thread::id>
-		: public unary_function<thread::id, size_t>
 	{	// hash functor for thread::id
-	typedef thread::id _Kty;
+	typedef thread::id argument_type;
+	typedef size_t result_type;
 
-	size_t operator()(const _Kty& _Keyval) const
+	size_t operator()(const argument_type& _Keyval) const
 		{	// hash _Keyval to size_t value by pseudorandomizing transform
 		return (_Keyval._Hash_id());
 		}

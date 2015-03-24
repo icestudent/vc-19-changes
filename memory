@@ -533,7 +533,10 @@ public:
 		}
 
 	template<class _Ux,
-		class _Dx>
+		class _Dx,
+		class = typename enable_if<is_convertible<
+			typename unique_ptr<_Ux, _Dx>::pointer, _Ty *>::value,
+			void>::type>
 		shared_ptr(unique_ptr<_Ux, _Dx>&& _Right)
 		{	// construct from unique_ptr
 		_Resetp(_Right.release(), _Right.get_deleter());
@@ -1808,8 +1811,11 @@ template<class _Ty>
 
 template<class _Ty>
 	struct owner_less<shared_ptr<_Ty> >
-		: public binary_function<shared_ptr<_Ty>, shared_ptr<_Ty>, bool>
 	{	// functor for owner_before
+	typedef shared_ptr<_Ty> first_argument_type;
+	typedef shared_ptr<_Ty> second_argument_type;
+	typedef bool result_type;
+
 	bool operator()(const shared_ptr<_Ty>& _Left,
 		const shared_ptr<_Ty>& _Right) const
 		{	// apply owner_before to operands
@@ -1831,8 +1837,11 @@ template<class _Ty>
 
 template<class _Ty>
 	struct owner_less<weak_ptr<_Ty> >
-		: public binary_function<weak_ptr<_Ty>, weak_ptr<_Ty>, bool>
 	{	// functor for owner_before
+	typedef weak_ptr<_Ty> first_argument_type;
+	typedef weak_ptr<_Ty> second_argument_type;
+	typedef bool result_type;
+
 	bool operator()(const weak_ptr<_Ty>& _Left,
 		const weak_ptr<_Ty>& _Right) const
 		{	// apply owner_before to operands
@@ -1856,27 +1865,26 @@ template<class _Ty>
 template<class _Ty,
 	class _Dx>
 	struct hash<unique_ptr<_Ty, _Dx> >
-		: public unary_function<unique_ptr<_Ty, _Dx>, size_t>
 	{	// hash functor
-	typedef unique_ptr<_Ty, _Dx> _Kty;
-	typedef typename _Kty::pointer _Ptrtype;
+	typedef unique_ptr<_Ty, _Dx> argument_type;
+	typedef size_t result_type;
 
-	size_t operator()(const _Kty& _Keyval) const
+	size_t operator()(const argument_type& _Keyval) const
 		{	// hash _Keyval to size_t value by pseudorandomizing transform
+		typedef typename argument_type::pointer _Ptrtype;
 		return (hash<_Ptrtype>()(_Keyval.get()));
 		}
 	};
 
 template<class _Ty>
 	struct hash<shared_ptr<_Ty> >
-		: public unary_function<shared_ptr<_Ty>, size_t>
 	{	// hash functor
-	typedef shared_ptr<_Ty> _Kty;
-	typedef _Ty *_Ptrtype;
+	typedef shared_ptr<_Ty> argument_type;
+	typedef size_t result_type;
 
-	size_t operator()(const _Kty& _Keyval) const
+	size_t operator()(const argument_type& _Keyval) const
 		{	// hash _Keyval to size_t value by pseudorandomizing transform
-		return (hash<_Ptrtype>()(_Keyval.get()));
+		return (hash<_Ty *>()(_Keyval.get()));
 		}
 	};
 

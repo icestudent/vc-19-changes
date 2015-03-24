@@ -99,57 +99,38 @@ template<class _Ty>
 	};
 
 template<class _Ty>
-	struct _Is_funptr
-		: false_type
-	{	// base class for function pointer predicates
-	};
-
-template<class _Ty>
 	struct _Is_memfunptr
-		: false_type
 	{	// base class for member function pointer predicates
+	typedef false_type _Bool_type;
 	};
 
-#define _IS_FUNPTR(CALL_OPT, X1) \
-template<class _Ret, \
-	class... _Types> \
-	struct _Is_funptr<_Ret (CALL_OPT *)(_Types...)> \
-		: true_type \
-	{	/* base class for function pointer predicates */ \
-	};
-
-_NON_MEMBER_CALL(_IS_FUNPTR, )
-#undef _IS_FUNPTR
-
-#define _IS_MEMFUNPTR(CALL_OPT, X1, CV_OPT) \
+#define _IS_MEMFUNPTR(CALL_OPT, CV_OPT, REF_OPT) \
 template<class _Ret, \
 	class _Arg0, \
 	class... _Types> \
-	struct _Is_memfunptr<_Ret (CALL_OPT _Arg0::*)(_Types...) CV_OPT> \
-		: true_type \
+	struct _Is_memfunptr<_Ret (CALL_OPT _Arg0::*)(_Types...) CV_OPT REF_OPT> \
+		: _Arg_types<CV_OPT _Arg0 *, _Types...> \
 	{	/* base class for member function pointer predicates */ \
+	typedef true_type _Bool_type; \
+	typedef _Ret result_type; \
+	typedef _Arg0 _Class_type; \
 	};
 
-_MEMBER_CALL_CV(_IS_MEMFUNPTR, )
+_MEMBER_CALL_CV_REF(_IS_MEMFUNPTR)
 #undef _IS_MEMFUNPTR
 
-template<class _Ret,
-	class... _Types>
-	struct _Is_funptr<_Ret (*)(_Types..., ...)>
-		: true_type
-	{	// no calling conventions for ellipsis
-	};
-
-#define _IS_MEMFUNPTR_ELLIPSIS(CV_OPT) \
+#define _IS_MEMFUNPTR_ELLIPSIS(CV_OPT, REF_OPT) \
 template<class _Ret, \
 	class _Arg0, \
 	class... _Types> \
-	struct _Is_memfunptr<_Ret (_Arg0::*)(_Types..., ...) CV_OPT> \
-		: true_type \
+	struct _Is_memfunptr<_Ret (_Arg0::*)(_Types..., ...) CV_OPT REF_OPT> \
 	{	/* no calling conventions for ellipsis */ \
+	typedef true_type _Bool_type; \
+	typedef _Ret result_type; \
+	typedef _Arg0 _Class_type; \
 	};
 
-_CLASS_DEFINE_CV(_IS_MEMFUNPTR_ELLIPSIS)
+_CLASS_DEFINE_CV_REF(_IS_MEMFUNPTR_ELLIPSIS)
 #undef _IS_MEMFUNPTR_ELLIPSIS
 
 
@@ -351,28 +332,30 @@ template<class _Ty>
 
 
 	// TEMPLATE CLASS is_member_object_pointer
-template<class _Ty>
+template<class _Ty,
+	bool _Pmf = _Is_memfunptr<_Ty>::_Bool_type::value>
 	struct _Is_member_object_pointer
 		: false_type
 	{	// determine whether _Ty is a pointer to member object
 	};
 
 template<class _Ty1, class _Ty2>
-	struct _Is_member_object_pointer<_Ty1 _Ty2::*>
-		: _Cat_base<!_Is_memfunptr<_Ty1 _Ty2::*>::value>
+	struct _Is_member_object_pointer<_Ty1 _Ty2::*, false>
+		: true_type
 	{	// determine whether _Ty is a pointer to member object
+	typedef _Ty2 _Class_type;
 	};
 
 template<class _Ty>
 	struct is_member_object_pointer
-		: _Is_member_object_pointer<typename remove_cv<_Ty>::type>
+		: _Is_member_object_pointer<typename remove_cv<_Ty>::type>::type
 	{	// determine whether _Ty is a pointer to member object
 	};
 
 	// TEMPLATE CLASS is_member_function_pointer
 template<class _Ty>
 	struct is_member_function_pointer
-		: _Cat_base<_Is_memfunptr<typename remove_cv<_Ty>::type>::value>
+		: _Is_memfunptr<typename remove_cv<_Ty>::type>::_Bool_type
 	{	// determine whether _Ty is a pointer to member function
 	};
 
@@ -414,25 +397,6 @@ template<class _Ty>
 template<class _Ty>
 	struct is_class _IS_CLASS(_Ty)
 	{	// determine whether _Ty is a class
-	};
-
-	// TEMPLATE CLASS is_function
-template<class _Ty>
-	struct is_function
-		: _Cat_base<_Is_funptr<typename remove_cv<_Ty>::type *>::value>
-	{	// determine whether _Ty is a function
-	};
-
-template<class _Ty>
-	struct is_function<_Ty&>
-		: false_type
-	{	// determine whether _Ty is a function
-	};
-
-template<class _Ty>
-	struct is_function<_Ty&&>
-		: false_type
-	{	// determine whether _Ty is a function
 	};
 
 	// TEMPLATE CLASS is_fundamental
@@ -1318,29 +1282,6 @@ template<size_t _Size>
 template<class... _Types>
 	using index_sequence_for = make_index_sequence<sizeof...(_Types)>;
 
-	// CLASS _Unrefwrap
-template<class _Ty>
-	class reference_wrapper;
-
-template<class _Ty>
-	struct _Unrefwrap_helper
-	{	// leave unchanged if not a reference_wrapper
-	typedef _Ty type;
-	};
-
-template<class _Ty>
-	struct _Unrefwrap_helper<reference_wrapper<_Ty> >
-	{	// make a reference from a reference_wrapper
-	typedef _Ty& type;
-	};
-
-template<class _Ty>
-	struct _Unrefwrap
-	{	// decay, then unwrap a reference_wrapper
-	typedef typename decay<_Ty>::type _Ty1;
-	typedef typename _Unrefwrap_helper<_Ty1>::type type;
-	};
-
 	// TEMPLATE CLASS identity
 template<class _Ty>
 	struct identity
@@ -1400,701 +1341,295 @@ template<class _Ty> inline
 	return (_STD forward<_Ty>(_Arg));
 	}
 
-// REFERENCE WRAPPERS
-template<class _Ty>
-	class reference_wrapper;
 
-	// TEMPLATE CLASS _Fun_class_base
-template<class _Ret,
+	// TEMPLATE FUNCTION invoke
+struct _Invoker_pmf_object
+	{	// INVOKE a pointer to member function on an object
+	template<class _Decayed,
+		class _Ty1,
+		class... _Types2>
+		static auto _Call(_Decayed _Pmf, _Ty1&& _Arg1, _Types2&&... _Args2)
+		-> decltype((_STD forward<_Ty1>(_Arg1).*_Pmf)(
+			_STD forward<_Types2>(_Args2)...))
+		{	// INVOKE a pointer to member function on an object
+		return ((_STD forward<_Ty1>(_Arg1).*_Pmf)(
+			_STD forward<_Types2>(_Args2)...));
+		}
+	};
+
+struct _Invoker_pmf_pointer
+	{	// INVOKE a pointer to member function on a [smart] pointer
+	template<class _Decayed,
+		class _Ty1,
+		class... _Types2>
+		static auto _Call(_Decayed _Pmf, _Ty1&& _Arg1, _Types2&&... _Args2)
+		-> decltype(((*_STD forward<_Ty1>(_Arg1)).*_Pmf)(
+			_STD forward<_Types2>(_Args2)...))
+		{	// INVOKE a pointer to member function on a [smart] pointer
+		return (((*_STD forward<_Ty1>(_Arg1)).*_Pmf)(
+			_STD forward<_Types2>(_Args2)...));
+		}
+	};
+
+
+struct _Invoker_pmd_object
+	{	// INVOKE a pointer to member data on an object
+	template<class _Decayed,
+		class _Ty1>
+		static auto _Call(_Decayed _Pmd, _Ty1&& _Arg1)
+		-> decltype(_STD forward<_Ty1>(_Arg1).*_Pmd)
+		{	// INVOKE a pointer to member data on an object
+		return (_STD forward<_Ty1>(_Arg1).*_Pmd);
+		}
+	};
+
+struct _Invoker_pmd_pointer
+	{	// INVOKE a pointer to member data on a [smart] pointer
+	template<class _Decayed,
+		class _Ty1>
+		static auto _Call(_Decayed _Pmd, _Ty1&& _Arg1)
+		-> decltype((*_STD forward<_Ty1>(_Arg1)).*_Pmd)
+		{	// INVOKE a pointer to member data on a [smart] pointer
+		return ((*_STD forward<_Ty1>(_Arg1)).*_Pmd);
+		}
+	};
+
+
+struct _Invoker_functor
+	{	// INVOKE a function object
+	template<class _Callable,
+		class... _Types>
+		static auto _Call(_Callable&& _Obj, _Types&&... _Args)
+		-> decltype(_STD forward<_Callable>(_Obj)(
+			_STD forward<_Types>(_Args)...))
+		{	// INVOKE a function object
+		return (_STD forward<_Callable>(_Obj)(
+			_STD forward<_Types>(_Args)...));
+		}
+	};
+
+
+template<class _Callable,
+	class _Ty1,
+	class _Decayed = typename decay<_Callable>::type,
+	bool _Is_pmf = is_member_function_pointer<_Decayed>::value,
+	bool _Is_pmd = is_member_object_pointer<_Decayed>::value>
+	struct _Invoker1;
+
+template<class _Callable,
+	class _Ty1,
+	class _Decayed>
+	struct _Invoker1<_Callable, _Ty1, _Decayed, true, false>
+		: _If<is_base_of<
+			typename _Is_memfunptr<_Decayed>::_Class_type,
+			typename decay<_Ty1>::type>::value,
+		_Invoker_pmf_object,
+		_Invoker_pmf_pointer>::type
+	{	// pointer to member function
+	};
+
+template<class _Callable,
+	class _Ty1,
+	class _Decayed>
+	struct _Invoker1<_Callable, _Ty1, _Decayed, false, true>
+		: _If<is_base_of<
+			typename _Is_member_object_pointer<_Decayed>::_Class_type,
+			typename decay<_Ty1>::type>::value,
+		_Invoker_pmd_object,
+		_Invoker_pmd_pointer>::type
+	{	// pointer to member data
+	};
+
+template<class _Callable,
+	class _Ty1,
+	class _Decayed>
+	struct _Invoker1<_Callable, _Ty1, _Decayed, false, false>
+		: _Invoker_functor
+	{	// function object
+	};
+
+
+template<class _Callable,
 	class... _Types>
-	struct _Fun_class_base
-	{	// base if no arguments
+	struct _Invoker;
+
+template<class _Callable>
+	struct _Invoker<_Callable>
+		: _Invoker_functor
+	{	// zero arguments
 	};
 
-template<class _Ret,
-	class _Farg0>
-	struct _Fun_class_base<_Ret, _Farg0>
-		: public unary_function<_Farg0, _Ret>
-	{	// base if one argument
-	};
-
-template<class _Ret,
-	class _Farg0,
-	class _Farg1>
-	struct _Fun_class_base<_Ret, _Farg0, _Farg1>
-		: public binary_function<_Farg0, _Farg1, _Ret>
-	{	// base if two arguments
-	};
-
-template<class _Ret,
-	class _Farg0,
-	class _Farg1,
-	class... _Types>
-	struct _Fun_class_base<_Ret, _Farg0, _Farg1, _Types...>
-	{	// base if more than two arguments
+template<class _Callable,
+	class _Ty1,
+	class... _Types2>
+	struct _Invoker<_Callable, _Ty1, _Types2...>
+		: _Invoker1<_Callable, _Ty1>
+	{	// one or more arguments
 	};
 
 
-// IMPLEMENT result_of
+template<class _Callable,
+	class... _Types> inline
+	auto invoke(_Callable&& _Obj, _Types&&... _Args)
+	-> decltype(_Invoker<_Callable, _Types...>::_Call(
+		_STD forward<_Callable>(_Obj), _STD forward<_Types>(_Args)...))
+	{	// INVOKE a callable object
+	return (_Invoker<_Callable, _Types...>::_Call(
+		_STD forward<_Callable>(_Obj), _STD forward<_Types>(_Args)...));
+	}
 
-template<class _Fty,
-	class... _Args>
-	struct _Result_of
-	{	// template to determine result of call operation
-	typedef decltype(
-		_STD declval<_Fty>()(_STD declval<_Args>()...)) type;
+
+template<class _Rx>
+	struct _Forced
+	{	// tag to give INVOKE an explicit return type
 	};
 
-#define _RESULT_OF_PMF(CALL_OPT, CONST_OPT, CV_OPT) \
-template<class _Ret, \
-	class _Ty, \
-	class... _Mfargs, \
-	class _Obj, \
-	class... _Args> \
-	struct _Result_of<_Ret (CALL_OPT _Ty::* CONST_OPT)(_Mfargs...) CV_OPT, \
-		_Obj, _Args...> \
-	{	/* template to determine result of call operation */ \
-		/* on pointer to member function */ \
-	typedef _Ret type; \
+struct _Unforced
+	{	// tag to distinguish bind() from bind<R>()
 	};
 
-_MEMBER_CALL_CONST_CV(_RESULT_OF_PMF)
-#undef _RESULT_OF_PMF
+template<class... _Valtys> inline
+	void _Invoke_ret(_Forced<void>, _Valtys&&... _Vals)
+	{	// INVOKE, "implicitly" converted to void
+	_STD invoke(_STD forward<_Valtys>(_Vals)...);
+	}
 
-template<class _Ret,
-	class _Ty,
-	class _Obj,
-	class... _Args>
-	struct _Result_of<_Ret _Ty::*, _Obj, _Args...>
-	{	// template to determine result of call operation
-		// on pointer to member data
-	typedef typename _Copy_cv<_Ret,
-		typename remove_pointer<
-			typename remove_reference<_Obj>::type>::type>::type type;
-	};
+template<class _Rx,
+	class... _Valtys> inline
+	_Rx _Invoke_ret(_Forced<_Rx>, _Valtys&&... _Vals)
+	{	// INVOKE, implicitly converted to _Rx
+	return (_STD invoke(_STD forward<_Valtys>(_Vals)...));
+	}
 
-template<class _Ret,
-	class _Ty,
-	class _Obj,
-	class... _Args>
-	struct _Result_of<_Ret _Ty::*const, _Obj, _Args...>
-	{	// template to determine result of call operation
-		// on pointer to member data
-	typedef typename _Copy_cv<_Ret,
-		typename remove_pointer<
-			typename remove_reference<_Obj>::type>::type>::type const type;
-	};
+template<class... _Valtys> inline
+	auto _Invoke_ret(_Forced<_Unforced>, _Valtys&&... _Vals)
+	-> decltype(_STD invoke(_STD forward<_Valtys>(_Vals)...))
+	{	// INVOKE, unchanged
+	return (_STD invoke(_STD forward<_Valtys>(_Vals)...));
+	}
 
+
+	// TEMPLATE CLASS result_of
 template<class _Fty>
-	struct result_of;	// not defined
+	struct result_of
+	{	// explain usage
+	static_assert(_Always_false<_Fty>::value,
+		"result_of<CallableType> is invalid; use "
+		"result_of<CallableType(zero or more argument types)> instead.");
+	};
 
-#define _RESULT_OF(CALL_OPT, X1) \
+#define _RESULT_OF(CALL_OPT) \
 template<class _Fty, \
 	class... _Args> \
 	struct result_of<_Fty CALL_OPT (_Args...)> \
 	{	/* template to determine result of call operation */ \
-	typedef typename _Result_of<_Fty, _Args...>::type type; \
-	}; \
-template<class _Fty, \
-	class... _Args> \
-	struct result_of<reference_wrapper<_Fty> CALL_OPT (_Args...)> \
-	{	/* template to determine result of call operation */ \
-	typedef typename _Result_of<_Fty, _Args...>::type type; \
+	typedef decltype(_STD invoke(_STD declval<_Fty>(), \
+		_STD declval<_Args>()...)) type; \
 	};
 
-_NON_MEMBER_CALL(_RESULT_OF, )
+_NON_MEMBER_CALL(_RESULT_OF)
 #undef _RESULT_OF
 
 
-// SUPPORT CLASSES FOR CALL WRAPPERS
-
-	// TEMPLATE STRUCT _Pmd_caller
-template<class _Ret,
-	class _Arg0>
-	struct _Pmd_caller
-	{	// bind object and pointer to member data
-	template<class _Pmd,
-		class _Farg0>
-		static _Ret& _Call_pmd(_Pmd _Pm, _Farg0&& _Fx0, true_type)
-		{	// apply to object
-		return ((_Ret&)(_Fx0.*_Pm));
-		}
-
-	template<class _Pmd,
-		class _Farg0>
-		static _Ret& _Call_pmd(_Pmd _Pm, _Farg0&& _Fx0, false_type)
-		{	// apply to (possibly smart) pointer
-		return ((_Ret&)((*_Fx0).*_Pm));
-		}
-
-	template<class _Pmd,
-		class _Farg0>
-		static _Ret& _Apply_pmd(_Pmd _Pm, _Farg0&& _Fx0)
-		{	// apply to object
-		typedef typename remove_cv<
-			typename remove_reference<_Arg0>::type>::type _Arg0_bare;
-		typedef typename remove_cv<
-			typename remove_reference<_Farg0>::type>::type _Farg0_bare;
-		typedef _Cat_base<is_same<_Arg0_bare, _Farg0_bare>::value
-			|| (is_base_of<_Arg0_bare, _Farg0_bare>::value
-				&& is_same<typename add_lvalue_reference<_Farg0_bare>::type,
-					_Farg0>::value)> _Is_obj;
-
-		return (_Call_pmd<_Pmd, _Farg0>(_Pm,
-			_STD forward<_Farg0>(_Fx0), _Is_obj()));
-		}
-	};
-
-	// TEMPLATE STRUCT _Callable_base
+	// TEMPLATE STRUCT _Weak_types
 template<class _Ty,
-	bool _Indirect>
-	struct _Callable_base;
-
-template<class _Ty>
-	struct _Callable_base<_Ty, false>
-	{	// base types for callable object wrappers
-	typedef _Ty _MyTy;
-	typedef const _Ty& _MyCnstTy;
-
-	_Callable_base(const _Ty& _Val)
-		: _Object(_Val)
-		{	// construct from value
-		}
-
-	const _Ty& _Get() const
-		{	// return reference to stored object
-		return (_Object);
-		}
-
-	_Ty& _Get()
-		{	// return reference to stored object
-		return (_Object);
-		}
-
-	void _Reset(_Ty& _Val)
-		{	// reseat reference (disallowed)
-		static_assert(_Always_false<_Ty>::value,
-			"can't assign to reference_wrapper<T&>");
-		}
-
-private:
-	_Callable_base& operator=(const _Callable_base&);
-
-	_Ty _Object;
-};
-
-template<class _Ty>
-	struct _Callable_base<_Ty, true>
-	{	// base types for callable object wrappers holding references
-		// (used by reference_wrapper)
-	typedef _Ty _MyTy;
-	typedef _Ty& _MyCnstTy;
-
-	_Callable_base(_Ty& _Val)
-		: _Ptr(_STD addressof(_Val))
-		{	// construct
-		}
-
-	_MyCnstTy _Get() const
-		{	// return reference to stored object
-		return (*_Ptr);
-		}
-
-	_Ty& _Get()
-		{	// return reference to stored object
-		return (*_Ptr);
-		}
-
-	void _Reset(_Ty& _Val)
-		{	// reseat reference
-		_Ptr = _STD addressof(_Val);
-		}
-
-private:
-	_Ty *_Ptr;
-};
-
-	// TEMPLATE STRUCT _Callable_pmd
-template<class _Ty,
-	class _Memty,
-	bool _Indirect = false>
-	struct _Callable_pmd
-		: _Callable_base<_Ty, _Indirect>
-	{	// wrap pointer to member data
-	_Callable_pmd(const _Callable_pmd& _Right)
-		: _Callable_base<_Ty, _Indirect>(_Right._Get())
-		{	// construct
-		}
-
-	_Callable_pmd(_Ty& _Val)
-		: _Callable_base<_Ty, _Indirect>(_Val)
-		{	// construct
-		}
-
-	template<class _Ret,
-		class _Arg0>
-		_Ret& _ApplyX(_Arg0&& _A0) const
-		{	// apply
-		return (_Pmd_caller<_Ret, _Memty>::
-			_Apply_pmd(this->_Get(), _STD forward<_Arg0>(_A0)));
-		}
-	};
-
-	// TEMPLATE STRUCT _Callable_obj
-template<class _Ty,
-	bool _Indirect = false>
-	struct _Callable_obj
-		: _Callable_base<_Ty, _Indirect>
-	{	// wrap function object
-	typedef _Callable_base<_Ty, _Indirect> _Mybase;
-
-	template<class _Ty2>
-		_Callable_obj(_Ty2&& _Val)
-		: _Mybase(_STD forward<_Ty2>(_Val))
-		{	// construct
-		}
-
-	template<class _Ret,
-		class... _Types>
-		_Ret _ApplyX(_Types&&... _Args) const
-		{ // apply to UDT object
-		return (this->_Get()(_STD forward<_Types>(_Args)...));
-		}
-
-	template<class _Ret,
-		class... _Types>
-		_Ret _ApplyX(_Types&&... _Args)
-		{ // apply to UDT object
-		return (this->_Get()(_STD forward<_Types>(_Args)...));
-		}
-
-	};
-
-	// TEMPLATE STRUCT _Pmf_caller
-
-template<class _Ret,
-	class _Arg0>
-	struct _Pmf_caller
-	{	// bind object and pointer to member function
-	template<class _Pmf,
-		class _Farg0,
-		class... _Ftypes>
-		static _Ret _Call_pmf(_Pmf _Pm, _Farg0&& _Fx0, true_type,
-			_Ftypes&&... _Fargs)
-		{	// apply to object
-		typedef typename _Copy_cv<_Arg0, _Farg0>::type
-			_Funobj_cv;
-		return (((_Funobj_cv)_Fx0.*_Pm)(_STD forward<_Ftypes>(_Fargs)...));
-		}
-
-	template<class _Pmf,
-		class _Farg0,
-		class... _Ftypes>
-		static _Ret _Call_pmf(_Pmf _Pm, _Farg0&& _Fx0, false_type,
-			_Ftypes&&... _Fargs)
-		{	// apply to (possibly smart) pointer
-		return (((*_Fx0).*_Pm)(_STD forward<_Ftypes>(_Fargs)...));
-		}
-
-	template<class _Pmf,
-		class _Farg0,
-		class... _Ftypes>
-		static _Ret _Apply_pmf(_Pmf _Pm, _Farg0&& _Fx0,
-			_Ftypes&&... _Fargs)
-		{	// apply to object
-		typedef typename remove_reference<_Arg0>::type _Arg0_bare0;
-		typedef typename remove_cv<_Arg0_bare0>::type _Arg0_bare;
-		typedef typename remove_reference<_Farg0>::type _Farg0_bare;
-		typedef _Cat_base<is_same<_Arg0_bare, _Farg0_bare>::value
-			|| (is_base_of<_Arg0_bare, _Farg0_bare>::value
-				&& is_same<typename add_lvalue_reference<_Farg0_bare>::type,
-					_Farg0>::value)> _Is_obj;
-
-		return (_Call_pmf<_Pmf, _Farg0&&, _Ftypes&&...>(_Pm,
-			_STD forward<_Farg0>(_Fx0), _Is_obj(),
-				_STD forward<_Ftypes>(_Fargs)...));
-		}
-	};
-
-
-	// TEMPLATE STRUCT _Callable_pmf
-template<class _Ty,
-	class _Memty,
-	bool _Indirect = false>
-	struct _Callable_pmf
-		: _Callable_base<_Ty, _Indirect>
-	{	// wrap pointer to member function
-	_Callable_pmf(const _Callable_pmf& _Right)
-		: _Callable_base<_Ty, _Indirect>(_Right._Get())
-		{	// construct
-		}
-
-	_Callable_pmf(_Ty& _Val)
-		: _Callable_base<_Ty, _Indirect>(_Val)
-		{	// construct
-		}
-
-	template<class _Ret,
-		class... _Types>
-		_Ret _ApplyX(_Types&&... _Args) const
-		{ // call pointer to member function
-		return (_Pmf_caller<_Ret, _Memty>::
-			_Apply_pmf(this->_Get(), _STD forward<_Types>(_Args)...));
-		}
-
-	};
-
-	// TEMPLATE STRUCT _Callable_fun
-template<class _Ty,
-	bool _Indirect = false>
-	struct _Callable_fun
-		: _Callable_base<_Ty, _Indirect>
-	{	// wrap pointer to function
-	_Callable_fun(const _Callable_fun& _Right)
-		: _Callable_base<_Ty, _Indirect>(_Right._Get())
-		{	// construct
-		}
-
-	_Callable_fun(_Ty& _Val)
-		: _Callable_base<_Ty, _Indirect>(_Val)
-		{	// construct
-		}
-
-	template<class _Ret,
-		class... _Types>
-		_Ret _ApplyX(_Types&&... _Args) const
-		{ // call pointer to function
-		return (this->_Get()(_STD forward<_Types>(_Args)...));
-		}
-
-	};
-
-	// TEMPLATE STRUCT _Call_wrapper_base
-template<class _Callable>
-	struct _Call_wrapper_base
-	{	// wrap callable object
-	typedef typename _Callable::_MyTy _MyTy;
-	typedef typename _Callable::_MyCnstTy _MyCnstTy;
-
-	_Call_wrapper_base(_MyTy& _Val)
-		: _Callee(_Val)
-		{	// construct
-		}
-
-	void _Reset(_MyTy& _Val)
-		{	// reset
-		_Callee._Reset(_Val);
-		}
-
-	_MyCnstTy _Get() const
-		{	// get
-		return (_Callee._Get());
-		}
-
-	_MyCnstTy _Get()
-		{	// get
-		return (_Callee._Get());
-		}
-
-	_Callable _Callee;
-	};
-
-	// TEMPLATE STRUCT _Call_wrapper
-template<class _Callable,
-	bool _Is_abstract = false>
-	struct _Call_wrapper
-	: _Call_wrapper_base<_Callable>
-	{	// wrap callable object
-	typedef _Call_wrapper_base<_Callable> _Mybase;
-
-	_Call_wrapper(typename _Call_wrapper_base<_Callable>::_MyTy& _Val)
-		: _Call_wrapper_base<_Callable>(_Val)
-		{	// construct
-		}
-
-	template<class... _Types>
-		typename result_of<
-			typename _Callable::_MyTy(_Types...)>::type
-			operator()(_Types&&... _Args) const
-		{ // call target object
-		typedef typename result_of<
-			typename _Callable::_MyTy(_Types...)>::type _Ret;
-		return (this->_Callee.template _ApplyX<_Ret>(
-			_STD forward<_Types>(_Args)...));
-		}
-
-	};
-
-template<class _Callable>
-	struct _Call_wrapper<_Callable, true>
-	: _Call_wrapper_base<_Callable>
-	{	// wrap abstract callable object
-	typedef _Call_wrapper_base<_Callable> _Mybase;
-
-	_Call_wrapper(typename _Call_wrapper_base<_Callable>::_MyTy& _Val)
-		: _Call_wrapper_base<_Callable>(_Val)
-		{	// construct
-		}
-	};
-
-template<class,
 	class = void>
-	struct _Has_result_and_arg_type
-		: false_type
+	struct _Weak_result_type
 	{	// default definition
 	};
 
 template<class _Ty>
-	struct _Has_result_and_arg_type<_Ty, typename _Param_tester<
-		typename _Ty::result_type,
-		typename _Ty::argument_type
-		>::type>
-		: true_type
-	{	// defined if _Ty::result/argument_type exist
-	};
-
-template<class,
-	class = void>
-	struct _Has_result_and_2arg_type
-		: false_type
-	{	// default definition
-	};
-
-template<class _Ty>
-	struct _Has_result_and_2arg_type<_Ty, typename _Param_tester<
-		typename _Ty::result_type,
-		typename _Ty::first_argument_type,
-		typename _Ty::second_argument_type
-		>::type>
-		: true_type
-	{	// defined if _Ty::result/first_argument/second_argument_type exist
-	};
-
-	// TEMPLATE CLASS _Refwrap_result0
-template<class _Ty,
-	bool>
-	struct _Refwrap_result0
-	{	// define result_type when target object defines it
+	struct _Weak_result_type<_Ty, typename _Param_tester<
+		typename _Ty::result_type>::type>
+	{	// defined if _Ty::result_type exists
 	typedef typename _Ty::result_type result_type;
 	};
 
-template<class _Ty>
-	struct _Refwrap_result0<_Ty, false>
-	{	// no result_type when not defined by target object
-	};
-
-// TEMPLATE CLASS _Refwrap_result1_helper
 template<class _Ty,
-	bool>
-	struct _Refwrap_result1_helper
-		: _Refwrap_result0<_Ty, _Has_result_type<_Ty>::type::value>
-	{	// select _Refwrap_result0 specialization
+	class = void>
+	struct _Weak_argument_type
+		: _Weak_result_type<_Ty>
+	{	// default definition
 	};
 
 template<class _Ty>
-	struct _Refwrap_result1_helper<_Ty, true>
-		: unary_function<typename _Ty::argument_type,
-			typename _Ty::result_type>
-	{	// derive from unary_function
+	struct _Weak_argument_type<_Ty, typename _Param_tester<
+		typename _Ty::argument_type>::type>
+		: _Weak_result_type<_Ty>
+	{	// defined if _Ty::argument_type exists
+	typedef typename _Ty::argument_type argument_type;
 	};
 
-	// TEMPLATE CLASS _Refwrap_result1
 template<class _Ty,
-	bool>
-	struct _Refwrap_result1
-		: _Refwrap_result0<_Ty, _Has_result_type<_Ty>::type::value>
-	{	// select base for type without typedefs for result and one argument
+	class = void>
+	struct _Weak_binary_args
+		: _Weak_argument_type<_Ty>
+	{	// default definition
 	};
 
 template<class _Ty>
-	struct _Refwrap_result1<_Ty, true>
-		: _Refwrap_result1_helper<_Ty,
-			is_base_of<unary_function<
-				typename _Ty::argument_type,
-				typename _Ty::result_type>, _Ty>::value>
-	{	// select base for type with typedefs for result and one argument
-	};
-
-	// TEMPLATE CLASS _Refwrap_result2_helper
-template<class _Ty,
-	bool>
-	struct _Refwrap_result2_helper
-		: _Refwrap_result1<_Ty, _Has_result_and_arg_type<_Ty>::type::value>
-	{	// select base
+	struct _Weak_binary_args<_Ty, typename _Param_tester<
+		typename _Ty::first_argument_type,
+		typename _Ty::second_argument_type>::type>
+		: _Weak_argument_type<_Ty>
+	{	// defined if both types exist
+	typedef typename _Ty::first_argument_type first_argument_type;
+	typedef typename _Ty::second_argument_type second_argument_type;
 	};
 
 template<class _Ty>
-	struct _Refwrap_result2_helper<_Ty, true>
-		: binary_function<typename _Ty::first_argument_type,
-			typename _Ty::second_argument_type,
-			typename _Ty::result_type>,
-		_Refwrap_result1<_Ty, _Has_result_and_arg_type<_Ty>::type::value>
-	{	// base for type derived from binary_function
+	struct _Weak_types
+	{	// provide nested types (sometimes)
+	typedef _Is_function<typename remove_pointer<_Ty>::type> _Is_f_or_pf;
+	typedef _Is_memfunptr<typename remove_cv<_Ty>::type> _Is_pmf;
+	typedef typename _If<_Is_f_or_pf::_Bool_type::value, _Is_f_or_pf,
+		typename _If<_Is_pmf::_Bool_type::value, _Is_pmf,
+		_Weak_binary_args<_Ty> >::type>::type type;
 	};
-
-	// TEMPLATE CLASS _Refwrap_result2
-template<class _Ty,
-	bool>
-	struct _Refwrap_result2
-		: _Refwrap_result1<_Ty, _Has_result_and_arg_type<_Ty>::type::value>
-	{	// select base for type without typedefs for result and two arguments
-	};
-
-template<class _Ty>
-	struct _Refwrap_result2<_Ty, true>
-		: _Refwrap_result2_helper<_Ty,
-			is_base_of<binary_function<
-				typename _Ty::first_argument_type,
-				typename _Ty::second_argument_type,
-				typename _Ty::result_type>, _Ty>::value>
-	{	// select base for type with typedefs for result and two arguments
-	};
-
-	// TEMPLATE CLASS _Refwrap_impl
-template<class _Ty>
-	struct _Refwrap_impl
-		: _Call_wrapper<_Callable_obj<_Ty, true>,
-			is_abstract<_Ty>::value>,
-			_Refwrap_result2<_Ty, _Has_result_and_2arg_type<_Ty>::type::value>
-	{	// reference_wrapper implementation for UDT
-	_Refwrap_impl(_Ty& _Val)
-		: _Call_wrapper<_Callable_obj<_Ty, true>,
-			is_abstract<_Ty>::value>(_Val)
-		{	// construct
-		}
-	};
-
-template<class _Rx,
-	class _Arg0>
-	struct _Refwrap_impl<_Rx _Arg0::*>
-		: _Call_wrapper<_Callable_pmd<_Rx _Arg0::*, _Arg0, false> >
-	{	// reference_wrapper implementation for pointer to member data
-	typedef _Rx _Arg0::* _Fty;
-	typedef _Rx result_type;
-
-	_Refwrap_impl(_Fty& _Val)
-		: _Call_wrapper<_Callable_pmd<_Fty, _Arg0, false> >(_Val)
-		{	// construct
-		}
-	};
-
-template<class _Rx,
-	class _Arg0>
-	struct _Refwrap_impl<_Rx _Arg0::*const>
-		: _Call_wrapper<_Callable_pmd<_Rx _Arg0::*const, _Arg0, false> >
-	{	// reference_wrapper implementation for const pointer to member data
-	typedef _Rx _Arg0::*const _Fty;
-	typedef _Rx result_type;
-	_Refwrap_impl(_Fty& _Val)
-		: _Call_wrapper<_Callable_pmd<_Fty, _Arg0, false> >(_Val)
-		{	// construct
-		}
-	};
-
-	// TEMPLATE CLASS _Refwrap_impl FOR FUNCTIONS
-#define _REFWRAP_IMPL_FUN(CALL_OPT, X1) \
-template<class _Rx, \
-	class... _Types> \
-	struct _Refwrap_impl<_Rx CALL_OPT (_Types...)> \
-		: _Call_wrapper<_Callable_fun< \
-				_Rx(CALL_OPT *)(_Types...), false> >, \
-			_Fun_class_base<_Rx, _Types...> \
-	{	/* implement for function */ \
-	typedef _Rx(CALL_OPT *_Fty)(_Types...); \
-	typedef _Rx result_type; \
-	_Refwrap_impl(_Fty _Val) \
-		: _Call_wrapper<_Callable_fun<_Fty, false> >(_Val) \
-		{	/* construct */ \
-		} \
-	};
-
-_NON_MEMBER_CALL(_REFWRAP_IMPL_FUN, )
-#undef _REFWRAP_IMPL_FUN
-
-	// TEMPLATE CLASS _Refwrap_impl FOR POINTERS TO FUNCTIONS
-#define _REFWRAP_IMPL_PF(CALL_OPT, CONST_OPT) \
-template<class _Rx, \
-	class... _Types> \
-	struct _Refwrap_impl<_Rx(CALL_OPT *CONST_OPT)(_Types...)> \
-		: _Call_wrapper<_Callable_fun< \
-				_Rx(CALL_OPT *CONST_OPT)(_Types...), true> >, \
-			_Fun_class_base<_Rx, _Types...> \
-	{	/* implement for CONST_OPT pointer to function */ \
-	typedef _Rx(CALL_OPT *CONST_OPT _Fty)(_Types...); \
-	typedef _Rx result_type; \
-	_Refwrap_impl(_Fty& _Val) \
-		: _Call_wrapper<_Callable_fun<_Fty, true> >(_Val) \
-		{	/* construct */ \
-		} \
-	};
-
-_NON_MEMBER_CALL_CONST(_REFWRAP_IMPL_PF)
-#undef _REFWRAP_IMPL_PF
-
-	// TEMPLATE CLASS _Refwrap_impl FOR POINTERS TO MEMBER FUNCTIONS
-#define _REFWRAP_IMPL_PMF(CALL_OPT, CONST_OPT, CV_OPT) \
-template<class _Rx, \
-	class _Arg0, \
-	class... _Types> \
-	struct _Refwrap_impl<_Rx(CALL_OPT _Arg0::* CONST_OPT)(_Types...) CV_OPT> \
-		: _Call_wrapper<_Callable_pmf< \
-			_Rx(CALL_OPT _Arg0::* CONST_OPT)(_Types...) CV_OPT, \
-				_Arg0, true> >, \
-			_Fun_class_base<_Rx, CV_OPT _Arg0 *, _Types...> \
-	{	/* implement for pointer to member function */ \
-	typedef _Rx(CALL_OPT _Arg0::* CONST_OPT _Fty)(_Types...) CV_OPT; \
-	typedef _Rx result_type; \
-	_Refwrap_impl(_Fty& _Val) \
-		: _Call_wrapper<_Callable_pmf<_Fty, _Arg0, true> >(_Val) \
-		{	/* construct */ \
-		} \
-	};
-
-_MEMBER_CALL_CONST_CV(_REFWRAP_IMPL_PMF)
-#undef _REFWRAP_IMPL_PMF
 
 
 	// TEMPLATE CLASS reference_wrapper
 template<class _Ty>
 	class reference_wrapper
-	: public _Refwrap_impl<_Ty>
+		: public _Weak_types<_Ty>::type
 	{	// stand-in for an assignable reference
 public:
-	typedef reference_wrapper<_Ty> _Myt;
-	typedef _Refwrap_impl<_Ty> _Mybase;
+	static_assert(is_object<_Ty>::value || is_function<_Ty>::value,
+		"reference_wrapper<T> requires T to be an object type "
+		"or a function type.");
+
 	typedef _Ty type;
 
 	reference_wrapper(_Ty& _Val) _NOEXCEPT
-		: _Mybase(_Val)
+		: _Ptr(_STD addressof(_Val))
 		{	// construct
-		}
-
-	reference_wrapper(const _Myt& _Right) _NOEXCEPT
-		: _Mybase(_Right.get())
-		{	// construct by copying _Right
-		}
-
-	_Myt& operator=(const _Myt& _Right) _NOEXCEPT
-		{	// assign _Right
-		this->_Reset(_Right.get());
-		return (*this);
 		}
 
 	operator _Ty&() const _NOEXCEPT
 		{	// return reference
-		return (this->_Get());
+		return (*_Ptr);
 		}
 
 	_Ty& get() const _NOEXCEPT
 		{	// return reference
-		return (this->_Get());
+		return (*_Ptr);
+		}
+
+	template<class... _Types>
+		typename result_of<_Ty&(_Types&&...)>::type
+		operator()(_Types&&... _Args) const
+		{	// invoke object/function
+		return (_STD invoke(get(), _STD forward<_Types>(_Args)...));
 		}
 
 	reference_wrapper(_Ty&&) = delete;
+
+private:
+	_Ty *_Ptr;
 	};
 
 	// TEMPLATE FUNCTIONS ref AND cref
-template<class _Ty>
+template<class _Ty> inline
 	reference_wrapper<_Ty>
 		ref(_Ty& _Val) _NOEXCEPT
 	{	// create reference_wrapper<_Ty> object
@@ -2104,14 +1639,14 @@ template<class _Ty>
 template<class _Ty>
 	void ref(const _Ty&&) = delete;
 
-template<class _Ty>
+template<class _Ty> inline
 	reference_wrapper<_Ty>
 		ref(reference_wrapper<_Ty> _Val) _NOEXCEPT
 	{	// create reference_wrapper<_Ty> object
-	return (_Val);
+	return (_STD ref(_Val.get()));
 	}
 
-template<class _Ty>
+template<class _Ty> inline
 	reference_wrapper<const _Ty>
 		cref(const _Ty& _Val) _NOEXCEPT
 	{	// create reference_wrapper<const _Ty> object
@@ -2121,12 +1656,37 @@ template<class _Ty>
 template<class _Ty>
 	void cref(const _Ty&&) = delete;
 
-template<class _Ty>
+template<class _Ty> inline
 	reference_wrapper<const _Ty>
 		cref(reference_wrapper<_Ty> _Val) _NOEXCEPT
 	{	// create reference_wrapper<const _Ty> object
-	return (reference_wrapper<const _Ty>(_Val.get()));
+	return (_STD cref(_Val.get()));
 	}
+
+
+	// TEMPLATE CLASS _Unrefwrap
+template<class _Ty>
+	struct _Unrefwrap_helper
+	{	// leave unchanged if not a reference_wrapper
+	typedef _Ty type;
+	static const bool _Is_refwrap = false;
+	};
+
+template<class _Ty>
+	struct _Unrefwrap_helper<reference_wrapper<_Ty> >
+	{	// make a reference from a reference_wrapper
+	typedef _Ty& type;
+	static const bool _Is_refwrap = true;
+	};
+
+template<class _Ty>
+	struct _Unrefwrap
+	{	// decay, then unwrap a reference_wrapper
+	typedef typename decay<_Ty>::type _Ty1;
+	typedef typename _Unrefwrap_helper<_Ty1>::type type;
+	static const bool _Is_refwrap = _Unrefwrap_helper<_Ty1>::_Is_refwrap;
+	};
+
 
 namespace tr1 {	// TR1 additions
 using _STD cref;

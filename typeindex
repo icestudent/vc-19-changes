@@ -70,11 +70,11 @@ private:
 	// TEMPLATE STRUCT SPECIALIZATION hash
 template<>
 	struct hash<type_index>
-		: public unary_function<type_index, size_t>
 	{	// hash functor for type_index
-	typedef type_index _Kty;
+	typedef type_index argument_type;
+	typedef size_t result_type;
 
-	size_t operator()(_Kty _Keyval) const
+	size_t operator()(const argument_type& _Keyval) const
 		{	// hash _Keyval to size_t value by pseudorandomizing transform
 		return (_Keyval.hash_code());
 		}

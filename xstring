@@ -2583,11 +2583,11 @@ template<class _Elem,
 	class _Traits,
 	class _Alloc>
 	struct hash<basic_string<_Elem, _Traits, _Alloc> >
-		: public unary_function<basic_string<_Elem, _Traits, _Alloc>, size_t>
 	{	// hash functor for basic_string
-	typedef basic_string<_Elem, _Traits, _Alloc> _Kty;
+	typedef basic_string<_Elem, _Traits, _Alloc> argument_type;
+	typedef size_t result_type;
 
-	size_t operator()(const _Kty& _Keyval) const
+	size_t operator()(const argument_type& _Keyval) const
 		{	// hash _Keyval to size_t value by pseudorandomizing transform
 		return (_Hash_seq((const unsigned char *)_Keyval.c_str(),
 			_Keyval.size() * sizeof (_Elem)));

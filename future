@@ -575,7 +575,7 @@ public:
 	template<class _Fty2,
 		class _Alloc>
 		_Packaged_state(const _Fty2& _Fnarg, const _Alloc& _Al, _Mydel *_Dp)
-			: _Mybase(_Dp), _Fn(_Fnarg, _Al)
+			: _Mybase(_Dp), _Fn(allocator_arg, _Al, _Fnarg)
 		{	// construct from function object and allocator
 		}
 
@@ -588,7 +588,7 @@ public:
 	template<class _Fty2,
 		class _Alloc>
 		_Packaged_state(_Fty2&& _Fnarg, const _Alloc& _Al, _Mydel *_Dp)
-			: _Mybase(_Dp), _Fn(_STD forward<_Fty2>(_Fnarg), _Al)
+			: _Mybase(_Dp), _Fn(allocator_arg, _Al, _STD forward<_Fty2>(_Fnarg))
 		{	// construct from rvalue function object and allocator
 		}
 
@@ -643,7 +643,7 @@ public:
 	template<class _Fty2,
 		class _Alloc>
 		_Packaged_state(const _Fty2& _Fnarg, const _Alloc& _Al, _Mydel *_Dp)
-			: _Mybase(_Dp), _Fn(_Fnarg, _Al)
+			: _Mybase(_Dp), _Fn(allocator_arg, _Al, _Fnarg)
 		{	// construct from function object and allocator
 		}
 
@@ -656,7 +656,7 @@ public:
 	template<class _Fty2,
 		class _Alloc>
 		_Packaged_state(_Fty2&& _Fnarg, const _Alloc& _Al, _Mydel *_Dp)
-			: _Mybase(_Dp), _Fn(_STD forward<_Fty2>(_Fnarg), _Al)
+			: _Mybase(_Dp), _Fn(allocator_arg, _Al, _STD forward<_Fty2>(_Fnarg))
 		{	// construct from rvalue function object and allocator
 		}
 
@@ -664,7 +664,8 @@ public:
 		{	// set deferred call
 		_TRY_BEGIN
 			// call function object and catch exceptions
-			this->_Set_value(&_Fn(_STD forward<_ArgTypes>(_Args)...),
+			this->_Set_value(
+				_STD addressof(_Fn(_STD forward<_ArgTypes>(_Args)...)),
 				true);
 		_CATCH_ALL
 			// function object threw exception; record result
@@ -676,7 +677,8 @@ public:
 		{	// call function object
 		_TRY_BEGIN
 			// call function object and catch exceptions
-			this->_Set_value(&_Fn(_STD forward<_ArgTypes>(_Args)...),
+			this->_Set_value(
+				_STD addressof(_Fn(_STD forward<_ArgTypes>(_Args)...)),
 				false);
 		_CATCH_ALL
 			// function object threw exception; record result
@@ -710,7 +712,7 @@ public:
 	template<class _Fty2,
 		class _Alloc>
 		_Packaged_state(const _Fty2& _Fnarg, const _Alloc& _Al, _Mydel *_Dp)
-			: _Mybase(_Dp), _Fn(_Fnarg, _Al)
+			: _Mybase(_Dp), _Fn(allocator_arg, _Al, _Fnarg)
 		{	// construct from function object and allocator
 		}
 
@@ -723,7 +725,7 @@ public:
 	template<class _Fty2,
 		class _Alloc>
 		_Packaged_state(_Fty2&& _Fnarg, const _Alloc& _Al, _Mydel *_Dp)
-			: _Mybase(_Dp), _Fn(_STD forward<_Fty2>(_Fnarg), _Al)
+			: _Mybase(_Dp), _Fn(allocator_arg, _Al, _STD forward<_Fty2>(_Fnarg))
 		{	// construct from rvalue function object and allocator
 		}
 

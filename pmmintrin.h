@@ -7,8 +7,6 @@
 *** or reproduced in whole or in part except as expressly provided
 *** by the accompanying LICENSE AGREEMENT
 ***
-*** cvs_id[] = "$Id: pmmintrin.h,v 1.5 2005/01/03 22:55:01 hhle Exp $";
-***
 ****/
 /*
  * pmmintrin.h

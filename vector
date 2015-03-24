@@ -3034,11 +3034,11 @@ template<class _Alloc> inline
 	// TEMPLATE STRUCT SPECIALIZATION hash
 template<class _Alloc>
 	struct hash<vector<bool, _Alloc> >
-		: public unary_function<vector<bool, _Alloc>, size_t>
 	{	// hash functor
-	typedef vector<bool, _Alloc> _Kty;
+	typedef vector<bool, _Alloc> argument_type;
+	typedef size_t result_type;
 
-	size_t operator()(const _Kty& _Keyval) const
+	size_t operator()(const argument_type& _Keyval) const
 		{	// hash _Keyval to size_t value by pseudorandomizing transform
 		return (_Keyval.hash());
 		}

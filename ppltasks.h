@@ -171,8 +171,8 @@ template <> class task<void>;
 /// <summary>
 ///     Cancels the currently executing task. This function can be called from within the body of a task to abort the
 ///     task's execution and cause it to enter the <c>canceled</c> state. While it may be used in response to
-///     the <see cref="is_task_cancellation_requested Function">is_task_cancellation_requested</see> function, you may
-///     also use it by itself, to initiate cancellation of the task that is currently executing.
+///     a cancellation request through a <c>cancellation_token</c>, you may also use it by itself, to initiate 
+///     cancellation of the task that is currently executing.
 ///     <para>It is not a supported scenario to call this function if you are not within the body of a <c>task</c>.
 ///     Doing so will result in undefined behavior such as a crash or a hang in your application.</para>
 /// </summary>
@@ -989,6 +989,27 @@ public:
         return task_continuation_context();
     }
 
+    /// <summary>
+    ///     Returns a task continuation context object that represents the current winrt thread context.
+    /// </summary>
+    /// <returns>
+    ///     The current winrt thread context.
+    /// </returns>
+    /// <remarks>
+    ///     This method captures the current caller's Windows Runtime thread context.
+    ///     It is very similar to what <c>task_continuation_context::use_current()</c> is doing except it is also available without C++/Cx extention support.
+    ///     Please approach this method with caution as it is designd for advanced users writing C++/Cx agnostic library code.
+    ///     <c>task_continuation_context::use_current()</c> will give you more protection from mistakes.
+    ///     <para>This method is only available to Windows Store apps.</para>
+    /// </remarks>
+    /**/
+    static task_continuation_context get_current_winrt_context()
+    {
+        task_continuation_context _Current;
+        _Current._Resolve(true);
+        return _Current;
+    }
+
 #if defined (__cplusplus_winrt)
     /// <summary>
     ///     Creates a task continuation context which allows the Runtime to choose the execution context for a continuation.
@@ -1027,9 +1048,7 @@ public:
     /**/
     static task_continuation_context use_current()
     {
-        task_continuation_context _Current;
-        _Current._Resolve(true);
-        return _Current;
+        return get_current_winrt_context();
     }
 #endif  /* defined (__cplusplus_winrt) */
 
@@ -2226,19 +2245,26 @@ namespace details
 #if defined (__cplusplus_winrt)
         void _SetUnwrappedAsyncOp(Windows::Foundation::IAsyncOperation<typename details::_ValueTypeOrRefType<_ReturnType>::_Value>^ _AsyncOp)
         {
-            ::std::lock_guard<std::mutex> _LockHolder(_M_ContinuationsCritSec);
-            // Cancel the async operation if the task itself is canceled, since the thread that canceled the task missed it.
-            if (_IsPendingCancel())
+            bool _DoCancel = false;
             {
-                _ASSERTE(!_IsCanceled());
-                _AsyncOp->Cancel();
+                ::std::lock_guard<std::mutex> _LockHolder(_M_ContinuationsCritSec);
+                // Cancel the async operation if the task itself is canceled, since the thread that canceled the task missed it.
+                if (_IsPendingCancel())
+                {
+                    _ASSERTE(!_IsCanceled());
+                    _DoCancel = true;
+                }
+                else if (!_IsCanceled() && !_IsCompleted())
+                {
+                    _M_TaskState = _Started;
+                    _M_InternalCancellation = [=] {
+                        _AsyncOp->Cancel();
+                    };
+                }
             }
-            else if (!_IsCanceled() && !_IsCompleted())
+            if (_DoCancel)
             {
-                _M_TaskState = _Started;
-                _M_InternalCancellation = [=] {
-                    _AsyncOp->Cancel();
-                };
+                _AsyncOp->Cancel();
             }
         }
 #endif  /* defined (__cplusplus_winrt) */
@@ -2575,20 +2601,33 @@ private:
     /// </summary>
     void _RegisterTask(const typename details::_Task_ptr<_ResultType>::_Type & _TaskParam)
     {
-        ::std::lock_guard<std::mutex> _LockHolder(_M_Impl->_M_taskListCritSec);
+        enum { _Nothing, _Trigger, _Cancel } _Action = _Nothing;
+        {
+            ::std::lock_guard<std::mutex> _LockHolder(_M_Impl->_M_taskListCritSec);
 
-        //If an exception was already set on this event, then cancel the task with the stored exception.
-        if(_M_Impl->_HasUserException())
-        {
-            _TaskParam->_CancelWithExceptionHolder(_M_Impl->_M_exceptionHolder, true);
+            //If an exception was already set on this event, then cancel the task with the stored exception.
+            if (_M_Impl->_HasUserException())
+            {
+                _Action = _Cancel;
+            }
+            else if (_M_Impl->_M_fHasValue)
+            {
+                _Action = _Trigger;
+            }
+            else
+            {
+                _M_Impl->_M_tasks.push_back(_TaskParam);
+            }
         }
-        else if (_M_Impl->_M_fHasValue)
+
+        switch (_Action)
         {
+        case _Trigger:
             _TaskParam->_FinalizeAndRunContinuations(_M_Impl->_M_value.Get());
-        }
-        else
-        {
-            _M_Impl->_M_tasks.push_back(_TaskParam);
+            break;
+        case _Cancel:
+            _TaskParam->_CancelWithExceptionHolder(_M_Impl->_M_exceptionHolder, true);
+            break;
         }
     }
 

@@ -25,7 +25,7 @@
   #endif /* defined(_M_ARM) */
 
   #if defined(_M_ARM64)
-  #define _Memory_barrier()     __dmb(0xB)	/* TRANSITION */
+  #define _Memory_barrier()     __dmb(_ARM64_BARRIER_ISH)
   #endif /* defined(_M_ARM64) */
 
  #ifndef _CONCAT

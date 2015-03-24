@@ -20,10 +20,15 @@ _STD_BEGIN
 	using _STDEXT bad_alloc; \
 	using _STDEXT bad_exception;
 
+  #ifdef _M_CEE_PURE
+  #define _USE_EX \
+	using ::terminate; \
+	using ::unexpected;
+  #else /* _M_CEE_PURE */
   #define _USE_EX \
 	using ::set_terminate; using ::terminate_handler; using ::terminate; \
 	using ::set_unexpected; using ::unexpected_handler; using ::unexpected;
-
+  #endif /* _M_CEE_PURE */
 _STD_END
 
  #if _HAS_EXCEPTIONS

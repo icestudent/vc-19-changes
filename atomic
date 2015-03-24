@@ -5,9 +5,9 @@
 #ifndef RC_INVOKED
 #include <yvals.h>
 
- #ifdef _M_CEE
-  #error <atomic> is not supported when compiling with /clr or /clr:pure.
- #endif /* _M_CEE */
+ #ifdef _M_CEE_PURE
+  #error <atomic> is not supported when compiling with /clr:pure.
+ #endif /* _M_CEE_PURE */
 
  #include <type_traits>
 

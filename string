@@ -632,12 +632,10 @@ inline string operator "" s(const char *_Str, size_t _Len)
 	return (string(_Str, _Len));
 	}
 
- #if defined(_NATIVE_WCHAR_T_DEFINED) || !defined(__EDG__) /* TRANSITION */
 inline wstring operator "" s(const wchar_t *_Str, size_t _Len)
 	{	// construct literal from [_Str, _Str + _Len)
 	return (wstring(_Str, _Len));
 	}
- #endif /* defined(_NATIVE_WCHAR_T_DEFINED) || !defined(__EDG__) */
 
 inline u16string operator "" s(const char16_t *_Str, size_t _Len)
 	{	// construct literal from [_Str, _Str + _Len)

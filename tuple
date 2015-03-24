@@ -525,9 +525,6 @@ template<class _This,
 		"duplicate type T in get<T>(tuple)");
 
 	typedef _This type;
-	typedef typename add_lvalue_reference<const _This>::type _Ctype;
-	typedef typename add_lvalue_reference<_This>::type _Rtype;
-	typedef typename add_rvalue_reference<_This>::type _RRtype;
 	typedef tuple<_This, _Rest...> _Ttype;
 	};
 
@@ -572,10 +569,10 @@ template<class _Ty,
 	typedef typename add_cv<typename _Mybase::type>::type type;
 	};
 
-	// FUNCTION get (by index)
+	// TEMPLATE FUNCTION get (by index)
 template<size_t _Index,
 	class... _Types> inline
-	typename tuple_element<_Index, tuple<_Types...> >::_Rtype
+	typename tuple_element<_Index, tuple<_Types...> >::type&
 		get(tuple<_Types...>& _Tuple) _NOEXCEPT
 	{	// get reference to _Index element of tuple
 	typedef typename tuple_element<_Index, tuple<_Types...> >::_Ttype
@@ -585,7 +582,7 @@ template<size_t _Index,
 
 template<size_t _Index,
 	class... _Types> inline
-	typename tuple_element<_Index, tuple<_Types...> >::_Ctype
+	typename tuple_element<_Index, tuple<_Types...> >::type const&
 		get(const tuple<_Types...>& _Tuple) _NOEXCEPT
 	{	// get const reference to _Index element of tuple
 	typedef typename tuple_element<_Index, tuple<_Types...> >::_Ttype
@@ -595,21 +592,20 @@ template<size_t _Index,
 
 template<size_t _Index,
 	class... _Types> inline
-	typename tuple_element<_Index, tuple<_Types...> >::_RRtype
+	typename tuple_element<_Index, tuple<_Types...> >::type&&
 		get(tuple<_Types...>&& _Tuple) _NOEXCEPT
 	{	// get rvalue reference to _Index element of tuple
 	typedef typename tuple_element<_Index, tuple<_Types...> >::_Ttype
 		_Ttype;
-	typedef typename tuple_element<_Index, tuple<_Types...> >::_RRtype
+	typedef typename tuple_element<_Index, tuple<_Types...> >::type&&
 		_RRtype;
 	return (_STD forward<_RRtype>(((_Ttype&)_Tuple)._Myfirst._Val));
 	}
 
-	// FUNCTION get (by type)
+	// TEMPLATE FUNCTION get (by type)
 template<class _Ty,
 	class... _Types> inline
-	typename _Tuple_element<_Ty, tuple<_Types...> >::_Rtype
-		get(tuple<_Types...>& _Tuple) _NOEXCEPT
+	_Ty& get(tuple<_Types...>& _Tuple) _NOEXCEPT
 	{	// get reference to _Ty element of tuple
 	typedef typename _Tuple_element<_Ty, tuple<_Types...> >::_Ttype
 		_Ttype;
@@ -618,8 +614,7 @@ template<class _Ty,
 
 template<class _Ty,
 	class... _Types> inline
-	typename _Tuple_element<_Ty, tuple<_Types...> >::_Ctype
-		get(const tuple<_Types...>& _Tuple) _NOEXCEPT
+	const _Ty& get(const tuple<_Types...>& _Tuple) _NOEXCEPT
 	{	// get const reference to _Ty element of tuple
 	typedef typename _Tuple_element<_Ty, tuple<_Types...> >::_Ttype
 		_Ttype;
@@ -628,17 +623,14 @@ template<class _Ty,
 
 template<class _Ty,
 	class... _Types> inline
-	typename _Tuple_element<_Ty, tuple<_Types...> >::_RRtype
-		get(tuple<_Types...>&& _Tuple) _NOEXCEPT
+	_Ty&& get(tuple<_Types...>&& _Tuple) _NOEXCEPT
 	{	// get rvalue reference to _Ty element of tuple
 	typedef typename _Tuple_element<_Ty, tuple<_Types...> >::_Ttype
 		_Ttype;
-	typedef typename _Tuple_element<_Ty, tuple<_Types...> >::_RRtype
-		_RRtype;
-	return (_STD forward<_RRtype>(((_Ttype&)_Tuple)._Myfirst._Val));
+	return (_STD forward<_Ty&&>(((_Ttype&)_Tuple)._Myfirst._Val));
 	}
 
-	// FUNCTION make_tuple
+	// TEMPLATE FUNCTION make_tuple
 template<class... _Types> inline
 	tuple<typename _Unrefwrap<_Types>::type...>
 		make_tuple(_Types&&... _Args)
@@ -647,7 +639,7 @@ template<class... _Types> inline
 	return (_Ttype(_STD forward<_Types>(_Args)...));
 	}
 
-	// FUNCTION tie
+	// TEMPLATE FUNCTION tie
 template<class... _Types> inline
 	tuple<_Types&...>
 		tie(_Types&... _Args) _NOEXCEPT
@@ -745,7 +737,7 @@ template<size_t _Nx,
 	{	// repeats _Nx for each _Ty in a parameter pack
 	};
 
-	// FUNCTION tuple_cat
+	// TEMPLATE FUNCTION tuple_cat
 template<class _Ret,
 	class _Kx_arg,
 	class _Ix_arg,

@@ -598,11 +598,11 @@ template<class _Elem,
 	// TEMPLATE STRUCT SPECIALIZATION hash
 template<size_t _Bits>
 	struct hash<bitset<_Bits> >
-		: public unary_function<bitset<_Bits>, size_t>
 	{	// hash functor for bitset<_Bits>
-	typedef bitset<_Bits> _Kty;
+	typedef bitset<_Bits> argument_type;
+	typedef size_t result_type;
 
-	size_t operator()(const _Kty& _Keyval) const
+	size_t operator()(const argument_type& _Keyval) const
 		{	// hash _Keyval to size_t value by pseudorandomizing transform
 		return (_Keyval.hash());
 		}

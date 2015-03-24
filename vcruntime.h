@@ -18,6 +18,9 @@
 // Full details can be found in our documentation by searching for
 // "Security Enhancements in the CRT".
 //
+#ifndef _UCRT
+    #define _UCRT
+#endif
 
 // The _CRTIMP macro is not used in the VCRuntime or the CoreCRT anymore, but
 // there is a lot of existing code that declares CRT functions using this macro,
@@ -104,7 +107,7 @@ _CRT_BEGIN_C_HEADER
         #define _VCRTIMP _CRTIMP
     #elif defined _VCRT_BUILD && defined CRTDLL
         #define _VCRTIMP __declspec(dllexport)
-    #elif defined _ACRT_BUILD
+    #elif defined _CORECRT_BUILD
         #define _VCRTIMP
     #elif defined _DLL
         #define _VCRTIMP __declspec(dllimport)
@@ -285,7 +288,7 @@ _CRT_BEGIN_C_HEADER
 
 
 
-#ifndef _M_CEE
+#if !defined _M_CEE && !defined __midl
     void __cdecl __security_init_cookie(void);
 
     #ifdef _M_IX86

@@ -389,9 +389,6 @@ template<class _This,
 	struct tuple_element<0, tuple<_This, _Rest...> >
 	{	// select first element
 	typedef _This type;
-	typedef typename add_lvalue_reference<const _This>::type _Ctype;
-	typedef typename add_lvalue_reference<_This>::type _Rtype;
-	typedef typename add_rvalue_reference<_This>::type _RRtype;
 	typedef tuple<_This, _Rest...> _Ttype;
 	};
 

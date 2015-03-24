@@ -22,7 +22,7 @@
 #include <ppltasks.h>
 #include <allocators>
 #include <type_traits>
-#include <taskscheduler.h>
+#include <ppltaskscheduler.h>
 
 #define __resumable
 
@@ -190,7 +190,7 @@ namespace Concurrency
         _Task.then([_ResumeCb](task<_Ty>&)
         {
             _ResumeCb();
-        }, task_continuation_context::use_current());
+        }, task_continuation_context::get_current_winrt_context());
     }
 
     template <class _Ty>
@@ -337,7 +337,7 @@ namespace Windows
 {
     namespace Foundation
     {
-        bool await_ready(IAsyncInfo^ _Task) 
+        inline bool await_ready(IAsyncInfo^ _Task) 
         { 
             return _Task->Status >= AsyncStatus::Completed;
         }
@@ -370,7 +370,7 @@ namespace Windows
                 [_ResumeCb](IAsyncOperationWithProgress<_Ty, _Pr>^, AsyncStatus) { _ResumeCb(); }, CallbackContext::Same);
         }
 
-        void await_resume(Windows::Foundation::IAsyncAction^ _Task) 
+        inline void await_resume(Windows::Foundation::IAsyncAction^ _Task) 
         {
             _Task->GetResults();
         }

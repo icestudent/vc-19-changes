@@ -4,7 +4,7 @@
 //      Copyright (c) Microsoft Corporation. All rights reserved.
 //
 // Declarations used across the Visual C++ Libraries.  The lack of #pragma once
-// is deliberate.  (CRT_REFACTOR TODO Why do we not use #pragma once?)
+// is deliberate.
 //
 #include <vcruntime.h>
 #include <corecrt.h>

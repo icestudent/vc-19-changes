@@ -9,6 +9,10 @@
 
 #include <eh.h>
 
+#ifdef _M_CEE_PURE
+    #include <vcruntime_new.h>
+#endif
+
 #pragma pack(push, _CRT_PACKING)
 #if !defined RC_INVOKED && _HAS_EXCEPTIONS
 

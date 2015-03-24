@@ -8,59 +8,55 @@
 #pragma once
 #define _INC_EH
 
-#include <vcruntime.h>
+#include <corecrt_terminate.h>
 
 #ifndef RC_INVOKED
 
-#pragma pack(push, _CRT_PACKING)
+_CRT_BEGIN_C_HEADER
 
-#ifndef __cplusplus
-    #error "eh.h is only for C++!"
-#endif
-
-// terminate_handler is the standard name; terminate_function is supported for
-// historical reasons
-typedef void (__CRTDECL* terminate_function )();
-typedef void (__CRTDECL* terminate_handler  )();
-typedef void (__CRTDECL* unexpected_function)();
+// unexpected_handler is the standard name; unexpected_function is defined for
+// source compatibility.
 typedef void (__CRTDECL* unexpected_handler )();
+typedef void (__CRTDECL* unexpected_function)();
 
 #ifdef _M_CEE
-    typedef void (__clrcall* __terminate_function_m)();
-    typedef void (__clrcall* __terminate_handler_m)();
     typedef void (__clrcall* __unexpected_function_m)();
     typedef void (__clrcall* __unexpected_handler_m)();
 #endif
 
 struct _EXCEPTION_POINTERS;
-#ifndef _M_CEE_PURE
-    typedef void (__cdecl* _se_translator_function)(unsigned int, struct _EXCEPTION_POINTERS*);
+
+#ifdef __cplusplus
+    
+    _VCRTIMP __declspec(noreturn) void __cdecl unexpected() throw(...);
+
+    #ifndef _M_CEE_PURE
+
+        _VCRTIMP unexpected_handler __cdecl set_unexpected(
+            _In_opt_ unexpected_handler _NewUnexpectedHandler
+            ) throw();
+
+        _VCRTIMP unexpected_handler __cdecl _get_unexpected();
+
+        typedef void (__cdecl* _se_translator_function)(unsigned int, struct _EXCEPTION_POINTERS*);
+
+        _VCRTIMP _se_translator_function __cdecl _set_se_translator(
+            _In_opt_ _se_translator_function _NewSETranslator
+            );
+
+    #endif
+
+    class type_info;
+
+    _VCRTIMP int __cdecl _is_exception_typeof(
+        _In_ type_info const&     _Type,
+        _In_ _EXCEPTION_POINTERS* _ExceptionPtr
+        );
+
+    _VCRTIMP bool __cdecl __uncaught_exception();
+
 #endif
 
-_VCRTIMP __declspec(noreturn) void __cdecl terminate(void);
-_VCRTIMP __declspec(noreturn) void __cdecl unexpected(void);
+_CRT_END_C_HEADER
 
-_VCRTIMP int __cdecl _is_exception_typeof(_In_ const type_info &_Type, _In_ struct _EXCEPTION_POINTERS * _ExceptionPtr);
-
-#ifndef _M_CEE_PURE 
-    extern "C" _VCRTIMP terminate_function __cdecl set_terminate(_In_opt_ terminate_function _NewPtFunc);
-    extern "C" _VCRTIMP terminate_function __cdecl _get_terminate(void);
-
-    extern "C" _VCRTIMP unexpected_function __cdecl set_unexpected(_In_opt_ unexpected_function _NewPtFunc);
-    extern "C" _VCRTIMP unexpected_function __cdecl _get_unexpected(void);
-
-    extern "C" _VCRTIMP _se_translator_function __cdecl _set_se_translator(_In_opt_ _se_translator_function _NewPtFunc);
-#endif
-
-
-
-_VCRTIMP bool __cdecl __uncaught_exception();
-
-// These overload helps in resolving NULL
-#ifdef _M_CEE
-    _VCRTIMP terminate_function __cdecl set_terminate(_In_ int _Zero);
-    _VCRTIMP unexpected_function __cdecl set_unexpected(_In_ int _Zero);
-#endif
-
-#pragma pack(pop)
 #endif // RC_INVOKED

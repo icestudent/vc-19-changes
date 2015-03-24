@@ -31,8 +31,11 @@ _STD_BEGIN
 		// TEMPLATE STRUCT divides
 template<class _Ty = void>
 	struct divides
-		: public binary_function<_Ty, _Ty, _Ty>
 	{	// functor for operator/
+	typedef _Ty first_argument_type;
+	typedef _Ty second_argument_type;
+	typedef _Ty result_type;
+
 	_Ty operator()(const _Ty& _Left, const _Ty& _Right) const
 		{	// apply operator/ to operands
 		return (_Left / _Right);
@@ -42,8 +45,11 @@ template<class _Ty = void>
 		// TEMPLATE STRUCT modulus
 template<class _Ty = void>
 	struct modulus
-		: public binary_function<_Ty, _Ty, _Ty>
 	{	// functor for operator%
+	typedef _Ty first_argument_type;
+	typedef _Ty second_argument_type;
+	typedef _Ty result_type;
+
 	_Ty operator()(const _Ty& _Left, const _Ty& _Right) const
 		{	// apply operator% to operands
 		return (_Left % _Right);
@@ -53,8 +59,10 @@ template<class _Ty = void>
 		// TEMPLATE STRUCT negate
 template<class _Ty = void>
 	struct negate
-		: public unary_function<_Ty, _Ty>
 	{	// functor for unary operator-
+	typedef _Ty argument_type;
+	typedef _Ty result_type;
+
 	_Ty operator()(const _Ty& _Left) const
 		{	// apply operator- to operand
 		return (-_Left);
@@ -67,8 +75,11 @@ template<class _Ty = void>
 		// TEMPLATE STRUCT not_equal_to
 template<class _Ty = void>
 	struct not_equal_to
-		: public binary_function<_Ty, _Ty, bool>
 	{	// functor for operator!=
+	typedef _Ty first_argument_type;
+	typedef _Ty second_argument_type;
+	typedef bool result_type;
+
 	bool operator()(const _Ty& _Left, const _Ty& _Right) const
 		{	// apply operator!= to operands
 		return (_Left != _Right);
@@ -78,8 +89,11 @@ template<class _Ty = void>
 		// TEMPLATE STRUCT greater
 template<class _Ty = void>
 	struct greater
-		: public binary_function<_Ty, _Ty, bool>
 	{	// functor for operator>
+	typedef _Ty first_argument_type;
+	typedef _Ty second_argument_type;
+	typedef bool result_type;
+
 	bool operator()(const _Ty& _Left, const _Ty& _Right) const
 		{	// apply operator> to operands
 		return (_Left > _Right);
@@ -92,8 +106,11 @@ template<class _Ty = void>
 		// TEMPLATE STRUCT greater_equal
 template<class _Ty = void>
 	struct greater_equal
-		: public binary_function<_Ty, _Ty, bool>
 	{	// functor for operator>=
+	typedef _Ty first_argument_type;
+	typedef _Ty second_argument_type;
+	typedef bool result_type;
+
 	bool operator()(const _Ty& _Left, const _Ty& _Right) const
 		{	// apply operator>= to operands
 		return (_Left >= _Right);
@@ -103,8 +120,11 @@ template<class _Ty = void>
 		// TEMPLATE STRUCT less_equal
 template<class _Ty = void>
 	struct less_equal
-		: public binary_function<_Ty, _Ty, bool>
 	{	// functor for operator<=
+	typedef _Ty first_argument_type;
+	typedef _Ty second_argument_type;
+	typedef bool result_type;
+
 	bool operator()(const _Ty& _Left, const _Ty& _Right) const
 		{	// apply operator<= to operands
 		return (_Left <= _Right);
@@ -114,8 +134,11 @@ template<class _Ty = void>
 		// TEMPLATE STRUCT logical_and
 template<class _Ty = void>
 	struct logical_and
-		: public binary_function<_Ty, _Ty, bool>
 	{	// functor for operator&&
+	typedef _Ty first_argument_type;
+	typedef _Ty second_argument_type;
+	typedef bool result_type;
+
 	bool operator()(const _Ty& _Left, const _Ty& _Right) const
 		{	// apply operator&& to operands
 		return (_Left && _Right);
@@ -125,8 +148,11 @@ template<class _Ty = void>
 		// TEMPLATE STRUCT logical_or
 template<class _Ty = void>
 	struct logical_or
-		: public binary_function<_Ty, _Ty, bool>
 	{	// functor for operator||
+	typedef _Ty first_argument_type;
+	typedef _Ty second_argument_type;
+	typedef bool result_type;
+
 	bool operator()(const _Ty& _Left, const _Ty& _Right) const
 		{	// apply operator|| to operands
 		return (_Left || _Right);
@@ -136,8 +162,10 @@ template<class _Ty = void>
 		// TEMPLATE STRUCT logical_not
 template<class _Ty = void>
 	struct logical_not
-		: public unary_function<_Ty, bool>
 	{	// functor for unary operator!
+	typedef _Ty argument_type;
+	typedef bool result_type;
+
 	bool operator()(const _Ty& _Left) const
 		{	// apply operator! to operand
 		return (!_Left);
@@ -147,8 +175,11 @@ template<class _Ty = void>
 		// TEMPLATE STRUCT bit_and
 template<class _Ty = void>
 	struct bit_and
-		: public binary_function<_Ty, _Ty, _Ty>
 	{	// functor for operator&
+	typedef _Ty first_argument_type;
+	typedef _Ty second_argument_type;
+	typedef _Ty result_type;
+
 	_Ty operator()(const _Ty& _Left, const _Ty& _Right) const
 		{	// apply operator& to operands
 		return (_Left & _Right);
@@ -158,8 +189,11 @@ template<class _Ty = void>
 		// TEMPLATE STRUCT bit_or
 template<class _Ty = void>
 	struct bit_or
-		: public binary_function<_Ty, _Ty, _Ty>
 	{	// functor for operator|
+	typedef _Ty first_argument_type;
+	typedef _Ty second_argument_type;
+	typedef _Ty result_type;
+
 	_Ty operator()(const _Ty& _Left, const _Ty& _Right) const
 		{	// apply operator| to operands
 		return (_Left | _Right);
@@ -169,8 +203,11 @@ template<class _Ty = void>
 		// TEMPLATE STRUCT bit_xor
 template<class _Ty = void>
 	struct bit_xor
-		: public binary_function<_Ty, _Ty, _Ty>
 	{	// functor for operator^
+	typedef _Ty first_argument_type;
+	typedef _Ty second_argument_type;
+	typedef _Ty result_type;
+
 	_Ty operator()(const _Ty& _Left, const _Ty& _Right) const
 		{	// apply operator^ to operands
 		return (_Left ^ _Right);
@@ -180,8 +217,10 @@ template<class _Ty = void>
 		// TEMPLATE STRUCT bit_not
 template<class _Ty = void>
 	struct bit_not
-		: public unary_function<_Ty, _Ty>
 	{	// functor for unary operator~
+	typedef _Ty argument_type;
+	typedef _Ty result_type;
+
 	_Ty operator()(const _Ty& _Left) const
 		{	// apply operator~ to operand
 		return (~_Left);
@@ -413,20 +452,22 @@ template<>
 		// TEMPLATE CLASS unary_negate
 template<class _Fn1>
 	class unary_negate
-	: public unary_function<typename _Fn1::argument_type, bool>
 	{	// functor adapter !_Func(left)
 public:
+	typedef typename _Fn1::argument_type argument_type;
+	typedef bool result_type;
+
 	explicit unary_negate(const _Fn1& _Func)
 		: _Functor(_Func)
 		{	// construct from functor
 		}
 
-	bool operator()(const typename _Fn1::argument_type& _Left) const
+	bool operator()(const argument_type& _Left) const
 		{	// apply functor to operand
 		return (!_Functor(_Left));
 		}
 
-protected:
+private:
 	_Fn1 _Functor;	// the functor to apply
 	};
 
@@ -440,22 +481,24 @@ template<class _Fn1> inline
 		// TEMPLATE CLASS binary_negate
 template<class _Fn2>
 	class binary_negate
-		: public binary_function<typename _Fn2::first_argument_type,
-			typename _Fn2::second_argument_type, bool>
 	{	// functor adapter !_Func(left, right)
 public:
+	typedef typename _Fn2::first_argument_type first_argument_type;
+	typedef typename _Fn2::second_argument_type second_argument_type;
+	typedef bool result_type;
+
 	explicit binary_negate(const _Fn2& _Func)
 		: _Functor(_Func)
 		{	// construct from functor
 		}
 
-	bool operator()(const typename _Fn2::first_argument_type& _Left,
-		const typename _Fn2::second_argument_type& _Right) const
+	bool operator()(const first_argument_type& _Left,
+		const second_argument_type& _Right) const
 		{	// apply functor to operands
 		return (!_Functor(_Left, _Right));
 		}
 
-protected:
+private:
 	_Fn2 _Functor;	// the functor to apply
 	};
 

@@ -402,8 +402,9 @@ protected:
 		ios_base::iostate _Res = _Getint(_First, _Last, 0, 9999,
 			_Ans, _Ctype_fac);
 
+		_State |= _Res;	// pass on eofbit and failbit
 		if (_Res & ios_base::failbit)
-			_State |= ios_base::failbit;	// invalid input
+			;	// invalid input
 		else if (_Ans < 69)
 			_Pt->tm_year = _Ans + 100;	// [0, 68] parsed as [2000, 2068]
 		else if (_Ans < 100)

@@ -11,6 +11,7 @@
 #include <thr/xthread>
 #include <chrono>
 #include <functional>
+#include <system_error>
 
  #pragma pack(push,_CRT_PACKING)
  #pragma warning(push,3)
@@ -297,12 +298,14 @@ public:
 	// LOCK AND UNLOCK
 	void lock()
 		{	// lock the mutex
+		_Validate();
 		_Pmtx->lock();
 		_Owns = true;
 		}
 
-	bool try_lock() _NOEXCEPT
+	bool try_lock()
 		{	// try to lock the mutex
+		_Validate();
 		_Owns = _Pmtx->try_lock();
 		return (_Owns);
 		}
@@ -311,6 +314,7 @@ public:
 		class _Period>
 		bool try_lock_for(const chrono::duration<_Rep, _Period>& _Rel_time)
 		{	// try to lock mutex with timeout
+		_Validate();
 		_Owns = _Pmtx->try_lock_for(_Rel_time);
 		return (_Owns);
 		}
@@ -320,18 +324,23 @@ public:
 		bool try_lock_until(
 			const chrono::time_point<_Clock, _Duration>& _Abs_time)
 		{	// try to lock mutex with timeout
+		_Validate();
 		_Owns = _Pmtx->try_lock_until(_Abs_time);
 		return (_Owns);
 		}
 
 	bool try_lock_until(const xtime *_Abs_time)
 		{	// try to lock the mutex until _Abs_time
+		_Validate();
 		_Owns = _Pmtx->try_lock_until(_Abs_time);
 		return (_Owns);
 		}
 
 	void unlock()
 		{	// unlock the mutex
+		if (!_Pmtx || !_Owns)
+			_THROW_NCEE(system_error,
+				_STD make_error_code(errc::operation_not_permitted));
 		_Pmtx->unlock();
 		_Owns = false;
 		}
@@ -370,6 +379,16 @@ public:
 private:
 	_Mutex *_Pmtx;
 	bool _Owns;
+
+	void _Validate() const
+		{	// check if the mutex can be locked
+		if (!_Pmtx)
+			_THROW_NCEE(system_error,
+				_STD make_error_code(errc::operation_not_permitted));
+		if (_Owns)
+			_THROW_NCEE(system_error,
+				_STD make_error_code(errc::resource_deadlock_would_occur));
+		}
 	};
 
 	// SWAP

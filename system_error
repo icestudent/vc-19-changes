@@ -471,11 +471,11 @@ inline error_condition make_error_condition(_Io_errc _Errno) _NOEXCEPT
 		// TEMPLATE STRUCT SPECIALIZATION hash
 template<>
 	struct hash<error_code>
-		: public unary_function<error_code, size_t>
 	{	// hash functor for error_code
-	typedef error_code _Kty;
+	typedef error_code argument_type;
+	typedef size_t result_type;
 
-	size_t operator()(const _Kty& _Keyval) const
+	size_t operator()(const argument_type& _Keyval) const
 		{	// hash _Keyval to size_t value by pseudorandomizing transform
 		return (hash<int>()(_Keyval.value()));
 		}

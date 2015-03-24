@@ -54,7 +54,7 @@ _VCRT_ALLOCATOR void* __CRTDECL operator new[](
 
 void __CRTDECL operator delete(
     void* _Block
-    );
+    ) throw();
 
 void __CRTDECL operator delete(
     void* _Block,
@@ -63,7 +63,7 @@ void __CRTDECL operator delete(
 
 void __CRTDECL operator delete[](
     void* _Block
-    );
+    ) throw();
 
 void __CRTDECL operator delete[](
     void* _Block,
@@ -73,23 +73,11 @@ void __CRTDECL operator delete[](
 void __CRTDECL operator delete(
     void*  _Block,
     size_t _Size
-    );
-
-void __CRTDECL operator delete(
-    void*  _Block,
-    size_t _Size,
-    std::nothrow_t const&
     ) throw();
 
 void __CRTDECL operator delete[](
     void* _Block,
     size_t _Size
-    );
-
-void __CRTDECL operator delete[](
-    void*  _Block,
-    size_t _Size,
-    std::nothrow_t const&
     ) throw();
 
 #ifndef __PLACEMENT_NEW_INLINE

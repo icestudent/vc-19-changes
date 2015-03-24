@@ -37,9 +37,12 @@ public:
 		}
 
 	class value_compare
-		: public binary_function<value_type, value_type, bool>
 		{	// functor for comparing two element values
 	public:
+		typedef value_type first_argument_type;
+		typedef value_type second_argument_type;
+		typedef bool result_type;
+
 		bool operator()(const value_type& _Left,
 			const value_type& _Right) const
 			{	// test if _Left precedes _Right by comparing just keys

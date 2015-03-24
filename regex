@@ -123,7 +123,6 @@ enum match_flag_type
 	match_any = 0x0010,
 	match_not_null = 0x0020,
 	match_continuous = 0x0040,
-	_Match_partial = 0x0080,
 	match_prev_avail = 0x0100,
 	format_default = 0x0000,
 	format_sed = 0x0400,
@@ -1966,16 +1965,9 @@ public:
 
 		_Matched = false;
 
-		if (_Match_pat(_Rep))
-			;
-		else if ((_Mflags & regex_constants::_Match_partial) != 0
-			&& _Tgt_state._Cur == _End && _First != _End)
-			{	// record successful partial match
-			_Res = _Tgt_state;
-			_Matched = true;
-			}
-		else
+		if (!_Match_pat(_Rep))
 			return (false);
+
 		if (_Matches)
 			{	// copy results to _Matches
 			_Matches->_Resize(_Ncap);
@@ -4222,15 +4214,13 @@ template<class _BidIt1,
 	class _BidIt2,
 	class _Pr> inline
 	_BidIt1 _Cmp_chrange(_BidIt1 _Begin1, _BidIt1 _End1,
-		_BidIt2 _Begin2, _BidIt2 _End2, _Pr _Pred, bool _Partial)
+		_BidIt2 _Begin2, _BidIt2 _End2, _Pr _Pred)
 	{	// compare character ranges
 	_BidIt1 _Res = _Begin1;
 	while (_Begin1 != _End1 && _Begin2 != _End2)
 		if (!_Pred(*_Begin1++, *_Begin2++))
 			return (_Res);
-	return (_Begin2 == _End2 ? _Begin1
-		: _Partial && _Begin1 == _End1 ? _Begin1
-		: _Res);
+	return (_Begin2 == _End2 ? _Begin1 : _Res);
 	}
 
 template<class _BidIt1,
@@ -4238,19 +4228,18 @@ template<class _BidIt1,
 	class _RxTraits> inline
 	_BidIt1 _Compare(_BidIt1 _Begin1, _BidIt1 _End1,
 		_BidIt2 _Begin2, _BidIt2 _End2, const _RxTraits& _Traits,
-		regex_constants::syntax_option_type _Sflags,
-		bool _Partial)
+		regex_constants::syntax_option_type _Sflags)
 	{	// compare character ranges
 	_BidIt1 _Res = _End1;
 	if (_Sflags & regex_constants::icase)
 		_Res = _Cmp_chrange(_Begin1, _End1, _Begin2, _End2,
-			_Cmp_icase<_RxTraits>(_Traits), _Partial);
+			_Cmp_icase<_RxTraits>(_Traits));
 	else if (_Sflags & regex_constants::collate)
 		_Res = _Cmp_chrange(_Begin1, _End1, _Begin2, _End2,
-			_Cmp_collate<_RxTraits>(_Traits), _Partial);
+			_Cmp_collate<_RxTraits>(_Traits));
 	else
 		_Res = _Cmp_chrange(_Begin1, _End1, _Begin2, _End2,
-			_Cmp_cs<_RxTraits>(), _Partial);
+			_Cmp_cs<_RxTraits>());
 	return (_Res);
 	}
 
@@ -4464,8 +4453,7 @@ template<class _BidIt,
 				if ((_Res0 = _Compare(_Tgt_state._Cur, _End,
 					_Node->_Data._Str(),
 					_Node->_Data._Str() + _Node->_Data._Size(),
-					_Traits, _Sflags,
-					(_Mflags & regex_constants::_Match_partial) != 0))
+					_Traits, _Sflags))
 						!= _Tgt_state._Cur)
 					_Tgt_state._Cur = _Res0;
 				else
@@ -4538,8 +4526,7 @@ template<class _BidIt,
 					_It _Ex = _Tgt_state._Grps[_Node->_Idx]._End;
 					if (_Bx != _Ex	// _Bx == _Ex for zero-length match
 						&& (_Res0 = _Compare(_Tgt_state._Cur, _End,
-							_Bx, _Ex, _Traits, _Sflags,
-							(_Mflags & regex_constants::_Match_partial) != 0))
+							_Bx, _Ex, _Traits, _Sflags))
 								== _Tgt_state._Cur)
 						_Failed = true;
 					else
@@ -4657,8 +4644,7 @@ template<class _BidIt,
 					if (_Compare(_First_arg, ++_Next,
 						_Node->_Data._Str(),
 						_Node->_Data._Str() + 1,
-						_Traits, _Sflags,
-						(_Mflags & regex_constants::_Match_partial) != 0)
+						_Traits, _Sflags)
 							!= _First_arg)
 						break;
 					}

@@ -17,7 +17,6 @@
 #define _HAS_FUNCTION_DELETE	1
 #define _HAS_INITIALIZER_LISTS	1
 #define _HAS_NULLPTR_T	1
-#define _HAS_REF_QUALIFIER	0
 #define _HAS_RVALUE_REFERENCES	1
 #define _HAS_SCOPED_ENUM	1
 #define _HAS_TEMPLATE_ALIAS	1
@@ -27,8 +26,13 @@
 #define _HAS_CPP0X     1
 #define _HAS_CPP1X     1
 
-#define _NOEXCEPT	noexcept
-#define _NOEXCEPT_OP(x)	noexcept(x)
+ #if _HAS_EXCEPTIONS
+  #define _NOEXCEPT	noexcept
+  #define _NOEXCEPT_OP(x)	noexcept(x)
+ #else /* _HAS_EXCEPTIONS */
+  #define _NOEXCEPT	throw ()
+  #define _NOEXCEPT_OP(x)
+ #endif /* _HAS_EXCEPTIONS */
 
 /* Note on use of "deprecate":
  * Various places in this header and other headers use __declspec(deprecate) or macros that have the term DEPRECATE in them.
@@ -55,29 +59,25 @@ clients and process-global for mixed clients.
 
 		/* CURRENT DLL NAMES */
 #ifndef _CRT_MSVCP_CURRENT
-#ifdef _DEBUG
-#define _CRT_MSVCP_CURRENT "msvcp140d.dll"
-#else
-#define _CRT_MSVCP_CURRENT "msvcp140.dll"
+	#ifdef _CRT_WINDOWS
+		/* Windows */
+		#ifdef _DEBUG
+			#define _CRT_MSVCP_CURRENT "msvcpd_win.dll"
+		#else
+			#define _CRT_MSVCP_CURRENT "msvcp_win.dll"
+		#endif
+	#else
+		/* Visual Studio */
+		#ifdef _DEBUG
+			#define _CRT_MSVCP_CURRENT "msvcp140d.dll"
+		#else
+			#define _CRT_MSVCP_CURRENT "msvcp140.dll"
+		#endif
+	#endif
 #endif
-#endif
-
-		/* NAMING PROPERTIES */
-#define _WIN32_C_LIB	1
 
 		/* THREAD AND LOCALE CONTROL */
 #define _MULTI_THREAD	1	/* nontrivial locks if multithreaded */
-#define _IOSTREAM_OP_LOCKS	1	/* lock iostream operations */
-#define _GLOBAL_LOCALE	0	/* 0 for per-thread locales, 1 for shared */
-
-		/* THREAD-LOCAL STORAGE */
-#define _COMPILER_TLS	1	/* 1 if compiler supports TLS directly */
- #if _MULTI_THREAD
-  #define _TLS_QUAL	__declspec(thread)	/* TLS qualifier, if any */
-
- #else /* _MULTI_THREAD */
-  #define _TLS_QUAL
- #endif /* _MULTI_THREAD */
 
 #define _GLOBAL_USING	1
 
@@ -168,7 +168,6 @@ clients and process-global for mixed clients.
 #define _STRINGIZEX(x) #x
 #define _STRINGIZE(x) _STRINGIZEX(x)
 
-#ifndef __EDG__ /* TRANSITION */
 #ifdef __cplusplus
 	#ifndef _ALLOW_MSC_VER_MISMATCH
 		#pragma detect_mismatch("_MSC_VER", "1900")
@@ -190,7 +189,6 @@ clients and process-global for mixed clients.
 		#endif /* defined(_DLL) etc. */
 	#endif /* _ALLOW_RUNTIME_LIBRARY_MISMATCH */
 #endif /* __cplusplus */
-#endif /* __EDG__ */
 
 #ifdef _ITERATOR_DEBUG_ARRAY_OVERLOADS
 	#if _ITERATOR_DEBUG_ARRAY_OVERLOADS != 0 && _ITERATOR_DEBUG_ARRAY_OVERLOADS != 1
@@ -217,10 +215,6 @@ clients and process-global for mixed clients.
 #else
 #define _SECURE_SCL_DEPRECATE 1
 #endif
-#endif
-
-#if defined(_SECURE_SCL_THROWS) && _SECURE_SCL_THROWS
-#error _SECURE_SCL_THROWS has been removed.
 #endif
 
 /* _SECURE_SCL switches: helper macros */

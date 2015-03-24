@@ -297,6 +297,16 @@ public:
 		return (*this);
 		}
 
+	volatile _Ty1& _Get_first() volatile _NOEXCEPT
+		{	// return volatile reference to first
+		return (*this);
+		}
+
+	const volatile _Ty1& _Get_first() const volatile _NOEXCEPT
+		{	// return const volatile reference to first
+		return (*this);
+		}
+
 	_Ty2& _Get_second() _NOEXCEPT
 		{	// return reference to second
 		return (_Myval2);
@@ -304,6 +314,16 @@ public:
 
 	const _Ty2& _Get_second() const _NOEXCEPT
 		{	// return const reference to second
+		return (_Myval2);
+		}
+
+	volatile _Ty2& _Get_second() volatile _NOEXCEPT
+		{	// return volatile reference to second
+		return (_Myval2);
+		}
+
+	const volatile _Ty2& _Get_second() const volatile _NOEXCEPT
+		{	// return const volatile reference to second
 		return (_Myval2);
 		}
 	};
@@ -345,6 +365,16 @@ public:
 		return (_Myval1);
 		}
 
+	volatile _Ty1& _Get_first() volatile _NOEXCEPT
+		{	// return volatile reference to first
+		return (_Myval1);
+		}
+
+	const volatile _Ty1& _Get_first() const volatile _NOEXCEPT
+		{	// return const volatile reference to first
+		return (_Myval1);
+		}
+
 	_Ty2& _Get_second() _NOEXCEPT
 		{	// return reference to second
 		return (_Myval2);
@@ -352,6 +382,16 @@ public:
 
 	const _Ty2& _Get_second() const _NOEXCEPT
 		{	// return const reference to second
+		return (_Myval2);
+		}
+
+	volatile _Ty2& _Get_second() volatile _NOEXCEPT
+		{	// return volatile reference to second
+		return (_Myval2);
+		}
+
+	const volatile _Ty2& _Get_second() const volatile _NOEXCEPT
+		{	// return const volatile reference to second
 		return (_Myval2);
 		}
 	};

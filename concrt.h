@@ -23,7 +23,7 @@
 #endif
 
 #if !(defined (_M_X64) || defined (_M_IX86) || defined (_M_ARM) || defined (_M_ARM64))
-    #error ERROR: Concurrency Runtime is supported only on X64, X86, ARM, and CRT_UNSUPPORTED architectures.
+    #error ERROR: Concurrency Runtime is supported only on X64, X86, ARM, and ARM64 architectures.
 #endif  /* !(defined (_M_X64) || defined (_M_IX86) || defined (_M_ARM) || defined (_M_ARM64)) */
 
 #if defined (_M_CEE)
@@ -1833,6 +1833,7 @@ public:
     location() :
         _M_type(_System),
         _M_reserved(0),
+        _M_bindingId(0),
         _M_pBinding(NULL),
         _M_ptr(NULL)
     {

@@ -157,16 +157,53 @@ private:
 	_Mtx_t _MyMtxp;
 	};
 
-class _CRTIMP2_PURE _Pad
+class _Pad
 	{	// base class for launching threads
 public:
-	_Pad();
-	~_Pad() _NOEXCEPT;
-	void _Launch(_Thrd_t *_Thr);
-	void _Release();
+	_Pad()
+		{	// initialize handshake
+		_Cnd_initX(&_Cond);
+		_Auto_cnd _Cnd_cleaner(_Cond);
+		_Mtx_initX(&_Mtx, _Mtx_plain);
+		_Auto_mtx _Mtx_cleaner(_Mtx);
+		_Started = false;
+		_Mtx_lockX(_Mtx);
+		_Mtx_cleaner._Release();
+		_Cnd_cleaner._Release();
+		}
+
+	~_Pad() _NOEXCEPT
+		{	// clean up handshake
+		_Auto_cnd _Cnd_cleaner(_Cond);
+		_Auto_mtx _Mtx_cleaner(_Mtx);
+		_Mtx_unlockX(_Mtx);
+		}
+
+	void _Launch(_Thrd_t *_Thr)
+		{	// launch a thread
+		_Thrd_startX(_Thr, _Call_func, this);
+		while (!_Started)
+			_Cnd_waitX(_Cond, _Mtx);
+		}
+
+	void _Release()
+		{	// notify caller that it's okay to continue
+		_Mtx_lockX(_Mtx);
+		_Started = true;
+		_Cnd_signalX(_Cond);
+		_Mtx_unlockX(_Mtx);
+		}
+
 	virtual void _Go() = 0;
 
 private:
+	static unsigned int _STDCALL _Call_func(void *_Data)
+		{	// entry point for new thread
+		static_cast<_Pad *>(_Data)->_Go();
+		_Cnd_do_broadcast_at_thread_exit();
+		return (0);
+		}
+
 	_Cnd_t _Cond;
 	_Mtx_t _Mtx;
 	bool _Started;

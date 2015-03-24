@@ -11,17 +11,6 @@
  #undef new
 
 _STD_BEGIN
-	// TEMPLATE CLASS unary_function
-template<class _T1,
-	class _Ret>
-	struct unary_function;
-
-	// TEMPLATE CLASS binary_function
-template<class _T1,
-	class _T2,
-	class _Ret>
-	struct binary_function;
-
 	// STRUCT _Nil
 struct _Nil
 	{	// empty struct, for unused argument types
@@ -52,15 +41,9 @@ typedef integral_constant<bool, true> true_type;
 typedef integral_constant<bool, false> false_type;
 
 	// TEMPLATE CLASS _Cat_base
-template<bool>
+template<bool _Val>
 	struct _Cat_base
-		: false_type
-	{	// base class for type predicates
-	};
-
-template<>
-	struct _Cat_base<true>
-		: true_type
+		: integral_constant<bool, _Val>
 	{	// base class for type predicates
 	};
 
@@ -312,7 +295,7 @@ template<class _Ty>
 	{	// determine whether _Ty is an arithmetic type
 	};
 
-	// TEMPLATE remove_reference
+	// TEMPLATE CLASS remove_reference
 template<class _Ty>
 	struct remove_reference
 	{	// remove reference
@@ -329,46 +312,6 @@ template<class _Ty>
 	struct remove_reference<_Ty&&>
 	{	// remove rvalue reference
 	typedef _Ty type;
-	};
-
-	// TEMPLATE STRUCT _Copy_cv
-template<class _Tgt,
-	class _Src>
-	struct _Copy_cv
-	{	// plain version
-	typedef typename remove_reference<_Tgt>::type _Tgtx;
-	typedef _Tgtx& type;
-	};
-
-template<class _Tgt,
-	class _Src>
-	struct _Copy_cv<_Tgt, const _Src>
-	{	// const version
-	typedef typename remove_reference<_Tgt>::type _Tgtx;
-	typedef const _Tgtx& type;
-	};
-
-template<class _Tgt,
-	class _Src>
-	struct _Copy_cv<_Tgt, volatile _Src>
-	{	// volatile version
-	typedef typename remove_reference<_Tgt>::type _Tgtx;
-	typedef volatile _Tgtx& type;
-	};
-
-template<class _Tgt,
-	class _Src>
-	struct _Copy_cv<_Tgt, const volatile _Src>
-	{	// const volatile version
-	typedef typename remove_reference<_Tgt>::type _Tgtx;
-	typedef const volatile _Tgtx& type;
-	};
-
-template<class _Tgt,
-	class _Src>
-	struct _Copy_cv<_Tgt, _Src&>
-	{	// remove reference from second argument
-	typedef typename _Copy_cv<_Tgt, _Src>::type type;
 	};
 
 	// TYPE TESTING MACROS
@@ -407,21 +350,9 @@ template<class...>
 	typedef void type;
 	};
 
-
-		// TEMPLATE STRUCT _Has_result_type
-template<class _Ty,
-	class = void>
-	struct _Has_result_type
-		: false_type
-	{	// default definition
-	};
-
-template<class _Ty>
-	struct _Has_result_type<_Ty, typename _Param_tester<
-		typename _Ty::result_type>::type>
-		: true_type
-	{	// defined if _Ty::result_type exists
-	};
+	// ALIAS TEMPLATE void_t
+template<class... _Types>	// TRANSITION, needs CWG 1558
+	using void_t = typename _Param_tester<_Types...>::type;
 _STD_END
  #pragma pop_macro("new")
  #pragma warning(pop)

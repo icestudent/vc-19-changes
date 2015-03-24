@@ -1,7 +1,7 @@
 /***
 * imminitrin.h - Meta Header file for Intel(R) Architecture intrinsic functions.
 *
-* Copyright (C) 1985-2011 Intel Corporation.  All rights reserved.
+* Copyright (C) 1985-2014 Intel Corporation.  All rights reserved.
 *
 * The information and source code contained herein is the exclusive
 * property of Intel Corporation and may not be disclosed, examined
@@ -1980,6 +1980,21 @@ extern unsigned char __cdecl _addcarryx_u64(unsigned char /*c_in*/,
                                                    unsigned __int64 /*src2*/,
                                                    unsigned __int64 * /*out*/);
 #endif  /* defined (_M_X64) */
+
+/*
+ * Intel(R) Memory Protection Extensions (Intel(R) MPX) intrinsic functions
+*/
+extern void * _bnd_set_ptr_bounds(const void *, size_t);
+extern void * _bnd_init_ptr_bounds(const void *);
+extern void * _bnd_copy_ptr_bounds(const void *, const void *);
+extern void _bnd_chk_ptr_bounds(const void *, size_t);
+extern void _bnd_chk_ptr_lbounds(const void *);
+extern void _bnd_chk_ptr_ubounds(const void *);
+extern void _bnd_store_ptr_bounds(const void **, const void *);
+extern void * _bnd_load_ptr_bounds(const void **, const void *);
+extern const void * _bnd_get_ptr_lbound(const void *);
+extern const void * _bnd_get_ptr_ubound(const void *);
+extern void * _bnd_narrow_ptr_bounds(const void *, const void *, size_t);
 
 #if defined __cplusplus
 }; /* End "C" */

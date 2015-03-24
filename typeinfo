@@ -78,7 +78,7 @@ class _CRTIMP2 __non_rtti_object
 	: public bad_typeid
 	{	// report a non RTTI object
 public:
-    __non_rtti_object(const char *_Message)
+	__non_rtti_object(const char *_Message)
 		: bad_typeid(_Message)
 		{	// construct from message string
 		}
@@ -86,12 +86,10 @@ public:
  _STD_END
  #endif /* _HAS_EXCEPTIONS */
 
-#endif /* RC_INVOKED */
-
 #pragma pop_macro("new")
 #pragma pack(pop)
 #pragma warning(pop)
-
+#endif /* RC_INVOKED */
 #endif // _TYPEINFO_
 
 /*
