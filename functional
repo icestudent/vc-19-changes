@@ -4,7 +4,6 @@
 #define _FUNCTIONAL_
 #ifndef RC_INVOKED
 #include <xfunctional>
-
 #include <exception>
 #include <typeinfo>
 #include <tuple>	// for bind
@@ -45,7 +44,6 @@ template<class _Memptr> inline
 		// in order to handle arbitrary calling conventions.
 	return (_Mem_fn<_Memptr>(_Pm));
 	}
-
 
 // IMPLEMENT function
 
@@ -424,7 +422,6 @@ template<class _Ret, \
 _NON_MEMBER_CALL(_GET_FUNCTION_IMPL)
 #undef _GET_FUNCTION_IMPL
 
-
 	// TEMPLATE CLASS function
 template<class _Fty>
 	class function
@@ -572,32 +569,34 @@ template<class _Fty> inline
 
 	// TEMPLATE NULL POINTER COMPARISONS
 template<class _Fty> inline
-	bool operator==(const function<_Fty>& _Other, nullptr_t) _NOEXCEPT
+	bool operator==(const function<_Fty>& _Other,
+		nullptr_t) _NOEXCEPT
 	{	// compare to null pointer
 	return (!_Other);
 	}
 
 template<class _Fty> inline
-	bool operator==(nullptr_t, const function<_Fty>& _Other) _NOEXCEPT
+	bool operator==(nullptr_t,
+		const function<_Fty>& _Other) _NOEXCEPT
 	{	// compare to null pointer
 	return (!_Other);
 	}
 
 template<class _Fty> inline
-	bool operator!=(const function<_Fty>& _Other, nullptr_t) _NOEXCEPT
+	bool operator!=(const function<_Fty>& _Other,
+		nullptr_t) _NOEXCEPT
 	{	// compare to null pointer
 	return (static_cast<bool>(_Other));
 	}
 
 template<class _Fty> inline
-	bool operator!=(nullptr_t, const function<_Fty>& _Other) _NOEXCEPT
+	bool operator!=(nullptr_t,
+		const function<_Fty>& _Other) _NOEXCEPT
 	{	// compare to null pointer
 	return (static_cast<bool>(_Other));
 	}
-
 
 // IMPLEMENT bind
-
 	// PLACEHOLDERS
 template<int _Nx>
 	struct _Ph
@@ -634,13 +633,11 @@ template<class _Tx>
 	{	// ignore cv-qualifiers
 	};
 
-
 	// TEMPLATE CLASS _Binder FORWARD DECLARATION
 template<class _Ret,
 	class _Fx,
 	class... _Types>
 	class _Binder;
-
 
 	// TEMPLATE CLASS is_bind_expression
 template<class _Tx>
@@ -674,7 +671,6 @@ template<class _Tx>
 		: is_bind_expression<_Tx>
 	{	// ignore cv-qualifiers
 	};
-
 
 	// TEMPLATE FUNCTION _Fix_arg
 template<class _Cv_TiD,
@@ -748,7 +744,6 @@ template<class _Cv_TiD,
 	return (_Select_fixer<_Cv_TiD>::_Fix(_Tid, _STD move(_Ut)));
 	}
 
-
 	// TEMPLATE FUNCTION get (by index, for volatile and const volatile)
 namespace _Cv_get {
 using _STD get;
@@ -774,7 +769,6 @@ template<size_t _Index,
 	}
 }	// namespace _Cv_get
 
-
 	// TEMPLATE FUNCTION _Call_binder
 template<class _Ret,
 	size_t... _Ix,
@@ -789,7 +783,6 @@ template<class _Ret,
 	return (_Invoke_ret(_Fr, _Obj, _Fix_arg(
 		_Cv_get::get<_Ix>(_Tpl), _STD move(_Ut))...));
 	}
-
 
 	// TEMPLATE CLASS _Binder
 template<class _Ret>
@@ -835,10 +828,9 @@ public:
 	template<class... _Unbound> \
 		auto operator()(_Unbound&&... _Unbargs) CV_OPT \
 		-> decltype(_Call_binder(_Forced<_Ret>(), _Seq(), \
-			_STD declval<CV_OPT _First&>(), _STD declval<CV_OPT _Second&>(), \
+			_Mypair._Get_first(), _Mypair._Get_second(), \
 			_STD forward_as_tuple(_STD forward<_Unbound>(_Unbargs)...))) \
 		{	/* invoke bound callable object with bound/unbound arguments */ \
-			/* TRANSITION, decltype should match return */ \
 		return (_Call_binder(_Forced<_Ret>(), _Seq(), \
 			_Mypair._Get_first(), _Mypair._Get_second(), \
 			_STD forward_as_tuple(_STD forward<_Unbound>(_Unbargs)...))); \
@@ -847,7 +839,6 @@ public:
 _CLASS_DEFINE_CV(_BINDER_OPERATOR)
 #undef _BINDER_OPERATOR
 	};
-
 
 	// TEMPLATE FUNCTION bind (implicit return type)
 template<class _Fx,
@@ -867,7 +858,6 @@ template<class _Ret,
 	return (_Binder<_Ret, _Fx, _Types...>(
 		_STD forward<_Fx>(_Func), _STD forward<_Types>(_Args)...));
 	}
-
 
 	// PLACEHOLDER ARGUMENTS
 		namespace placeholders {	// placeholders
@@ -904,7 +894,7 @@ using _STD swap;
 
 namespace placeholders {
 	using namespace _STD placeholders;
-}	// namespace placeholders
+	}	// namespace placeholders
 }	// namespace tr1
 _STD_END
 
@@ -917,7 +907,6 @@ template<class _Fty,
 	{	// true_type if container allocator enabled
 	};
 }	// namespace std
-
  #pragma pop_macro("new")
  #pragma warning(pop)
  #pragma pack(pop)

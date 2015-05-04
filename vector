@@ -457,7 +457,6 @@ template<class _Ty,
 	};
 
 		// TEMPLATE CLASS _Vector_val
-
 template<class _Val_types>
 	class _Vector_val
 		: public _Container_base
@@ -515,14 +514,19 @@ public:
 		{	// construct allocator from _Al
 		}
 
-	void _Change_alloc(const _Alty& _Al)
+	void _Copy_alloc(const _Alty& _Al)
 		{	// replace old allocator
-		_Getal() = _Al;
+		_Pocca(_Getal(), _Al);
+		}
+
+	void _Move_alloc(_Alty& _Al)
+		{	// replace old allocator
+		_Pocma(_Getal(), _Al);
 		}
 
 	void _Swap_alloc(_Myt& _Right)
 		{	// swap allocators
-		_Swap_adl(_Getal(), _Right._Getal());
+		_Pocs(_Getal(), _Right._Getal());
 		}
 
  #else /* _ITERATOR_DEBUG_LEVEL == 0 */
@@ -537,16 +541,23 @@ public:
 		_Free_proxy();
 		}
 
-	void _Change_alloc(const _Alty& _Al)
+	void _Copy_alloc(const _Alty& _Al)
 		{	// replace old allocator
 		_Free_proxy();
-		_Getal() = _Al;
+		_Pocca(_Getal(), _Al);
+		_Alloc_proxy();
+		}
+
+	void _Move_alloc(_Alty& _Al)
+		{	// replace old allocator
+		_Free_proxy();
+		_Pocma(_Getal(), _Al);
 		_Alloc_proxy();
 		}
 
 	void _Swap_alloc(_Myt& _Right)
 		{	// swap allocators
-		_Swap_adl(_Getal(), _Right._Getal());
+		_Pocs(_Getal(), _Right._Getal());
 		_Swap_adl(_Myproxy(), _Right._Myproxy());
 		}
 
@@ -658,7 +669,6 @@ template<class _Ty,
 public:
 	typedef vector<_Ty, _Alloc> _Myt;
 	typedef _Vector_alloc<_Vec_base_types<_Ty, _Alloc> > _Mybase;
-
 	typedef _Alloc allocator_type;
 
 	typedef typename _Mybase::_Alty _Alty;
@@ -680,12 +690,12 @@ public:
 	typedef _STD reverse_iterator<iterator> reverse_iterator;
 	typedef _STD reverse_iterator<const_iterator> const_reverse_iterator;
 
-	vector()
+	vector() _NOEXCEPT
 		: _Mybase()
 		{	// construct empty vector
 		}
 
-	explicit vector(const _Alloc& _Al)
+	explicit vector(const _Alloc& _Al) _NOEXCEPT
 		: _Mybase(_Al)
 		{	// construct empty vector, allocator
 		}
@@ -814,7 +824,7 @@ public:
 			}
 		}
 
-	vector(_Myt&& _Right)
+	vector(_Myt&& _Right) _NOEXCEPT
 		: _Mybase(_Right._Getal())
 		{	// construct by moving _Right
 		_Assign_rv(_STD forward<_Myt>(_Right), true_type());
@@ -827,13 +837,15 @@ public:
 		}
 
 	_Myt& operator=(_Myt&& _Right)
+		_NOEXCEPT_OP(_Alty::propagate_on_container_move_assignment::value
+			|| _Alty::is_always_equal::value)
 		{	// assign by moving _Right
 		if (this != &_Right)
 			{	// different, assign it
 			_Tidy();
 			if (_Alty::propagate_on_container_move_assignment::value
 				&& this->_Getal() != _Right._Getal())
-				this->_Change_alloc(_Right._Getal());
+				this->_Move_alloc(_Right._Getal());
 
 			_Assign_rv(_STD forward<_Myt>(_Right));
 			}
@@ -960,7 +972,7 @@ public:
 				&& _Alty::propagate_on_container_copy_assignment::value)
 				{	// change allocator before copying
 				_Tidy();
-				this->_Change_alloc(_Right._Getal());
+				this->_Copy_alloc(_Right._Getal());
 				}
 
 			this->_Orphan_all();
@@ -1520,6 +1532,8 @@ public:
 		}
 
 	void swap(_Myt& _Right)
+		_NOEXCEPT_OP(_Alty::propagate_on_container_swap::value
+			|| _Alty::is_always_equal::value)
 		{	// exchange contents with _Right
 		if (this == &_Right)
 			;	// same object, do nothing
@@ -1794,6 +1808,7 @@ protected:
 template<class _Ty,
 	class _Alloc> inline
 	void swap(vector<_Ty, _Alloc>& _Left, vector<_Ty, _Alloc>& _Right)
+		_NOEXCEPT_OP(_NOEXCEPT_OP(_Left.swap(_Right)))
 	{	// swap _Left and _Right vectors
 	_Left.swap(_Right);
 	}

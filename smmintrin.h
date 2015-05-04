@@ -1,5 +1,5 @@
 /***
-*** Copyright (C) 1985-2007 Intel Corporation.  All rights reserved.
+*** Copyright (C) 1985-2015 Intel Corporation.  All rights reserved.
 ***
 *** The information and source code contained herein is the exclusive
 *** property of Intel Corporation and may not be disclosed, examined
@@ -24,10 +24,6 @@
 #ifndef _INCLUDED_SMM
 #define _INCLUDED_SMM
 #ifndef __midl
-
-#if !defined _M_IX86 && !defined _M_X64
-    #error This header is specific to X86 and X64 targets
-#endif
 
 #if defined (_M_CEE_PURE)
         #error ERROR: EMM intrinsics not supported in the pure mode!
@@ -88,73 +84,72 @@ extern "C" {
 #endif  /* __cplusplus */
 
         // Integer blend instructions - select data from 2 sources
-        // using constant/variable mask
+        // using constant or variable mask
 
-        extern __m128i _mm_blend_epi16 (__m128i v1, __m128i v2,
-                                        const int mask);
-        extern __m128i _mm_blendv_epi8 (__m128i v1, __m128i v2, __m128i mask);
+        extern __m128i _mm_blend_epi16 (__m128i, __m128i, const int /* mask */);
+        extern __m128i _mm_blendv_epi8 (__m128i, __m128i, __m128i mask);
 
         // Float single precision blend instructions - select data
         // from 2 sources using constant/variable mask
 
-        extern __m128  _mm_blend_ps (__m128  v1, __m128  v2, const int mask);
-        extern __m128  _mm_blendv_ps(__m128  v1, __m128  v2, __m128 v3);
+        extern __m128  _mm_blend_ps (__m128, __m128, const int /* mask */);
+        extern __m128  _mm_blendv_ps(__m128, __m128, __m128 /* mask */);
 
         // Float double precision blend instructions - select data
         // from 2 sources using constant/variable mask
 
-        extern __m128d _mm_blend_pd (__m128d v1, __m128d v2, const int mask);
-        extern __m128d _mm_blendv_pd(__m128d v1, __m128d v2, __m128d v3);
+        extern __m128d _mm_blend_pd (__m128d, __m128d, const int /* mask */);
+        extern __m128d _mm_blendv_pd(__m128d, __m128d, __m128d /* mask */);
 
         // Dot product instructions with mask-defined summing and zeroing
         // of result's parts
 
-        extern __m128  _mm_dp_ps(__m128  val1, __m128  val2, const int mask);
-        extern __m128d _mm_dp_pd(__m128d val1, __m128d val2, const int mask);
+        extern __m128  _mm_dp_ps(__m128, __m128, const int /* mask */);
+        extern __m128d _mm_dp_pd(__m128d, __m128d, const int /* mask */);
 
         // Packed integer 64-bit comparison, zeroing or filling with ones
         // corresponding parts of result
 
-        extern __m128i _mm_cmpeq_epi64(__m128i val1, __m128i val2);
+        extern __m128i _mm_cmpeq_epi64(__m128i, __m128i);
 
         // Min/max packed integer instructions
 
-        extern __m128i _mm_min_epi8 (__m128i val1, __m128i val2);
-        extern __m128i _mm_max_epi8 (__m128i val1, __m128i val2);
+        extern __m128i _mm_min_epi8 (__m128i, __m128i);
+        extern __m128i _mm_max_epi8 (__m128i, __m128i);
 
-        extern __m128i _mm_min_epu16(__m128i val1, __m128i val2);
-        extern __m128i _mm_max_epu16(__m128i val1, __m128i val2);
+        extern __m128i _mm_min_epu16(__m128i, __m128i);
+        extern __m128i _mm_max_epu16(__m128i, __m128i);
 
-        extern __m128i _mm_min_epi32(__m128i val1, __m128i val2);
-        extern __m128i _mm_max_epi32(__m128i val1, __m128i val2);
-        extern __m128i _mm_min_epu32(__m128i val1, __m128i val2);
-        extern __m128i _mm_max_epu32(__m128i val1, __m128i val2);
+        extern __m128i _mm_min_epi32(__m128i, __m128i);
+        extern __m128i _mm_max_epi32(__m128i, __m128i);
+        extern __m128i _mm_min_epu32(__m128i, __m128i);
+        extern __m128i _mm_max_epu32(__m128i, __m128i);
 
         // Packed integer 32-bit multiplication with truncation
         // of upper halves of results
 
-        extern __m128i _mm_mullo_epi32(__m128i a, __m128i b);
+        extern __m128i _mm_mullo_epi32(__m128i, __m128i);
 
         // Packed integer 32-bit multiplication of 2 pairs of operands
         // producing two 64-bit results
 
-        extern __m128i _mm_mul_epi32(__m128i a, __m128i b);
+        extern __m128i _mm_mul_epi32(__m128i, __m128i);
 
         // Packed integer 128-bit bitwise comparison.
         // return 1 if (val 'and' mask) == 0
 
-        extern int _mm_testz_si128(__m128i mask, __m128i val);
+        extern int _mm_testz_si128(__m128i /* mask */, __m128i /* val */);
 
         // Packed integer 128-bit bitwise comparison.
         // return 1 if (val 'and_not' mask) == 0
 
-        extern int _mm_testc_si128(__m128i mask, __m128i val);
+        extern int _mm_testc_si128(__m128i /* mask */, __m128i /* val */);
 
         // Packed integer 128-bit bitwise comparison
         // ZF = ((val 'and' mask) == 0)  CF = ((val 'and_not' mask) == 0)
         // return 1 if both ZF and CF are 0
 
-        extern int _mm_testnzc_si128(__m128i mask, __m128i s2);
+        extern int _mm_testnzc_si128(__m128i /* mask */, __m128i /* val */);
 
         // Insert single precision float into packed single precision
         // array element selected by index.
@@ -162,9 +157,9 @@ extern "C" {
         // the bits [5-4] define dst index, and bits [3-0] define zeroing
         // mask for dst
 
-        extern __m128 _mm_insert_ps(__m128 dst, __m128 src, const int ndx);
+        extern __m128 _mm_insert_ps(__m128 /* dst */, __m128 /* src */, const int /* index */);
 
-        // Helper macro to create ndx-parameter value for _mm_insert_ps
+        // Helper macro to create index-parameter value for _mm_insert_ps
 
 #define _MM_MK_INSERTPS_NDX(srcField, dstField, zeroMask) \
         (((srcField)<<6) | ((dstField)<<4) | (zeroMask))
@@ -172,7 +167,7 @@ extern "C" {
         // Extract binary representation of single precision float from
         // packed single precision array element selected by index
 
-        extern int _mm_extract_ps(__m128 src, const int ndx);
+        extern int _mm_extract_ps(__m128 /* src */, const int /* index */);
 
         // Extract single precision float from packed single precision
         // array element selected by index into dest
@@ -190,72 +185,72 @@ extern "C" {
         // Insert integer into packed integer array element
         // selected by index
 
-        extern __m128i _mm_insert_epi8 (__m128i dst, int s, const int ndx);
-        extern __m128i _mm_insert_epi32(__m128i dst, int s, const int ndx);
+        extern __m128i _mm_insert_epi8 (__m128i /* dst */, int /* src */, const int /* index */);
+        extern __m128i _mm_insert_epi32(__m128i /* dst */, int /* src */, const int /* index */);
 
 #if defined (_M_X64)
-        extern __m128i _mm_insert_epi64(__m128i dst, __int64 s, const int ndx);
+        extern __m128i _mm_insert_epi64(__m128i /* dst */, __int64 /* src */, const int /* index */);
 #endif  /* defined (_M_X64) */
         // Extract integer from packed integer array element
         // selected by index
 
-        extern int   _mm_extract_epi8 (__m128i src, const int ndx);
-        extern int   _mm_extract_epi32(__m128i src, const int ndx);
+        extern int   _mm_extract_epi8 (__m128i /* src */, const int /* index */);
+        extern int   _mm_extract_epi32(__m128i /* src */, const int /* index */);
 
 #if defined (_M_X64)
-        extern __int64 _mm_extract_epi64(__m128i src, const int ndx);
+        extern __int64 _mm_extract_epi64(__m128i /* src */, const int /* index */);
 #endif  /* defined (_M_X64) */
 
         // Horizontal packed word minimum and its index in
         // result[15:0] and result[18:16] respectively
 
-        extern __m128i _mm_minpos_epu16(__m128i shortValues);
+        extern __m128i _mm_minpos_epu16(__m128i);
 
         // Packed/single float double precision rounding
 
-        extern __m128d _mm_round_pd(__m128d val, int iRoundMode);
-        extern __m128d _mm_round_sd(__m128d dst, __m128d val, int iRoundMode);
+        extern __m128d _mm_round_pd(__m128d /* val */, int /* iRoundMode */);
+        extern __m128d _mm_round_sd(__m128d /* dst */, __m128d /* val */, int /* iRoundMode */);
 
         // Packed/single float single precision rounding
 
-        extern __m128  _mm_round_ps(__m128  val, int iRoundMode);
-        extern __m128  _mm_round_ss(__m128 dst, __m128  val, int iRoundMode);
+        extern __m128  _mm_round_ps(__m128  /* val */, int /* iRoundMode */);
+        extern __m128  _mm_round_ss(__m128 /* dst */, __m128  /* val */, int /* iRoundMode */);
 
         // Packed integer sign-extension
 
-        extern __m128i _mm_cvtepi8_epi32 (__m128i byteValues);
-        extern __m128i _mm_cvtepi16_epi32(__m128i shortValues);
-        extern __m128i _mm_cvtepi8_epi64 (__m128i byteValues);
-        extern __m128i _mm_cvtepi32_epi64(__m128i intValues);
-        extern __m128i _mm_cvtepi16_epi64(__m128i shortValues);
-        extern __m128i _mm_cvtepi8_epi16 (__m128i byteValues);
+        extern __m128i _mm_cvtepi8_epi32 (__m128i);
+        extern __m128i _mm_cvtepi16_epi32(__m128i);
+        extern __m128i _mm_cvtepi8_epi64 (__m128i);
+        extern __m128i _mm_cvtepi32_epi64(__m128i);
+        extern __m128i _mm_cvtepi16_epi64(__m128i);
+        extern __m128i _mm_cvtepi8_epi16 (__m128i);
 
         // Packed integer zero-extension
 
-        extern __m128i _mm_cvtepu8_epi32 (__m128i byteValues);
-        extern __m128i _mm_cvtepu16_epi32(__m128i shortValues);
-        extern __m128i _mm_cvtepu8_epi64 (__m128i shortValues);
-        extern __m128i _mm_cvtepu32_epi64(__m128i intValues);
-        extern __m128i _mm_cvtepu16_epi64(__m128i shortValues);
-        extern __m128i _mm_cvtepu8_epi16 (__m128i byteValues);
+        extern __m128i _mm_cvtepu8_epi32 (__m128i);
+        extern __m128i _mm_cvtepu16_epi32(__m128i);
+        extern __m128i _mm_cvtepu8_epi64 (__m128i);
+        extern __m128i _mm_cvtepu32_epi64(__m128i);
+        extern __m128i _mm_cvtepu16_epi64(__m128i);
+        extern __m128i _mm_cvtepu8_epi16 (__m128i);
 
 
         // Pack 8 double words from 2 operands into 8 words of result
         // with unsigned saturation
 
-        extern __m128i _mm_packus_epi32(__m128i val1, __m128i val2);
+        extern __m128i _mm_packus_epi32(__m128i, __m128i);
 
         // Sum absolute 8-bit integer difference of adjacent groups of 4 byte
         // integers in operands. Starting offsets within operands are
         // determined by mask
 
-        extern __m128i _mm_mpsadbw_epu8(__m128i s1, __m128i s2, const int msk);
+        extern __m128i _mm_mpsadbw_epu8(__m128i /* s1 */, __m128i /* s2 */, const int /* mask */);
 
         /*
          * Load double quadword using non-temporal aligned hint
          */
 
-        extern __m128i _mm_stream_load_si128(__m128i* v1);
+        extern __m128i _mm_stream_load_si128(__m128i*);
 
 #if defined __cplusplus
 }; /* End "C" */

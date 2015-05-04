@@ -242,7 +242,7 @@ public:
 		}
 
 	iterator insert(const_iterator, value_type&& _Val)
-		{	// try to insert node with value _Val ignoring hint
+		{	// try to insert node with value _Val, ignore hint
 		return (_Insert(_STD forward<value_type>(_Val), _Nil()).first);
 		}
 
@@ -672,9 +672,9 @@ public:
 
 			this->_List.swap(_Right._List);
 			this->_Vec.swap(_Right._Vec);
-			_STD swap(this->_Mask, _Right._Mask);
-			_STD swap(this->_Maxidx, _Right._Maxidx);
-			_STD swap(_Max_bucket_size(), _Right._Max_bucket_size());
+			_Swap_adl(this->_Mask, _Right._Mask);
+			_Swap_adl(this->_Maxidx, _Right._Maxidx);
+			_Swap_adl(_Max_bucket_size(), _Right._Max_bucket_size());
 			}
 		}
 
@@ -717,8 +717,9 @@ protected:
 				_Traits::_Kfn(*--_Where)))
 				;	// still too high in bucket list
 			else if (_Multi
-				|| _Traitsobj(_Traits::_Kfn(*_Where),
-						_Traits::_Kfn(_Val)))
+				|| (!_Traits::_Standard
+					&& _Traitsobj(_Traits::_Kfn(*_Where),
+						_Traits::_Kfn(_Val))))
 				{	// found insertion point, back up to it
 				++_Where;
 				break;
@@ -840,9 +841,7 @@ protected:
 		_List.clear();
 
 		_TRY_BEGIN
-
 		_Traitsobj = _Right._Traitsobj;
-
 		_Vec.assign(_Right._Vec.size(), _Unchecked_end());
 		insert(_Right.begin(), _Right.end());
 		_CATCH_ALL
@@ -905,7 +904,6 @@ protected:
 		}
 
 	_Traits _Traitsobj;	// traits to customize behavior
-
 	_Mylist _List;	// list of elements, must initialize before _Vec
 	_Myvec _Vec;	// vector of list iterators, begin() then end()-1
 	size_type _Mask;	// the key mask

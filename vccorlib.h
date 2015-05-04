@@ -1676,7 +1676,7 @@ namespace Platform
 		__k = __dArg[7];
 	}
 
-	__declspec(selectany) ::Platform::Guid __winrt_GUID_NULL(0x00000000, 0x0000, 0x0000, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00);
+	__declspec(selectany) ::Platform::Guid __winrt_GUID_NULL = {0x00000000, 0x0000, 0x0000, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
 	////////////////////////////////////////////////////////////////////////////////
 	inline void* Details::Heap::Allocate(::Platform::SizeT /*__sizeArg*/, void* __pPlacementArg)

@@ -3,7 +3,7 @@
 //
 //      Copyright (c) Microsoft Corporation. All rights reserved.
 //
-// User-includable hedaer for exception handling.
+// User-includable header for exception handling.
 //
 #pragma once
 #define _INC_EH
@@ -54,6 +54,7 @@ struct _EXCEPTION_POINTERS;
         );
 
     _VCRTIMP bool __cdecl __uncaught_exception();
+    _VCRTIMP int  __cdecl __uncaught_exceptions();
 
 #endif
 

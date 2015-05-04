@@ -603,14 +603,19 @@ public:
 		_Freeheadnode(_Myhead());
 		}
 
-	void _Change_alloc(const _Alty& _Al)
+	void _Copy_alloc(const _Alty& _Al)
 		{	// replace old allocator
-		_Getal() = _Al;
+		_Pocca(_Getal(), _Al);
+		}
+
+	void _Move_alloc(_Alty& _Al)
+		{	// replace old allocator
+		_Pocma(_Getal(), _Al);
 		}
 
 	void _Swap_alloc(_Myt& _Right)
 		{	// swap allocators
-		_Swap_adl(_Getal(), _Right._Getal());
+		_Pocs(_Getal(), _Right._Getal());
 		}
 
  #else /* _ITERATOR_DEBUG_LEVEL == 0 */
@@ -632,16 +637,23 @@ public:
 		_Free_proxy();
 		}
 
-	void _Change_alloc(const _Alty& _Al)
+	void _Copy_alloc(const _Alty& _Al)
 		{	// replace old allocator
 		_Free_proxy();
-		_Getal() = _Al;
+		_Pocca(_Getal(), _Al);
+		_Alloc_proxy();
+		}
+
+	void _Move_alloc(_Alty& _Al)
+		{	// replace old allocator
+		_Free_proxy();
+		_Pocma(_Getal(), _Al);
 		_Alloc_proxy();
 		}
 
 	void _Swap_alloc(_Myt& _Right)
 		{	// swap allocators
-		_Swap_adl(_Getal(), _Right._Getal());
+		_Pocs(_Getal(), _Right._Getal());
 		_Swap_adl(_Myproxy(), _Right._Myproxy());
 		}
 
@@ -956,6 +968,7 @@ public:
 		}
 
 	_Myt& operator=(_Myt&& _Right)
+		_NOEXCEPT_OP(_Alty::is_always_equal::value)
 		{	// assign by moving _Right
 		if (this != &_Right)
 			{	// different, assign it
@@ -963,7 +976,7 @@ public:
 
 			if (_Alty::propagate_on_container_move_assignment::value
 				&& this->_Getal() != _Right._Getal())
-				this->_Change_alloc(_Right._Getal());
+				this->_Move_alloc(_Right._Getal());
 
 			_Assign_rv(_STD forward<_Myt>(_Right));
 			}
@@ -1067,7 +1080,7 @@ public:
 				&& _Alty::propagate_on_container_copy_assignment::value)
 				{	// change allocator before copying
 				clear();
-				this->_Change_alloc(_Right._Getal());
+				this->_Copy_alloc(_Right._Getal());
 				}
 
 			assign(_Right.begin(), _Right.end());
@@ -1475,6 +1488,7 @@ public:
 		}
 
 	void swap(_Myt& _Right)
+		_NOEXCEPT_OP(_Alty::is_always_equal::value)
 		{	// exchange contents with _Right
 		if (this == &_Right)
 			;	// same object, do nothing
@@ -1750,13 +1764,13 @@ public:
 			const bool _All = !_One && _Count == _Right.size();
 			const bool _Some = !_One && !_All;
 
-			_Nodeptr _Oldprev = _First._Ptr->_Prev;
+			_Nodeptr _Oldprev = this->_Prevnode(_First._Ptr);
 
 			if (_Some)
 				for (_Nodeptr _Ptr = _First._Ptr; _Ptr != _Last._Ptr;
-					_Ptr = _Ptr->_Next)
+					_Ptr = this->_Nextnode(_Ptr))
 					{	// mark _Prev pointers
-					_Ptr->_Prev = 0;
+					this->_Prevnode(_Ptr) = 0;
 					}
 
 			const_iterator **_Pnext = (const_iterator **)_Right._Getpfirst();
@@ -1770,7 +1784,7 @@ public:
 
 				if ((_One && _Iter._Ptr == _First._Ptr)
 					|| (_All && _Iter._Ptr != _Right._Myhead())
-					|| (_Some && _Iter._Ptr->_Prev == 0))
+					|| (_Some && this->_Prevnode(_Iter._Ptr) == 0))
 					{	// adopt the iterator
 					*_Pnext = (const_iterator *)_Iter._Mynextiter;
 					_Iter._Myproxy = this->_Myproxy();
@@ -1785,9 +1799,9 @@ public:
 
 			if (_Some)
 				for (_Nodeptr _Ptr = _First._Ptr; _Ptr != _Last._Ptr;
-					_Ptr = _Ptr->_Next)
+					_Ptr = this->_Nextnode(_Ptr))
 					{	// restore _Prev pointers
-					_Ptr->_Prev = _Oldprev;
+					this->_Prevnode(_Ptr) = _Oldprev;
 					_Oldprev = _Ptr;
 					}
 			}
@@ -1899,6 +1913,7 @@ public:
 template<class _Ty,
 	class _Alloc> inline
 	void swap(list<_Ty, _Alloc>& _Left, list<_Ty, _Alloc>& _Right)
+		_NOEXCEPT_OP(_NOEXCEPT_OP(_Left.swap(_Right)))
 	{	// swap _Left and _Right lists
 	_Left.swap(_Right);
 	}

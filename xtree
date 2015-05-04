@@ -715,14 +715,19 @@ public:
 		_Freeheadnode(_Myhead());
 		}
 
-	void _Change_alloc(const _Alty& _Al)
+	void _Copy_alloc(const _Alty& _Al)
 		{	// replace old allocator
-		_Getal() = _Al;
+		_Pocca(_Getal(), _Al);
+		}
+
+	void _Move_alloc(_Alty& _Al)
+		{	// replace old allocator
+		_Pocma(_Getal(), _Al);
 		}
 
 	void _Swap_alloc(_Myt& _Right)
 		{	// swap allocators
-		_Swap_adl(_Getal(), _Right._Getal());
+		_Pocs(_Getal(), _Right._Getal());
 		}
 
  #else /* _ITERATOR_DEBUG_LEVEL == 0 */
@@ -743,16 +748,23 @@ public:
 		_Free_proxy();
 		}
 
-	void _Change_alloc(const _Alty& _Al)
+	void _Copy_alloc(const _Alty& _Al)
 		{	// replace old allocator
 		_Free_proxy();
-		_Getal() = _Al;
+		_Pocca(_Getal(), _Al);
+		_Alloc_proxy();
+		}
+
+	void _Move_alloc(_Alty& _Al)
+		{	// replace old allocator
+		_Free_proxy();
+		_Pocma(_Getal(), _Al);
 		_Alloc_proxy();
 		}
 
 	void _Swap_alloc(_Myt& _Right)
 		{	// swap allocators
-		_Swap_adl(_Getal(), _Right._Getal());
+		_Pocs(_Getal(), _Right._Getal());
 		_Swap_adl(_Myproxy(), _Right._Myproxy());
 		}
 
@@ -1024,7 +1036,7 @@ public:
 			clear();
 			if (_Alty::propagate_on_container_move_assignment::value
 				&& this->_Getal() != _Right._Getal())
-				this->_Change_alloc(_Right._Getal());
+				this->_Move_alloc(_Right._Getal());
 
 			_Assign_rv(_STD forward<_Myt>(_Right));
 			}
@@ -1115,7 +1127,7 @@ public:
 			clear();
 			if (this->_Getal() != _Right._Getal()
 				&& _Alty::propagate_on_container_copy_assignment::value)
-				this->_Change_alloc(_Right._Getal());
+				this->_Copy_alloc(_Right._Getal());
 
 			this->_Getcomp() = _Right._Getcomp();
 			_Copy(_Right, _Copy_tag());

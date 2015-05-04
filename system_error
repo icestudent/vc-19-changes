@@ -12,6 +12,7 @@
  #pragma push_macro("new")
  #undef new
 
+
  #ifdef _CRT_NO_POSIX_ERROR_CODES
   #error <system_error> is incompatible with _CRT_NO_POSIX_ERROR_CODES.
  #endif /* _CRT_NO_POSIX_ERROR_CODES */
@@ -156,6 +157,7 @@ class error_category
 public:
 	error_category() _NOEXCEPT
 		{	// default constructor
+		_Addr = reinterpret_cast<uintptr_t>(this);
 		}
 
 	virtual ~error_category() _NOEXCEPT
@@ -177,7 +179,7 @@ public:
 
 	bool operator==(const error_category& _Right) const _NOEXCEPT
 		{	// compare categories for equality
-		return (this == &_Right);
+		return (_Addr == _Right._Addr);
 		}
 
 	bool operator!=(const error_category& _Right) const _NOEXCEPT
@@ -187,11 +189,22 @@ public:
 
 	bool operator<(const error_category& _Right) const _NOEXCEPT
 		{	// compare categories for order
-		return (this < &_Right);
+		return (_Addr < _Right._Addr);
 		}
 
 	error_category(const error_category&) = delete;
 	error_category& operator=(const error_category&) = delete;
+
+protected:
+	uintptr_t _Addr;
+
+	enum : uintptr_t
+		{	// imaginary addresses for Standard error_category objects
+		_Future_addr = 1,
+		_Generic_addr = 3,
+		_Iostream_addr = 5,
+		_System_addr = 7
+		};
 	};
 
 		// CLASS error_code
@@ -560,6 +573,8 @@ protected:
 
 _CRTIMP2_PURE const char *__CLRCALL_PURE_OR_CDECL _Syserror_map(int);
 _CRTIMP2_PURE int __CLRCALL_PURE_OR_CDECL _Winerror_map(int);
+_CRTIMP2_PURE unsigned long __CLRCALL_PURE_OR_CDECL _Winerror_message(
+	unsigned long _Message_id, char * _Narrow, unsigned long _Size);
 
 		// CLASS _Generic_error_category
 class _Generic_error_category
@@ -568,6 +583,7 @@ class _Generic_error_category
 public:
 	_Generic_error_category() _NOEXCEPT
 		{	// default constructor
+		_Addr = _Generic_addr;
 		}
 
 	virtual const char *name() const _NOEXCEPT
@@ -588,6 +604,7 @@ class _Iostream_error_category
 public:
 	_Iostream_error_category() _NOEXCEPT
 		{	// default constructor
+		_Addr = _Iostream_addr;
 		}
 
 	virtual const char *name() const _NOEXCEPT
@@ -611,6 +628,7 @@ class _System_error_category
 public:
 	_System_error_category() _NOEXCEPT
 		{	// default constructor
+		_Addr = _System_addr;
 		}
 
 	virtual const char *name() const _NOEXCEPT
@@ -620,7 +638,18 @@ public:
 
 	virtual string message(int _Errcode) const
 		{	// convert to name of error
-		return (_Syserror_map(_Winerror_map(_Errcode)));
+		const unsigned long _Size = 32767;
+		string _Narrow(_Size, '\0');
+
+		const unsigned long _Val = _Winerror_message(
+			static_cast<unsigned long>(_Errcode), &_Narrow[0], _Size);
+
+		if (_Val == 0)
+			return ("unknown error");
+
+		_Narrow.resize(_Val);
+		_Narrow.shrink_to_fit();
+		return (_Narrow);
 		}
 
 	virtual error_condition

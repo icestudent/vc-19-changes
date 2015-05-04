@@ -24,8 +24,6 @@ public:
 	typedef typename _If<_Bits <= 32, _Uint32t, _ULonglong>::type _Ty;
 
 
-	typedef bool element_type;	// retained
-
 		// CLASS reference
 	class reference
 		{	// proxy for an element
@@ -78,16 +76,6 @@ public:
 		bitset<_Bits> *_Pbitset;	// pointer to the bitset
 		size_t _Mypos;	// position of element in bitset
 		};
-
-	bool at(size_t _Pos) const	// retained
-		{	// subscript nonmutable sequence with checking
-		return (test(_Pos));
-		}
-
-	reference at(size_t _Pos)	// retained
-		{	// subscript mutable sequence with checking
-		return (reference(*this, _Pos));
-		}
 
 	bool operator[](size_t _Pos) const
 		{	// subscript nonmutable sequence

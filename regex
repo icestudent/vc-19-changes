@@ -1685,7 +1685,8 @@ public:
 	};
 
 	// TEMPLATE CLASS _Node_class
-template<class _Elem, class _RxTraits>
+template<class _Elem,
+	class _RxTraits>
 	class _Node_class
 		: public _Node_base
 	{	// node that holds a character class (POSIX bracket expression)
@@ -1987,13 +1988,15 @@ public:
 					}
 				}
 			_Matches->_Org = _Begin;
-			_Matches->_Pfx().matched = true;
 			_Matches->_Pfx().first = _Begin;
 			_Matches->_Pfx().second = _Matches->_At(0).first;
+			_Matches->_Pfx().matched =
+				_Matches->_Pfx().first != _Matches->_Pfx().second;
 
-			_Matches->_Sfx().matched = true;
 			_Matches->_Sfx().first = _Matches->_At(0).second;
 			_Matches->_Sfx().second = _End;
+			_Matches->_Sfx().matched =
+				_Matches->_Sfx().first != _Matches->_Sfx().second;
 
 			_Matches->_Null().first = _End;
 			_Matches->_Null().second = _End;
@@ -2151,13 +2154,13 @@ class _Regex_base
 public:
  #if 0 < _ITERATOR_DEBUG_LEVEL
 	_Regex_base()
-		{ // construct proxy
+		{	// construct proxy
 		this->_Myproxy = new _Container_proxy;
 		this->_Myproxy->_Mycont = this;
 		}
 
 	~_Regex_base() _NOEXCEPT
-		{ // destroy proxy
+		{	// destroy proxy
 		this->_Orphan_all();
 		delete this->_Myproxy;
 		this->_Myproxy = 0;
@@ -2773,6 +2776,8 @@ template<class _BidIt,
 		{	// update _Matches
 		_Matches->_Org = _Org;
 		_Matches->_Pfx().first = _Begin;
+		_Matches->_Pfx().matched =
+			_Matches->_Pfx().first != _Matches->_Pfx().second;
 		}
 	return (_Found);
 	}

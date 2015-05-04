@@ -249,7 +249,7 @@ public:
 
         // dummy default constructor - never used but for suppress warning
         _Node();
-        
+
         _Nodeptr         _M_next;      // Next element in the list
         value_type       _M_element;   // Element storage
         _Split_order_key _M_order_key; // Order key for this element

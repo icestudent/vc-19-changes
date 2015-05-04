@@ -77,7 +77,8 @@ template<class _Ty1,
 	};
 
 	// TEMPLATE CLASS is_same
-template<class _Ty1, class _Ty2>
+template<class _Ty1,
+	class _Ty2>
 	struct is_same
 		: false_type
 	{	// determine whether _Ty1 and _Ty2 are the same type
@@ -341,18 +342,6 @@ template<class _Ty>
 	typedef decltype(_Fn<_Ty>(0)) _Decltype; \
 	typedef typename _Decltype::type type; \
 	}
-
-		// TEMPLATE STRUCT _Param_tester
-
-template<class...>
-	struct _Param_tester
-	{	// test if parameters are valid
-	typedef void type;
-	};
-
-	// ALIAS TEMPLATE void_t
-template<class... _Types>	// TRANSITION, needs CWG 1558
-	using void_t = typename _Param_tester<_Types...>::type;
 _STD_END
  #pragma pop_macro("new")
  #pragma warning(pop)

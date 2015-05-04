@@ -691,12 +691,15 @@ namespace details
         };
 
         /// <summary>
-        ///     Yields its time slice using the specified yieldFunciton
+        ///     Yields its time slice using the specified yieldFunction
         /// </summary>
         /**/
         void _DoYield()
         {
+#pragma warning ( push )
+#pragma warning ( disable : 6326 )  // potential comparison of a constant with another constant
             bool _ShouldYield = (_YieldCount != 0);
+#pragma warning ( pop )
             if (_ShouldYield)
             {
                 _CONCRT_ASSERT(_M_yieldFunction != NULL);
@@ -1952,7 +1955,7 @@ public:
         _SchedulingNode, // _M_id is the unique identifier for the scheduling node
 
         /// <summary>
-        ///     Indicates that the location represents a paritcular execution resource.
+        ///     Indicates that the location represents a particular execution resource.
         /// </summary>
         _ExecutionResource, // _M_id is the unique identifier for the execution resource
     };
@@ -4506,7 +4509,7 @@ namespace details
         _StructuredTaskCollection(const _StructuredTaskCollection&) = delete;
         _StructuredTaskCollection& operator=(const _StructuredTaskCollection&) = delete;
         /// <summary>
-        ///     Construct a new structured task collection whose cancellation is goverened by the supplied cancellation token.
+        ///     Construct a new structured task collection whose cancellation is governed by the supplied cancellation token.
         /// </summary>
         /// <param name="_PTokenState">
         ///     When this cancellation token is canceled, the structured task group will be canceled.
@@ -4857,7 +4860,7 @@ namespace details
         void _ReleaseAlias();
 
         /// <summary>
-        ///     Constructs an alias collection based on a specifed origin collection
+        ///     Constructs an alias collection based on a specified origin collection
         /// </summary>
         /// <param name="_POriginCollection">
         ///     Specifies which collection the newly constructed one will alias
@@ -5207,7 +5210,7 @@ namespace details
         /// </returns>
         _TaskCollectionStatus _ScheduleWithAutoInline(_UnrealizedChore * _PChore, _TaskInliningMode _InliningMode)
         {
-            _CONCRT_ASSERT(_PChore);
+            _CONCRT_ASSERT(_PChore != nullptr);
             _Reference();
 
             if (_InliningMode == _NoInline)
@@ -5277,7 +5280,7 @@ namespace details
     };
 
     /// <summary>
-    ///     Internal maintainence structure for beacons.
+    ///     Internal maintenance structure for beacons.
     /// </summary>
     struct _Beacon_reference
     {
@@ -5376,7 +5379,7 @@ namespace details
     struct _CONCRT_TRACE_INFO
     {
         volatile unsigned long EnableFlags;    // Determines which class of events to log
-        volatile unsigned char EnableLevel;    // Determines the serverity of events to log
+        volatile unsigned char EnableLevel;    // Determines the severity of events to log
 
         void _EnableTrace(unsigned char level, unsigned long flags)
         {

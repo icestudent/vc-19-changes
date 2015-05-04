@@ -31,12 +31,14 @@ _EXTERN_C
   #define _STDCALL	__stdcall
  #endif /* defined(_X86_EMUL) etc. */
 
+typedef unsigned int _Thrd_id_t;
 typedef struct
 	{	/* thread identifier for Win32 */
 	void *_Hnd;	/* Win32 HANDLE */
-	unsigned int _Id;
+	_Thrd_id_t _Id;
 	} _Thrd_imp_t;
 
+#define _Thr_val(thr) thr._Id
 #define _Thr_set_null(thr) (thr._Hnd = 0, thr._Id = 0)
 #define _Thr_is_null(thr) (thr._Id == 0)
 
@@ -73,9 +75,6 @@ typedef struct _Mtx_internal_imp_t *_Mtx_imp_t;
 
 typedef struct _Cnd_internal_imp_t *_Cnd_imp_t;
 typedef int _Tss_imp_t;
-
-typedef char _Once_flag_imp_t;
-  #define _ONCE_FLAG_INIT_IMP	0
 
 	/* internal */
 _CRTIMP2_PURE void __cdecl _Thrd_abort(const char *);

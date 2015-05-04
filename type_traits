@@ -133,7 +133,6 @@ template<class _Ret, \
 _CLASS_DEFINE_CV_REF(_IS_MEMFUNPTR_ELLIPSIS)
 #undef _IS_MEMFUNPTR_ELLIPSIS
 
-
 	// Type modifiers
 	// TEMPLATE CLASS add_const
 template<class _Ty>
@@ -339,7 +338,8 @@ template<class _Ty,
 	{	// determine whether _Ty is a pointer to member object
 	};
 
-template<class _Ty1, class _Ty2>
+template<class _Ty1,
+	class _Ty2>
 	struct _Is_member_object_pointer<_Ty1 _Ty2::*, false>
 		: true_type
 	{	// determine whether _Ty is a pointer to member object
@@ -419,7 +419,8 @@ template<class _Ty>
 
 	// TEMPLATE CLASS is_convertible
 
-template<class _From, class _To>
+template<class _From,
+	class _To>
 	struct is_convertible
 		_IS_CONVERTIBLE(_From, _To)
 	{	// determine whether _From is convertible to _To
@@ -574,14 +575,12 @@ template<class _Ty>
 		// CONSTRUCTIBLE/ASSIGNABLE TRAITS
 	// TEMPLATE CLASS is_constructible
 
-
 template<class _Ty,
 	class... _Args>
 	struct is_constructible
 		: _Cat_base<_IS_CONSTRUCTIBLE(_Ty, _Args...)>
 	{	// determine whether _Ty(_Args...) is constructible
 	};
-
 
 	// TEMPLATE CLASS is_copy_constructible
 template<class _Ty>
@@ -672,14 +671,12 @@ template<class _Ty>
 		// TRIVIAL TRAITS
 	// TEMPLATE CLASS is_trivially_constructible
 
-
 template<class _Ty,
 	class... _Args>
 	struct is_trivially_constructible
 		: _Cat_base<_IS_TRIVIALLY_CONSTRUCTIBLE(_Ty, _Args...)>
 	{	// determine whether _Ty(_Args...) is trivially constructible
 	};
-
 
 	// TEMPLATE CLASS is_trivially_copy_constructible
 template<class _Ty>
@@ -758,14 +755,12 @@ template<class _Ty>
 		// NOTHROW TRAITS
 	// TEMPLATE CLASS is_nothrow_constructible
 
-
 template<class _Ty,
 	class... _Args>
 	struct is_nothrow_constructible
 		: _Cat_base<_IS_NOTHROW_CONSTRUCTIBLE(_Ty, _Args...)>
 	{	// determine whether _Ty(_Args...) is nothrow constructible
 	};
-
 
 	// TEMPLATE CLASS is_nothrow_copy_constructible
 template<class _Ty>
@@ -1018,7 +1013,6 @@ template<size_t _Len,
 #undef _NEXT_ALIGN
 
 	// TEMPLATE CLASS aligned_union
-
 template<size_t... _Vals>
 	struct _Maximum;
 
@@ -1052,7 +1046,6 @@ template<size_t _Len,
 		alignment_of<_Types>::value...>::value;
 	typedef typename aligned_storage<_Max_len, alignment_value>::type type;
 	};
-
 
 	// TEMPLATE CLASS underlying_type
 template<class _Ty>
@@ -1112,7 +1105,8 @@ template<class _Ty, unsigned int _Nx = 0>
 	};
 
 	// TEMPLATE CLASS is_base_of
-template<class _Base, class _Der>
+template<class _Base,
+	class _Der>
 	struct is_base_of _IS_BASE_OF(_Base, _Der)
 	{	// determine whether _Base is a base of or the same as _Der
 	};
@@ -1187,7 +1181,6 @@ using _STD true_type;
 	}	// namespace tr1
 
 		// TEMPLATE STRUCT common_type
-
 template<class... _Ty>
 	struct common_type;
 
@@ -1217,7 +1210,6 @@ template<class _Ty0,
 		typename common_type<_Ty0, _Ty1>::type, _Ty...
 	>::type type;
 	};
-
 
 	// TEMPLATE STRUCT integer_sequence
 template<class _Ty,
@@ -1296,13 +1288,15 @@ template<class _Ty>
 
 	// TEMPLATE FUNCTION forward
 template<class _Ty> inline
-	_Ty&& forward(typename remove_reference<_Ty>::type& _Arg) _NOEXCEPT
+	_Ty&& forward(
+		typename remove_reference<_Ty>::type& _Arg) _NOEXCEPT
 	{	// forward an lvalue as either an lvalue or an rvalue
 	return (static_cast<_Ty&&>(_Arg));
 	}
 
 template<class _Ty> inline
-	_Ty&& forward(typename remove_reference<_Ty>::type&& _Arg) _NOEXCEPT
+	_Ty&& forward(
+		typename remove_reference<_Ty>::type&& _Arg) _NOEXCEPT
 	{	// forward an rvalue as an rvalue
 	static_assert(!is_lvalue_reference<_Ty>::value, "bad forward call");
 	return (static_cast<_Ty&&>(_Arg));
@@ -1330,7 +1324,7 @@ template<class _Ty> inline
 		&& is_copy_constructible<_Ty>::value,
 			const _Ty&, _Ty&&>::type
 	move_if_noexcept(_Ty& _Arg) _NOEXCEPT
-	{	// forward _Arg if moveable
+	{	// forward _Arg as movable, sometimes
 	return (_STD move(_Arg));
 	}
 
@@ -1341,6 +1335,16 @@ template<class _Ty> inline
 	return (_STD forward<_Ty>(_Arg));
 	}
 
+	// TEMPLATE STRUCT _Param_tester
+template<class...>
+	struct _Param_tester
+	{	// test if parameters are valid
+	typedef void type;
+	};
+
+	// ALIAS TEMPLATE void_t
+template<class... _Types>	// TRANSITION, needs CWG 1558
+	using void_t = typename _Param_tester<_Types...>::type;
 
 	// TEMPLATE FUNCTION invoke
 struct _Invoker_pmf_object
@@ -1371,7 +1375,6 @@ struct _Invoker_pmf_pointer
 		}
 	};
 
-
 struct _Invoker_pmd_object
 	{	// INVOKE a pointer to member data on an object
 	template<class _Decayed,
@@ -1394,7 +1397,6 @@ struct _Invoker_pmd_pointer
 		}
 	};
 
-
 struct _Invoker_functor
 	{	// INVOKE a function object
 	template<class _Callable,
@@ -1407,7 +1409,6 @@ struct _Invoker_functor
 			_STD forward<_Types>(_Args)...));
 		}
 	};
-
 
 template<class _Callable,
 	class _Ty1,
@@ -1448,7 +1449,6 @@ template<class _Callable,
 	{	// function object
 	};
 
-
 template<class _Callable,
 	class... _Types>
 	struct _Invoker;
@@ -1467,7 +1467,6 @@ template<class _Callable,
 	{	// one or more arguments
 	};
 
-
 template<class _Callable,
 	class... _Types> inline
 	auto invoke(_Callable&& _Obj, _Types&&... _Args)
@@ -1477,7 +1476,6 @@ template<class _Callable,
 	return (_Invoker<_Callable, _Types...>::_Call(
 		_STD forward<_Callable>(_Obj), _STD forward<_Types>(_Args)...));
 	}
-
 
 template<class _Rx>
 	struct _Forced
@@ -1508,7 +1506,6 @@ template<class... _Valtys> inline
 	return (_STD invoke(_STD forward<_Valtys>(_Vals)...));
 	}
 
-
 	// TEMPLATE CLASS result_of
 template<class _Fty>
 	struct result_of
@@ -1529,7 +1526,6 @@ template<class _Fty, \
 
 _NON_MEMBER_CALL(_RESULT_OF)
 #undef _RESULT_OF
-
 
 	// TEMPLATE STRUCT _Weak_types
 template<class _Ty,
@@ -1586,7 +1582,6 @@ template<class _Ty>
 		typename _If<_Is_pmf::_Bool_type::value, _Is_pmf,
 		_Weak_binary_args<_Ty> >::type>::type type;
 	};
-
 
 	// TEMPLATE CLASS reference_wrapper
 template<class _Ty>
@@ -1663,7 +1658,6 @@ template<class _Ty> inline
 	return (_STD cref(_Val.get()));
 	}
 
-
 	// TEMPLATE CLASS _Unrefwrap
 template<class _Ty>
 	struct _Unrefwrap_helper
@@ -1686,7 +1680,6 @@ template<class _Ty>
 	typedef typename _Unrefwrap_helper<_Ty1>::type type;
 	static const bool _Is_refwrap = _Unrefwrap_helper<_Ty1>::_Is_refwrap;
 	};
-
 
 namespace tr1 {	// TR1 additions
 using _STD cref;

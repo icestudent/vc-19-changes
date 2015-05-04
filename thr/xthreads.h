@@ -23,7 +23,6 @@ enum {	/* return codes */
 
 	/* threads */
 typedef _Thrd_imp_t _Thrd_t;
-typedef unsigned int _Thrd_id_t;
 typedef int (*_Thrd_start_t)(void *);
 
 _CRTIMP2_PURE int __cdecl _Thrd_create(_Thrd_t *, _Thrd_start_t, void *);
@@ -95,19 +94,6 @@ _CRTIMP2_PURE void *__cdecl _Tss_get(_Tss_t);
   #define _Tss_set(key, value)		_TSS_SET(key, value)
   #define _Tss_get(key)				_TSS_GET(key)
  #endif	/* TSS_USE_MACROS */
-
-	/* once functions */
-#define _ONCE_FLAG_INIT		_ONCE_FLAG_INIT_IMP
-#define _ONCE_FLAG_CPP_INIT	0
-
-typedef _Once_flag_imp_t _Once_flag;
-typedef int _Once_flag_cpp;
-typedef void (__cdecl *_Once_callback_t)(void);
-typedef void (__cdecl *_Once_callbackEx_t)(void *);
-
-_CRTIMP2_PURE void __cdecl _Call_once(_Once_flag *, _Once_callback_t);
-_CRTIMP2_PURE void __cdecl _Call_onceEx(_Once_flag_cpp *, _Once_callbackEx_t,
-	void *);
 
 	/* utility functions */
 _CRTIMP2_PURE void __cdecl _Thrd_abort(const char *);

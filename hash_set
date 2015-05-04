@@ -48,6 +48,8 @@ public:
 		{	// make multi parameter visible as an enum constant
 		_Multi = _Mfl};
 
+	static const bool _Standard = false;
+
 	_Hset_traits(const _Tr& _Traits = _Tr())
 		: _Tr(_Traits), _Max_buckets(0.0F)
 		{	// construct with specified comparator

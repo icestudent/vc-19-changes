@@ -63,6 +63,8 @@ public:
 		const_reverse_iterator;
 	typedef typename _Mybase::value_type value_type;
 
+	typedef typename _Mybase::_Alty _Alty;
+
 	set()
 		: _Mybase(key_compare(), allocator_type())
 		{	// construct empty set from defaults
@@ -137,6 +139,8 @@ public:
 		}
 
 	_Myt& operator=(_Myt&& _Right)
+		_NOEXCEPT_OP(_Alty::is_always_equal::value
+			&& is_nothrow_move_assignable<_Pr>::value)
 		{	// assign by moving _Right
 		_Mybase::operator=(_STD move(_Right));
 		return (*this);
@@ -153,6 +157,9 @@ public:
 		}
 
 	void swap(_Myt& _Right)
+		_NOEXCEPT_OP(_Alty::is_always_equal::value
+			&& _NOEXCEPT_OP(_Swap_adl(_STD declval<_Pr&>(),
+				_STD declval<_Pr&>())))
 		{	// exchange contents with non-movable _Right
 		_Mybase::swap(_Right);
 		}
@@ -214,6 +221,7 @@ template<class _Kty,
 	class _Alloc> inline
 	void swap(set<_Kty, _Pr, _Alloc>& _Left,
 		set<_Kty, _Pr, _Alloc>& _Right)
+		_NOEXCEPT_OP(_NOEXCEPT_OP(_Left.swap(_Right)))
 	{	// swap _Left and _Right sets
 	_Left.swap(_Right);
 	}
@@ -244,6 +252,8 @@ public:
 	typedef typename _Mybase::const_reverse_iterator
 		const_reverse_iterator;
 	typedef typename _Mybase::value_type value_type;
+
+	typedef typename _Mybase::_Alty _Alty;
 
 	multiset()
 		: _Mybase(key_compare(), allocator_type())
@@ -319,6 +329,8 @@ public:
 		}
 
 	_Myt& operator=(_Myt&& _Right)
+		_NOEXCEPT_OP(_Alty::is_always_equal::value
+			&& is_nothrow_move_assignable<_Pr>::value)
 		{	// assign by moving _Right
 		_Mybase::operator=(_STD move(_Right));
 		return (*this);
@@ -342,6 +354,9 @@ public:
 
 
 	void swap(_Myt& _Right)
+		_NOEXCEPT_OP(_Alty::is_always_equal::value
+			&& _NOEXCEPT_OP(_Swap_adl(_STD declval<_Pr&>(),
+				_STD declval<_Pr&>())))
 		{	// exchange contents with non-movable _Right
 		_Mybase::swap(_Right);
 		}
@@ -403,6 +418,7 @@ template<class _Kty,
 	class _Alloc> inline
 	void swap(multiset<_Kty, _Pr, _Alloc>& _Left,
 		multiset<_Kty, _Pr, _Alloc>& _Right)
+		_NOEXCEPT_OP(_NOEXCEPT_OP(_Left.swap(_Right)))
 	{	// swap _Left and _Right multisets
 	_Left.swap(_Right);
 	}

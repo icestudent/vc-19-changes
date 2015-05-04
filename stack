@@ -151,7 +151,7 @@ public:
 		}
 
 	void swap(_Myt& _Right)
-		_NOEXCEPT_OP(_NOEXCEPT_OP(_Swap_adl(c, _Right.c)))
+		_NOEXCEPT_OP(_NOEXCEPT_OP(_Swap_adl(this->c, _Right.c)))
 		{	// exchange contents with _Right
 		_Swap_adl(c, _Right.c);
 		}

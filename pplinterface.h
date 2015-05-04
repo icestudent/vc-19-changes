@@ -18,19 +18,8 @@
 #ifndef _PPLINTERFACE_H
 #define _PPLINTERFACE_H
 
-#if defined(_CRTBLD)
-#elif defined(_MS_WINDOWS)
-#if (_MSC_VER >= 1700)
-#define _USE_REAL_ATOMICS
-#endif
-#else // GCC compiler
-#define _USE_REAL_ATOMICS
-#endif
-
 #include <memory>
-#ifdef _USE_REAL_ATOMICS
 #include <atomic>
-#endif
 
 namespace Concurrency
 {
@@ -181,17 +170,17 @@ public:
     ///     A descriptive message of the error.
     /// </param>
     /**/
-    explicit task_canceled(_In_z_ const char * _Message) throw() 
-		: exception(_Message) 
-	{}
+    explicit task_canceled(_In_z_ const char * _Message) throw()
+        : exception(_Message)
+    {}
 
     /// <summary>
     ///     Constructs a <c>task_canceled</c> object.
     /// </summary>
     /**/
     task_canceled() throw()
-		: exception() 
-	{}
+        : exception()
+    {}
 };
 
 namespace details
@@ -205,13 +194,13 @@ namespace details
 class _Interruption_exception : public std::exception
 {
 public:
-	explicit _Interruption_exception(const char * _Message) throw()
-		: exception(_Message) 
-	{}
+    explicit _Interruption_exception(const char * _Message) throw()
+        : exception(_Message)
+    {}
 
-	_Interruption_exception() throw()
-		: exception() 
-	{}
+    _Interruption_exception() throw()
+        : exception()
+    {}
 };
 
 /// <summary>
@@ -221,7 +210,7 @@ public:
 /// </summary>
 /// <remarks>
 ///     As an optimization, we assigned an integer number to each option in the enum,
-///     which efectively stands for the maximal inlining depth (threshold) for current chore,
+///     which effectively stands for the maximal inlining depth (threshold) for current chore,
 ///     and the scheduler will compare this threshold with current context's inlining depth to
 ///     make inline decision.
 ///     If the current context's inlining depth greater than this threshold,
@@ -231,18 +220,17 @@ public:
 /// </remarks>
 enum _TaskInliningMode
 {
-	// Disable inline scheduling
-	_NoInline = 0,
-	// Let runtime decide whether to do inline scheduling or not
-	_DefaultAutoInline = 16,
-	// Always do inline scheduling
-	_ForceInline = -1,
+    // Disable inline scheduling
+    _NoInline = 0,
+    // Let runtime decide whether to do inline scheduling or not
+    _DefaultAutoInline = 16,
+    // Always do inline scheduling
+    _ForceInline = -1,
 };
 
 /// <summary>
 ///     Atomics
 /// </summary>
-#ifdef _USE_REAL_ATOMICS
 typedef std::atomic<long> atomic_long;
 typedef std::atomic<size_t> atomic_size_t;
 
@@ -277,67 +265,6 @@ _T atomic_add(std::atomic<_T>& _Target, _T value)
 {
     return _Target.fetch_add(value) + value;
 }
-
-#else // not _USE_REAL_ATOMICS
-
-typedef long volatile atomic_long;
-typedef size_t volatile atomic_size_t;
-
-template<class T>
-inline T atomic_exchange(T volatile& _Target, T _Value)
-{
-    return _InterlockedExchange(&_Target, _Value);
-}
-
-inline long atomic_increment(long volatile & _Target)
-{
-    return _InterlockedIncrement(&_Target);
-}
-
-inline long atomic_add(long volatile & _Target, long value)
-{
-    return _InterlockedExchangeAdd(&_Target, value) + value;
-}
-
-inline size_t atomic_increment(size_t volatile & _Target)
-{
-#if (defined(_M_IX86) || defined(_M_ARM))
-    return static_cast<size_t>(_InterlockedIncrement(reinterpret_cast<long volatile *>(&_Target)));
-#else
-    return static_cast<size_t>(_InterlockedIncrement64(reinterpret_cast<__int64 volatile *>(&_Target)));
-#endif
-}
-
-inline long atomic_decrement(long volatile & _Target)
-{
-    return _InterlockedDecrement(&_Target);
-}
-
-inline size_t atomic_decrement(size_t volatile & _Target)
-{
-#if (defined(_M_IX86) || defined(_M_ARM))
-    return static_cast<size_t>(_InterlockedDecrement(reinterpret_cast<long volatile *>(&_Target)));
-#else
-    return static_cast<size_t>(_InterlockedDecrement64(reinterpret_cast<__int64 volatile *>(&_Target)));
-#endif
-}
-
-inline long atomic_compare_exchange(long volatile & _Target, long _Exchange, long _Comparand)
-{
-    return _InterlockedCompareExchange(&_Target, _Exchange, _Comparand);
-}
-
-inline size_t atomic_compare_exchange(size_t volatile & _Target, size_t _Exchange, size_t _Comparand)
-{
-#if (defined(_M_IX86) || defined(_M_ARM))
-    return static_cast<size_t>(_InterlockedCompareExchange(reinterpret_cast<long volatile *>(_Target), static_cast<long>(_Exchange), static_cast<long>(_Comparand)));
-#else
-    return static_cast<size_t>(_InterlockedCompareExchange64(reinterpret_cast<__int64 volatile *>(_Target), static_cast<__int64>(_Exchange), static_cast<__int64>(_Comparand)));
-#endif
-}
-#endif // _USE_REAL_ATOMICS
-
-
 
 }} // namespace Concurrency::details
 

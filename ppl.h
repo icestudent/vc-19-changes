@@ -1837,7 +1837,7 @@ public:
     // Steal the entire range and give it to the helper
     void _Steal_range(_Range<_Index_type>  * _Helper_range)
     {
-        // We allow stealing only from a range that has atleast 1 iteration
+        // We allow stealing only from a range that has at least 1 iteration
         _CONCRT_ASSERT(_Number_of_iterations() > 0);
 
         _Index_type _Current_iter = _M_current_iteration;
@@ -2485,9 +2485,9 @@ void _Parallel_for_impl(_Index_type _First, _Index_type _Last, _Index_type _Step
     }
 
     // Compute the difference type based on the arguments and avoid signed overflow for int, long, and long long
-    typedef typename std::tr1::conditional<std::tr1::is_same<_Index_type, int>::value, unsigned int,
-        typename std::tr1::conditional<std::tr1::is_same<_Index_type, long>::value, unsigned long,
-            typename std::tr1::conditional<std::tr1::is_same<_Index_type, long long>::value, unsigned long long, decltype(_Last - _First)
+    typedef typename std::conditional<std::is_same<_Index_type, int>::value, unsigned int,
+        typename std::conditional<std::is_same<_Index_type, long>::value, unsigned long,
+            typename std::conditional<std::is_same<_Index_type, long long>::value, unsigned long long, decltype(_Last - _First)
             >::type
         >::type
     >::type _Diff_type;
@@ -3175,8 +3175,8 @@ inline _Reduce_type parallel_reduce(_Forward_iterator _Begin, _Forward_iterator 
 {
     typedef typename std::iterator_traits<_Forward_iterator>::value_type _Value_type;
 
-    static_assert(!std::tr1::is_same<typename std::iterator_traits<_Forward_iterator>::iterator_category, std::input_iterator_tag>::value
-        && !std::tr1::is_same<typename std::iterator_traits<_Forward_iterator>::iterator_category, std::output_iterator_tag>::value,
+    static_assert(!std::is_same<typename std::iterator_traits<_Forward_iterator>::iterator_category, std::input_iterator_tag>::value
+        && !std::is_same<typename std::iterator_traits<_Forward_iterator>::iterator_category, std::output_iterator_tag>::value,
         "iterator can not be input_iterator or output_iterator.");
 
     return _Parallel_reduce_impl(_Begin, _End,
@@ -4523,7 +4523,7 @@ private:
 private:
     _Node *volatile * _M_buckets;
     size_t _M_size;
-    std::tr1::function<_Ty ()> _M_fnInitialize;
+    std::function<_Ty ()> _M_fnInitialize;
 };
 
 #pragma warning(pop) // C4316
@@ -5257,7 +5257,7 @@ private:
 ///     A random-access iterator addressing the position one past the final element in the range to be sorted.
 /// </param>
 /// <remarks>
-///     The first overload uses the the binary comparator <c>std::less</c>.
+///     The first overload uses the binary comparator <c>std::less</c>.
 ///     <para>The second overloaded uses the supplied binary comparator that should have the signature <c>bool _Func(T, T)</c> where <c>T</c>
 ///     is the type of the elements in the input range.</para>
 ///     <para>The algorithm divides the input range into two chunks and successively divides each chunk into two sub-chunks for execution in parallel. The optional
@@ -5293,10 +5293,10 @@ inline void parallel_sort(const _Random_iterator &_Begin, const _Random_iterator
 ///     must impose a strict weak ordering on pairs of elements from the sequence.
 /// </param>
 /// <param name="_Chunk_size">
-///     The mimimum size of a chunk that will be split into two for parallel execution.
+///     The minimum size of a chunk that will be split into two for parallel execution.
 /// </param>
 /// <remarks>
-///     The first overload uses the the binary comparator <c>std::less</c>.
+///     The first overload uses the binary comparator <c>std::less</c>.
 ///     <para>The second overloaded uses the supplied binary comparator that should have the signature <c>bool _Func(T, T)</c> where <c>T</c>
 ///     is the type of the elements in the input range.</para>
 ///     <para>The algorithm divides the input range into two chunks and successively divides each chunk into two sub-chunks for execution in parallel. The optional
@@ -5453,7 +5453,7 @@ inline void parallel_buffered_sort(const _Allocator& _Alloc, const _Random_itera
 ///     must impose a strict weak ordering on pairs of elements from the sequence.
 /// </param>
 /// <param name="_Chunk_size">
-///     The mimimum size of a chunk that will be split into two for parallel execution.
+///     The minimum size of a chunk that will be split into two for parallel execution.
 /// </param>
 /// <remarks>
 ///     All overloads require <c>n * sizeof(T)</c> additional space, where <c>n</c> is the number of elements to be sorted, and <c>T</c> is the element type.
@@ -5499,7 +5499,7 @@ inline void parallel_buffered_sort(const _Random_iterator &_Begin, const _Random
 ///     must impose a strict weak ordering on pairs of elements from the sequence.
 /// </param>
 /// <param name="_Chunk_size">
-///     The mimimum size of a chunk that will be split into two for parallel execution.
+///     The minimum size of a chunk that will be split into two for parallel execution.
 /// </param>
 /// <remarks>
 ///     All overloads require <c>n * sizeof(T)</c> additional space, where <c>n</c> is the number of elements to be sorted, and <c>T</c> is the element type.
@@ -5549,7 +5549,7 @@ inline void parallel_buffered_sort(const _Random_iterator &_Begin, const _Random
 ///     must impose a strict weak ordering on pairs of elements from the sequence.
 /// </param>
 /// <param name="_Chunk_size">
-///     The mimimum size of a chunk that will be split into two for parallel execution.
+///     The minimum size of a chunk that will be split into two for parallel execution.
 /// </param>
 /// <remarks>
 ///     All overloads require <c>n * sizeof(T)</c> additional space, where <c>n</c> is the number of elements to be sorted, and <c>T</c> is the element type.
@@ -5791,7 +5791,7 @@ inline void parallel_radixsort(const _Allocator& _Alloc, const _Random_iterator 
 ///     A user-defined projection function object that converts an element into an integral value.
 /// </param>
 /// <param name="_Chunk_size">
-///     The mimimum size of a chunk that will be split into two for parallel execution.
+///     The minimum size of a chunk that will be split into two for parallel execution.
 /// </param>
 /// <remarks>
 ///     All overloads require <c>n * sizeof(T)</c> additional space, where <c>n</c> is the number of elements to be sorted, and <c>T</c> is the element type.
@@ -5835,7 +5835,7 @@ inline void parallel_radixsort(const _Random_iterator &_Begin, const _Random_ite
 ///     A user-defined projection function object that converts an element into an integral value.
 /// </param>
 /// <param name="_Chunk_size">
-///     The mimimum size of a chunk that will be split into two for parallel execution.
+///     The minimum size of a chunk that will be split into two for parallel execution.
 /// </param>
 /// <remarks>
 ///     All overloads require <c>n * sizeof(T)</c> additional space, where <c>n</c> is the number of elements to be sorted, and <c>T</c> is the element type.
@@ -5882,7 +5882,7 @@ inline void parallel_radixsort(const _Random_iterator &_Begin, const _Random_ite
 ///     A user-defined projection function object that converts an element into an integral value.
 /// </param>
 /// <param name="_Chunk_size">
-///     The mimimum size of a chunk that will be split into two for parallel execution.
+///     The minimum size of a chunk that will be split into two for parallel execution.
 /// </param>
 /// <remarks>
 ///     All overloads require <c>n * sizeof(T)</c> additional space, where <c>n</c> is the number of elements to be sorted, and <c>T</c> is the element type.

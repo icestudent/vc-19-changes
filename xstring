@@ -388,7 +388,7 @@ public:
 
 	difference_type operator-(const _Mybase& _Right) const
 		{	// return difference of iterators
-		return ((_Mybase)*this - _Right);
+		return (*(_Mybase *)this - _Right);
 		}
 
 	reference operator[](difference_type _Off) const
@@ -465,7 +465,6 @@ template<class _Ty,
 	};
 
 		// TEMPLATE CLASS _String_val
-
 template<class _Val_types>
 	class _String_val
 		: public _Container_base
@@ -573,14 +572,19 @@ public:
 		{	// construct allocator from _Al
 		}
 
-	void _Change_alloc(const _Alty& _Al)
+	void _Copy_alloc(const _Alty& _Al)
 		{	// replace old allocator
-		_Getal() = _Al;
+		_Pocca(_Getal(), _Al);
+		}
+
+	void _Move_alloc(_Alty& _Al)
+		{	// replace old allocator
+		_Pocma(_Getal(), _Al);
 		}
 
 	void _Swap_alloc(_Myt& _Right)
 		{	// swap allocators
-		_Swap_adl(_Getal(), _Right._Getal());
+		_Pocs(_Getal(), _Right._Getal());
 		}
 
  #else /* _ITERATOR_DEBUG_LEVEL == 0 */
@@ -595,16 +599,23 @@ public:
 		_Free_proxy();
 		}
 
-	void _Change_alloc(const _Alty& _Al)
+	void _Copy_alloc(const _Alty& _Al)
 		{	// replace old allocator
 		_Free_proxy();
-		_Getal() = _Al;
+		_Pocca(_Getal(), _Al);
+		_Alloc_proxy();
+		}
+
+	void _Move_alloc(_Alty& _Al)
+		{	// replace old allocator
+		_Free_proxy();
+		_Pocma(_Getal(), _Al);
 		_Alloc_proxy();
 		}
 
 	void _Swap_alloc(_Myt& _Right)
 		{	// swap allocators
-		_Swap_adl(_Getal(), _Right._Getal());
+		_Pocs(_Getal(), _Right._Getal());
 		_Swap_adl(_Myproxy(), _Right._Myproxy());
 		}
 
@@ -719,7 +730,6 @@ template<class _Elem,
 public:
 	typedef basic_string<_Elem, _Traits, _Alloc> _Myt;
 	typedef _String_alloc<_String_base_types<_Elem, _Alloc> > _Mybase;
-
 	typedef _Traits traits_type;
 	typedef _Alloc allocator_type;
 
@@ -756,13 +766,13 @@ public:
 		assign(_Right, 0, npos);
 		}
 
-	basic_string()
+	basic_string() _NOEXCEPT
 		: _Mybase()
 		{	// construct empty string
 		_Tidy();
 		}
 
-	explicit basic_string(const _Alloc& _Al)
+	explicit basic_string(const _Alloc& _Al) _NOEXCEPT
 		: _Mybase(_Al)
 		{	// construct empty string with allocator
 		_Tidy();
@@ -890,7 +900,9 @@ public:
 			_Assign_rv(_STD forward<_Myt>(_Right));
 		}
 
-	_Myt& operator=(_Myt&& _Right) _NOEXCEPT
+	_Myt& operator=(_Myt&& _Right)
+		_NOEXCEPT_OP(_Alty::propagate_on_container_move_assignment::value
+			|| _Alty::is_always_equal::value)
 		{	// assign by moving _Right
 		if (this != &_Right)
 			{	// different, assign it
@@ -898,7 +910,7 @@ public:
 
 			if (_Alty::propagate_on_container_move_assignment::value
 				&& this->_Getal() != _Right._Getal())
-				this->_Change_alloc(_Right._Getal());
+				this->_Move_alloc(_Right._Getal());
 
 			if (this->_Getal() != _Right._Getal())
 				assign(_Right.begin(), _Right.end());
@@ -993,7 +1005,7 @@ public:
 				&& _Alty::propagate_on_container_copy_assignment::value)
 				{	// change allocator before copying
 				_Tidy(true);
-				this->_Change_alloc(_Right._Getal());
+				this->_Copy_alloc(_Right._Getal());
 				}
 
 			assign(_Right);
@@ -1819,6 +1831,8 @@ public:
 		}
 
 	void swap(_Myt& _Right)
+		_NOEXCEPT_OP(_Alty::propagate_on_container_swap::value
+			|| _Alty::is_always_equal::value)
 		{	// exchange contents with _Right
 		if (this == &_Right)
 			;	// same object, do nothing
@@ -2243,6 +2257,7 @@ template<class _Elem,
 	class _Alloc> inline
 	void swap(basic_string<_Elem, _Traits, _Alloc>& _Left,
 		basic_string<_Elem, _Traits, _Alloc>& _Right)
+			_NOEXCEPT_OP(_NOEXCEPT_OP(_Left.swap(_Right)))
 	{	// swap _Left and _Right strings
 	_Left.swap(_Right);
 	}

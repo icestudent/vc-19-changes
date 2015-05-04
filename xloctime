@@ -411,7 +411,6 @@ protected:
 			_Pt->tm_year = _Ans;		// [69, 99] parsed as [1969, 1999]
 		else
 			_Pt->tm_year = _Ans - 1900;	// [100, 9999] parsed literally
-
 		return (_First);
 		}
 

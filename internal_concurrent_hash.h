@@ -105,7 +105,7 @@ public:
     typedef typename allocator_type::size_type size_type;
     typedef typename allocator_type::difference_type difference_type;
 
-    typedef typename std::tr1::conditional<std::tr1::is_same<key_type, value_type>::value, typename _Mylist::const_iterator, typename _Mylist::iterator>::type iterator;
+    typedef typename std::conditional<std::is_same<key_type, value_type>::value, typename _Mylist::const_iterator, typename _Mylist::iterator>::type iterator;
     typedef typename _Mylist::const_iterator const_iterator;
     typedef iterator local_iterator;
     typedef const_iterator const_local_iterator;
@@ -467,7 +467,7 @@ public:
     ///     The key value to search for.
     /// </param>
     /// <returns>
-    ///     An iterator pointing to the location of the the first element that matched the key provided,
+    ///     An iterator pointing to the location of the first element that matched the key provided,
     ///     or the iterator <c>end()</c> if no such element exists.
     /// </returns>
     /**/
@@ -483,7 +483,7 @@ public:
     ///     The key value to search for.
     /// </param>
     /// <returns>
-    ///     An iterator pointing to the location of the the first element that matched the key provided,
+    ///     An iterator pointing to the location of the first element that matched the key provided,
     ///     or the iterator <c>end()</c> if no such element exists.
     /// </returns>
     /**/

@@ -29,6 +29,8 @@ public:
 		{	// make multi parameter visible as an enum constant
 		_Multi = _Mfl};
 
+	static const bool _Standard = true;
+
 	_Uset_traits(const _Tr& _Traits = _Tr())
 		: _Tr(_Traits)
 		{	// construct with specified comparator
@@ -81,6 +83,8 @@ public:
 
 	typedef typename _Mybase::iterator local_iterator;
 	typedef typename _Mybase::const_iterator const_local_iterator;
+
+	typedef typename _Mybase::_Alty _Alty;
 
 	unordered_set()
 		: _Mybase(key_compare(), allocator_type())
@@ -194,6 +198,9 @@ public:
 		}
 
 	_Myt& operator=(_Myt&& _Right)
+		_NOEXCEPT_OP(_Alty::is_always_equal::value
+			&& is_nothrow_move_assignable<_Hasher>::value
+			&& is_nothrow_move_assignable<_Keyeq>::value)
 		{	// assign by moving _Right
 		_Mybase::operator=(_STD move(_Right));
 		return (*this);
@@ -210,6 +217,11 @@ public:
 		}
 
 	void swap(_Myt& _Right)
+		_NOEXCEPT_OP(_Alty::is_always_equal::value
+			&& _NOEXCEPT_OP(_Swap_adl(_STD declval<_Hasher&>(),
+				_STD declval<_Hasher&>()))
+			&& _NOEXCEPT_OP(_Swap_adl(_STD declval<_Keyeq&>(),
+				_STD declval<_Keyeq&>())))
 		{	// exchange contents with non-movable _Right
 		_Mybase::swap(_Right);
 		}
@@ -299,6 +311,7 @@ template<class _Kty,
 	class _Alloc>
 	void swap(unordered_set<_Kty, _Hasher, _Keyeq, _Alloc>& _Left,
 		unordered_set<_Kty, _Hasher, _Keyeq, _Alloc>& _Right)
+		_NOEXCEPT_OP(_NOEXCEPT_OP(_Left.swap(_Right)))
 	{	// swap _Left and _Right unordered_sets
 	_Left.swap(_Right);
 	}
@@ -355,6 +368,8 @@ public:
 	typedef typename _Mybase::iterator iterator;
 	typedef typename _Mybase::const_iterator const_iterator;
 	typedef typename _Mybase::value_type value_type;
+
+	typedef typename _Mybase::_Alty _Alty;
 
 	unordered_multiset()
 		: _Mybase(key_compare(), allocator_type())
@@ -468,6 +483,9 @@ public:
 		}
 
 	_Myt& operator=(_Myt&& _Right)
+		_NOEXCEPT_OP(_Alty::is_always_equal::value
+			&& is_nothrow_move_assignable<_Hasher>::value
+			&& is_nothrow_move_assignable<_Keyeq>::value)
 		{	// assign by moving _Right
 		_Mybase::operator=(_STD move(_Right));
 		return (*this);
@@ -491,6 +509,11 @@ public:
 
 
 	void swap(_Myt& _Right)
+		_NOEXCEPT_OP(_Alty::is_always_equal::value
+			&& _NOEXCEPT_OP(_Swap_adl(_STD declval<_Hasher&>(),
+				_STD declval<_Hasher&>()))
+			&& _NOEXCEPT_OP(_Swap_adl(_STD declval<_Keyeq&>(),
+				_STD declval<_Keyeq&>())))
 		{	// exchange contents with non-movable _Right
 		_Mybase::swap(_Right);
 		}
@@ -580,6 +603,7 @@ template<class _Kty,
 	class _Alloc>
 	void swap(unordered_multiset<_Kty, _Hasher, _Keyeq, _Alloc>& _Left,
 		unordered_multiset<_Kty, _Hasher, _Keyeq, _Alloc>& _Right)
+		_NOEXCEPT_OP(_NOEXCEPT_OP(_Left.swap(_Right)))
 	{	// swap _Left and _Right unordered_multisets
 	_Left.swap(_Right);
 	}

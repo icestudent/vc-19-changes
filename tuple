@@ -204,7 +204,8 @@ public:
 		{	// construct by copying same size tuple, allocator
 		}
 
-	explicit tuple(const _This& _This_arg, const _Rest&... _Rest_arg)
+	explicit tuple(const _This& _This_arg,
+		const _Rest&... _Rest_arg)
 		: _Mybase(_Rest_arg...),
 			_Myfirst(_This_arg)
 		{	// construct from one or more copied elements
@@ -440,7 +441,7 @@ public:
 
 	void swap(tuple& _Right)
 		_NOEXCEPT_OP(
-			_NOEXCEPT_OP(_Swap_adl(_Myfirst._Val, _Myfirst._Val))
+			_NOEXCEPT_OP(_Swap_adl(this->_Myfirst._Val, _Right._Myfirst._Val))
 			&& _NOEXCEPT_OP(_Swap_adl((_Mybase&)_Right, (_Mybase&)_Right)))
 		{	// swap *this and _Right
 		_Swap_adl(_Myfirst._Val, _Right._Myfirst._Val);
@@ -582,7 +583,7 @@ template<size_t _Index,
 
 template<size_t _Index,
 	class... _Types> inline
-	typename tuple_element<_Index, tuple<_Types...> >::type const&
+	const typename tuple_element<_Index, tuple<_Types...> >::type&
 		get(const tuple<_Types...>& _Tuple) _NOEXCEPT
 	{	// get const reference to _Index element of tuple
 	typedef typename tuple_element<_Index, tuple<_Types...> >::_Ttype
@@ -607,8 +608,7 @@ template<class _Ty,
 	class... _Types> inline
 	_Ty& get(tuple<_Types...>& _Tuple) _NOEXCEPT
 	{	// get reference to _Ty element of tuple
-	typedef typename _Tuple_element<_Ty, tuple<_Types...> >::_Ttype
-		_Ttype;
+	typedef typename _Tuple_element<_Ty, tuple<_Types...> >::_Ttype _Ttype;
 	return (((_Ttype&)_Tuple)._Myfirst._Val);
 	}
 
@@ -616,8 +616,7 @@ template<class _Ty,
 	class... _Types> inline
 	const _Ty& get(const tuple<_Types...>& _Tuple) _NOEXCEPT
 	{	// get const reference to _Ty element of tuple
-	typedef typename _Tuple_element<_Ty, tuple<_Types...> >::_Ttype
-		_Ttype;
+	typedef typename _Tuple_element<_Ty, tuple<_Types...> >::_Ttype _Ttype;
 	return (((_Ttype&)_Tuple)._Myfirst._Val);
 	}
 
@@ -625,8 +624,7 @@ template<class _Ty,
 	class... _Types> inline
 	_Ty&& get(tuple<_Types...>&& _Tuple) _NOEXCEPT
 	{	// get rvalue reference to _Ty element of tuple
-	typedef typename _Tuple_element<_Ty, tuple<_Types...> >::_Ttype
-		_Ttype;
+	typedef typename _Tuple_element<_Ty, tuple<_Types...> >::_Ttype _Ttype;
 	return (_STD forward<_Ty&&>(((_Ttype&)_Tuple)._Myfirst._Val));
 	}
 

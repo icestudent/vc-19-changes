@@ -409,11 +409,7 @@ inline _Uint1_t _Exchange_release_1(volatile _Uint1_t *_Tgt, _Uint1_t _Value)
 	{	/* exchange _Value and *_Tgt atomically with
 			release memory order */
 
- #if defined(_M_ARM64) /* TRANSITION */
-	return (_INTRIN_SEQ_CST(_InterlockedExchange8)((volatile char *)_Tgt, _Value));
- #else /* defined(_M_ARM64) */
 	return (_INTRIN_RELEASE(_InterlockedExchange8)((volatile char *)_Tgt, _Value));
- #endif /* defined(_M_ARM64) */
 	}
 
 inline _Uint1_t _Atomic_exchange_1(
@@ -923,11 +919,7 @@ inline _Uint2_t _Exchange_release_2(volatile _Uint2_t *_Tgt, _Uint2_t _Value)
 	{	/* exchange _Value and *_Tgt atomically with
 			release memory order */
 
- #if defined(_M_ARM64) /* TRANSITION */
-	return (_INTRIN_SEQ_CST(_InterlockedExchange16)((volatile short *)_Tgt, _Value));
- #else /* defined(_M_ARM64) */
 	return (_INTRIN_RELEASE(_InterlockedExchange16)((volatile short *)_Tgt, _Value));
- #endif /* defined(_M_ARM64) */
 	}
 
 inline _Uint2_t _Atomic_exchange_2(
@@ -1437,11 +1429,7 @@ inline _Uint4_t _Exchange_release_4(volatile _Uint4_t *_Tgt, _Uint4_t _Value)
 	{	/* exchange _Value and *_Tgt atomically with
 			release memory order */
 
- #if defined(_M_ARM64) /* TRANSITION */
-	return (_INTRIN_SEQ_CST(_InterlockedExchange)((volatile long *)_Tgt, _Value));
- #else /* defined(_M_ARM64) */
 	return (_INTRIN_RELEASE(_InterlockedExchange)((volatile long *)_Tgt, _Value));
- #endif /* defined(_M_ARM64) */
 	}
 
 inline _Uint4_t _Atomic_exchange_4(
@@ -1970,11 +1958,7 @@ inline _Uint8_t _Exchange_release_8(volatile _Uint8_t *_Tgt, _Uint8_t _Value)
 	{	/* exchange _Value and *_Tgt atomically with
 			release memory order */
 
- #if defined(_M_ARM64) /* TRANSITION */
-	return (_INTRIN_SEQ_CST(_InterlockedExchange64)((volatile _LONGLONG *)_Tgt, _Value));
- #else /* defined(_M_ARM64) */
 	return (_INTRIN_RELEASE(_InterlockedExchange64)((volatile _LONGLONG *)_Tgt, _Value));
- #endif /* defined(_M_ARM64) */
 	}
 
 inline _Uint8_t _Atomic_exchange_8(

@@ -298,6 +298,9 @@ unsigned __int64 _blcmsk_u64(unsigned __int64);
 unsigned __int64 _blci_u64(unsigned __int64);
 #endif  /* defined (_M_X64) */
 
+void _mm_monitorx(void const *, unsigned int, unsigned int);
+void _mm_mwaitx(unsigned int, unsigned int, unsigned int);
+
 #if defined __cplusplus
 }; /* End "C" */
 #endif  /* defined __cplusplus */

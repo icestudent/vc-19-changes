@@ -308,7 +308,7 @@ inline float stof(const string& _Str, size_t *_Idx = 0)
 
 	if (_Ptr == _Eptr)
 		_Xinvalid_argument("invalid stof argument");
-	if (errno == ERANGE || 0 < _CSTD _FDtest(&_Ans))
+	if (errno == ERANGE)
 		_Xout_of_range("stof argument out of range");
 	if (_Idx != 0)
 		*_Idx = (size_t)(_Eptr - _Ptr);
@@ -324,7 +324,7 @@ inline double stod(const string& _Str, size_t *_Idx = 0)
 
 	if (_Ptr == _Eptr)
 		_Xinvalid_argument("invalid stod argument");
-	if (errno == ERANGE || 0 < _CSTD _Dtest(&_Ans))
+	if (errno == ERANGE)
 		_Xout_of_range("stod argument out of range");
 	if (_Idx != 0)
 		*_Idx = (size_t)(_Eptr - _Ptr);
@@ -340,7 +340,7 @@ inline long double stold(const string& _Str, size_t *_Idx = 0)
 
 	if (_Ptr == _Eptr)
 		_Xinvalid_argument("invalid stold argument");
-	if (errno == ERANGE || 0 < _CSTD _LDtest(&_Ans))
+	if (errno == ERANGE)
 		_Xout_of_range("stold argument out of range");
 	if (_Idx != 0)
 		*_Idx = (size_t)(_Eptr - _Ptr);
@@ -442,7 +442,7 @@ inline float stof(const wstring& _Str, size_t *_Idx = 0)
 
 	if (_Ptr == _Eptr)
 		_Xinvalid_argument("invalid stof argument");
-	if (errno == ERANGE || 0 < _CSTD _FDtest(&_Ans))
+	if (errno == ERANGE)
 		_Xout_of_range("stof argument out of range");
 	if (_Idx != 0)
 		*_Idx = (size_t)(_Eptr - _Ptr);
@@ -458,7 +458,7 @@ inline double stod(const wstring& _Str, size_t *_Idx = 0)
 
 	if (_Ptr == _Eptr)
 		_Xinvalid_argument("invalid stod argument");
-	if (errno == ERANGE || 0 < _CSTD _Dtest(&_Ans))
+	if (errno == ERANGE)
 		_Xout_of_range("stod argument out of range");
 	if (_Idx != 0)
 		*_Idx = (size_t)(_Eptr - _Ptr);
@@ -474,7 +474,7 @@ inline long double stold(const wstring& _Str, size_t *_Idx = 0)
 
 	if (_Ptr == _Eptr)
 		_Xinvalid_argument("invalid stold argument");
-	if (errno == ERANGE || 0 < _CSTD _LDtest(&_Ans))
+	if (errno == ERANGE)
 		_Xout_of_range("stold argument out of range");
 	if (_Idx != 0)
 		*_Idx = (size_t)(_Eptr - _Ptr);

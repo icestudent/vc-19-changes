@@ -406,6 +406,7 @@ template<size_t _Sz,
 	size_t _Nelts = 20>
 	class cache_suballoc
 	{	// suballocate without reblocking
+		// NB: THIS CLASS INTENTIONALLY DOES *NOT* FREE STORAGE
 public:
 	cache_suballoc()
 		: _Begin(0), _End(0)

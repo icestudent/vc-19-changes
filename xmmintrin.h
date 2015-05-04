@@ -1,5 +1,5 @@
 /***
-*** Copyright (C) 1985-1999 Intel Corporation.  All rights reserved.
+*** Copyright (C) 1985-2015 Intel Corporation.  All rights reserved.
 ***
 *** The information and source code contained herein is the exclusive
 *** property of Intel Corporation and may not be disclosed, examined
@@ -34,10 +34,6 @@
 #ifndef _INCLUDED_MM2
 #define _INCLUDED_MM2
 #ifndef __midl
-
-#if !defined _M_IX86 && !defined _M_X64
-    #error This header is specific to X86 and X64 targets
-#endif
 
 #if defined (_M_CEE_PURE)
         #error ERROR: XMM intrinsics not supported in the pure mode!
@@ -109,17 +105,17 @@ typedef union __declspec(intrin_type) __declspec(align(16)) __m128 {
  /* holds column 1 of the original matrix, etc.         */
  /*******************************************************/
 #define _MM_TRANSPOSE4_PS(row0, row1, row2, row3) {                 \
-            __m128 tmp3, tmp2, tmp1, tmp0;                          \
+            __m128 _Tmp3, _Tmp2, _Tmp1, _Tmp0;                          \
                                                                     \
-            tmp0   = _mm_shuffle_ps((row0), (row1), 0x44);          \
-            tmp2   = _mm_shuffle_ps((row0), (row1), 0xEE);          \
-            tmp1   = _mm_shuffle_ps((row2), (row3), 0x44);          \
-            tmp3   = _mm_shuffle_ps((row2), (row3), 0xEE);          \
+            _Tmp0   = _mm_shuffle_ps((row0), (row1), 0x44);          \
+            _Tmp2   = _mm_shuffle_ps((row0), (row1), 0xEE);          \
+            _Tmp1   = _mm_shuffle_ps((row2), (row3), 0x44);          \
+            _Tmp3   = _mm_shuffle_ps((row2), (row3), 0xEE);          \
                                                                     \
-            (row0) = _mm_shuffle_ps(tmp0, tmp1, 0x88);              \
-            (row1) = _mm_shuffle_ps(tmp0, tmp1, 0xDD);              \
-            (row2) = _mm_shuffle_ps(tmp2, tmp3, 0x88);              \
-            (row3) = _mm_shuffle_ps(tmp2, tmp3, 0xDD);              \
+            (row0) = _mm_shuffle_ps(_Tmp0, _Tmp1, 0x88);              \
+            (row1) = _mm_shuffle_ps(_Tmp0, _Tmp1, 0xDD);              \
+            (row2) = _mm_shuffle_ps(_Tmp2, _Tmp3, 0x88);              \
+            (row3) = _mm_shuffle_ps(_Tmp2, _Tmp3, 0xDD);              \
         }
 
 
@@ -385,18 +381,18 @@ extern void __cdecl _mm_free(void *_P);
  /*  NAME : _mm_cvtpi16_ps                                */
  /*  DESCRIPTION : Convert 4 16-bit signed integer values */
  /*                to 4 single-precision float values     */
- /*  IN : __m64 a                                         */
+ /*  IN : __m64 _A                                         */
  /*  OUT : none                                           */
- /*  RETURN : __m128 : (float)a                           */
+ /*  RETURN : __m128 : (float)_A                           */
  /*********************************************************/
-__inline __m128 _mm_cvtpi16_ps(__m64 a)
+__inline __m128 _mm_cvtpi16_ps(__m64 _A)
 {
-  __m128 tmp;
-  __m64  ext_val = _mm_cmpgt_pi16(_mm_setzero_si64(), a);
+  __m128 _Tmp;
+  __m64  _Ext_val = _mm_cmpgt_pi16(_mm_setzero_si64(), _A);
 
-  tmp = _mm_cvtpi32_ps(_mm_setzero_ps(), _mm_unpackhi_pi16(a, ext_val));
-  return(_mm_cvtpi32_ps(_mm_movelh_ps(tmp, tmp),
-                        _mm_unpacklo_pi16(a, ext_val)));
+  _Tmp = _mm_cvtpi32_ps(_mm_setzero_ps(), _mm_unpackhi_pi16(_A, _Ext_val));
+  return(_mm_cvtpi32_ps(_mm_movelh_ps(_Tmp, _Tmp),
+                        _mm_unpacklo_pi16(_A, _Ext_val)));
 }
 
 
@@ -404,18 +400,18 @@ __inline __m128 _mm_cvtpi16_ps(__m64 a)
  /*  NAME : _mm_cvtpu16_ps                                  */
  /*  DESCRIPTION : Convert 4 16-bit unsigned integer values */
  /*                to 4 single-precision float values       */
- /*  IN : __m64 a                                           */
+ /*  IN : __m64 _A                                           */
  /*  OUT : none                                             */
- /*  RETURN : __m128 : (float)a                             */
+ /*  RETURN : __m128 : (float)_A                             */
  /***********************************************************/
-__inline __m128 _mm_cvtpu16_ps(__m64 a)
+__inline __m128 _mm_cvtpu16_ps(__m64 _A)
 {
-  __m128 tmp;
-  __m64  ext_val = _mm_setzero_si64();
+  __m128 _Tmp;
+  __m64  _Ext_val = _mm_setzero_si64();
 
-  tmp = _mm_cvtpi32_ps(_mm_setzero_ps(), _mm_unpackhi_pi16(a, ext_val));
-  return(_mm_cvtpi32_ps(_mm_movelh_ps(tmp, tmp),
-                        _mm_unpacklo_pi16(a, ext_val)));
+  _Tmp = _mm_cvtpi32_ps(_mm_setzero_ps(), _mm_unpackhi_pi16(_A, _Ext_val));
+  return(_mm_cvtpi32_ps(_mm_movelh_ps(_Tmp, _Tmp),
+                        _mm_unpacklo_pi16(_A, _Ext_val)));
 }
 
 
@@ -427,10 +423,10 @@ __inline __m128 _mm_cvtpu16_ps(__m64 a)
  /*  OUT : none                                        */
  /*  RETURN : __m64 : (short)a                         */
  /******************************************************/
-__inline __m64 _mm_cvtps_pi16(__m128 a)
+__inline __m64 _mm_cvtps_pi16(__m128 _A)
 {
-  return _mm_packs_pi32(_mm_cvtps_pi32(a),
-                        _mm_cvtps_pi32(_mm_movehl_ps(a, a)));
+  return _mm_packs_pi32(_mm_cvtps_pi32(_A),
+                        _mm_cvtps_pi32(_mm_movehl_ps(_A, _A)));
 }
 
 
@@ -438,15 +434,15 @@ __inline __m64 _mm_cvtps_pi16(__m128 a)
  /*  NAME : _mm_cvtpi8_ps                              */
  /*  DESCRIPTION : Convert 4 8-bit integer values to 4 */
  /*                single-precision float values       */
- /*  IN : __m64 a                                      */
+ /*  IN : __m64 _A                                     */
  /*  OUT : none                                        */
- /*  RETURN : __m128 : (float)a                        */
+ /*  RETURN : __m128 : (float)_A                        */
  /******************************************************/
-__inline __m128 _mm_cvtpi8_ps(__m64 a)
+__inline __m128 _mm_cvtpi8_ps(__m64 _A)
 {
-  __m64  ext_val = _mm_cmpgt_pi8(_mm_setzero_si64(), a);
+  __m64  _Ext_val = _mm_cmpgt_pi8(_mm_setzero_si64(), _A);
 
-  return _mm_cvtpi16_ps(_mm_unpacklo_pi8(a, ext_val));
+  return _mm_cvtpi16_ps(_mm_unpacklo_pi8(_A, _Ext_val));
 }
 
 
@@ -455,13 +451,13 @@ __inline __m128 _mm_cvtpi8_ps(__m64 a)
  /*  DESCRIPTION : Convert 4 8-bit unsigned integer    */
  /*                values to 4 single-precision float  */
  /*                values                              */
- /*  IN : __m64 a                                      */
+ /*  IN : __m64 _A                                      */
  /*  OUT : none                                        */
- /*  RETURN : __m128 : (float)a                        */
+ /*  RETURN : __m128 : (float)_A                        */
  /******************************************************/
-__inline __m128 _mm_cvtpu8_ps(__m64 a)
+__inline __m128 _mm_cvtpu8_ps(__m64 _A)
 {
-  return _mm_cvtpu16_ps(_mm_unpacklo_pi8(a, _mm_setzero_si64()));
+  return _mm_cvtpu16_ps(_mm_unpacklo_pi8(_A, _mm_setzero_si64()));
 }
 
 
@@ -469,13 +465,13 @@ __inline __m128 _mm_cvtpu8_ps(__m64 a)
  /*  NAME : _mm_cvtps_pi8                              */
  /*  DESCRIPTION : Convert 4 single-precision float    */
  /*                values to 4 8-bit integer values    */
- /*  IN : __m128 a                                     */
+ /*  IN : __m128 _A                                     */
  /*  OUT : none                                        */
- /*  RETURN : __m64 : (char)a                          */
+ /*  RETURN : __m64 : (char)_A                          */
  /******************************************************/
-__inline __m64 _mm_cvtps_pi8(__m128 a)
+__inline __m64 _mm_cvtps_pi8(__m128 _A)
 {
-  return _mm_packs_pi16(_mm_cvtps_pi16(a), _mm_setzero_si64());
+  return _mm_packs_pi16(_mm_cvtps_pi16(_A), _mm_setzero_si64());
 }
 
 
@@ -483,15 +479,15 @@ __inline __m64 _mm_cvtps_pi8(__m128 a)
  /*  NAME : _mm_cvtpi32x2_ps                           */
  /*  DESCRIPTION : Convert 4 32-bit integer values     */
  /*                to 4 single-precision float values  */
- /*  IN : __m64 a : operand 1                          */
- /*       __m64 b : operand 2                          */
+ /*  IN : __m64 _A : operand 1                          */
+ /*       __m64 _B : operand 2                          */
  /*  OUT : none                                        */
- /*  RETURN : __m128 : (float)a,(float)b               */
+ /*  RETURN : __m128 : (float)_A,(float)_B               */
  /******************************************************/
-__inline __m128 _mm_cvtpi32x2_ps(__m64 a, __m64 b)
+__inline __m128 _mm_cvtpi32x2_ps(__m64 _A, __m64 _B)
 {
-  return _mm_movelh_ps(_mm_cvt_pi2ps(_mm_setzero_ps(), a),
-                       _mm_cvt_pi2ps(_mm_setzero_ps(), b));
+  return _mm_movelh_ps(_mm_cvt_pi2ps(_mm_setzero_ps(), _A),
+                       _mm_cvt_pi2ps(_mm_setzero_ps(), _B));
 }
 
 

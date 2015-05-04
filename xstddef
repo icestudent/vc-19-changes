@@ -148,6 +148,8 @@ template<class _Ty>
 	};
 
 		//	FUNCTIONAL STUFF (from <functional>)
+
+ #if _HAS_AUTO_PTR_ETC
 		// TEMPLATE STRUCT unary_function
 template<class _Arg,
 	class _Result>
@@ -167,6 +169,7 @@ template<class _Arg1,
 	typedef _Arg2 second_argument_type;
 	typedef _Result result_type;
 	};
+ #endif /* _HAS_AUTO_PTR_ETC */
 
 		// TEMPLATE STRUCT plus
 template<class _Ty = void>
@@ -479,7 +482,7 @@ template<>
 	size_t operator()(const _Kty& _Keyval) const
 		{	// hash _Keyval to size_t value by pseudorandomizing transform
 		return (_Mybase::operator()(
-			_Keyval == 0 ? 0 : _Keyval)); // map -0 to 0
+			_Keyval == 0 ? 0 : _Keyval));	// map -0 to 0
 		}
 	};
 
@@ -493,7 +496,7 @@ template<>
 	size_t operator()(const _Kty& _Keyval) const
 		{	// hash _Keyval to size_t value by pseudorandomizing transform
 		return (_Mybase::operator()(
-			_Keyval == 0 ? 0 : _Keyval)); // map -0 to 0
+			_Keyval == 0 ? 0 : _Keyval));	// map -0 to 0
 		}
 	};
 
@@ -507,7 +510,7 @@ template<>
 	size_t operator()(const _Kty& _Keyval) const
 		{	// hash _Keyval to size_t value by pseudorandomizing transform
 		return (_Mybase::operator()(
-			_Keyval == 0 ? 0 : _Keyval)); // map -0 to 0
+			_Keyval == 0 ? 0 : _Keyval));	// map -0 to 0
 		}
 	};
 
@@ -616,6 +619,7 @@ _STD_END
 #define _COMMA	,	/* for immediate commas in macro parameters */
 
 
+
 _STD_BEGIN
 	// TEMPLATE CLASS _Arg_types
 template<class... _Types>
@@ -636,7 +640,6 @@ template<class _Ty1,
 	typedef _Ty1 first_argument_type;
 	typedef _Ty2 second_argument_type;
 	};
-
 
 	// TEMPLATE CLASS is_function
 template<class _Ty>
@@ -672,7 +675,6 @@ template<class _Ty>
 	{	// determine whether _Ty is a function
 	};
 
-
 		// TEMPLATE FUNCTION addressof
 template<class _Ty> inline
 	_Ty *_Addressof(_Ty& _Val, true_type) _NOEXCEPT
@@ -694,8 +696,6 @@ template<class _Ty> inline
 	return (_Addressof(_Val, is_function<_Ty>()));
 	}
 _STD_END
-
-
  #pragma pop_macro("new")
  #pragma warning(pop)
  #pragma pack(pop)

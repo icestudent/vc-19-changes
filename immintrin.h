@@ -1,7 +1,7 @@
 /***
 * imminitrin.h - Meta Header file for Intel(R) Architecture intrinsic functions.
 *
-* Copyright (C) 1985-2014 Intel Corporation.  All rights reserved.
+* Copyright (C) 1985-2015 Intel Corporation.  All rights reserved.
 *
 * The information and source code contained herein is the exclusive
 * property of Intel Corporation and may not be disclosed, examined
@@ -20,10 +20,6 @@
 #ifndef _INCLUDED_IMM
 #define _INCLUDED_IMM
 #ifndef __midl
-
-#if !defined _M_IX86 && !defined _M_X64
-    #error This header is specific to X86 and X64 targets
-#endif
 
 #if defined (_M_CEE_PURE)
         #error ERROR: Intel Architecture intrinsic functions not supported in the pure mode!
@@ -1186,7 +1182,7 @@ extern __m256i __cdecl _mm256_castsi128_si256(__m128i);
  */
 extern __m128  __cdecl _mm_cvtph_ps(__m128i);
 extern __m256  __cdecl _mm256_cvtph_ps(__m128i);
-extern __m128i __cdecl _mm_cvtps_ph(__m128 m1, const int imm);
+extern __m128i __cdecl _mm_cvtps_ph(__m128 /* m1 */, const int /* imm */);
 extern __m128i __cdecl _mm256_cvtps_ph(__m256, int);
 
 /*
@@ -1897,10 +1893,10 @@ extern long _InterlockedOr_HLERelease(long volatile *,long);
 extern long _InterlockedXor_HLEAcquire(long volatile *,long);
 extern long _InterlockedXor_HLERelease(long volatile *,long);
 
-extern unsigned char _interlockedbittestandset_HLEAcquire(long *a,long b);
-extern unsigned char _interlockedbittestandset_HLERelease(long *a,long b);
-extern unsigned char _interlockedbittestandreset_HLEAcquire(long *a,long b);
-extern unsigned char _interlockedbittestandreset_HLERelease(long *a,long b);
+extern unsigned char _interlockedbittestandset_HLEAcquire(long *,long);
+extern unsigned char _interlockedbittestandset_HLERelease(long *,long);
+extern unsigned char _interlockedbittestandreset_HLEAcquire(long *,long);
+extern unsigned char _interlockedbittestandreset_HLERelease(long *,long);
 
 #if defined(_M_X64)
 extern void _Store64_HLERelease(__int64 volatile *,__int64);
@@ -1917,10 +1913,10 @@ extern __int64 _InterlockedOr64_HLERelease(__int64 volatile *,__int64);
 extern __int64 _InterlockedXor64_HLEAcquire(__int64 volatile *,__int64);
 extern __int64 _InterlockedXor64_HLERelease(__int64 volatile *,__int64);
 
-extern unsigned char _interlockedbittestandset64_HLEAcquire(__int64 *a,__int64 b);
-extern unsigned char _interlockedbittestandset64_HLERelease(__int64 *a,__int64 b);
-extern unsigned char _interlockedbittestandreset64_HLEAcquire(__int64 *a,__int64 b);
-extern unsigned char _interlockedbittestandreset64_HLERelease(__int64 *a,__int64 b);
+extern unsigned char _interlockedbittestandset64_HLEAcquire(__int64 *,__int64);
+extern unsigned char _interlockedbittestandset64_HLERelease(__int64 *,__int64);
+extern unsigned char _interlockedbittestandreset64_HLEAcquire(__int64 *,__int64);
+extern unsigned char _interlockedbittestandreset64_HLERelease(__int64 *,__int64);
 #endif  /* defined (_M_X64) */
 
 //  Restricted Transactional Memory

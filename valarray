@@ -412,11 +412,6 @@ public:
 		_VALOP(_Ty, size(), _Func(_Myptr[_Idx]));
 		}
 
-	void (free)()	// retained
-		{	// erase all elements
-		_Tidy(true);
-		}
-
 private:
 	void _Grow(size_t _Newsize)
 		{	// grow to _Count elements and pad with default values

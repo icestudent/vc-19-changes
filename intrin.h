@@ -1132,6 +1132,8 @@ __MACHINEX86_X64(unsigned char __cdecl _addcarry_u32(unsigned char, unsigned int
 __MACHINEX86_X64(unsigned char __cdecl _subborrow_u32(unsigned char, unsigned int, unsigned int, unsigned int *))
 __MACHINEX64(unsigned char __cdecl _addcarry_u64(unsigned char, unsigned __int64, unsigned __int64, unsigned __int64 *))
 __MACHINEX64(unsigned char __cdecl _subborrow_u64(unsigned char, unsigned __int64, unsigned __int64, unsigned __int64 *))
+__MACHINEX86_X64(void _mm_monitorx(void const *, unsigned int, unsigned int))
+__MACHINEX86_X64(void _mm_mwaitx(unsigned int, unsigned int, unsigned int))
 
 #if defined (__cplusplus)
 }

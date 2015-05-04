@@ -57,6 +57,7 @@ template<class _Ty> inline
 		// TEMPLATE FUNCTION _Swap_adl
 template<class _Ty> inline
 	void _Swap_adl(_Ty& _Left, _Ty& _Right)
+		_NOEXCEPT_OP(_NOEXCEPT_OP(swap(_Left, _Right)))
 	{	// exchange values stored at _Left and _Right, using ADL
 	swap(_Left, _Right);
 	}
@@ -435,14 +436,16 @@ template<size_t _Index,
 	// TUPLE INTERFACE TO pair
 template<class _Ret,
 	class _Pair> inline
-	_Ret _Pair_get(_Pair& _Pr, integral_constant<size_t, 0>) _NOEXCEPT
+	_Ret _Pair_get(_Pair& _Pr,
+		integral_constant<size_t, 0>) _NOEXCEPT
 	{	// get reference to element 0 in pair _Pr
 	return (_Pr.first);
 	}
 
 template<class _Ret,
 	class _Pair> inline
-	_Ret _Pair_get(_Pair& _Pr, integral_constant<size_t, 1>) _NOEXCEPT
+	_Ret _Pair_get(_Pair& _Pr,
+		integral_constant<size_t, 1>) _NOEXCEPT
 	{	// get reference to element 1 in pair _Pr
 	return (_Pr.second);
 	}

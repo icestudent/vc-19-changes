@@ -753,7 +753,6 @@ template<class _Ty,
 	};
 
 		// TEMPLATE CLASS _Deque_val
-
 template<class _Val_types>
 	class _Deque_val
 		: public _Container_base12
@@ -832,16 +831,23 @@ public:
 		_Free_proxy();
 		}
 
-	void _Change_alloc(const _Alty& _Al)
+	void _Copy_alloc(const _Alty& _Al)
 		{	// replace old allocator
 		_Free_proxy();
-		_Getal() = _Al;
+		_Pocca(_Getal(), _Al);
+		_Alloc_proxy();
+		}
+
+	void _Move_alloc(_Alty& _Al)
+		{	// replace old allocator
+		_Free_proxy();
+		_Pocma(_Getal(), _Al);
 		_Alloc_proxy();
 		}
 
 	void _Swap_alloc(_Myt& _Right)
 		{	// swap allocators
-		_Swap_adl(_Getal(), _Right._Getal());
+		_Pocs(_Getal(), _Right._Getal());
 		_Swap_adl(_Myproxy(), _Right._Myproxy());
 		}
 
@@ -962,7 +968,6 @@ template<class _Ty,
 public:
 	typedef deque<_Ty, _Alloc> _Myt;
 	typedef _Deque_alloc<_Deque_base_types<_Ty, _Alloc> > _Mybase;
-
 	typedef _Alloc allocator_type;
 
 	typedef typename _Mybase::_Alty _Alty;
@@ -1110,13 +1115,14 @@ public:
 		}
 
 	_Myt& operator=(_Myt&& _Right)
+		_NOEXCEPT_OP(_Alty::is_always_equal::value)
 		{	// assign by moving _Right
 		if (this != &_Right)
 			{	// different, assign it
 			_Tidy();
 			if (_Alty::propagate_on_container_move_assignment::value
 				&& this->_Getal() != _Right._Getal())
-				this->_Change_alloc(_Right._Getal());
+				this->_Move_alloc(_Right._Getal());
 			_Assign_rv(_STD forward<_Myt>(_Right));
 			}
 		return (*this);
@@ -1260,7 +1266,7 @@ public:
 				&& _Alty::propagate_on_container_copy_assignment::value)
 				{	// change allocator before copying
 				_Tidy();
-				this->_Change_alloc(_Right._Getal());
+				this->_Copy_alloc(_Right._Getal());
 				}
 
 			this->_Orphan_all();
@@ -1683,6 +1689,7 @@ public:
 		}
 
 	void swap(_Myt& _Right)
+		_NOEXCEPT_OP(_Alty::is_always_equal::value)
 		{	// exchange contents with _Right
 		if (this == &_Right)
 			;	// same object, do nothing
@@ -1913,6 +1920,7 @@ protected:
 template<class _Ty,
 	class _Alloc> inline
 	void swap(deque<_Ty, _Alloc>& _Left, deque<_Ty, _Alloc>& _Right)
+		_NOEXCEPT_OP(_NOEXCEPT_OP(_Left.swap(_Right)))
 	{	// swap _Left and _Right deques
 	_Left.swap(_Right);
 	}

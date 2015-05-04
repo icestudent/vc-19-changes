@@ -117,6 +117,7 @@ namespace details
         _CancellationTokenRegistration(long _InitialRefs = 1) :
             _RefCounter(_InitialRefs),
             _M_state(_STATE_CALLED),
+            _M_signaled(false),
             _M_pTokenState(NULL)
         {
         }
@@ -154,14 +155,20 @@ namespace details
 
                 if (result == _STATE_SYNCHRONIZE)
                 {
-                    _M_pSyncBlock->notify_all();
+                    {
+                        std::lock_guard<std::mutex> _Lock(_M_Mutex);
+                        _M_signaled = true;
+                    }
+                    _M_CondVar.notify_all();
                 }
             }
             _Release();
         }
 
-        atomic_long _M_state;
-        std::condition_variable *_M_pSyncBlock;
+        atomic_long             _M_state;
+        std::condition_variable _M_CondVar;
+        std::mutex              _M_Mutex;
+        bool                    _M_signaled;
         _CancellationTokenState *_M_pTokenState;
     };
 
@@ -469,19 +476,15 @@ namespace details
                             break;
                         }
 
-                        std::condition_variable cv;
-
-
-                        _PRegistration->_M_pSyncBlock = &cv;
-
                         long result_1 = atomic_exchange(_PRegistration->_M_state, _CancellationTokenRegistration::_STATE_SYNCHRONIZE);
 
                         if (result_1 != _CancellationTokenRegistration::_STATE_CALLED)
                         {
-                            // use condition_variable as an event
-                            std::mutex cs;
-                            std::unique_lock<std::mutex> _lock(cs);
-                            _PRegistration->_M_pSyncBlock->wait(_lock);
+                            std::unique_lock<std::mutex> _Lock(_PRegistration->_M_Mutex);
+                            _PRegistration->_M_CondVar.wait(_Lock,
+                                [_PRegistration]{ return _PRegistration->_M_signaled; });
+
+                            _ASSERTE(_PRegistration->_M_signaled);
                         }
 
                         break;

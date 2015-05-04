@@ -239,7 +239,6 @@ public:
 			_Right._Closef = _Closef_sav;
 
 			// swap ancillary data
-
 			_STD swap(_Set_eback, _Right._Set_eback);
 			_STD swap(_Set_egptr, _Right._Set_egptr);
 

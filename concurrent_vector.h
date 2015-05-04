@@ -331,7 +331,7 @@ namespace details
     template<typename _Container, typename _Value>
     struct std::_Is_checked_helper<_Vector_iterator<_Container, _Value> >
         : public true_type
-    {   // mark _Vector_iterator as checked. This supresses warning C4996
+    {   // mark _Vector_iterator as checked. This suppresses warning C4996
     };
 
     template<typename _Container, typename _Ty>

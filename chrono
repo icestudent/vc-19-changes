@@ -583,7 +583,7 @@ template<class _Clock,
 	{	// add duration to time_point
 	typedef time_point<_Clock, typename common_type<
 		_Duration, duration<_Rep, _Period> >::type> _RT;
-	return (_RT(_Left) += _Right);
+	return (_RT(_Left.time_since_epoch() + _Right));
 	}
 
 template<class _Rep,
@@ -609,9 +609,7 @@ template<class _Clock,
 			const time_point<_Clock, _Duration>& _Left,
 			const duration<_Rep, _Period>& _Right)
 	{	// subtract duration from time_point
-	typedef time_point<_Clock, typename common_type<
-		_Duration, duration<_Rep, _Period> >::type> _RT;
-	return (_RT(_Left) -= _Right);
+	return (_Left + (-_Right));
 	}
 
 template<class _Clock,
@@ -690,8 +688,8 @@ template<class _Clock,
 template<class _To,
 	class _Clock,
 	class _Duration> inline
-		typename enable_if<_Is_duration<_To>::value,
-			time_point<_Clock, _To> >::type
+	typename enable_if<_Is_duration<_To>::value,
+		time_point<_Clock, _To> >::type
 		time_point_cast(const time_point<_Clock, _Duration>& _Time)
 	{	// convert time_point to duration
 	return (time_point<_Clock, _To>(

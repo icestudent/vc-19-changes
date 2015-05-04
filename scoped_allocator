@@ -80,6 +80,28 @@ template<class _Outer>
 		::propagate_on_container_swap::type type;
 	};
 
+		// TEMPLATE STRUCT _Scoped_is_always_equal
+
+template<class _Outer,
+	class... _Inner>
+	struct _Scoped_is_always_equal
+	{	// determines scoped_allocator_adaptor<_Outer, _Inner...>
+		// ::is_always_equal
+	typedef typename _If<!allocator_traits<_Outer>
+		::is_always_equal::value,
+		false_type,
+		_Scoped_is_always_equal<_Inner...> >::type
+			::type type;
+	};
+
+template<class _Outer>
+	struct _Scoped_is_always_equal<_Outer>
+	{	// determines scoped_allocator_adaptor<_Outer, _Inner...>
+		// ::is_always_equal
+	typedef typename allocator_traits<_Outer>
+		::is_always_equal::type type;
+	};
+
 		// TEMPLATE STRUCT _Scoped_outermost_allocator
 template<class _Outer>
 	struct _Scoped_outermost_allocator
@@ -359,6 +381,10 @@ public:
 	typedef typename
 		_Scoped_propagate_on_container_swap<_Outermost, _Inner...>::type
 			propagate_on_container_swap;
+
+	typedef typename
+		_Scoped_is_always_equal<_Outermost, _Inner...>::type
+			is_always_equal;
 
 	outer_allocator_type& outer_allocator() _NOEXCEPT
 		{	// get reference to outer allocator

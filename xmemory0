@@ -377,6 +377,12 @@ template<class _Ty>
 	_GET_TYPE_OR_DEFAULT(propagate_on_container_swap,
 		false_type);
 
+		// TEMPLATE STRUCT _Get_is_always_equal
+template<class _Ty>
+	struct _Get_is_always_equal
+	_GET_TYPE_OR_DEFAULT(is_always_equal,
+		typename is_empty<_Ty>::type);
+
 		// STRUCT _Alloc_allocate
 struct _Alloc_allocate
 	{	// determines allocator_traits<_Alloc>
@@ -517,6 +523,8 @@ template<class _Alloc>
 		propagate_on_container_move_assignment;
 	typedef typename _Get_propagate_on_container_swap<_Alloc>::type
 		propagate_on_container_swap;
+	typedef typename _Get_is_always_equal<_Alloc>::type
+		is_always_equal;
 
 	template<class _Other>
 		using rebind_alloc = typename _Get_rebind_type<_Alloc, _Other>::type;
@@ -590,6 +598,7 @@ public:
 	typedef ptrdiff_t difference_type;
 
 	typedef true_type propagate_on_container_move_assignment;
+	typedef true_type is_always_equal;
 
 	template<class _Other>
 		struct rebind
@@ -733,6 +742,7 @@ template<class _Ty>
 	typedef false_type propagate_on_container_copy_assignment;
 	typedef true_type propagate_on_container_move_assignment;
 	typedef false_type propagate_on_container_swap;
+	typedef true_type is_always_equal;
 
 	template<class _Other>
 		using rebind_alloc = allocator<_Other>;
@@ -813,6 +823,8 @@ template<class _Alloc>
 		propagate_on_container_move_assignment;
 	typedef typename _Mytraits::propagate_on_container_swap
 		propagate_on_container_swap;
+	typedef typename _Mytraits::is_always_equal
+		is_always_equal;
 
 	_Wrap_alloc select_on_container_copy_construction(_Nil = _Nil()) const
 		{	// get allocator to use
@@ -936,6 +948,64 @@ template<class _Ty,
 		const _Wrap_alloc<_Other>& _Right) _THROW0()
 	{	// test for allocator inequality
 	return (!(_Left == _Right));
+	}
+
+
+		// TEMPLATE FUNCTION _Pocca
+template<class _Alty> inline
+	void _Pocca(_Alty& _Left, const _Alty& _Right, true_type) _NOEXCEPT
+	{	// propagate on container copy assignment
+	_Left = _Right;
+	}
+
+template<class _Alty> inline
+	void _Pocca(_Alty&, const _Alty&, false_type) _NOEXCEPT
+	{	// (don't) propagate on container copy assignment
+	}
+
+template<class _Alty> inline
+	void _Pocca(_Alty& _Left, const _Alty& _Right) _NOEXCEPT
+	{	// (maybe) propagate on container copy assignment
+	typename _Alty::propagate_on_container_copy_assignment _Tag;
+	_Pocca(_Left, _Right, _Tag);
+	}
+
+		// TEMPLATE FUNCTION _Pocma
+template<class _Alty> inline
+	void _Pocma(_Alty& _Left, _Alty& _Right, true_type) _NOEXCEPT
+	{	// propagate on container move assignment
+	_Left = _STD move(_Right);
+	}
+
+template<class _Alty> inline
+	void _Pocma(_Alty&, _Alty&, false_type) _NOEXCEPT
+	{	// (don't) propagate on container move assignment
+	}
+
+template<class _Alty> inline
+	void _Pocma(_Alty& _Left, _Alty& _Right) _NOEXCEPT
+	{	// (maybe) propagate on container move assignment
+	typename _Alty::propagate_on_container_move_assignment _Tag;
+	_Pocma(_Left, _Right, _Tag);
+	}
+
+		// TEMPLATE FUNCTION _Pocs
+template<class _Alty> inline
+	void _Pocs(_Alty& _Left, _Alty& _Right, true_type) _NOEXCEPT
+	{	// propagate on container swap
+	_Swap_adl(_Left, _Right);
+	}
+
+template<class _Alty> inline
+	void _Pocs(_Alty&, _Alty&, false_type) _NOEXCEPT
+	{	// (don't) propagate on container swap
+	}
+
+template<class _Alty> inline
+	void _Pocs(_Alty& _Left, _Alty& _Right) _NOEXCEPT
+	{	// (maybe) propagate on container swap
+	typename _Alty::propagate_on_container_swap _Tag;
+	_Pocs(_Left, _Right, _Tag);
 	}
 _STD_END
 

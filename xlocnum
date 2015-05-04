@@ -1298,7 +1298,7 @@ protected:
 		if (_Isfixed && 1e10 < _CSTD fabs(_Val))
 			{	// f or F format
 			int _Ptwo;
-			_CSTD frexp(_Val, &_Ptwo);
+			(void)_CSTD frexp(_Val, &_Ptwo);
 			_Bufsize += _CSTD abs(_Ptwo) * 30103L / 100000L;
 			}
 		_Buf.resize(_Bufsize + 50);	// add fudge factor
@@ -1322,7 +1322,7 @@ protected:
 		if (_Isfixed && 1e10 < _CSTD fabsl(_Val))
 			{	// f or F format
 			int _Ptwo;
-			_CSTD frexpl(_Val, &_Ptwo);
+			(void)_CSTD frexpl(_Val, &_Ptwo);
 			_Bufsize += _CSTD abs(_Ptwo) * 30103L / 100000L;
 			}
 		_Buf.resize(_Bufsize + 50);	// add fudge factor

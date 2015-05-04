@@ -509,6 +509,7 @@ template<class _Fn2> inline
 	return (binary_negate<_Fn2>(_Func));
 	}
 
+ #if _HAS_AUTO_PTR_ETC
 		// TEMPLATE CLASS binder1st
 template<class _Fn2>
 	class binder1st
@@ -973,6 +974,7 @@ template<class _Result,
 	{	// return a const_mem_fun1_ref_t functor adapter
 	return (const_mem_fun1_ref_t<_Result, _Ty, _Arg>(_Pm));
 	}
+ #endif /* _HAS_AUTO_PTR_ETC */
 _STD_END
 
  #pragma pop_macro("new")

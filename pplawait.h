@@ -26,12 +26,12 @@
 
 #define __resumable
 
-namespace std 
+namespace std
 {
     namespace experimental
     {
         template <typename _Ty, typename... _Whatever>
-        struct resumable_traits<concurrency::task<_Ty>, _Whatever...>
+        struct coroutine_traits<concurrency::task<_Ty>, _Whatever...>
         {
             struct promise_type
             {
@@ -40,14 +40,9 @@ namespace std
                     return concurrency::create_task(_M_tce);
                 }
 
-                suspend_never initial_suspend() { return{}; }
+                bool initial_suspend() const { return (false); }
 
-                suspend_never final_suspend() { return{}; }
-
-                bool cancellation_requested() const
-                {
-                    return false;
-                }
+                bool final_suspend() const { return (false); }
 
                 void set_result(const _Ty &_Val)
                 {
@@ -64,7 +59,7 @@ namespace std
         };
 
         template <typename... _Whatever>
-        struct resumable_traits<concurrency::task<void>, _Whatever...>
+        struct coroutine_traits<concurrency::task<void>, _Whatever...>
         {
             struct promise_type
             {
@@ -73,14 +68,9 @@ namespace std
                     return concurrency::create_task(_M_tce);
                 }
 
-                suspend_never initial_suspend() { return{}; }
+                bool initial_suspend() const { return (false); }
 
-                suspend_never final_suspend() { return{}; }
-
-                bool cancellation_requested() const
-                {
-                    return false;
-                }
+                bool final_suspend() const { return (false); }
 
                 void set_result()
                 {
@@ -226,14 +216,14 @@ namespace Concurrency
             {
                 _M_chore._M_work = nullptr;
             }
-            
+
             ~ThreadpoolContext()
             {
                 // Release chore multiple times is fine
                 details::_Release_chore(&_M_chore);
             }
         };
-        
+
         details::_ContextCallback _M_context;
         ThreadpoolContext _M_defaultContext;
 
@@ -333,12 +323,12 @@ namespace Concurrency
 
 // WinRT IAsync(Operation|Action) awaitable extension
 
-namespace Windows 
+namespace Windows
 {
     namespace Foundation
     {
-        inline bool await_ready(IAsyncInfo^ _Task) 
-        { 
+        inline bool await_ready(IAsyncInfo^ _Task)
+        {
             return _Task->Status >= AsyncStatus::Completed;
         }
 
@@ -348,7 +338,7 @@ namespace Windows
             _Task->Completed = ref new AsyncActionCompletedHandler(
                 [_ResumeCb](IAsyncAction^, AsyncStatus) { _ResumeCb(); }, CallbackContext::Same);
         }
-        
+
         template <typename _Ty, typename _Handle>
         void await_suspend(IAsyncOperation<_Ty>^ _Task, _Handle _ResumeCb)
         {
@@ -370,11 +360,11 @@ namespace Windows
                 [_ResumeCb](IAsyncOperationWithProgress<_Ty, _Pr>^, AsyncStatus) { _ResumeCb(); }, CallbackContext::Same);
         }
 
-        inline void await_resume(Windows::Foundation::IAsyncAction^ _Task) 
+        inline void await_resume(Windows::Foundation::IAsyncAction^ _Task)
         {
             _Task->GetResults();
         }
-        
+
         template <typename _Ty>
         _Ty await_resume(Windows::Foundation::IAsyncOperation<_Ty>^ _Task)
         {

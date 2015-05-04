@@ -74,12 +74,6 @@ typedef _Tss_dtor_t tss_dtor_t;
 #define tss_set(key, value)		_Tss_set(key, value)
 #define tss_get(key)			_Tss_get(key)
 
-	/* once functions */
-#define ONCE_FLAG_INIT			_ONCE_FLAG_INIT
-typedef _Once_flag				once_flag;
-typedef _Once_callback_t		once_callback_t;
-#define call_once(flg, once)	_Call_once(flg, once)
-
 	/* utility functions */
 #define thread_abort	_Thread_abort
 

@@ -48,9 +48,7 @@ typedef future_errc _Future_errc;
 
 enum class launch {	// names for launch options passed to async
 	async = 0x1,
-	deferred = 0x2,
-	any = async | deferred,	// retained
-	sync = deferred
+	deferred = 0x2
 	};
 
 inline launch operator&(launch _Left, launch _Right)
@@ -132,7 +130,6 @@ inline error_condition make_error_condition(_Future_errc _Errno) _NOEXCEPT
 	}
 
 		// CLASS future_error
-
 inline const char *_Future_error_map(int _Errcode) _NOEXCEPT
 	{	// convert to name of future error
 	switch (static_cast<_Future_errc>(_Errcode))
@@ -184,7 +181,7 @@ protected:
  #endif /* _HAS_EXCEPTIONS */
 
 private:
-	error_code _Mycode; // the stored error code
+	error_code _Mycode;	// the stored error code
 	};
 
 		// CLASS _Future_error_category
@@ -194,6 +191,7 @@ class _Future_error_category
 public:
 	_Future_error_category()
 		{	// default constructor
+		_Addr = _Future_addr;
 		}
 
 	virtual const char *name() const _NOEXCEPT
@@ -588,7 +586,8 @@ public:
 	template<class _Fty2,
 		class _Alloc>
 		_Packaged_state(_Fty2&& _Fnarg, const _Alloc& _Al, _Mydel *_Dp)
-			: _Mybase(_Dp), _Fn(allocator_arg, _Al, _STD forward<_Fty2>(_Fnarg))
+			: _Mybase(_Dp), _Fn(allocator_arg, _Al,
+				_STD forward<_Fty2>(_Fnarg))
 		{	// construct from rvalue function object and allocator
 		}
 
@@ -656,7 +655,8 @@ public:
 	template<class _Fty2,
 		class _Alloc>
 		_Packaged_state(_Fty2&& _Fnarg, const _Alloc& _Al, _Mydel *_Dp)
-			: _Mybase(_Dp), _Fn(allocator_arg, _Al, _STD forward<_Fty2>(_Fnarg))
+			: _Mybase(_Dp), _Fn(allocator_arg, _Al,
+				_STD forward<_Fty2>(_Fnarg))
 		{	// construct from rvalue function object and allocator
 		}
 
@@ -725,7 +725,8 @@ public:
 	template<class _Fty2,
 		class _Alloc>
 		_Packaged_state(_Fty2&& _Fnarg, const _Alloc& _Al, _Mydel *_Dp)
-			: _Mybase(_Dp), _Fn(allocator_arg, _Al, _STD forward<_Fty2>(_Fnarg))
+			: _Mybase(_Dp), _Fn(allocator_arg, _Al,
+					_STD forward<_Fty2>(_Fnarg))
 		{	// construct from rvalue function object and allocator
 		}
 
@@ -1906,7 +1907,8 @@ template<class _Fty,
 	async(_Fty&& _Fnarg, _ArgTypes&&... _Args)
 	{	// return a future object whose associated asynchronous state
 		// manages a function object
-	return (_Async(launch::any, _Decay_copy(_STD forward<_Fty>(_Fnarg)),
+	return (_Async(launch::async | launch::deferred,
+		_Decay_copy(_STD forward<_Fty>(_Fnarg)),
 		_Decay_copy(_STD forward<_ArgTypes>(_Args))...));
 	}
 
@@ -1925,13 +1927,12 @@ template<class _Policy_type,
 		_Decay_copy(_STD forward<_ArgTypes>(_Args))...));
 	}
 
+
  #ifdef _RESUMABLE_FUNCTIONS_SUPPORTED
-
 namespace experimental {
-
 template<class _Ty,
 	class... _ArgTypes>
-	struct resumable_traits<future<_Ty>, _ArgTypes...>
+	struct coroutine_traits<future<_Ty>, _ArgTypes...>
 	{	// defines resumable traits for functions returning future<_Ty>
 	struct promise_type
 		{
@@ -1942,26 +1943,17 @@ template<class _Ty,
 			return (_MyPromise.get_future());
 			}
 
-		suspend_never initial_suspend()
+		bool initial_suspend() const
 			{
-			return{};
+			return (false);
 			}
 
-		suspend_never final_suspend()
+		bool final_suspend() const
 			{
-			return{};
+			return (false);
 			}
 
-		template<class _Ut = _Ty,
-			class = enable_if_t<is_void<_Ut>::value>>
-			void set_result()
-			{
-			_MyPromise.set_value();
-			}
-
-		template<class _Ut,
-			class _Ty2 = _Ty,
-			class = enable_if_t<!is_void<_Ty2>::value>>
+		template<class _Ut>
 			void set_result(_Ut&& _Value)
 			{
 			_MyPromise.set_value(_STD forward<_Ut>(_Value));
@@ -1972,9 +1964,39 @@ template<class _Ty,
 			_MyPromise.set_exception(_STD move(_Exc));
 			}
 
-		bool cancellation_requested() const
+		};
+	};
+
+template<class... _ArgTypes>
+	struct coroutine_traits<future<void>, _ArgTypes...>
+	{	// defines resumable traits for functions returning future<void>
+	struct promise_type
+		{
+		promise<void> _MyPromise;
+
+		future<void> get_return_object()
+			{
+			return (_MyPromise.get_future());
+			}
+
+		bool initial_suspend() const
 			{
 			return (false);
+			}
+
+		bool final_suspend() const
+			{
+			return (false);
+			}
+
+		void set_result()
+			{
+			_MyPromise.set_value();
+			}
+
+		void set_exception(exception_ptr _Exc)
+			{
+			_MyPromise.set_exception(_STD move(_Exc));
 			}
 		};
 	};
@@ -1987,7 +2009,7 @@ template<class _Ty>
 	}
 
 template<class _Ty>
-	void await_suspend(future<_Ty>& _Fut, experimental::resumable_handle<> _ResumeCb)
+	void await_suspend(future<_Ty>& _Fut, experimental::coroutine_handle<> _ResumeCb)
 	{	// change to .then when future gets .then
 	thread _WaitingThread([&_Fut, _ResumeCb]{
 		_Fut.wait();
@@ -2001,9 +2023,7 @@ template<class _Ty>
 	{
 	return (_Fut.get());
 	}
-
  #endif /* _RESUMABLE_FUNCTIONS_SUPPORTED */
-
 _STD_END
 
 namespace std {
@@ -2014,7 +2034,8 @@ template<class _Ty,
 	{	// asserts that promise<_Ty> can use an allocator
 	};
 
-template<class _Ty, class _Alloc>
+template<class _Ty,
+	class _Alloc>
 	struct uses_allocator<packaged_task<_Ty>, _Alloc>
 		: true_type
 	{	// asserts that packaged_task<_Ty> can use an allocator

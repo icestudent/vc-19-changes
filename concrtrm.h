@@ -1324,7 +1324,7 @@ namespace Concurrency
         static enum OSVersion
         {
             /// <summary>
-            /// An operating system prior to Windows XP. The Concurrency Runtime is not supported on operating 
+            /// An operating system prior to Windows XP. The Concurrency Runtime is not supported on operating
             /// systems with a version earlier than Windows XP with Service Pack 3.
             /// </summary>
             /**/

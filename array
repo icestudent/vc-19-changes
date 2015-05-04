@@ -45,7 +45,8 @@ public:
 		}
 
 	void swap(_Myt& _Other)
-		_NOEXCEPT_OP(_NOEXCEPT_OP(_Swap_adl(_Elems[0], _Elems[0])))
+		_NOEXCEPT_OP(
+			_NOEXCEPT_OP(_Swap_adl(this->_Elems[0], _Other._Elems[0])))
 		{	// swap contents with _Other
 		_Swap_ranges(_STD addressof(_Elems[0]),
 			_STD addressof(_Elems[0]) + _Size,

@@ -23,8 +23,9 @@
 #define _HAS_TEMPLATE_TEMPLATE	1
 #define _HAS_VARIADIC_TEMPLATES	1
 
-#define _HAS_CPP0X     1
-#define _HAS_CPP1X     1
+#define _HAS_CPP0X	1
+#define _HAS_CPP1X	1
+#define _HAS_CPP17	1
 
  #if _HAS_EXCEPTIONS
   #define _NOEXCEPT	noexcept
@@ -33,6 +34,10 @@
   #define _NOEXCEPT	throw ()
   #define _NOEXCEPT_OP(x)
  #endif /* _HAS_EXCEPTIONS */
+
+ #ifndef _HAS_AUTO_PTR_ETC
+  #define _HAS_AUTO_PTR_ETC	1
+ #endif /* _HAS_AUTO_PTR_ETC */
 
 /* Note on use of "deprecate":
  * Various places in this header and other headers use __declspec(deprecate) or macros that have the term DEPRECATE in them.
@@ -522,9 +527,7 @@ typedef _ULONGLONG _ULonglong;
 #define _LOCK_MALLOC			1
 #define _LOCK_STREAM			2
 #define _LOCK_DEBUG				3
-#define _LOCK_CALL_ONCE			4
-#define _LOCK_CALL_ONCEEX		5
-#define _LOCK_AT_THREAD_EXIT	6
+#define _LOCK_AT_THREAD_EXIT	4
 
  #ifdef __cplusplus
 _STD_BEGIN

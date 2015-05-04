@@ -12,6 +12,8 @@
 #include <iosfwd>
 #include <functional>
 #include <chrono>
+#include <memory>
+#include <tuple>
 
 #include <thr/xthread>
 #include <thr/xtimec.h>
@@ -46,8 +48,8 @@ public:
 		explicit thread(_Fn&& _Fx, _Args&&... _Ax)
 		{	// construct with _Fx(_Ax...)
 		_Launch(&_Thr,
-			_STD bind(_Decay_copy(_STD forward<_Fn>(_Fx)),
-				_Decay_copy(_STD forward<_Args>(_Ax))...));
+			_STD make_unique<tuple<decay_t<_Fn>, decay_t<_Args>...> >(
+				_STD forward<_Fn>(_Fx), _STD forward<_Args>(_Ax)...));
 		}
 
 
@@ -203,7 +205,7 @@ inline void thread::join()
 
 inline thread::id thread::get_id() const _NOEXCEPT
 	{	// return id for this thread
-	return (id(_Thr._Id));
+	return (_Thr_val(_Thr));
 	}
 
 inline thread::id this_thread::get_id() _NOEXCEPT
@@ -235,10 +237,12 @@ inline bool operator<=(thread::id _Left, thread::id _Right) _NOEXCEPT
 	{	// return true if _Left precedes or equals _Right
 	return (!(_Right < _Left));
 	}
+
 inline bool operator>(thread::id _Left, thread::id _Right) _NOEXCEPT
 	{	// return true if _Left follows _Right
 	return (_Right < _Left);
 	}
+
 inline bool operator>=(thread::id _Left, thread::id _Right) _NOEXCEPT
 	{	// return true if _Left follows or equals _Right
 	return (!(_Left < _Right));

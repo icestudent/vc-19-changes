@@ -398,7 +398,7 @@ template<class _InIt,
 template<class _Ty1,
 	class _Ty2> inline
 	_Ty2 *_Uninit_copy(_Ty1 *_First, _Ty1 *_Last, _Ty2 *_Dest,
-		_Wrap_alloc<allocator<_Ty2>>&, _Scalar_ptr_iterator_tag)
+		_Wrap_alloc<allocator<_Ty2> >&, _Scalar_ptr_iterator_tag)
 	{	// copy [_First, _Last) to raw _Dest, scalar type
 	_DEBUG_RANGE_PTR(_First, _Last, _Dest);
 	size_t _Count = (size_t)(_Last - _First);
@@ -464,7 +464,7 @@ template<class _Ty1,
 	class _Ty2,
 	class _Valty> inline
 	_Ty2 *_Uninit_move(_Ty1 *_First, _Ty1 *_Last, _Ty2 *_Dest,
-		_Wrap_alloc<allocator<_Ty2>>&, _Valty *, _Scalar_ptr_iterator_tag)
+		_Wrap_alloc<allocator<_Ty2> >&, _Valty *, _Scalar_ptr_iterator_tag)
 	{	// move [_First, _Last) to raw _Dest, scalar type
 	_DEBUG_RANGE_PTR(_First, _Last, _Dest);
 	size_t _Count = (size_t)(_Last - _First);
@@ -616,7 +616,7 @@ template<class _Ty,
 	class _Tval,
 	class _Valty> inline
 	void _Uninit_fill_n(_Ty *_First, _Diff _Count,
-		const _Tval *_Pval, _Wrap_alloc<allocator<_Ty>>&,
+		const _Tval *_Pval, _Wrap_alloc<allocator<_Ty> >&,
 			_Valty *, _Scalar_ptr_iterator_tag)
 	{	// copy _Count * *_Pval to raw _First, using _Al, scalar type
 	_Fill_n(_First, _Count, *_Pval);
@@ -675,7 +675,7 @@ template<class _Ty,
 	class _Diff,
 	class _Valty> inline
 	void _Uninit_def_fill_n(_Ty *_First, _Diff _Count,
-		_Wrap_alloc<allocator<_Ty>>&, _Valty *, _Scalar_ptr_iterator_tag)
+		_Wrap_alloc<allocator<_Ty> >&, _Valty *, _Scalar_ptr_iterator_tag)
 	{	// copy _Count * _Valty() to raw _First, using _Al, scalar type
 	_Fill_n(_First, _Count, (_Valty)0);
 	}
@@ -859,6 +859,7 @@ private:
 	_Bufpar *_Pbuf;	// pointer to active buffer control
 	};
 
+ #if _HAS_AUTO_PTR_ETC
 		// TEMPLATE CLASS auto_ptr
 template<class _Ty>
 	class auto_ptr;
@@ -987,6 +988,7 @@ public:
 private:
 	_Ty *_Myptr;	// the wrapped object pointer
 	};
+ #endif /* _HAS_AUTO_PTR_ETC */
 _STD_END
 
  #pragma pop_macro("new")

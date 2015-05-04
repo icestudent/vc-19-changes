@@ -3759,7 +3759,7 @@ public:
 
         // Create a std::shared_future by creating a deferred task through std::async that waits for the
         // event _Ev to finish. Wrap functor with start and end events
-        retFuture = std::async(std::launch::sync, [=]() mutable {
+        retFuture = std::async(std::launch::deferred, [=]() mutable {
             try 
             {
                 if (_Async_op_id == _Amp_runtime_trace::_M_event_disabled)

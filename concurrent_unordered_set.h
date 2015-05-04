@@ -78,7 +78,7 @@ public:
 /// </typeparam>
 /// <typeparam name="_Hasher">
 ///     The hash function object type. This argument is optional and the default value is
-///     <c>std::tr1::hash&lt;</c><typeparamref name="_Key_type"/><c>&gt;</c>.
+///     <c>std::hash&lt;</c><typeparamref name="_Key_type"/><c>&gt;</c>.
 /// </typeparam>
 /// <typeparam name="_Key_equality">
 ///     The equality comparison function object type. This argument is optional and the default value is
@@ -94,7 +94,7 @@ public:
 /// </remarks>
 /// <seealso cref="Parallel Containers and Objects"/>
 /**/
-template <typename _Key_type, typename _Hasher = std::tr1::hash<_Key_type>, typename _Key_equality = std::equal_to<_Key_type>, typename _Allocator_type = std::allocator<_Key_type> >
+template <typename _Key_type, typename _Hasher = std::hash<_Key_type>, typename _Key_equality = std::equal_to<_Key_type>, typename _Allocator_type = std::allocator<_Key_type> >
 class concurrent_unordered_set : public details::_Concurrent_hash< details::_Concurrent_unordered_set_traits<_Key_type, details::_Hash_compare<_Key_type, _Hasher, _Key_equality>, _Allocator_type, false> >
 {
 public:
@@ -545,8 +545,8 @@ public:
     /// </remarks>
     /**/
     template<class _Valty>
-        typename std::tr1::enable_if<!std::tr1::is_same<const_iterator,
-            typename std::tr1::remove_reference<_Valty>::type>::value, iterator>::type
+        typename std::enable_if<!std::is_same<const_iterator,
+            typename std::remove_reference<_Valty>::type>::value, iterator>::type
     insert(const_iterator _Where, _Valty&& _Value)
     {
         // Current implementation ignores the hint. The method is provided for compatibility with unordered_set.
@@ -672,7 +672,7 @@ public:
 /// </typeparam>
 /// <typeparam name="_Hasher">
 ///     The hash function object type. This argument is optional and the default value is
-///     <c>std::tr1::hash&lt;</c><typeparamref name="_Key_type"/><c>&gt;</c>.
+///     <c>std::hash&lt;</c><typeparamref name="_Key_type"/><c>&gt;</c>.
 /// </typeparam>
 /// <typeparam name="_Key_equality">
 ///     The equality comparison function object type. This argument is optional and the default value is
@@ -688,7 +688,7 @@ public:
 /// </remarks>
 /// <seealso cref="Parallel Containers and Objects"/>
 /**/
-template <typename _Key_type, typename _Hasher = std::tr1::hash<_Key_type>, typename _Key_equality = std::equal_to<_Key_type>, typename _Allocator_type = std::allocator<_Key_type> >
+template <typename _Key_type, typename _Hasher = std::hash<_Key_type>, typename _Key_equality = std::equal_to<_Key_type>, typename _Allocator_type = std::allocator<_Key_type> >
 class concurrent_unordered_multiset : public details::_Concurrent_hash< details::_Concurrent_unordered_set_traits<_Key_type, details::_Hash_compare<_Key_type, _Hasher, _Key_equality>, _Allocator_type, true> >
 {
 public:
@@ -1127,8 +1127,8 @@ public:
     /// </remarks>
     /**/
     template<class _Valty>
-        typename std::tr1::enable_if<!std::tr1::is_same<const_iterator,
-            typename std::tr1::remove_reference<_Valty>::type>::value, iterator>::type
+        typename std::enable_if<!std::is_same<const_iterator,
+            typename std::remove_reference<_Valty>::type>::value, iterator>::type
     insert(const_iterator _Where, _Valty&& _Value)
     {
         // Current implementation ignores the hint. The method is provided for compatibility with unordered_multiset.

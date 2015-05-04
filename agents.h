@@ -248,7 +248,7 @@ namespace details
     //
     // _Dynamic_array implements a container very similar to std::vector.
     // However, it exposes a reduced subset of functionality that is
-    // geared towards use in network_link_registry. The array acess is not
+    // geared towards use in network_link_registry. The array access is not
     // thread-safe.
     //
     template<class _Type>
@@ -400,7 +400,7 @@ namespace details
 
             if (_M_array != NULL)
             {
-                // Copy over the elememts
+                // Copy over the elements
                 for (size_t _I = 0; _I < _M_size; _I++)
                 {
                     _Array[_I] = _M_array[_I];
@@ -1120,7 +1120,7 @@ private:
                 // non-NULL entries.
                 _Insert_pos = _Index + 1;
 
-                // Throw if dupiclate entry is found
+                // Throw if duplicate entry is found
                 if (_M_vector[_Index] == _Link)
                 {
                     throw invalid_link_target("_Link");
@@ -1436,7 +1436,7 @@ public:
     ///     The method signature for a callback method for this <c>source_link_manager</c> object.
     /// </summary>
     /**/
-    typedef std::tr1::function<void(_Block *, bool)>  _Callback_method;
+    typedef std::function<void(_Block *, bool)>  _Callback_method;
 
     /// <summary>
     ///     A type that represents a pointer to an element stored in the <c>source_link_manager</c> object.
@@ -2013,13 +2013,13 @@ public:
     ///     The signature of the callback method invoked while processing messages.
     /// </summary>
     /**/
-    typedef std::tr1::function<void(message<_Type> *)>  _Handler_method;
+    typedef std::function<void(message<_Type> *)>  _Handler_method;
 
     /// <summary>
     ///     The signature of the callback method invoked while propagating messages.
     /// </summary>
     /**/
-    typedef std::tr1::function<void(void)>  _Propagator_method;
+    typedef std::function<void(void)>  _Propagator_method;
 
     /// <summary>
     ///     A type alias for <typeparamref name="_Type"/>.
@@ -2193,7 +2193,7 @@ public:
 
         // This spin makes sure all previously initiated message processings
         // will still process correctly.  As soon as this count reaches zero, we can
-        // procede with the message block destructor.
+        // proceed with the message block destructor.
         ::Concurrency::details::_SpinWaitBackoffNone spinWait(::Concurrency::details::_Context::_Yield);
         while(_M_lwtCount != 0)
         {
@@ -2282,7 +2282,7 @@ protected:
         bool _StopProcessing = false;
 
         // This count could be 0 if there was both a synchronous and asynchronous
-        // send occuring.  One of them could have sent all of the messages for the other
+        // send occurring.  One of them could have sent all of the messages for the other
         while (_Count > 0)
         {
             // Process _Count number of messages
@@ -2520,7 +2520,7 @@ public:
     ///     When overridden in a derived class, returns true or false depending on whether the
     ///     message block accepts messages offered by a source that is not linked to it. If the overridden method returns
     ///     <c>true</c>, the target cannot postpone an offered message, as consumption of a postponed message
-    ///     at a later time requires the source to be identified in its sourse link registry.
+    ///     at a later time requires the source to be identified in its source link registry.
     /// </summary>
     /// <returns>
     ///     <c>true</c> if the block can accept message from a source that is not linked to it
@@ -2543,7 +2543,7 @@ public:
     ///     whether an offered message should be accepted.
     /// </summary>
     /**/
-    typedef std::tr1::function<bool(_Type const&)> filter_method;
+    typedef std::function<bool(_Type const&)> filter_method;
 
 protected:
 
@@ -2745,7 +2745,7 @@ protected:
     /// </param>
     /// <remarks>
     ///     This function definition is required because ISource blocks the need to call
-    ///     Target->link_source(), which is a private memeber of ITarget.  ISource is
+    ///     Target->link_source(), which is a private member of ITarget.  ISource is
     ///     declared as a friend class, so this is an way for derived classes of ISource
     ///     to properly link/unlink their targets during link_target(), unlink_target() and
     ///     unlink_targets()
@@ -2764,7 +2764,7 @@ protected:
     /// </param>
     /// <remarks>
     ///     This function definition is required because ISource blocks need to call
-    ///     Target->unlink_source(), which is a private memeber of ITarget.  ISource is
+    ///     Target->unlink_source(), which is a private member of ITarget.  ISource is
     ///     declared as a friend class, so this is an way for derived classes of ISource
     ///     to properly link/unlink their targets during link_target(), unlink_target() and
     ///     unlink_targets()
@@ -3590,7 +3590,7 @@ protected:
     /**/
     virtual void link_target_notification(_Inout_ ITarget<_Target_type> *)
     {
-        // By default, we restart propagation if there is no pending resrvation
+        // By default, we restart propagation if there is no pending reservation
         if (_M_pReservedFor == NULL)
         {
             propagate_to_any_targets(NULL);
@@ -5440,7 +5440,7 @@ private:
 /// </remarks>
 /// <seealso cref="transformer Class"/>
 /**/
-template<class _Type, class _FunctorType = std::tr1::function<void(_Type const&)>>
+template<class _Type, class _FunctorType = std::function<void(_Type const&)>>
 class call : public target_block<multi_link_registry<ISource<_Type>>>
 {
     /// <summary>
@@ -5806,7 +5806,7 @@ private:
 template<class _Input, class _Output>
 class transformer : public propagator_block<single_link_registry<ITarget<_Output>>, multi_link_registry<ISource<_Input>>>
 {
-    typedef std::tr1::function<_Output(_Input const&)> _Transform_method;
+    typedef std::function<_Output(_Input const&)> _Transform_method;
 
 public:
     /// <summary>
@@ -10051,20 +10051,20 @@ private:
     template<int _Index>
     void _Initialize_choices()
     {
-        std::tr1::tuple_element<_Index, _Type>::type _Item = std::tr1::get<_Index>(_M_sourceTuple);
-        _Reserving_node<std::tr1::remove_pointer<std::tr1::tuple_element<_Index, _Type>::type>::type::source_type> * _Order_node_element = NULL;
+        std::tuple_element<_Index, _Type>::type _Item = std::get<_Index>(_M_sourceTuple);
+        _Reserving_node<std::remove_pointer<std::tuple_element<_Index, _Type>::type>::type::source_type> * _Order_node_element = NULL;
 
         if (_M_pScheduleGroup != NULL)
         {
-            _Order_node_element = new _Reserving_node<std::tr1::remove_pointer<std::tr1::tuple_element<_Index, _Type>::type>::type::source_type> (*_M_pScheduleGroup, _Item, _Index);
+            _Order_node_element = new _Reserving_node<std::remove_pointer<std::tuple_element<_Index, _Type>::type>::type::source_type> (*_M_pScheduleGroup, _Item, _Index);
         }
         else if (_M_pScheduler != NULL)
         {
-            _Order_node_element = new _Reserving_node<std::tr1::remove_pointer<std::tr1::tuple_element<_Index, _Type>::type>::type::source_type> (*_M_pScheduler, _Item, _Index);
+            _Order_node_element = new _Reserving_node<std::remove_pointer<std::tuple_element<_Index, _Type>::type>::type::source_type> (*_M_pScheduler, _Item, _Index);
         }
         else
         {
-            _Order_node_element = new _Reserving_node<std::tr1::remove_pointer<std::tr1::tuple_element<_Index, _Type>::type>::type::source_type> (_Item, _Index);
+            _Order_node_element = new _Reserving_node<std::remove_pointer<std::tuple_element<_Index, _Type>::type>::type::source_type> (_Item, _Index);
         }
 
         _M_pSourceChoices[_Index] = _Order_node_element;
@@ -10077,7 +10077,7 @@ private:
     ///     template expansion.
     /// </summary>
     /**/
-    template<> void _Initialize_choices<std::tr1::tuple_size<_Type>::value>()
+    template<> void _Initialize_choices<std::tuple_size<_Type>::value>()
     {
     }
 
@@ -10089,7 +10089,7 @@ private:
     template<int _Index>
     void _Delete_choices()
     {
-        delete reinterpret_cast<_Reserving_node<std::tr1::remove_pointer<std::tr1::tuple_element<_Index, _Type>::type>::type::source_type> *>(_M_pSourceChoices[_Index]);
+        delete reinterpret_cast<_Reserving_node<std::remove_pointer<std::tuple_element<_Index, _Type>::type>::type::source_type> *>(_M_pSourceChoices[_Index]);
         _M_pSourceChoices[_Index] = NULL;
         _Delete_choices<_Index + 1>();
     }
@@ -10099,12 +10099,12 @@ private:
     ///     template expansion.
     /// </summary>
     /**/
-    template<> void _Delete_choices<std::tr1::tuple_size<_Type>::value>()
+    template<> void _Delete_choices<std::tuple_size<_Type>::value>()
     {
     }
 
     // Array of pointers to _Reserving_node elements representing each source
-    void * _M_pSourceChoices[std::tr1::tuple_size<_Type>::value];
+    void * _M_pSourceChoices[std::tuple_size<_Type>::value];
 
     // Single assignment which chooses between source messaging blocks
     single_assignment<size_t> * _M_pSingleAssignment;
@@ -10285,7 +10285,7 @@ public:
     ///     group of the scheduler's choosing.
     /// </summary>
     /**/
-    _Join_node() : _M_counter(std::tr1::tuple_size<_Destination_type>::value)
+    _Join_node() : _M_counter(std::tuple_size<_Destination_type>::value)
     {
         initialize_source_and_target();
     }
@@ -10298,7 +10298,7 @@ public:
     ///     A reference to a scheduler instance.
     /// </param>
     /**/
-    _Join_node(Scheduler& _PScheduler) : _M_counter(std::tr1::tuple_size<_Destination_type>::value)
+    _Join_node(Scheduler& _PScheduler) : _M_counter(std::tuple_size<_Destination_type>::value)
     {
         initialize_source_and_target(&_PScheduler);
     }
@@ -10311,7 +10311,7 @@ public:
     ///     A reference to a schedule group.
     /// </param>
     /**/
-    _Join_node(ScheduleGroup& _PScheduleGroup) : _M_counter(std::tr1::tuple_size<_Destination_type>::value)
+    _Join_node(ScheduleGroup& _PScheduleGroup) : _M_counter(std::tuple_size<_Destination_type>::value)
     {
         initialize_source_and_target(NULL, &_PScheduleGroup);
     }
@@ -10514,7 +10514,7 @@ protected:
             {
                 // Because a greedy join has captured all input, we can reset
                 // the counter to the total number of inputs
-                _InterlockedExchange(&_M_counter, std::tr1::tuple_size<_Destination_type>::value);
+                _InterlockedExchange(&_M_counter, std::tuple_size<_Destination_type>::value);
             }
 
             _Msg = _Create_send_message();
@@ -10550,8 +10550,8 @@ private:
     template<int _Index>
     bool _Try_consume_source_messages(_Destination_type & _Destination_tuple, ISource<size_t> ** _Sources)
     {
-        _Non_greedy_node<std::tr1::remove_pointer<std::tr1::tuple_element<_Index, _Type>::type>::type::source_type> * _Node =
-            static_cast<_Non_greedy_node<std::tr1::remove_pointer<std::tr1::tuple_element<_Index, _Type>::type>::type::source_type> *>(_Sources[_Index]);
+        _Non_greedy_node<std::remove_pointer<std::tuple_element<_Index, _Type>::type>::type::source_type> * _Node =
+            static_cast<_Non_greedy_node<std::remove_pointer<std::tuple_element<_Index, _Type>::type>::type::source_type> *>(_Sources[_Index]);
 
         // Increment the counter once for each reservation
         _InterlockedIncrement(&_M_counter);
@@ -10591,7 +10591,7 @@ private:
     ///     A bool indicating whether the consumption attempt worked.
     /// </returns>
     /**/
-    template<> bool _Try_consume_source_messages<std::tr1::tuple_size<_Type>::value>(_Destination_type &, ISource<size_t> **)
+    template<> bool _Try_consume_source_messages<std::tuple_size<_Type>::value>(_Destination_type &, ISource<size_t> **)
     {
         return true;
     }
@@ -10610,7 +10610,7 @@ private:
         _Destination_type _Destination_tuple;
 
         // Populate the sources buffer
-        ISource<size_t> * _Sources[std::tr1::tuple_size<_Type>::value];
+        ISource<size_t> * _Sources[std::tuple_size<_Type>::value];
         size_t _Index = 0;
 
         // Get an iterator which will keep a reference on the connected sources
@@ -10626,7 +10626,7 @@ private:
                 break;
             }
 
-            if (_Index >= std::tr1::tuple_size<_Type>::value)
+            if (_Index >= std::tuple_size<_Type>::value)
             {
                 // More sources that we expect
                 break;
@@ -10640,10 +10640,10 @@ private:
         // The order nodes should not have unlinked while the join node is
         // active.
 
-        if (_Index != std::tr1::tuple_size<_Type>::value)
+        if (_Index != std::tuple_size<_Type>::value)
         {
             // On debug build assert to help debugging
-            _CONCRT_ASSERT(_Index == std::tr1::tuple_size<_Type>::value);
+            _CONCRT_ASSERT(_Index == std::tuple_size<_Type>::value);
             return false;
         }
 
@@ -10717,7 +10717,7 @@ private:
         _Destination_type _Destination_tuple;
 
         // Populate the sources buffer
-        ISource<size_t> * _Sources[std::tr1::tuple_size<_Type>::value];
+        ISource<size_t> * _Sources[std::tuple_size<_Type>::value];
         size_t _Index = 0;
 
         // Get an iterator which will keep a reference on the connected sources
@@ -10734,7 +10734,7 @@ private:
             }
 
             // Avoid buffer overrun
-            if (_Index >= std::tr1::tuple_size<_Type>::value)
+            if (_Index >= std::tuple_size<_Type>::value)
             {
                 // More sources that we expect
                 break;
@@ -10747,10 +10747,10 @@ private:
 
         // The order nodes should not have unlinked while the join node is
         // active.
-        if (_Index != std::tr1::tuple_size<_Type>::value)
+        if (_Index != std::tuple_size<_Type>::value)
         {
             // On debug build assert to help debugging
-            _CONCRT_ASSERT(_Index == std::tr1::tuple_size<_Type>::value);
+            _CONCRT_ASSERT(_Index == std::tuple_size<_Type>::value);
             return NULL;
         }
 
@@ -10785,10 +10785,10 @@ private:
     template<int _Index>
     void _Populate_destination_tuple(_Destination_type & _Destination_tuple, ISource<size_t> ** _Sources)
     {
-        _Order_node_base<std::tr1::remove_pointer<std::tr1::tuple_element<_Index, _Type>::type>::type::source_type> * _Node =
-            static_cast<_Order_node_base<std::tr1::remove_pointer<std::tr1::tuple_element<_Index, _Type>::type>::type::source_type> *>(_Sources[_Index]);
+        _Order_node_base<std::remove_pointer<std::tuple_element<_Index, _Type>::type>::type::source_type> * _Node =
+            static_cast<_Order_node_base<std::remove_pointer<std::tuple_element<_Index, _Type>::type>::type::source_type> *>(_Sources[_Index]);
 
-        std::tr1::get<_Index>(_Destination_tuple) = _Node->value();
+        std::get<_Index>(_Destination_tuple) = _Node->value();
         _Node->_Reset();
 
         _Populate_destination_tuple<_Index + 1>(_Destination_tuple, _Sources);
@@ -10799,7 +10799,7 @@ private:
     ///     template expansion.
     /// </summary>
     /**/
-    template<> void _Populate_destination_tuple<std::tr1::tuple_size<_Type>::value>(_Destination_type &, ISource<size_t> **)
+    template<> void _Populate_destination_tuple<std::tuple_size<_Type>::value>(_Destination_type &, ISource<size_t> **)
     {
     }
 
@@ -11154,8 +11154,8 @@ private:
     template<int _Index>
     void _Initialize_joins()
     {
-        std::tr1::tuple_element<_Index, _Type>::type _Item = std::tr1::get<_Index>(_M_sourceTuple);
-        _Order_node_base<std::tr1::remove_pointer<std::tr1::tuple_element<_Index, _Type>::type>::type::source_type> * _Order_node_element = NULL;
+        std::tuple_element<_Index, _Type>::type _Item = std::get<_Index>(_M_sourceTuple);
+        _Order_node_base<std::remove_pointer<std::tuple_element<_Index, _Type>::type>::type::source_type> * _Order_node_element = NULL;
 
         bool fIsNonGreedy = (_Jtype == non_greedy);
 
@@ -11163,30 +11163,30 @@ private:
         {
             if (_M_pScheduleGroup != NULL)
             {
-                _Order_node_element = new _Non_greedy_node<std::tr1::remove_pointer<std::tr1::tuple_element<_Index, _Type>::type>::type::source_type> (*_M_pScheduleGroup, _Item, _Index);
+                _Order_node_element = new _Non_greedy_node<std::remove_pointer<std::tuple_element<_Index, _Type>::type>::type::source_type> (*_M_pScheduleGroup, _Item, _Index);
             }
             else if (_M_pScheduler != NULL)
             {
-                _Order_node_element = new _Non_greedy_node<std::tr1::remove_pointer<std::tr1::tuple_element<_Index, _Type>::type>::type::source_type> (*_M_pScheduler, _Item, _Index);
+                _Order_node_element = new _Non_greedy_node<std::remove_pointer<std::tuple_element<_Index, _Type>::type>::type::source_type> (*_M_pScheduler, _Item, _Index);
             }
             else
             {
-                _Order_node_element = new _Non_greedy_node<std::tr1::remove_pointer<std::tr1::tuple_element<_Index, _Type>::type>::type::source_type> (_Item, _Index);
+                _Order_node_element = new _Non_greedy_node<std::remove_pointer<std::tuple_element<_Index, _Type>::type>::type::source_type> (_Item, _Index);
             }
         }
         else
         {
             if (_M_pScheduleGroup != NULL)
             {
-                _Order_node_element = new _Greedy_node<std::tr1::remove_pointer<std::tr1::tuple_element<_Index, _Type>::type>::type::source_type> (*_M_pScheduleGroup, _Item, _Index);
+                _Order_node_element = new _Greedy_node<std::remove_pointer<std::tuple_element<_Index, _Type>::type>::type::source_type> (*_M_pScheduleGroup, _Item, _Index);
             }
             else if (_M_pScheduler != NULL)
             {
-                _Order_node_element = new _Greedy_node<std::tr1::remove_pointer<std::tr1::tuple_element<_Index, _Type>::type>::type::source_type> (*_M_pScheduler, _Item, _Index);
+                _Order_node_element = new _Greedy_node<std::remove_pointer<std::tuple_element<_Index, _Type>::type>::type::source_type> (*_M_pScheduler, _Item, _Index);
             }
             else
             {
-                _Order_node_element = new _Greedy_node<std::tr1::remove_pointer<std::tr1::tuple_element<_Index, _Type>::type>::type::source_type> (_Item, _Index);
+                _Order_node_element = new _Greedy_node<std::remove_pointer<std::tuple_element<_Index, _Type>::type>::type::source_type> (_Item, _Index);
             }
         }
         _M_pSourceJoins[_Index] = _Order_node_element;
@@ -11199,7 +11199,7 @@ private:
     ///     template expansion.
     /// </summary>
     /**/
-    template<> void _Initialize_joins<std::tr1::tuple_size<_Type>::value>()
+    template<> void _Initialize_joins<std::tuple_size<_Type>::value>()
     {
     }
 
@@ -11213,7 +11213,7 @@ private:
     template<int _Index>
     void _Delete_joins()
     {
-        delete reinterpret_cast<_Order_node_base<std::tr1::remove_pointer<std::tr1::tuple_element<_Index, _Type>::type>::type::source_type> *>(_M_pSourceJoins[_Index]);
+        delete reinterpret_cast<_Order_node_base<std::remove_pointer<std::tuple_element<_Index, _Type>::type>::type::source_type> *>(_M_pSourceJoins[_Index]);
         _M_pSourceJoins[_Index] = NULL;
         _Delete_joins<_Index + 1>();
     }
@@ -11223,12 +11223,12 @@ private:
     ///     template expansion.
     /// </summary>
     /**/
-    template<> void _Delete_joins<std::tr1::tuple_size<_Type>::value>()
+    template<> void _Delete_joins<std::tuple_size<_Type>::value>()
     {
     }
 
     // Array of pointers to _Order_node elements representing each source
-    void * _M_pSourceJoins[std::tr1::tuple_size<_Type>::value];
+    void * _M_pSourceJoins[std::tuple_size<_Type>::value];
 
     // Join node that collects source messaging block messages
     _Join_node<_Type, _Destination_type, _Jtype> * _M_pJoinNode;
@@ -11757,7 +11757,7 @@ private:
     volatile long _M_fStartable;
 
     // A flag to check of whether the agent can be canceled
-    // This is initailized to TRUE and there is a race between Cancel() and the LWT executing
+    // This is initialized to TRUE and there is a race between Cancel() and the LWT executing
     // a task that has been started to set it to FALSE.  If Cancel() wins, the task will not be
     // executed.  If the LWT wins, Cancel() will return false.
     /**/
@@ -11912,7 +11912,7 @@ _Type _Receive_impl(ISource<_Type> * _Src, unsigned int _Timeout, typename ITarg
             }
 
             // Only the connected source is allowed to send messages
-            // to the blocking recepient. Decline messages without
+            // to the blocking recipient. Decline messages without
             // a source.
 
             return declined;
@@ -12312,7 +12312,7 @@ bool _Try_receive_impl(ISource<_Type> * _Src, _Type & _value, typename ITarget<_
             }
 
             // Only the connected source is allowed to send messages
-            // to the blocking recepient. Decline messages without
+            // to the blocking recipient. Decline messages without
             // a source.
 
             return declined;
@@ -12571,7 +12571,7 @@ namespace details
                 return NULL;
             }
 
-            // The IDs match, actaully transfer ownership of the message and
+            // The IDs match. Actually transfer ownership of the message and
             // unlink away from the target
             message<_Type> * _Result = _M_pMessage;
 
@@ -12772,7 +12772,7 @@ namespace details
                 return NULL;
             }
 
-            // The IDs match, actaully transfer ownership of the message and
+            // The IDs match. Actually transfer ownership of the message and
             // unlink away from the target
             message<_Type> * _Result = _M_pMessage;
 
@@ -13069,7 +13069,7 @@ namespace details
             }
 
             //
-            // If the IDs match, actaully transfer ownership of the message.
+            // If the IDs match, actually transfer ownership of the message.
             //
             message<_Type> * _Result = _M_pMessage;
             _M_pMessage = NULL;

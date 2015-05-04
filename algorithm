@@ -659,7 +659,7 @@ template<class _FwdIt1,
 		forward_iterator_tag, forward_iterator_tag)
 	{	// find first [_First2, _Last2) satisfying _Pred, arbitrary iterators
 	for (; ; ++_First1)
-		{
+		{	// loop until match or end of a sequence
 		_FwdIt1 _Mid1 = _First1;
 		for (_FwdIt2 _Mid2 = _First2; ; ++_Mid1, (void)++_Mid2)
 			if (_Mid2 == _Last2)
@@ -2089,7 +2089,7 @@ template<class _FwdIt,
 	return (_STD copy(_First, _Mid, _Dest));
 	}
 
-		// TEMPLATE FUNCTION random_shuffle WITH RANDOM FN
+		// TEMPLATE FUNCTION shuffle WITH URNG
 template<class _RanIt,
 	class _Fn1,
 	class _Diff> inline
@@ -2117,7 +2117,7 @@ template<class _RanIt,
 
 template<class _RanIt,
 	class _Fn1> inline
-	void random_shuffle(_RanIt _First, _RanIt _Last, _Fn1&& _Func)
+	void _Random_shuffle(_RanIt _First, _RanIt _Last, _Fn1& _Func)
 	{	// shuffle [_First, _Last) using random function _Func
 	_DEBUG_RANGE(_First, _Last);
 	if (2 <= _Last - _First)
@@ -2128,7 +2128,6 @@ template<class _RanIt,
 		}
 	}
 
-		// TEMPLATE FUNCTION shuffle WITH URNG
 template<class _RanIt,
 	class _Urng> inline
 	void shuffle(_RanIt _First, _RanIt _Last, _Urng&& _Func)
@@ -2136,7 +2135,16 @@ template<class _RanIt,
 	typedef typename iterator_traits<_RanIt>::difference_type _Diff;
 	typedef typename remove_reference<_Urng>::type _Urng0;
 	_Rng_from_urng<_Diff, _Urng0> _Rng(_Func);
-	_STD random_shuffle(_First, _Last, _Rng);
+	_Random_shuffle(_First, _Last, _Rng);
+	}
+
+ #if _HAS_AUTO_PTR_ETC
+		// TEMPLATE FUNCTION random_shuffle WITH RANDOM FN
+template<class _RanIt,
+	class _Fn1> inline
+	void random_shuffle(_RanIt _First, _RanIt _Last, _Fn1&& _Func)
+	{	// shuffle [_First, _Last) using random function _Func
+	_Random_shuffle(_First, _Last, _Func);
 	}
 
 	// STRUCT _Rand_urng_from_func
@@ -2167,6 +2175,7 @@ template<class _RanIt> inline
 	_Rand_urng_from_func _Func;
 	_STD shuffle(_First, _Last, _Func);
 	}
+ #endif /* _HAS_AUTO_PTR_ETC */
 
 		// TEMPLATE FUNCTION partition
 template<class _FwdIt,

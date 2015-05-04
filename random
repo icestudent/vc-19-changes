@@ -323,6 +323,7 @@ template<class _Real,
 #define _NRAND(eng, resty) \
 	(_STD generate_canonical<resty, static_cast<size_t>(-1)>(eng))
 
+
 	// MULTIPLE PRECISION MATH FUNCTIONS
 
 #ifdef _ULONGLONG
@@ -542,7 +543,8 @@ public:
 		return (_Imp._Prev == _Right._Imp._Prev);
 		}
 
-	template<class _Elem, class _Traits>
+	template<class _Elem,
+		class _Traits>
 		basic_ostream<_Elem, _Traits>&
 			_Write(basic_ostream<_Elem, _Traits>& _Ostr) const
 		{	// write state to _Ostr
@@ -830,7 +832,8 @@ public:
 			&& _Carry == _Right._Carry);
 		}
 
-	template<class _Elem, class _Traits>
+	template<class _Elem,
+		class _Traits>
 		basic_ostream<_Elem, _Traits>&
 			_Write(basic_ostream<_Elem, _Traits>& _Ostr) const
 		{	// write state to _Ostr
@@ -1436,7 +1439,8 @@ template<class _Ty, int _Wx, int _Nx, int _Mx, int _Rx,
 	return (!_Left._Equals(_Right));
 	}
 
-template<class _Elem, class _S_Traits,
+template<class _Elem,
+	class _S_Traits,
 	class _Ty, int _Wx, int _Nx, int _Mx, int _Rx,
 	_Ty _Px, int _Ux, int _Sx, _Ty _Bx, int _Tx, _Ty _Cx, int _Lx>
 	basic_istream<_Elem, _S_Traits>& operator>>(
@@ -1449,7 +1453,8 @@ template<class _Elem, class _S_Traits,
 	return (_Istr);
 	}
 
-template<class _Elem, class _S_Traits,
+template<class _Elem,
+	class _S_Traits,
 	class _Ty, int _Wx, int _Nx, int _Mx, int _Rx,
 	_Ty _Px, int _Ux, int _Sx, _Ty _Bx, int _Tx, _Ty _Cx, int _Lx>
 	basic_ostream<_Elem, _S_Traits>& operator<<(
@@ -2405,14 +2410,13 @@ template<class _Ty = int>
 	{	// template class for uniform integer distribution
 public:
 	typedef uniform_int<_Ty> _Myt;
-	typedef _Ty input_type;	// retained
 	typedef _Ty result_type;
 
 	struct param_type
 		{	// parameter package
 		typedef _Myt distribution_type;
 
-		param_type(result_type _Min0 = 0, result_type _Max0 = 9)
+		explicit param_type(result_type _Min0 = 0, result_type _Max0 = 9)
 			{	// construct from parameters
 			_Init(_Min0, _Max0);
 			}
@@ -2560,7 +2564,7 @@ private:
 
 	static _Uty _Adjust(_Uty _Uval, true_type)
 		{	// convert signed ranges to unsigned ranges and vice versa
-		const _Uty _Adjuster = (_Uty(-1) >> 1) + 1; // 2^(N-1)
+		const _Uty _Adjuster = (_Uty(-1) >> 1) + 1;	// 2^(N-1)
 
 		if (_Uval < _Adjuster)
 			return (_Uval + _Adjuster);
@@ -2639,12 +2643,25 @@ public:
 		}
 	};
 
+template<class _Ty>
+	bool operator==(const uniform_int_distribution<_Ty>& _Left,
+		const uniform_int_distribution<_Ty>& _Right)
+	{	// test for equality
+	return (_Left.param() == _Right.param());
+	}
+
+template<class _Ty>
+	bool operator!=(const uniform_int_distribution<_Ty>& _Left,
+		const uniform_int_distribution<_Ty>& _Right)
+	{	// test for inequality
+	return (!(_Left == _Right));
+	}
+
 	// CLASS bernoulli_distribution
 class bernoulli_distribution
 	{	// class for bernoulli distribution
 public:
 	typedef bernoulli_distribution _Myt;
-	typedef int input_type;	// retained
 	typedef bool result_type;
 
 	struct param_type
@@ -2763,6 +2780,18 @@ private:
 	param_type _Par;
 	};
 
+inline bool operator==(const bernoulli_distribution& _Left,
+	const bernoulli_distribution& _Right)
+	{	// test for equality
+	return (_Left.param() == _Right.param());
+	}
+
+inline bool operator!=(const bernoulli_distribution& _Left,
+	const bernoulli_distribution& _Right)
+	{	// test for inequality
+	return (!(_Left == _Right));
+	}
+
 template<class _Elem,
 	class _Traits>
 	basic_istream<_Elem, _Traits>& operator>>(
@@ -2783,17 +2812,16 @@ template<class _Elem,
 
 	// TEMPLATE CLASS geometric_distribution
 
-template<class _Ty0 = int>
+template<class _Ty = int>
 	class geometric_distribution
 	{	// template class for geometric distribution
 public:
-	typedef geometric_distribution<_Ty0> _Myt;
+	typedef geometric_distribution<_Ty> _Myt;
 	typedef double _Ty1;
 
 
-	typedef _Ty1 input_type;	// retained
-	typedef _Ty0 result_type;
-	static_assert(_Is_IntType<_Ty0>::value,
+	typedef _Ty result_type;
+	static_assert(_Is_IntType<_Ty>::value,
 		"invalid template argument for geometric_distribution");
 
 	struct param_type
@@ -2907,29 +2935,43 @@ private:
 	template<class _Engine>
 		result_type _Eval(_Engine& _Eng, const param_type& _Par0) const
 		{	// return next value
-		return ((_Ty0)(_CSTD log(_NRAND(_Eng, _Ty1))
+		return ((_Ty)(_CSTD log(_NRAND(_Eng, _Ty1))
 			/ _Par0._Log_1_p));
 		}
 
 	param_type _Par;
 	};
 
+template<class _Ty>
+	bool operator==(const geometric_distribution<_Ty>& _Left,
+		const geometric_distribution<_Ty>& _Right)
+	{	// test for equality
+	return (_Left.param() == _Right.param());
+	}
+
+template<class _Ty>
+	bool operator!=(const geometric_distribution<_Ty>& _Left,
+		const geometric_distribution<_Ty>& _Right)
+	{	// test for inequality
+	return (!(_Left == _Right));
+	}
+
 template<class _Elem,
 	class _Traits,
-	class _Ty0>
+	class _Ty>
 	basic_istream<_Elem, _Traits>& operator>>(
 		basic_istream<_Elem, _Traits>& _Istr,
-		geometric_distribution<_Ty0>& _Dist)
+		geometric_distribution<_Ty>& _Dist)
 	{	// read state from _Istr
 	return (_Dist._Read(_Istr));
 	}
 
 template<class _Elem,
 	class _Traits,
-	class _Ty0>
+	class _Ty>
 	basic_ostream<_Elem, _Traits>& operator<<(
 		basic_ostream<_Elem, _Traits>& _Ostr,
-		const geometric_distribution<_Ty0>& _Dist)
+		const geometric_distribution<_Ty>& _Dist)
 	{	// write state to _Ostr
 	return (_Dist._Write(_Ostr));
 	}
@@ -2937,7 +2979,7 @@ template<class _Elem,
 
 	// TEMPLATE CLASS poisson_distribution AND HELPER
 
-template<class _Ty0 = int>
+template<class _Ty = int>
 	class _Small_poisson_distribution
 	{	//template class for poisson distribution with small mean
 public:
@@ -2945,9 +2987,9 @@ public:
 
 
 	template<class _Engine>
-		_Ty0 operator()(_Engine& _Eng) const
+		_Ty operator()(_Engine& _Eng) const
 		{	// return next value
-		_Ty0 _Res;
+		_Ty _Res;
 		_Ty1 _Val;
 		for (_Res = 0, _Val = 1.0; ; ++_Res)
 			{	// count repetitions
@@ -2967,17 +3009,16 @@ private:
 	_Ty1 _G0;
 	};
 
-template<class _Ty0 = int>
+template<class _Ty = int>
 	class poisson_distribution
 	{	// template class for poisson distribution
 public:
-	typedef poisson_distribution<_Ty0> _Myt;
+	typedef poisson_distribution<_Ty> _Myt;
 	typedef double _Ty1;
 
 
-	typedef _Ty1 input_type;	// retained
-	typedef _Ty0 result_type;
-	static_assert(_Is_IntType<_Ty0>::value,
+	typedef _Ty result_type;
+	static_assert(_Is_IntType<_Ty>::value,
 		"invalid template argument for poisson_distribution");
 
 	struct param_type
@@ -3020,7 +3061,7 @@ public:
 		_Ty1 _Logm;
 		_Ty1 _G1;
 
-		_Small_poisson_distribution<_Ty0> _Small;
+		_Small_poisson_distribution<_Ty> _Small;
 
 		};
 
@@ -3103,13 +3144,13 @@ private:
 			return (_Par0._Small(_Eng));
 		for (; ; )
 			{	// generate and reject
-			_Ty0 _Res;
+			_Ty _Res;
 			_Ty1 _Yx;
-			static _Ty0 _Zero = 0;	// to quiet diagnostics
+			static _Ty _Zero = 0;	// to quiet diagnostics
 			for (; ; )
 				{	// generate a tentative value
 				_Yx = (_Ty1)_CSTD tan(_Pi * _NRAND(_Eng, _Ty1));
-				_Res = (_Ty0)(_Par0._Sqrt * _Yx + _Par0._Mean);
+				_Res = (_Ty)(_Par0._Sqrt * _Yx + _Par0._Mean);
 				if (_Zero <= _Res)
 					break;
 				}
@@ -3123,22 +3164,36 @@ private:
 	param_type _Par;
 	};
 
+template<class _Ty>
+	bool operator==(const poisson_distribution<_Ty>& _Left,
+		const poisson_distribution<_Ty>& _Right)
+	{	// test for equality
+	return (_Left.param() == _Right.param());
+	}
+
+template<class _Ty>
+	bool operator!=(const poisson_distribution<_Ty>& _Left,
+		const poisson_distribution<_Ty>& _Right)
+	{	// test for inequality
+	return (!(_Left == _Right));
+	}
+
 template<class _Elem,
 	class _Traits,
-	class _Ty0>
+	class _Ty>
 	basic_istream<_Elem, _Traits>& operator>>(
 		basic_istream<_Elem, _Traits>& _Istr,
-		poisson_distribution<_Ty0>& _Dist)
+		poisson_distribution<_Ty>& _Dist)
 	{	// read state from _Istr
 	return (_Dist._Read(_Istr));
 	}
 
 template<class _Elem,
 	class _Traits,
-	class _Ty0>
+	class _Ty>
 	basic_ostream<_Elem, _Traits>& operator<<(
 		basic_ostream<_Elem, _Traits>& _Ostr,
-		const poisson_distribution<_Ty0>& _Dist)
+		const poisson_distribution<_Ty>& _Dist)
 	{	// write state to _Ostr
 	return (_Dist._Write(_Ostr));
 	}
@@ -3146,24 +3201,23 @@ template<class _Elem,
 
 	// TEMPLATE CLASS binomial_distribution
 
-template<class _Ty0 = int>
+template<class _Ty = int>
 	class binomial_distribution
 	{	// template class for binomial distribution
 public:
-	typedef binomial_distribution<_Ty0> _Myt;
+	typedef binomial_distribution<_Ty> _Myt;
 	typedef double _Ty1;
 
 
-	typedef _Ty1 input_type;	// retained
-	typedef _Ty0 result_type;
-	static_assert(_Is_IntType<_Ty0>::value,
+	typedef _Ty result_type;
+	static_assert(_Is_IntType<_Ty>::value,
 		"invalid template argument for binomial_distribution");
 
 	struct param_type
 		{	// parameter package
 		typedef _Myt distribution_type;
 
-		explicit param_type(_Ty0 _T0 = 1, _Ty1 _P0 = _Ty1(0.5))
+		explicit param_type(_Ty _T0 = 1, _Ty1 _P0 = _Ty1(0.5))
 			{	// construct from parameters
 			_Init(_T0, _P0);
 			}
@@ -3178,7 +3232,7 @@ public:
 			return (!(*this == _Right));
 			}
 
-		_Ty0 t() const
+		_Ty t() const
 			{	// return max value
 			return (_Tx);
 			}
@@ -3188,7 +3242,7 @@ public:
 			return (_Px);
 			}
 
-		void _Init(_Ty0 _T0, _Ty1 _P0)
+		void _Init(_Ty _T0, _Ty1 _P0)
 			{	// initialize
 			_RNG_ASSERT(0.0 <= _T0,
 				"invalid max argument for binomial_distribution");
@@ -3205,7 +3259,7 @@ public:
 			_Small._Init(_Mean);
 			}
 
-		_Ty0 _Tx;
+		_Ty _Tx;
 		_Ty1 _Px;
 		_Ty1 _Pp;
 		_Ty1 _Mean;
@@ -3214,11 +3268,11 @@ public:
 		_Ty1 _Logp;
 		_Ty1 _Logp1;
 
-		_Small_poisson_distribution<_Ty0> _Small;
+		_Small_poisson_distribution<_Ty> _Small;
 
 		};
 
-	explicit binomial_distribution(_Ty0 _T0 = 1,
+	explicit binomial_distribution(_Ty _T0 = 1,
 		_Ty1 _P0 = _Ty1(0.5))
 		: _Par(_T0, _P0)
 		{	// construct
@@ -3229,7 +3283,7 @@ public:
 		{	// construct from parameter package
 		}
 
-	_Ty0 t() const
+	_Ty t() const
 		{	// return max value
 		return (_Par.t());
 		}
@@ -3280,7 +3334,7 @@ public:
 		basic_istream<_Elem, _Traits>& _Read(
 			basic_istream<_Elem, _Traits>& _Istr)
 		{	// read state from _Istr
-		_Ty0 _T0;
+		_Ty _T0;
 		_Ty1 _P0;
 		_In(_Istr, _P0);
 		_In(_Istr, _T0);
@@ -3302,12 +3356,12 @@ private:
 	template<class _Engine>
 		result_type _Eval(_Engine& _Eng, const param_type& _Par0) const
 		{	// Press et al., Numerical Recipes in C, 2nd ed., pp 295-296.
-		_Ty0 _Res;
-		static _Ty0 _Zero = 0;	// to quiet diagnostics
+		_Ty _Res;
+		static _Ty _Zero = 0;	// to quiet diagnostics
 		if (_Par0._Tx < 25)
 			{	// generate directly
 			_Res = 0;
-			for (_Ty0 _Ix = 0; _Ix < _Par0._Tx; ++_Ix)
+			for (_Ty _Ix = 0; _Ix < _Par0._Tx; ++_Ix)
 				if (_NRAND(_Eng, _Ty1) < _Par0._Px)
 					++_Res;
 			return (_Res);
@@ -3323,7 +3377,7 @@ private:
 				for (; ; )
 					{	// generate a tentative value
 					_Yx = (_Ty1)_CSTD tan(_Pi * _NRAND(_Eng, _Ty1));
-					_Res = (_Ty0)(_Par0._Sqrt * _Yx + _Par0._Mean);
+					_Res = (_Ty)(_Par0._Sqrt * _Yx + _Par0._Mean);
 					if (_Zero <= _Res && _Res <= _Par0._Tx)
 						break;
 					}
@@ -3342,22 +3396,36 @@ private:
 	param_type _Par;
 	};
 
+template<class _Ty>
+	bool operator==(const binomial_distribution<_Ty>& _Left,
+		const binomial_distribution<_Ty>& _Right)
+	{	// test for equality
+	return (_Left.param() == _Right.param());
+	}
+
+template<class _Ty>
+	bool operator!=(const binomial_distribution<_Ty>& _Left,
+		const binomial_distribution<_Ty>& _Right)
+	{	// test for inequality
+	return (!(_Left == _Right));
+	}
+
 template<class _Elem,
 	class _Traits,
-	class _Ty0>
+	class _Ty>
 	basic_istream<_Elem, _Traits>& operator>>(
 		basic_istream<_Elem, _Traits>& _Istr,
-		binomial_distribution<_Ty0>& _Dist)
+		binomial_distribution<_Ty>& _Dist)
 	{	// read state from _Istr
 	return (_Dist._Read(_Istr));
 	}
 
 template<class _Elem,
 	class _Traits,
-	class _Ty0>
+	class _Ty>
 	basic_ostream<_Elem, _Traits>& operator<<(
 		basic_ostream<_Elem, _Traits>& _Ostr,
-		const binomial_distribution<_Ty0>& _Dist)
+		const binomial_distribution<_Ty>& _Dist)
 	{	// write state to _Ostr
 	return (_Dist._Write(_Ostr));
 	}
@@ -3369,14 +3437,13 @@ template<class _Ty = double>
 	{	// template class for uniform real distribution
 public:
 	typedef uniform_real<_Ty> _Myt;
-	typedef _Ty input_type;	// retained
 	typedef _Ty result_type;
 
 	struct param_type
 		{	// parameter package
 		typedef _Myt distribution_type;
 
-		param_type(_Ty _Min0 = _Ty(0),
+		explicit param_type(_Ty _Min0 = _Ty(0),
 			_Ty _Max0 = _Ty(1))
 			{	// construct from parameters
 			_Init(_Min0, _Max0);
@@ -3404,7 +3471,8 @@ public:
 
 		void _Init(_Ty _Min0, _Ty _Max0)
 			{	// set internal state
-			_RNG_ASSERT(_Min0 <= _Max0,
+			_RNG_ASSERT(_Min0 <= _Max0 && (0 <= _Min0
+				|| _Max0 <= _Min0 + (numeric_limits<_Ty>::max)()),
 				"invalid min and max arguments for uniform_real");
 			_Min = _Min0;
 			_Max = _Max0;
@@ -3471,7 +3539,8 @@ public:
 		return (_Eval(_Eng, _Par0));
 		}
 
-	template<class _Elem, class _Traits>
+	template<class _Elem,
+		class _Traits>
 		basic_istream<_Elem, _Traits>& _Read(
 			basic_istream<_Elem, _Traits>& _Istr)
 		{	// read state from _Istr
@@ -3483,7 +3552,8 @@ public:
 		return (_Istr);
 		}
 
-	template<class _Elem, class _Traits>
+	template<class _Elem,
+		class _Traits>
 		basic_ostream<_Elem, _Traits>& _Write(
 			basic_ostream<_Elem, _Traits>& _Ostr) const
 		{	// write state to _Ostr
@@ -3503,7 +3573,8 @@ private:
 	};
 
 template<class _Elem,
-	class _Traits, class _Ty>
+	class _Traits,
+	class _Ty>
 	basic_istream<_Elem, _Traits>& operator>>(
 		basic_istream<_Elem, _Traits>& _Istr,
 		uniform_real<_Ty>& _Dist)
@@ -3564,6 +3635,20 @@ public:
 		}
 	};
 
+template<class _Ty>
+	bool operator==(const uniform_real_distribution<_Ty>& _Left,
+		const uniform_real_distribution<_Ty>& _Right)
+	{	// test for equality
+	return (_Left.param() == _Right.param());
+	}
+
+template<class _Ty>
+	bool operator!=(const uniform_real_distribution<_Ty>& _Left,
+		const uniform_real_distribution<_Ty>& _Right)
+	{	// test for inequality
+	return (!(_Left == _Right));
+	}
+
 	// TEMPLATE CLASS exponential_distribution
 template<class _Ty = double>
 	class exponential_distribution
@@ -3573,7 +3658,6 @@ public:
 		"invalid template argument for exponential_distribution");
 
 	typedef exponential_distribution<_Ty> _Myt;
-	typedef _Ty input_type;	// retained
 	typedef _Ty result_type;
 
 	struct param_type
@@ -3691,6 +3775,20 @@ private:
 	param_type _Par;
 	};
 
+template<class _Ty>
+	bool operator==(const exponential_distribution<_Ty>& _Left,
+		const exponential_distribution<_Ty>& _Right)
+	{	// test for equality
+	return (_Left.param() == _Right.param());
+	}
+
+template<class _Ty>
+	bool operator!=(const exponential_distribution<_Ty>& _Left,
+		const exponential_distribution<_Ty>& _Right)
+	{	// test for inequality
+	return (!(_Left == _Right));
+	}
+
 template<class _Elem,
 	class _Traits,
 	class _Ty>
@@ -3720,7 +3818,6 @@ public:
 		"invalid template argument for normal_distribution");
 
 	typedef normal_distribution<_Ty> _Myt;
-	typedef _Ty input_type;	// retained
 	typedef _Ty result_type;
 
 	struct param_type
@@ -3901,6 +3998,20 @@ private:
 	_Ty _X2;
 	};
 
+template<class _Ty>
+	bool operator==(const normal_distribution<_Ty>& _Left,
+		const normal_distribution<_Ty>& _Right)
+	{	// test for equality
+	return (_Left.param() == _Right.param());
+	}
+
+template<class _Ty>
+	bool operator!=(const normal_distribution<_Ty>& _Left,
+		const normal_distribution<_Ty>& _Right)
+	{	// test for inequality
+	return (!(_Left == _Right));
+	}
+
 template<class _Elem,
 	class _Traits,
 	class _Ty>
@@ -3930,7 +4041,6 @@ public:
 		"invalid template argument for gamma_distribution");
 
 	typedef gamma_distribution<_Ty> _Myt;
-	typedef _Ty input_type;	// retained
 	typedef _Ty result_type;
 
 	struct param_type
@@ -4122,6 +4232,20 @@ private:
 	param_type _Par;
 	};
 
+template<class _Ty>
+	bool operator==(const gamma_distribution<_Ty>& _Left,
+		const gamma_distribution<_Ty>& _Right)
+	{	// test for equality
+	return (_Left.param() == _Right.param());
+	}
+
+template<class _Ty>
+	bool operator!=(const gamma_distribution<_Ty>& _Left,
+		const gamma_distribution<_Ty>& _Right)
+	{	// test for inequality
+	return (!(_Left == _Right));
+	}
+
 template<class _Elem,
 	class _Traits,
 	class _Ty>
@@ -4288,6 +4412,20 @@ private:
 	param_type _Par;
 	};
 
+template<class _Ty>
+	bool operator==(const weibull_distribution<_Ty>& _Left,
+		const weibull_distribution<_Ty>& _Right)
+	{	// test for equality
+	return (_Left.param() == _Right.param());
+	}
+
+template<class _Ty>
+	bool operator!=(const weibull_distribution<_Ty>& _Left,
+		const weibull_distribution<_Ty>& _Right)
+	{	// test for inequality
+	return (!(_Left == _Right));
+	}
+
 template<class _Elem,
 	class _Traits,
 	class _Ty>
@@ -4451,6 +4589,20 @@ private:
 
 	param_type _Par;
 	};
+
+template<class _Ty>
+	bool operator==(const extreme_value_distribution<_Ty>& _Left,
+		const extreme_value_distribution<_Ty>& _Right)
+	{	// test for equality
+	return (_Left.param() == _Right.param());
+	}
+
+template<class _Ty>
+	bool operator!=(const extreme_value_distribution<_Ty>& _Left,
+		const extreme_value_distribution<_Ty>& _Right)
+	{	// test for inequality
+	return (!(_Left == _Right));
+	}
 
 template<class _Elem,
 	class _Traits,
@@ -4616,6 +4768,20 @@ private:
 	param_type _Par;
 	};
 
+template<class _Ty>
+	bool operator==(const lognormal_distribution<_Ty>& _Left,
+		const lognormal_distribution<_Ty>& _Right)
+	{	// test for equality
+	return (_Left.param() == _Right.param());
+	}
+
+template<class _Ty>
+	bool operator!=(const lognormal_distribution<_Ty>& _Left,
+		const lognormal_distribution<_Ty>& _Right)
+	{	// test for inequality
+	return (!(_Left == _Right));
+	}
+
 template<class _Elem,
 	class _Traits,
 	class _Ty>
@@ -4761,6 +4927,20 @@ private:
 
 	param_type _Par;
 	};
+
+template<class _Ty>
+	bool operator==(const chi_squared_distribution<_Ty>& _Left,
+		const chi_squared_distribution<_Ty>& _Right)
+	{	// test for equality
+	return (_Left.param() == _Right.param());
+	}
+
+template<class _Ty>
+	bool operator!=(const chi_squared_distribution<_Ty>& _Left,
+		const chi_squared_distribution<_Ty>& _Right)
+	{	// test for inequality
+	return (!(_Left == _Right));
+	}
 
 template<class _Elem,
 	class _Traits,
@@ -4926,6 +5106,20 @@ private:
 
 	param_type _Par;
 	};
+
+template<class _Ty>
+	bool operator==(const cauchy_distribution<_Ty>& _Left,
+		const cauchy_distribution<_Ty>& _Right)
+	{	// test for equality
+	return (_Left.param() == _Right.param());
+	}
+
+template<class _Ty>
+	bool operator!=(const cauchy_distribution<_Ty>& _Left,
+		const cauchy_distribution<_Ty>& _Right)
+	{	// test for inequality
+	return (!(_Left == _Right));
+	}
 
 template<class _Elem,
 	class _Traits,
@@ -5152,6 +5346,20 @@ private:
 	param_type _Par;
 	};
 
+template<class _Ty>
+	bool operator==(const fisher_f_distribution<_Ty>& _Left,
+		const fisher_f_distribution<_Ty>& _Right)
+	{	// test for equality
+	return (_Left.param() == _Right.param());
+	}
+
+template<class _Ty>
+	bool operator!=(const fisher_f_distribution<_Ty>& _Left,
+		const fisher_f_distribution<_Ty>& _Right)
+	{	// test for inequality
+	return (!(_Left == _Right));
+	}
+
 template<class _Elem,
 	class _Traits,
 	class _Ty>
@@ -5310,6 +5518,20 @@ private:
 
 	param_type _Par;
 	};
+
+template<class _Ty>
+	bool operator==(const student_t_distribution<_Ty>& _Left,
+		const student_t_distribution<_Ty>& _Right)
+	{	// test for equality
+	return (_Left.param() == _Right.param());
+	}
+
+template<class _Ty>
+	bool operator!=(const student_t_distribution<_Ty>& _Left,
+		const student_t_distribution<_Ty>& _Right)
+	{	// test for inequality
+	return (!(_Left == _Right));
+	}
 
 template<class _Elem,
 	class _Traits,
@@ -5484,6 +5706,20 @@ private:
 	param_type _Par;
 	};
 
+template<class _Ty>
+	bool operator==(const negative_binomial_distribution<_Ty>& _Left,
+		const negative_binomial_distribution<_Ty>& _Right)
+	{	// test for equality
+	return (_Left.param() == _Right.param());
+	}
+
+template<class _Ty>
+	bool operator!=(const negative_binomial_distribution<_Ty>& _Left,
+		const negative_binomial_distribution<_Ty>& _Right)
+	{	// test for inequality
+	return (!(_Left == _Right));
+	}
+
 template<class _Elem,
 	class _Traits,
 	class _Ty>
@@ -5641,7 +5877,7 @@ public:
 		}
 
 	_Myvec probabilities() const
-		{ // return scaled probabilities vector
+		{	// return scaled probabilities vector
 		return (_Par.probabilities());
 		}
 
@@ -5741,6 +5977,20 @@ private:
 public:
 	param_type _Par;
 	};
+
+template<class _Ty>
+	bool operator==(const discrete_distribution<_Ty>& _Left,
+		const discrete_distribution<_Ty>& _Right)
+	{	// test for equality
+	return (_Left.param() == _Right.param());
+	}
+
+template<class _Ty>
+	bool operator!=(const discrete_distribution<_Ty>& _Left,
+		const discrete_distribution<_Ty>& _Right)
+	{	// test for inequality
+	return (!(_Left == _Right));
+	}
 
 template<class _Elem,
 	class _Traits,
@@ -5904,12 +6154,12 @@ public:
 		}
 
 	vector<_Ty> intervals() const
-		{ // return intervals vector
+		{	// return intervals vector
 		return (_Par.intervals());
 		}
 
 	vector<_Ty> densities() const
-		{ // return densities vector
+		{	// return densities vector
 		return (_Par.densities());
 		}
 
@@ -5988,6 +6238,20 @@ public:
 
 	param_type _Par;
 	};
+
+template<class _Ty>
+	bool operator==(const piecewise_constant_distribution<_Ty>& _Left,
+		const piecewise_constant_distribution<_Ty>& _Right)
+	{	// test for equality
+	return (_Left.param() == _Right.param());
+	}
+
+template<class _Ty>
+	bool operator!=(const piecewise_constant_distribution<_Ty>& _Left,
+		const piecewise_constant_distribution<_Ty>& _Right)
+	{	// test for inequality
+	return (!(_Left == _Right));
+	}
 
 template<class _Elem,
 	class _Traits,
@@ -6186,12 +6450,12 @@ public:
 		}
 
 	vector<_Ty> intervals() const
-		{ // return intervals vector
+		{	// return intervals vector
 		return (_Par.intervals());
 		}
 
 	vector<_Ty> densities() const
-		{ // return densities vector
+		{	// return densities vector
 		return (_Par.densities());
 		}
 
@@ -6288,6 +6552,20 @@ public:
 
 	param_type _Par;
 	};
+
+template<class _Ty>
+	bool operator==(const piecewise_linear_distribution<_Ty>& _Left,
+		const piecewise_linear_distribution<_Ty>& _Right)
+	{	// test for equality
+	return (_Left.param() == _Right.param());
+	}
+
+template<class _Ty>
+	bool operator!=(const piecewise_linear_distribution<_Ty>& _Left,
+		const piecewise_linear_distribution<_Ty>& _Right)
+	{	// test for inequality
+	return (!(_Left == _Right));
+	}
 
 template<class _Elem,
 	class _Traits,

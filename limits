@@ -24,7 +24,7 @@ _STD_BEGIN
 //	tinyness detected before floating-point rounding
 //	64-bit long long (if _LONGLONG defined)
 
- #define _STCONS(ty, name, val)	static const ty name = (ty)(val)
+ #define _STCONS(ty, name, val)	static constexpr ty name = (ty)(val)
 
 		// ENUM float_denorm_style
 typedef enum
@@ -80,49 +80,49 @@ template<class _Ty>
 		: public _Num_base
 	{	// numeric limits for arbitrary type _Ty (say little or nothing)
 public:
-	static _Ty (min)() _THROW0()
+	static constexpr _Ty (min)() _THROW0()
 		{	// return minimum value
-		return (_Ty(0));
+		return (_Ty());
 		}
 
-	static _Ty (max)() _THROW0()
+	static constexpr _Ty (max)() _THROW0()
 		{	// return maximum value
-		return (_Ty(0));
+		return (_Ty());
 		}
 
-	static _Ty lowest() _THROW0()
+	static constexpr _Ty lowest() _THROW0()
 		{	// return most negative value
-		return ((min)());
+		return (_Ty());
 		}
 
-	static _Ty epsilon() _THROW0()
+	static constexpr _Ty epsilon() _THROW0()
 		{	// return smallest effective increment from 1.0
-		return (_Ty(0));
+		return (_Ty());
 		}
 
-	static _Ty round_error() _THROW0()
+	static constexpr _Ty round_error() _THROW0()
 		{	// return largest rounding error
-		return (_Ty(0));
+		return (_Ty());
 		}
 
-	static _Ty denorm_min() _THROW0()
+	static constexpr _Ty denorm_min() _THROW0()
 		{	// return minimum denormalized value
-		return (_Ty(0));
+		return (_Ty());
 		}
 
-	static _Ty infinity() _THROW0()
+	static constexpr _Ty infinity() _THROW0()
 		{	// return positive infinity
-		return (_Ty(0));
+		return (_Ty());
 		}
 
-	static _Ty quiet_NaN() _THROW0()
+	static constexpr _Ty quiet_NaN() _THROW0()
 		{	// return non-signaling NaN
-		return (_Ty(0));
+		return (_Ty());
 		}
 
-	static _Ty signaling_NaN() _THROW0()
+	static constexpr _Ty signaling_NaN() _THROW0()
 		{	// return signaling NaN
-		return (_Ty(0));
+		return (_Ty());
 		}
 	};
 
@@ -185,47 +185,47 @@ template<> class numeric_limits<char>
 public:
 	typedef char _Ty;
 
-	static _Ty (min)() _THROW0()
+	static constexpr _Ty (min)() _THROW0()
 		{	// return minimum value
 		return (CHAR_MIN);
 		}
 
-	static _Ty (max)() _THROW0()
+	static constexpr _Ty (max)() _THROW0()
 		{	// return maximum value
 		return (CHAR_MAX);
 		}
 
-	static _Ty lowest() _THROW0()
+	static constexpr _Ty lowest() _THROW0()
 		{	// return most negative value
 		return ((min)());
 		}
 
-	static _Ty epsilon() _THROW0()
+	static constexpr _Ty epsilon() _THROW0()
 		{	// return smallest effective increment from 1.0
 		return (0);
 		}
 
-	static _Ty round_error() _THROW0()
+	static constexpr _Ty round_error() _THROW0()
 		{	// return largest rounding error
 		return (0);
 		}
 
-	static _Ty denorm_min() _THROW0()
+	static constexpr _Ty denorm_min() _THROW0()
 		{	// return minimum denormalized value
 		return (0);
 		}
 
-	static _Ty infinity() _THROW0()
+	static constexpr _Ty infinity() _THROW0()
 		{	// return positive infinity
 		return (0);
 		}
 
-	static _Ty quiet_NaN() _THROW0()
+	static constexpr _Ty quiet_NaN() _THROW0()
 		{	// return non-signaling NaN
 		return (0);
 		}
 
-	static _Ty signaling_NaN() _THROW0()
+	static constexpr _Ty signaling_NaN() _THROW0()
 		{	// return signaling NaN
 		return (0);
 		}
@@ -243,47 +243,47 @@ template<> class numeric_limits<wchar_t>
 public:
 	typedef wchar_t _Ty;
 
-	static _Ty (min)() _THROW0()
+	static constexpr _Ty (min)() _THROW0()
 		{	// return minimum value
 		return ((_Ty)WCHAR_MIN);
 		}
 
-	static _Ty (max)() _THROW0()
+	static constexpr _Ty (max)() _THROW0()
 		{	// return maximum value
 		return ((_Ty)WCHAR_MAX);
 		}
 
-	static _Ty lowest() _THROW0()
+	static constexpr _Ty lowest() _THROW0()
 		{	// return most negative value
 		return ((min)());
 		}
 
-	static _Ty epsilon() _THROW0()
+	static constexpr _Ty epsilon() _THROW0()
 		{	// return smallest effective increment from 1.0
 		return (0);
 		}
 
-	static _Ty round_error() _THROW0()
+	static constexpr _Ty round_error() _THROW0()
 		{	// return largest rounding error
 		return (0);
 		}
 
-	static _Ty denorm_min() _THROW0()
+	static constexpr _Ty denorm_min() _THROW0()
 		{	// return minimum denormalized value
 		return (0);
 		}
 
-	static _Ty infinity() _THROW0()
+	static constexpr _Ty infinity() _THROW0()
 		{	// return positive infinity
 		return (0);
 		}
 
-	static _Ty quiet_NaN() _THROW0()
+	static constexpr _Ty quiet_NaN() _THROW0()
 		{	// return non-signaling NaN
 		return (0);
 		}
 
-	static _Ty signaling_NaN() _THROW0()
+	static constexpr _Ty signaling_NaN() _THROW0()
 		{	// return signaling NaN
 		return (0);
 		}
@@ -302,47 +302,47 @@ template<> class numeric_limits<bool>
 public:
 	typedef bool _Ty;
 
-	static _Ty (min)() _THROW0()
+	static constexpr _Ty (min)() _THROW0()
 		{	// return minimum value
 		return (false);
 		}
 
-	static _Ty (max)() _THROW0()
+	static constexpr _Ty (max)() _THROW0()
 		{	// return maximum value
 		return (true);
 		}
 
-	static _Ty lowest() _THROW0()
+	static constexpr _Ty lowest() _THROW0()
 		{	// return most negative value
 		return ((min)());
 		}
 
-	static _Ty epsilon() _THROW0()
+	static constexpr _Ty epsilon() _THROW0()
 		{	// return smallest effective increment from 1.0
 		return (0);
 		}
 
-	static _Ty round_error() _THROW0()
+	static constexpr _Ty round_error() _THROW0()
 		{	// return largest rounding error
 		return (0);
 		}
 
-	static _Ty denorm_min() _THROW0()
+	static constexpr _Ty denorm_min() _THROW0()
 		{	// return minimum denormalized value
 		return (0);
 		}
 
-	static _Ty infinity() _THROW0()
+	static constexpr _Ty infinity() _THROW0()
 		{	// return positive infinity
 		return (0);
 		}
 
-	static _Ty quiet_NaN() _THROW0()
+	static constexpr _Ty quiet_NaN() _THROW0()
 		{	// return non-signaling NaN
 		return (0);
 		}
 
-	static _Ty signaling_NaN() _THROW0()
+	static constexpr _Ty signaling_NaN() _THROW0()
 		{	// return signaling NaN
 		return (0);
 		}
@@ -360,47 +360,47 @@ template<> class numeric_limits<signed char>
 public:
 	typedef signed char _Ty;
 
-	static _Ty (min)() _THROW0()
+	static constexpr _Ty (min)() _THROW0()
 		{	// return minimum value
 		return (SCHAR_MIN);
 		}
 
-	static _Ty (max)() _THROW0()
+	static constexpr _Ty (max)() _THROW0()
 		{	// return maximum value
 		return (SCHAR_MAX);
 		}
 
-	static _Ty lowest() _THROW0()
+	static constexpr _Ty lowest() _THROW0()
 		{	// return most negative value
 		return ((min)());
 		}
 
-	static _Ty epsilon() _THROW0()
+	static constexpr _Ty epsilon() _THROW0()
 		{	// return smallest effective increment from 1.0
 		return (0);
 		}
 
-	static _Ty round_error() _THROW0()
+	static constexpr _Ty round_error() _THROW0()
 		{	// return largest rounding error
 		return (0);
 		}
 
-	static _Ty denorm_min() _THROW0()
+	static constexpr _Ty denorm_min() _THROW0()
 		{	// return minimum denormalized value
 		return (0);
 		}
 
-	static _Ty infinity() _THROW0()
+	static constexpr _Ty infinity() _THROW0()
 		{	// return positive infinity
 		return (0);
 		}
 
-	static _Ty quiet_NaN() _THROW0()
+	static constexpr _Ty quiet_NaN() _THROW0()
 		{	// return non-signaling NaN
 		return (0);
 		}
 
-	static _Ty signaling_NaN() _THROW0()
+	static constexpr _Ty signaling_NaN() _THROW0()
 		{	// return signaling NaN
 		return (0);
 		}
@@ -417,47 +417,47 @@ template<> class numeric_limits<unsigned char>
 public:
 	typedef unsigned char _Ty;
 
-	static _Ty (min)() _THROW0()
+	static constexpr _Ty (min)() _THROW0()
 		{	// return minimum value
 		return (0);
 		}
 
-	static _Ty (max)() _THROW0()
+	static constexpr _Ty (max)() _THROW0()
 		{	// return maximum value
 		return (UCHAR_MAX);
 		}
 
-	static _Ty lowest() _THROW0()
+	static constexpr _Ty lowest() _THROW0()
 		{	// return most negative value
 		return ((min)());
 		}
 
-	static _Ty epsilon() _THROW0()
+	static constexpr _Ty epsilon() _THROW0()
 		{	// return smallest effective increment from 1.0
 		return (0);
 		}
 
-	static _Ty round_error() _THROW0()
+	static constexpr _Ty round_error() _THROW0()
 		{	// return largest rounding error
 		return (0);
 		}
 
-	static _Ty denorm_min() _THROW0()
+	static constexpr _Ty denorm_min() _THROW0()
 		{	// return minimum denormalized value
 		return (0);
 		}
 
-	static _Ty infinity() _THROW0()
+	static constexpr _Ty infinity() _THROW0()
 		{	// return positive infinity
 		return (0);
 		}
 
-	static _Ty quiet_NaN() _THROW0()
+	static constexpr _Ty quiet_NaN() _THROW0()
 		{	// return non-signaling NaN
 		return (0);
 		}
 
-	static _Ty signaling_NaN() _THROW0()
+	static constexpr _Ty signaling_NaN() _THROW0()
 		{	// return signaling NaN
 		return (0);
 		}
@@ -474,47 +474,47 @@ template<> class numeric_limits<short>
 public:
 	typedef short _Ty;
 
-	static _Ty (min)() _THROW0()
+	static constexpr _Ty (min)() _THROW0()
 		{	// return minimum value
 		return (SHRT_MIN);
 		}
 
-	static _Ty (max)() _THROW0()
+	static constexpr _Ty (max)() _THROW0()
 		{	// return maximum value
 		return (SHRT_MAX);
 		}
 
-	static _Ty lowest() _THROW0()
+	static constexpr _Ty lowest() _THROW0()
 		{	// return most negative value
 		return ((min)());
 		}
 
-	static _Ty epsilon() _THROW0()
+	static constexpr _Ty epsilon() _THROW0()
 		{	// return smallest effective increment from 1.0
 		return (0);
 		}
 
-	static _Ty round_error() _THROW0()
+	static constexpr _Ty round_error() _THROW0()
 		{	// return largest rounding error
 		return (0);
 		}
 
-	static _Ty denorm_min() _THROW0()
+	static constexpr _Ty denorm_min() _THROW0()
 		{	// return minimum denormalized value
 		return (0);
 		}
 
-	static _Ty infinity() _THROW0()
+	static constexpr _Ty infinity() _THROW0()
 		{	// return positive infinity
 		return (0);
 		}
 
-	static _Ty quiet_NaN() _THROW0()
+	static constexpr _Ty quiet_NaN() _THROW0()
 		{	// return non-signaling NaN
 		return (0);
 		}
 
-	static _Ty signaling_NaN() _THROW0()
+	static constexpr _Ty signaling_NaN() _THROW0()
 		{	// return signaling NaN
 		return (0);
 		}
@@ -533,47 +533,47 @@ template<> class numeric_limits<unsigned short>
 public:
 	typedef unsigned short _Ty;
 
-	static _Ty (min)() _THROW0()
+	static constexpr _Ty (min)() _THROW0()
 		{	// return minimum value
 		return (0);
 		}
 
-	static _Ty (max)() _THROW0()
+	static constexpr _Ty (max)() _THROW0()
 		{	// return maximum value
 		return (USHRT_MAX);
 		}
 
-	static _Ty lowest() _THROW0()
+	static constexpr _Ty lowest() _THROW0()
 		{	// return most negative value
 		return ((min)());
 		}
 
-	static _Ty epsilon() _THROW0()
+	static constexpr _Ty epsilon() _THROW0()
 		{	// return smallest effective increment from 1.0
 		return (0);
 		}
 
-	static _Ty round_error() _THROW0()
+	static constexpr _Ty round_error() _THROW0()
 		{	// return largest rounding error
 		return (0);
 		}
 
-	static _Ty denorm_min() _THROW0()
+	static constexpr _Ty denorm_min() _THROW0()
 		{	// return minimum denormalized value
 		return (0);
 		}
 
-	static _Ty infinity() _THROW0()
+	static constexpr _Ty infinity() _THROW0()
 		{	// return positive infinity
 		return (0);
 		}
 
-	static _Ty quiet_NaN() _THROW0()
+	static constexpr _Ty quiet_NaN() _THROW0()
 		{	// return non-signaling NaN
 		return (0);
 		}
 
-	static _Ty signaling_NaN() _THROW0()
+	static constexpr _Ty signaling_NaN() _THROW0()
 		{	// return signaling NaN
 		return (0);
 		}
@@ -592,47 +592,47 @@ template<> class numeric_limits<char16_t>
 public:
 	typedef char16_t _Ty;
 
-	static _Ty (min)() _THROW0()
+	static constexpr _Ty (min)() _THROW0()
 		{	// return minimum value
 		return (0);
 		}
 
-	static _Ty (max)() _THROW0()
+	static constexpr _Ty (max)() _THROW0()
 		{	// return maximum value
 		return (USHRT_MAX);
 		}
 
-	static _Ty lowest() _THROW0()
+	static constexpr _Ty lowest() _THROW0()
 		{	// return most negative value
 		return ((min)());
 		}
 
-	static _Ty epsilon() _THROW0()
+	static constexpr _Ty epsilon() _THROW0()
 		{	// return smallest effective increment from 1.0
 		return (0);
 		}
 
-	static _Ty round_error() _THROW0()
+	static constexpr _Ty round_error() _THROW0()
 		{	// return largest rounding error
 		return (0);
 		}
 
-	static _Ty denorm_min() _THROW0()
+	static constexpr _Ty denorm_min() _THROW0()
 		{	// return minimum denormalized value
 		return (0);
 		}
 
-	static _Ty infinity() _THROW0()
+	static constexpr _Ty infinity() _THROW0()
 		{	// return positive infinity
 		return (0);
 		}
 
-	static _Ty quiet_NaN() _THROW0()
+	static constexpr _Ty quiet_NaN() _THROW0()
 		{	// return non-signaling NaN
 		return (0);
 		}
 
-	static _Ty signaling_NaN() _THROW0()
+	static constexpr _Ty signaling_NaN() _THROW0()
 		{	// return signaling NaN
 		return (0);
 		}
@@ -650,47 +650,47 @@ template<> class numeric_limits<int>
 public:
 	typedef int _Ty;
 
-	static _Ty (min)() _THROW0()
+	static constexpr _Ty (min)() _THROW0()
 		{	// return minimum value
 		return (INT_MIN);
 		}
 
-	static _Ty (max)() _THROW0()
+	static constexpr _Ty (max)() _THROW0()
 		{	// return maximum value
 		return (INT_MAX);
 		}
 
-	static _Ty lowest() _THROW0()
+	static constexpr _Ty lowest() _THROW0()
 		{	// return most negative value
 		return ((min)());
 		}
 
-	static _Ty epsilon() _THROW0()
+	static constexpr _Ty epsilon() _THROW0()
 		{	// return smallest effective increment from 1.0
 		return (0);
 		}
 
-	static _Ty round_error() _THROW0()
+	static constexpr _Ty round_error() _THROW0()
 		{	// return largest rounding error
 		return (0);
 		}
 
-	static _Ty denorm_min() _THROW0()
+	static constexpr _Ty denorm_min() _THROW0()
 		{	// return minimum denormalized value
 		return (0);
 		}
 
-	static _Ty infinity() _THROW0()
+	static constexpr _Ty infinity() _THROW0()
 		{	// return positive infinity
 		return (0);
 		}
 
-	static _Ty quiet_NaN() _THROW0()
+	static constexpr _Ty quiet_NaN() _THROW0()
 		{	// return non-signaling NaN
 		return (0);
 		}
 
-	static _Ty signaling_NaN() _THROW0()
+	static constexpr _Ty signaling_NaN() _THROW0()
 		{	// return signaling NaN
 		return (0);
 		}
@@ -708,47 +708,47 @@ template<> class numeric_limits<unsigned int>
 public:
 	typedef unsigned int _Ty;
 
-	static _Ty (min)() _THROW0()
+	static constexpr _Ty (min)() _THROW0()
 		{	// return minimum value
 		return (0);
 		}
 
-	static _Ty (max)() _THROW0()
+	static constexpr _Ty (max)() _THROW0()
 		{	// return maximum value
 		return (UINT_MAX);
 		}
 
-	static _Ty lowest() _THROW0()
+	static constexpr _Ty lowest() _THROW0()
 		{	// return most negative value
 		return ((min)());
 		}
 
-	static _Ty epsilon() _THROW0()
+	static constexpr _Ty epsilon() _THROW0()
 		{	// return smallest effective increment from 1.0
 		return (0);
 		}
 
-	static _Ty round_error() _THROW0()
+	static constexpr _Ty round_error() _THROW0()
 		{	// return largest rounding error
 		return (0);
 		}
 
-	static _Ty denorm_min() _THROW0()
+	static constexpr _Ty denorm_min() _THROW0()
 		{	// return minimum denormalized value
 		return (0);
 		}
 
-	static _Ty infinity() _THROW0()
+	static constexpr _Ty infinity() _THROW0()
 		{	// return positive infinity
 		return (0);
 		}
 
-	static _Ty quiet_NaN() _THROW0()
+	static constexpr _Ty quiet_NaN() _THROW0()
 		{	// return non-signaling NaN
 		return (0);
 		}
 
-	static _Ty signaling_NaN() _THROW0()
+	static constexpr _Ty signaling_NaN() _THROW0()
 		{	// return signaling NaN
 		return (0);
 		}
@@ -766,47 +766,47 @@ template<> class numeric_limits<long>
 public:
 	typedef long _Ty;
 
-	static _Ty (min)() _THROW0()
+	static constexpr _Ty (min)() _THROW0()
 		{	// return minimum value
 		return (LONG_MIN);
 		}
 
-	static _Ty (max)() _THROW0()
+	static constexpr _Ty (max)() _THROW0()
 		{	// return maximum value
 		return (LONG_MAX);
 		}
 
-	static _Ty lowest() _THROW0()
+	static constexpr _Ty lowest() _THROW0()
 		{	// return most negative value
 		return ((min)());
 		}
 
-	static _Ty epsilon() _THROW0()
+	static constexpr _Ty epsilon() _THROW0()
 		{	// return smallest effective increment from 1.0
 		return (0);
 		}
 
-	static _Ty round_error() _THROW0()
+	static constexpr _Ty round_error() _THROW0()
 		{	// return largest rounding error
 		return (0);
 		}
 
-	static _Ty denorm_min() _THROW0()
+	static constexpr _Ty denorm_min() _THROW0()
 		{	// return minimum denormalized value
 		return (0);
 		}
 
-	static _Ty infinity() _THROW0()
+	static constexpr _Ty infinity() _THROW0()
 		{	// return positive infinity
 		return (0);
 		}
 
-	static _Ty quiet_NaN() _THROW0()
+	static constexpr _Ty quiet_NaN() _THROW0()
 		{	// return non-signaling NaN
 		return (0);
 		}
 
-	static _Ty signaling_NaN() _THROW0()
+	static constexpr _Ty signaling_NaN() _THROW0()
 		{	// return signaling NaN
 		return (0);
 		}
@@ -824,47 +824,47 @@ template<> class numeric_limits<unsigned long>
 public:
 	typedef unsigned long _Ty;
 
-	static _Ty (min)() _THROW0()
+	static constexpr _Ty (min)() _THROW0()
 		{	// return minimum value
 		return (0);
 		}
 
-	static _Ty (max)() _THROW0()
+	static constexpr _Ty (max)() _THROW0()
 		{	// return maximum value
 		return (ULONG_MAX);
 		}
 
-	static _Ty lowest() _THROW0()
+	static constexpr _Ty lowest() _THROW0()
 		{	// return most negative value
 		return ((min)());
 		}
 
-	static _Ty epsilon() _THROW0()
+	static constexpr _Ty epsilon() _THROW0()
 		{	// return smallest effective increment from 1.0
 		return (0);
 		}
 
-	static _Ty round_error() _THROW0()
+	static constexpr _Ty round_error() _THROW0()
 		{	// return largest rounding error
 		return (0);
 		}
 
-	static _Ty denorm_min() _THROW0()
+	static constexpr _Ty denorm_min() _THROW0()
 		{	// return minimum denormalized value
 		return (0);
 		}
 
-	static _Ty infinity() _THROW0()
+	static constexpr _Ty infinity() _THROW0()
 		{	// return positive infinity
 		return (0);
 		}
 
-	static _Ty quiet_NaN() _THROW0()
+	static constexpr _Ty quiet_NaN() _THROW0()
 		{	// return non-signaling NaN
 		return (0);
 		}
 
-	static _Ty signaling_NaN() _THROW0()
+	static constexpr _Ty signaling_NaN() _THROW0()
 		{	// return signaling NaN
 		return (0);
 		}
@@ -882,47 +882,47 @@ template<> class numeric_limits<char32_t>
 public:
 	typedef char32_t _Ty;
 
-	static _Ty (min)() _THROW0()
+	static constexpr _Ty (min)() _THROW0()
 		{	// return minimum value
 		return (0);
 		}
 
-	static _Ty (max)() _THROW0()
+	static constexpr _Ty (max)() _THROW0()
 		{	// return maximum value
 		return (UINT_MAX);
 		}
 
-	static _Ty lowest() _THROW0()
+	static constexpr _Ty lowest() _THROW0()
 		{	// return most negative value
 		return ((min)());
 		}
 
-	static _Ty epsilon() _THROW0()
+	static constexpr _Ty epsilon() _THROW0()
 		{	// return smallest effective increment from 1.0
 		return (0);
 		}
 
-	static _Ty round_error() _THROW0()
+	static constexpr _Ty round_error() _THROW0()
 		{	// return largest rounding error
 		return (0);
 		}
 
-	static _Ty denorm_min() _THROW0()
+	static constexpr _Ty denorm_min() _THROW0()
 		{	// return minimum denormalized value
 		return (0);
 		}
 
-	static _Ty infinity() _THROW0()
+	static constexpr _Ty infinity() _THROW0()
 		{	// return positive infinity
 		return (0);
 		}
 
-	static _Ty quiet_NaN() _THROW0()
+	static constexpr _Ty quiet_NaN() _THROW0()
 		{	// return non-signaling NaN
 		return (0);
 		}
 
-	static _Ty signaling_NaN() _THROW0()
+	static constexpr _Ty signaling_NaN() _THROW0()
 		{	// return signaling NaN
 		return (0);
 		}
@@ -941,47 +941,47 @@ template<> class numeric_limits<_LONGLONG>
 public:
 	typedef _LONGLONG _Ty;
 
-	static _Ty (min)() _THROW0()
+	static constexpr _Ty (min)() _THROW0()
 		{	// return minimum value
 		return (-_LLONG_MAX - _C2);
 		}
 
-	static _Ty (max)() _THROW0()
+	static constexpr _Ty (max)() _THROW0()
 		{	// return maximum value
 		return (_LLONG_MAX);
 		}
 
-	static _Ty lowest() _THROW0()
+	static constexpr _Ty lowest() _THROW0()
 		{	// return most negative value
 		return ((min)());
 		}
 
-	static _Ty epsilon() _THROW0()
+	static constexpr _Ty epsilon() _THROW0()
 		{	// return smallest effective increment from 1.0
 		return (0);
 		}
 
-	static _Ty round_error() _THROW0()
+	static constexpr _Ty round_error() _THROW0()
 		{	// return largest rounding error
 		return (0);
 		}
 
-	static _Ty denorm_min() _THROW0()
+	static constexpr _Ty denorm_min() _THROW0()
 		{	// return minimum denormalized value
 		return (0);
 		}
 
-	static _Ty infinity() _THROW0()
+	static constexpr _Ty infinity() _THROW0()
 		{	// return positive infinity
 		return (0);
 		}
 
-	static _Ty quiet_NaN() _THROW0()
+	static constexpr _Ty quiet_NaN() _THROW0()
 		{	// return non-signaling NaN
 		return (0);
 		}
 
-	static _Ty signaling_NaN() _THROW0()
+	static constexpr _Ty signaling_NaN() _THROW0()
 		{	// return signaling NaN
 		return (0);
 		}
@@ -999,47 +999,47 @@ template<> class numeric_limits<_ULONGLONG>
 public:
 	typedef _ULONGLONG _Ty;
 
-	static _Ty (min)() _THROW0()
+	static constexpr _Ty (min)() _THROW0()
 		{	// return minimum value
 		return (0);
 		}
 
-	static _Ty (max)() _THROW0()
+	static constexpr _Ty (max)() _THROW0()
 		{	// return maximum value
 		return (_ULLONG_MAX);
 		}
 
-	static _Ty lowest() _THROW0()
+	static constexpr _Ty lowest() _THROW0()
 		{	// return most negative value
 		return ((min)());
 		}
 
-	static _Ty epsilon() _THROW0()
+	static constexpr _Ty epsilon() _THROW0()
 		{	// return smallest effective increment from 1.0
 		return (0);
 		}
 
-	static _Ty round_error() _THROW0()
+	static constexpr _Ty round_error() _THROW0()
 		{	// return largest rounding error
 		return (0);
 		}
 
-	static _Ty denorm_min() _THROW0()
+	static constexpr _Ty denorm_min() _THROW0()
 		{	// return minimum denormalized value
 		return (0);
 		}
 
-	static _Ty infinity() _THROW0()
+	static constexpr _Ty infinity() _THROW0()
 		{	// return positive infinity
 		return (0);
 		}
 
-	static _Ty quiet_NaN() _THROW0()
+	static constexpr _Ty quiet_NaN() _THROW0()
 		{	// return non-signaling NaN
 		return (0);
 		}
 
-	static _Ty signaling_NaN() _THROW0()
+	static constexpr _Ty signaling_NaN() _THROW0()
 		{	// return signaling NaN
 		return (0);
 		}
@@ -1058,47 +1058,47 @@ template<> class numeric_limits<float>
 public:
 	typedef float _Ty;
 
-	static _Ty (min)() _THROW0()
+	static constexpr _Ty (min)() _THROW0()
 		{	// return minimum value
 		return (FLT_MIN);
 		}
 
-	static _Ty (max)() _THROW0()
+	static constexpr _Ty (max)() _THROW0()
 		{	// return maximum value
 		return (FLT_MAX);
 		}
 
-	static _Ty lowest() _THROW0()
+	static constexpr _Ty lowest() _THROW0()
 		{	// return most negative value
 		return (-(max)());
 		}
 
-	static _Ty epsilon() _THROW0()
+	static constexpr _Ty epsilon() _THROW0()
 		{	// return smallest effective increment from 1.0
 		return (FLT_EPSILON);
 		}
 
-	static _Ty round_error() _THROW0()
+	static constexpr _Ty round_error() _THROW0()
 		{	// return largest rounding error
 		return (0.5);
 		}
 
-	static _Ty denorm_min() _THROW0()
+	static constexpr _Ty denorm_min() _THROW0()
 		{	// return minimum denormalized value
 		return (_CSTD _FDenorm._Float);
 		}
 
-	static _Ty infinity() _THROW0()
+	static constexpr _Ty infinity() _THROW0()
 		{	// return positive infinity
 		return (_CSTD _FInf._Float);
 		}
 
-	static _Ty quiet_NaN() _THROW0()
+	static constexpr _Ty quiet_NaN() _THROW0()
 		{	// return non-signaling NaN
 		return (_CSTD _FNan._Float);
 		}
 
-	static _Ty signaling_NaN() _THROW0()
+	static constexpr _Ty signaling_NaN() _THROW0()
 		{	// return signaling NaN
 		return (_CSTD _FSnan._Float);
 		}
@@ -1121,47 +1121,47 @@ template<> class numeric_limits<double>
 public:
 	typedef double _Ty;
 
-	static _Ty (min)() _THROW0()
+	static constexpr _Ty (min)() _THROW0()
 		{	// return minimum value
 		return (DBL_MIN);
 		}
 
-	static _Ty (max)() _THROW0()
+	static constexpr _Ty (max)() _THROW0()
 		{	// return maximum value
 		return (DBL_MAX);
 		}
 
-	static _Ty lowest() _THROW0()
+	static constexpr _Ty lowest() _THROW0()
 		{	// return most negative value
 		return (-(max)());
 		}
 
-	static _Ty epsilon() _THROW0()
+	static constexpr _Ty epsilon() _THROW0()
 		{	// return smallest effective increment from 1.0
 		return (DBL_EPSILON);
 		}
 
-	static _Ty round_error() _THROW0()
+	static constexpr _Ty round_error() _THROW0()
 		{	// return largest rounding error
 		return (0.5);
 		}
 
-	static _Ty denorm_min() _THROW0()
+	static constexpr _Ty denorm_min() _THROW0()
 		{	// return minimum denormalized value
 		return (_CSTD _Denorm._Double);
 		}
 
-	static _Ty infinity() _THROW0()
+	static constexpr _Ty infinity() _THROW0()
 		{	// return positive infinity
 		return (_CSTD _Inf._Double);
 		}
 
-	static _Ty quiet_NaN() _THROW0()
+	static constexpr _Ty quiet_NaN() _THROW0()
 		{	// return non-signaling NaN
 		return (_CSTD _Nan._Double);
 		}
 
-	static _Ty signaling_NaN() _THROW0()
+	static constexpr _Ty signaling_NaN() _THROW0()
 		{	// return signaling NaN
 		return (_CSTD _Snan._Double);
 		}
@@ -1184,47 +1184,47 @@ template<> class numeric_limits<long double>
 public:
 	typedef long double _Ty;
 
-	static _Ty (min)() _THROW0()
+	static constexpr _Ty (min)() _THROW0()
 		{	// return minimum value
 		return (LDBL_MIN);
 		}
 
-	static _Ty (max)() _THROW0()
+	static constexpr _Ty (max)() _THROW0()
 		{	// return maximum value
 		return (LDBL_MAX);
 		}
 
-	static _Ty lowest() _THROW0()
+	static constexpr _Ty lowest() _THROW0()
 		{	// return most negative value
 		return (-(max)());
 		}
 
-	static _Ty epsilon() _THROW0()
+	static constexpr _Ty epsilon() _THROW0()
 		{	// return smallest effective increment from 1.0
 		return (LDBL_EPSILON);
 		}
 
-	static _Ty round_error() _THROW0()
+	static constexpr _Ty round_error() _THROW0()
 		{	// return largest rounding error
 		return (0.5);
 		}
 
-	static _Ty denorm_min() _THROW0()
+	static constexpr _Ty denorm_min() _THROW0()
 		{	// return minimum denormalized value
 		return (_CSTD _LDenorm._Long_double);
 		}
 
-	static _Ty infinity() _THROW0()
+	static constexpr _Ty infinity() _THROW0()
 		{	// return positive infinity
 		return (_CSTD _LInf._Long_double);
 		}
 
-	static _Ty quiet_NaN() _THROW0()
+	static constexpr _Ty quiet_NaN() _THROW0()
 		{	// return non-signaling NaN
 		return (_CSTD _LNan._Long_double);
 		}
 
-	static _Ty signaling_NaN() _THROW0()
+	static constexpr _Ty signaling_NaN() _THROW0()
 		{	// return signaling NaN
 		return (_CSTD _LSnan._Long_double);
 		}
@@ -1243,7 +1243,7 @@ public:
   #if !defined(_MSC_EXTENSIONS)
    #undef _STCONS
    #define _STCONS(ty, name, val)	\
-		__declspec(selectany) const ty _STCLASS::name
+		__declspec(selectany) constexpr ty _STCLASS::name
 
   #undef _STCLASS
   #define _STCLASS	_Num_base

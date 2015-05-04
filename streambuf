@@ -28,7 +28,6 @@ protected:
 		}
 
 	__CLR_OR_THIS_CALL basic_streambuf(_Uninitialized)
-
 		{	// construct uninitialized
 		}
 
