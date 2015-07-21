@@ -726,6 +726,11 @@ public:
 		return (_Ans);
 		}
 
+	_OutIt base() const
+		{	// return the stored iterator
+		return (_Next);
+		}
+
 private:
 	_OutIt _Next;	// the stored iterator
 	};

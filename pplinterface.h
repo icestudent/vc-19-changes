@@ -49,15 +49,15 @@ struct scheduler_ptr
     /// <summary>
     /// Creates a scheduler pointer from shared_ptr to scheduler
     /// </summary>
-    explicit scheduler_ptr(std::shared_ptr<scheduler_interface> scheduler) : m_sharedScheduler(std::move(scheduler))
+    explicit scheduler_ptr(std::shared_ptr<scheduler_interface> _Scheduler) : _M_sharedScheduler(std::move(_Scheduler))
     {
-        m_scheduler = m_sharedScheduler.get();
+        _M_scheduler = _M_sharedScheduler.get();
     }
 
     /// <summary>
     /// Creates a scheduler pointer from raw pointer to scheduler
     /// </summary>
-    explicit scheduler_ptr(_In_opt_ scheduler_interface * pScheduler) : m_scheduler(pScheduler)
+    explicit scheduler_ptr(_In_opt_ scheduler_interface * _PScheduler) : _M_scheduler(_PScheduler)
     {
     }
 
@@ -74,7 +74,7 @@ struct scheduler_ptr
     /// </summary>
     scheduler_interface * get() const
     {
-        return m_scheduler;
+        return _M_scheduler;
     }
 
     /// <summary>
@@ -84,8 +84,8 @@ struct scheduler_ptr
 
 private:
 
-    std::shared_ptr<scheduler_interface> m_sharedScheduler;
-    scheduler_interface * m_scheduler;
+    std::shared_ptr<scheduler_interface> _M_sharedScheduler;
+    scheduler_interface * _M_scheduler;
 };
 
 /// <summary>
@@ -261,9 +261,9 @@ _T atomic_decrement(std::atomic<_T>& _Target)
 }
 
 template<typename _T>
-_T atomic_add(std::atomic<_T>& _Target, _T value)
+_T atomic_add(std::atomic<_T>& _Target, _T _Value)
 {
-    return _Target.fetch_add(value) + value;
+    return _Target.fetch_add(_Value) + _Value;
 }
 
 }} // namespace Concurrency::details

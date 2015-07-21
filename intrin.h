@@ -50,9 +50,8 @@ extern "C" {
 ** __MACHINEX64           : x64 only
 ** __MACHINEX86_X64       : x86 and x64 only
 ** __MACHINEARM           : ARM only
-** __MACHINEARM_X64       : ARM and x64 only
 ** __MACHINEARM64         : ARM64 only
-** __MACHINEARM_ARM64     : ARM and ARM64 only  
+** __MACHINEARM_ARM64     : ARM and ARM64 only
 ** __MACHINEARM_ARM64_X64 : ARM and 64-bit Arch only
 ** __MACHINEARM64_X64     : ARM64 and x64 only
 ** __MACHINEWVMPURE       : /clr:pure only
@@ -63,7 +62,6 @@ extern "C" {
 #define __MACHINEX64           __MACHINE
 #define __MACHINEX86_X64       __MACHINE
 #define __MACHINEARM           __MACHINE
-#define __MACHINEARM_X64       __MACHINE
 #define __MACHINEARM64         __MACHINE
 #define __MACHINEARM_ARM64     __MACHINE
 #define __MACHINEARM_ARM64_X64 __MACHINE
@@ -94,11 +92,6 @@ extern "C" {
 #undef __MACHINEX86_X64
 #define __MACHINEX86_X64    __MACHINEZ
 #endif  /* !(defined (_M_IX86) || defined (_M_X64)) */
-
-#if !(defined (_M_ARM) || defined (_M_X64))
-#undef __MACHINEARM_X64
-#define __MACHINEARM_X64    __MACHINEZ
-#endif  /* !(defined (_M_ARM) || defined (_M_X64)) */
 
 #if !defined (_M_ARM)
 #undef  __MACHINEARM
@@ -541,14 +534,14 @@ __MACHINEARM_ARM64(unsigned char _interlockedbittestandset_rel(long volatile *, 
 __MACHINEARM64(unsigned char _interlockedbittestandset64_acq(__int64 volatile *, __int64))
 __MACHINEARM64(unsigned char _interlockedbittestandset64_rel(__int64 volatile *, __int64))
 __MACHINEARM64(unsigned char _interlockedbittestandset64_nf(__int64 volatile *, __int64))
-__MACHINEARM64(__int32 __crc32b(__int32, __int32))
-__MACHINEARM64(__int32 __crc32h(__int32, __int32))
-__MACHINEARM64(__int32 __crc32w(__int32, __int32))
-__MACHINEARM64(__int32 __crc32x(__int32, __int64))
-__MACHINEARM64(__int32 __crc32cb(__int32, __int32))
-__MACHINEARM64(__int32 __crc32ch(__int32, __int32))
-__MACHINEARM64(__int32 __crc32cw(__int32, __int32))
-__MACHINEARM64(__int32 __crc32cx(__int32, __int64))
+__MACHINEARM64(unsigned __int32 __crc32b(unsigned __int32, unsigned __int32))
+__MACHINEARM64(unsigned __int32 __crc32h(unsigned __int32, unsigned __int32))
+__MACHINEARM64(unsigned __int32 __crc32w(unsigned __int32, unsigned __int32))
+__MACHINEARM64(unsigned __int32 __crc32d(unsigned __int32, unsigned __int64))
+__MACHINEARM64(unsigned __int32 __crc32cb(unsigned __int32, unsigned __int32))
+__MACHINEARM64(unsigned __int32 __crc32ch(unsigned __int32, unsigned __int32))
+__MACHINEARM64(unsigned __int32 __crc32cw(unsigned __int32, unsigned __int32))
+__MACHINEARM64(unsigned __int32 __crc32cd(unsigned __int32, unsigned __int64))
 __MACHINEARM(int _isunordered(double, double))
 __MACHINEARM(int _isunorderedf(float, float))
 __MACHINE(_Check_return_ unsigned long __cdecl _lrotl(_In_ unsigned long, _In_ int))

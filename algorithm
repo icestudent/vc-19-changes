@@ -4137,12 +4137,13 @@ template<class _Ty> inline
 
 	_Post_equal_to_(_Left < _Right ? _Right : _Left)
 
-	const _Ty& (max)(const _Ty& _Left, const _Ty& _Right)
+	_CONST_FUN const _Ty& (max)(const _Ty& _Left, const _Ty& _Right)
 	{	// return larger of _Left and _Right
 	return (_DEBUG_LT(_Left, _Right) ? _Right : _Left);
 	}
 
 template<class _Ty> inline
+	/* _CONST_FUN */	// TRANSITION
 	_Ty (max)(_XSTD initializer_list<_Ty> _Ilist)
 	{	// return leftmost/largest
 	const _Ty *_Res = _STD max_element(_Ilist.begin(), _Ilist.end());
@@ -4152,13 +4153,15 @@ template<class _Ty> inline
 		// TEMPLATE FUNCTION max WITH PRED
 template<class _Ty,
 	class _Pr> inline
-	const _Ty& (max)(const _Ty& _Left, const _Ty& _Right, _Pr _Pred)
+	_CONST_FUN const _Ty& (max)(const _Ty& _Left, const _Ty& _Right,
+		_Pr _Pred)
 	{	// return larger of _Left and _Right using _Pred
 	return (_DEBUG_LT_PRED(_Pred, _Left, _Right) ? _Right : _Left);
 	}
 
 template<class _Ty,
 	class _Pr> inline
+	/* _CONST_FUN */	// TRANSITION
 	_Ty (max)(_XSTD initializer_list<_Ty> _Ilist, _Pr _Pred)
 	{	// return leftmost/largest
 	const _Ty *_Res = _STD max_element(_Ilist.begin(), _Ilist.end(), _Pred);
@@ -4170,12 +4173,13 @@ template<class _Ty> inline
 
 	_Post_equal_to_(_Right < _Left ? _Right : _Left)
 
-	const _Ty& (min)(const _Ty& _Left, const _Ty& _Right)
+	_CONST_FUN const _Ty& (min)(const _Ty& _Left, const _Ty& _Right)
 	{	// return smaller of _Left and _Right
 	return (_DEBUG_LT(_Right, _Left) ? _Right : _Left);
 	}
 
 template<class _Ty> inline
+	/* _CONST_FUN */	// TRANSITION
 	_Ty (min)(_XSTD initializer_list<_Ty> _Ilist)
 	{	// return leftmost/smallest
 	const _Ty *_Res = _STD min_element(_Ilist.begin(), _Ilist.end());
@@ -4185,13 +4189,15 @@ template<class _Ty> inline
 		// TEMPLATE FUNCTION min WITH PRED
 template<class _Ty,
 	class _Pr> inline
-	const _Ty& (min)(const _Ty& _Left, const _Ty& _Right, _Pr _Pred)
+	_CONST_FUN const _Ty& (min)(const _Ty& _Left, const _Ty& _Right,
+		_Pr _Pred)
 	{	// return smaller of _Left and _Right using _Pred
 	return (_DEBUG_LT_PRED(_Pred, _Right, _Left) ? _Right : _Left);
 	}
 
 template<class _Ty,
 	class _Pr> inline
+	/* _CONST_FUN */	// TRANSITION
 	_Ty (min)(_XSTD initializer_list<_Ty> _Ilist, _Pr _Pred)
 	{	// return leftmost/smallest
 	const _Ty *_Res = _STD min_element(_Ilist.begin(), _Ilist.end(), _Pred);
@@ -4200,7 +4206,7 @@ template<class _Ty,
 
 		// TEMPLATE FUNCTION minmax
 template<class _Ty> inline
-	pair<const _Ty&, const _Ty&>
+	_CONST_FUN pair<const _Ty&, const _Ty&>
 		minmax(const _Ty& _Left, const _Ty& _Right)
 	{	// return pair(leftmost/smaller, rightmost/larger) of _Left and _Right
 	return (_Right < _Left
@@ -4209,6 +4215,7 @@ template<class _Ty> inline
 	}
 
 template<class _Ty> inline
+	/* _CONST_FUN */	// TRANSITION
 	pair<_Ty, _Ty> minmax(_XSTD initializer_list<_Ty> _Ilist)
 	{	// return {leftmost/smallest, rightmost/largest}
 	pair<const _Ty *, const _Ty *> _Res = _STD minmax_element(
@@ -4219,7 +4226,7 @@ template<class _Ty> inline
 		// TEMPLATE FUNCTION minmax WITH PRED
 template<class _Ty,
 	class _Pr> inline
-	pair<const _Ty&, const _Ty&>
+	_CONST_FUN pair<const _Ty&, const _Ty&>
 		minmax(const _Ty& _Left, const _Ty& _Right, _Pr _Pred)
 	{	// return pair(leftmost/smaller, rightmost/larger) of _Left and _Right
 	return (_Pred(_Right, _Left)
@@ -4229,7 +4236,9 @@ template<class _Ty,
 
 template<class _Ty,
 	class _Pr> inline
-	pair<_Ty, _Ty> minmax(_XSTD initializer_list<_Ty> _Ilist, _Pr _Pred)
+	/* _CONST_FUN */	// TRANSITION
+	pair<_Ty, _Ty> minmax(_XSTD initializer_list<_Ty> _Ilist,
+		_Pr _Pred)
 	{	// return {leftmost/smallest, rightmost/largest}
 	pair<const _Ty *, const _Ty *> _Res = _STD minmax_element(
 		_Ilist.begin(), _Ilist.end(), _Pred);

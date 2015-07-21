@@ -77,37 +77,63 @@ public:
 		size_t _Mypos;	// position of element in bitset
 		};
 
-	bool operator[](size_t _Pos) const
+ #if _ITERATOR_DEBUG_LEVEL == 2
+	static void _Validate(size_t _Pos)
+		{	// verify that _Pos is within bounds
+		if (_Bits <= _Pos)
+			_DEBUG_ERROR("bitset index outside range");
+		}
+
+ #elif _ITERATOR_DEBUG_LEVEL == 1
+	static void _Validate(size_t _Pos)
+		{	// verify that _Pos is within bounds
+		_SCL_SECURE_VALIDATE_RANGE(_Pos < _Bits);
+		}
+
+ #else /* _ITERATOR_DEBUG_LEVEL == 2 */
+	static void _Validate(size_t)
+		{	// (don't) verify that _Pos is within bounds
+		}
+ #endif /* _ITERATOR_DEBUG_LEVEL == 2 */
+
+	_CONST_FUN bool _Subscript(size_t _Pos) const
 		{	// subscript nonmutable sequence
-		return (test(_Pos));
+		return ((_Array[_Pos / _Bitsperword]
+			& ((_Ty)1 << _Pos % _Bitsperword)) != 0);
+		}
+
+	_CONST_FUN bool operator[](size_t _Pos) const
+		{	// subscript nonmutable sequence
+ #if _ITERATOR_DEBUG_LEVEL == 0
+		return (_Subscript(_Pos));
+
+ #else /* _ITERATOR_DEBUG_LEVEL == 0 */
+		return (_Bits <= _Pos
+			? (_Validate(_Pos), false)
+			: _Subscript(_Pos));
+ #endif /* _ITERATOR_DEBUG_LEVEL == 0 */
 		}
 
 	reference operator[](size_t _Pos)
 		{	// subscript mutable sequence
- #if _ITERATOR_DEBUG_LEVEL == 2
-		if (_Bits <= _Pos)
-			_DEBUG_ERROR("bitset index outside range");
-
- #elif _ITERATOR_DEBUG_LEVEL == 1
-		_SCL_SECURE_VALIDATE_RANGE(_Pos < _Bits);
- #endif /* _ITERATOR_DEBUG_LEVEL == 2 */
-
+		_Validate(_Pos);
 		return (reference(*this, _Pos));
 		}
 
-	bitset() _NOEXCEPT
+	_CONST_FUN bitset() _NOEXCEPT
+		: _Array()
 		{	// construct with all false values
-		_Tidy();
 		}
 
-	bitset(_ULonglong _Val) _NOEXCEPT
+	static _CONST_DATA bool _Need_mask
+		= _Bits < CHAR_BIT * sizeof (_ULonglong);
 
+	static _CONST_DATA _ULonglong _Mask
+		= (1ULL << (_Need_mask ? _Bits : 0)) - 1ULL;
 
-		{	// construct from bits in unsigned long
-		_Tidy();
-		for (size_t _Pos = 0; _Val != 0 && _Pos < _Bits; _Val >>= 1, ++_Pos)
-			if (_Val & 1)
-				set(_Pos);
+	_CONST_FUN bitset(_ULonglong _Val) _NOEXCEPT
+		: _Array{static_cast<_Ty>(_Need_mask ? _Val & _Mask : _Val)}
+		{	// construct from bits in unsigned long long
 		}
 
  #define _BITSET_SIZE_TYPE	\
@@ -375,7 +401,7 @@ public:
 		return (_Val);
 		}
 
-	size_t size() const _NOEXCEPT
+	_CONST_FUN size_t size() const _NOEXCEPT
 		{	// return size of bitset
 		return (_Bits);
 		}
@@ -403,8 +429,7 @@ public:
 		{	// test if bit at _Pos is set
 		if (_Bits <= _Pos)
 			_Xran();	// _Pos off end
-		return ((_Array[_Pos / _Bitsperword]
-			& ((_Ty)1 << _Pos % _Bitsperword)) != 0);
+		return (_Subscript(_Pos));
 		}
 
 	bool any() const _NOEXCEPT

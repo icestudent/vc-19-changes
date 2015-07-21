@@ -3220,7 +3220,7 @@ private:
     const _Sym_fun &_M_fun;
     size_t _M_number;
     _Bucket *_M_root;
-    _Order_combinable &operator =(const _Order_combinable &other);
+    _Order_combinable &operator =(const _Order_combinable &_Other);
 
 public:
     _Bucket *_Construct(_Bucket *_Par = 0)
@@ -3336,15 +3336,15 @@ struct _Reduce_functor_helper
     _Combinable_type &_Combinable;
 
     typedef _Reduce_type _Reduce_type;
-    typedef typename _Combinable_type::_Bucket Bucket_type;
+    typedef typename _Combinable_type::_Bucket _Bucket_type;
 
-    _Reduce_functor_helper(const _Reduce_type &_Identity, const _Sub_function &_Sub_fun, _Combinable_type &&comb):
-        _Sub_fun(_Sub_fun), _Combinable(comb), _Identity_value(_Identity)
+    _Reduce_functor_helper(const _Reduce_type &_Identity, const _Sub_function &_Sub_fun, _Combinable_type &&_Comb):
+        _Sub_fun(_Sub_fun), _Combinable(_Comb), _Identity_value(_Identity)
     {
     }
 
 private:
-    _Reduce_functor_helper &operator =(const _Reduce_functor_helper &other);
+    _Reduce_functor_helper &operator =(const _Reduce_functor_helper &_Other);
 };
 
 // All the code below is the worker without range stealing
@@ -3366,8 +3366,8 @@ public:
 private:
     const _Functor &_M_fun;
     const _Forward_iterator _M_begin, _M_end;
-    typename _Functor::Bucket_type * const _M_bucket;
-    _Parallel_reduce_fixed_worker &operator =(const _Parallel_reduce_fixed_worker &other);
+    typename _Functor::_Bucket_type * const _M_bucket;
+    _Parallel_reduce_fixed_worker &operator =(const _Parallel_reduce_fixed_worker &_Other);
 };
 
 // the parallel worker executor for fixed iterator
@@ -3726,8 +3726,8 @@ void _Parallel_transform_binary_impl2(_Input_iterator1 _First1, _Input_iterator1
 {
     // This functor will be copied on the heap and will execute the chunk in parallel
     {
-        _Parallel_transform_binary_helper<_Input_iterator1, _Input_iterator2, _Output_iterator, _Binary_operator> functor(_First1, _Last1, _First2, _Result, _Binary_op);
-        _Tg.run(functor);
+        _Parallel_transform_binary_helper<_Input_iterator1, _Input_iterator2, _Output_iterator, _Binary_operator> _Functor(_First1, _Last1, _First2, _Result, _Binary_op);
+        _Tg.run(_Functor);
     }
 
     // If there is a tail, push the tail
@@ -3778,8 +3778,8 @@ void _Parallel_transform_unary_impl2(_Input_iterator _First, _Input_iterator _La
 {
     // This functor will be copied on the heap and will execute the chunk in parallel
     {
-        _Parallel_transform_unary_helper<_Input_iterator, _Output_iterator, _Unary_operator> functor(_First, _Last, _Result, _Unary_op);
-        _Tg.run(functor);
+        _Parallel_transform_unary_helper<_Input_iterator, _Output_iterator, _Unary_operator> _Functor(_First, _Last, _Result, _Unary_op);
+        _Tg.run(_Functor);
     }
 
     // If there is a tail, push the tail
@@ -4986,7 +4986,7 @@ void _Parallel_integer_sort_asc(const _Random_iterator &_Begin, size_t _Size, co
             }
 
             return _Init;
-        }, [](const _Integer_type &a, const _Integer_type &b) -> const _Integer_type& {return (a < b)? b : a;});
+        }, [](const _Integer_type &_A, const _Integer_type &_B) -> const _Integer_type& {return (_A < _B)? _B : _A;});
     size_t _Radix = 0;
 
     // Find out highest differing byte
@@ -5578,7 +5578,7 @@ inline void parallel_buffered_sort(const _Allocator& _Alloc, const _Random_itera
     {
         return std::sort(_Begin, _End, _Func);
     }
-    const static size_t CORE_NUM_MASK = 0x55555555;
+    const static size_t _CORE_NUM_MASK = 0x55555555;
 
     _AllocatedBufferHolder<_Allocator> _Holder(_Size, _Alloc);
 
@@ -5610,7 +5610,7 @@ inline void parallel_buffered_sort(const _Allocator& _Alloc, const _Random_itera
         // In this algorithm, we will make this alignment by bit operations (it's easy and clear). For a binary representation,
         // all the numbers that satisfy power(2, even number) will be 1, 100, 10000, 1000000, 100000000 ...
         // After OR-ing these numbers together, we will get a mask (... 0101 0101 0101) which is all possible combinations of
-        // power(2, even number). We use _Core_num & CORE_NUM_MASK | _Core_num << 1 & CORE_NUM_MASK, a bit-wise operation to align
+        // power(2, even number). We use _Core_num & _CORE_NUM_MASK | _Core_num << 1 & _CORE_NUM_MASK, a bit-wise operation to align
         // _Core_num's highest bit into a power(2, even number).
         //
         // It means if _Core_num = 8, the highest bit in binary is bin(1000) which is not power(2, even number). After this
@@ -5619,7 +5619,7 @@ inline void parallel_buffered_sort(const _Allocator& _Alloc, const _Random_itera
         // mask bin(... 0101 0101 0101) We don't care about the other bits on the aligned result except the highest bit, because they
         // will be ignored in the function.
         _Parallel_buffered_sort_impl(_Begin, _Size, stdext::make_unchecked_array_iterator(_Holder._Get_buffer()),
-            _Func, _Core_num & CORE_NUM_MASK | _Core_num << 1 & CORE_NUM_MASK, _Chunk_size);
+            _Func, _Core_num & _CORE_NUM_MASK | _Core_num << 1 & _CORE_NUM_MASK, _Chunk_size);
     }, cancellation_token::none());
 
 }
@@ -5633,7 +5633,7 @@ inline void parallel_buffered_sort(const _Allocator& _Alloc, const _Random_itera
 template <typename _DataType>
 struct _Radix_sort_default_function
 {
-    size_t operator()(const _DataType& val) const
+    size_t operator()(const _DataType& _Val) const
     {
         // An instance of the type predicate returns the value if the type _DataType is one of the integral types, otherwise it
         // statically asserts.
@@ -5647,14 +5647,14 @@ struct _Radix_sort_default_function
 
         if (std::is_unsigned<_DataType>::value)
         {
-            return val;
+            return _Val;
         }
         else
         {
             // The default function needs to take the signed integer-like representation and map it to an unsigned one. The
             // following code will take the midpoint of the unsigned representable range (SIZE_MAX/2)+1 and does an unsigned
             // add of the value. Thus, it maps a [-signed_min,+signed_max] range into a [0, unsigned_max] range.
-            return (((SIZE_MAX/2) + 1) + static_cast<size_t>(val));
+            return (((SIZE_MAX/2) + 1) + static_cast<size_t>(_Val));
         }
     }
 };

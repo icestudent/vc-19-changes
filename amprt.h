@@ -522,10 +522,9 @@ namespace details
         }
 
 #if !defined(_CXXAMP)
-        void _Set_buffer_ptr(_In_opt_ _Ubiquitous_buffer *_Buffer_ptr) __GPU_ONLY
+        void _Set_buffer_ptr(_In_opt_ _Ubiquitous_buffer *) __GPU_ONLY
         {
             // No need to set the buffer ptr on the GPU
-            UNREFERENCED_PARAMETER(_Buffer_ptr);
             _M_buffer_ptr = NULL;
         }
 #endif // _CXXAMP
@@ -688,10 +687,9 @@ namespace details
         }
 
 #if !defined(_CXXAMP)
-        void _Set_texture_ptr(_In_opt_ _Texture *_Texture_ptr) __GPU_ONLY
+        void _Set_texture_ptr(_In_opt_ _Texture *) __GPU_ONLY
         {
             // No need to set the texture ptr on the GPU
-            UNREFERENCED_PARAMETER(_Texture_ptr);
             _M_texture_ptr = NULL;
         }
 #endif // _CXXAMP
@@ -800,10 +798,9 @@ namespace details
         }
 
 #if !defined(_CXXAMP)
-        void _Set_sampler_ptr(_In_opt_ _Sampler *_Sampler_ptr) __GPU_ONLY
+        void _Set_sampler_ptr(_In_opt_ _Sampler *) __GPU_ONLY
         {
             // No need to set the sampler ptr on the GPU
-            UNREFERENCED_PARAMETER(_Sampler_ptr);
             _M_sampler_ptr = NULL;
         }
 #endif // _CXXAMP

@@ -51,25 +51,25 @@ enum class launch {	// names for launch options passed to async
 	deferred = 0x2
 	};
 
-inline launch operator&(launch _Left, launch _Right)
+inline _CONST_FUN launch operator&(launch _Left, launch _Right)
 	{	/* return _Left&_Right */
 	return (static_cast<launch>(static_cast<unsigned int>(_Left)
 		& static_cast<unsigned int>(_Right)));
 	}
 
-inline launch operator|(launch _Left, launch _Right)
+inline _CONST_FUN launch operator|(launch _Left, launch _Right)
 	{	/* return _Left|_Right */
 	return (static_cast<launch>(static_cast<unsigned int>(_Left)
 		| static_cast<unsigned int>(_Right)));
 	}
 
-inline launch operator^(launch _Left, launch _Right)
+inline _CONST_FUN launch operator^(launch _Left, launch _Right)
 	{	/* return _Left^_Right */
 	return (static_cast<launch>(static_cast<unsigned int>(_Left)
 		^ static_cast<unsigned int>(_Right)));
 	}
 
-inline launch operator~(launch _Left)
+inline _CONST_FUN launch operator~(launch _Left)
 	{	/* return ~_Left */
 	return (static_cast<launch>(~static_cast<unsigned int>(_Left)));
 	}
@@ -1543,12 +1543,14 @@ public:
 
 	void set_value(_Ty&& _Val)
 		{	// store result
-		_MyPromise._Get_state_for_set()._Set_value(_STD forward<_Ty>(_Val), false);
+		_MyPromise._Get_state_for_set()._Set_value(
+			_STD forward<_Ty>(_Val), false);
 		}
 
 	void set_value_at_thread_exit(_Ty&& _Val)
 		{	// store result and block until thread exit
-		_MyPromise._Get_state_for_set()._Set_value(_STD forward<_Ty>(_Val), true);
+		_MyPromise._Get_state_for_set()._Set_value(
+			_STD forward<_Ty>(_Val), true);
 		}
 
 	void set_exception(_XSTD exception_ptr _Exc)
@@ -1772,8 +1774,7 @@ public:
 		class _Alloc,
 		class = typename enable_if<
 			!is_same<typename decay<_Fty2>::type, _Myt>::value>::type>
-		explicit packaged_task(allocator_arg_t, const _Alloc& _Al,
-			_Fty2&& _Fnarg)
+		packaged_task(allocator_arg_t, const _Alloc& _Al, _Fty2&& _Fnarg)
 		: _MyPromise(_Make_packaged_state<_MyStateType>(
 			_STD forward<_Fty2>(_Fnarg), _Al))
 		{	// construct from rvalue function object and allocator
@@ -1954,7 +1955,7 @@ template<class _Ty,
 			}
 
 		template<class _Ut>
-			void set_result(_Ut&& _Value)
+			void return_value(_Ut&& _Value)
 			{
 			_MyPromise.set_value(_STD forward<_Ut>(_Value));
 			}
@@ -1963,7 +1964,6 @@ template<class _Ty,
 			{
 			_MyPromise.set_exception(_STD move(_Exc));
 			}
-
 		};
 	};
 
@@ -1989,7 +1989,7 @@ template<class... _ArgTypes>
 			return (false);
 			}
 
-		void set_result()
+		void return_void()
 			{
 			_MyPromise.set_value();
 			}
@@ -2009,7 +2009,8 @@ template<class _Ty>
 	}
 
 template<class _Ty>
-	void await_suspend(future<_Ty>& _Fut, experimental::coroutine_handle<> _ResumeCb)
+	void await_suspend(future<_Ty>& _Fut,
+		experimental::coroutine_handle<> _ResumeCb)
 	{	// change to .then when future gets .then
 	thread _WaitingThread([&_Fut, _ResumeCb]{
 		_Fut.wait();

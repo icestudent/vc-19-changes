@@ -598,6 +598,12 @@ public:
 		_Myhead() = _Buyheadnode();
 		}
 
+	_List_alloc(_Alloc&& _Al)
+		: _Mypair(_One_then_variadic_args_t(), _STD move(_Al))
+		{	// construct head node, allocator from _Al
+		_Myhead() = _Buyheadnode();
+		}
+
 	~_List_alloc() _NOEXCEPT
 		{	// destroy head node
 		_Freeheadnode(_Myhead());
@@ -621,6 +627,18 @@ public:
  #else /* _ITERATOR_DEBUG_LEVEL == 0 */
 	_List_alloc(const _Alloc& _Al = _Alloc())
 		: _Mypair(_One_then_variadic_args_t(), _Al)
+		{	// construct head node, allocator from _Al
+		_Myhead() = _Buyheadnode();
+		_TRY_BEGIN
+		_Alloc_proxy();
+		_CATCH_ALL
+		_Freeheadnode(_Myhead());
+		_RERAISE;
+		_CATCH_END
+		}
+
+	_List_alloc(_Alloc&& _Al)
+		: _Mypair(_One_then_variadic_args_t(), _STD move(_Al))
 		{	// construct head node, allocator from _Al
 		_Myhead() = _Buyheadnode();
 		_TRY_BEGIN
@@ -799,6 +817,11 @@ public:
 		{	// construct from allocator
 		}
 
+	_List_buy(_Alloc&& _Al)
+		: _Mybase(_STD move(_Al))
+		{	// construct from allocator
+		}
+
 	template<class... _Valty>
 		_Nodeptr _Buynode(_Nodeptr _Next, _Nodeptr _Prev,
 			_Valty&&... _Val)
@@ -956,7 +979,7 @@ public:
 		}
 
 	list(_Myt&& _Right)
-		: _Mybase(_Right._Getal())
+		: _Mybase(_STD move(_Right._Getal()))
 		{	// construct list by moving _Right
 		_Assign_rv(_STD forward<_Myt>(_Right));
 		}

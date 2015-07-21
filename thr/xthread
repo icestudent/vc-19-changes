@@ -238,7 +238,7 @@ private:
 		_STD invoke(_STD move(_STD get<_Idxs>(_Tup))...);
 		}
 
-	static void _Run(_LaunchPad *_Ln) noexcept	// enforces termination
+	static void _Run(_LaunchPad *_Ln) _NOEXCEPT	// enforces termination
 		{	// construct local unique_ptr and call function object within
 		_Target _Local(_STD forward<_Target>(_Ln->_MyTarget));
 		_Ln->_Release();

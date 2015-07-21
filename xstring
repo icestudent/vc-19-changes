@@ -572,6 +572,11 @@ public:
 		{	// construct allocator from _Al
 		}
 
+	_String_alloc(_Alloc&& _Al)
+		: _Mypair(_One_then_variadic_args_t(), _STD move(_Al))
+		{	// construct allocator from _Al
+		}
+
 	void _Copy_alloc(const _Alty& _Al)
 		{	// replace old allocator
 		_Pocca(_Getal(), _Al);
@@ -590,6 +595,12 @@ public:
  #else /* _ITERATOR_DEBUG_LEVEL == 0 */
 	_String_alloc(const _Alloc& _Al = _Alloc())
 		: _Mypair(_One_then_variadic_args_t(), _Al)
+		{	// construct allocator from _Al
+		_Alloc_proxy();
+		}
+
+	_String_alloc(_Alloc&& _Al)
+		: _Mypair(_One_then_variadic_args_t(), _STD move(_Al))
 		{	// construct allocator from _Al
 		_Alloc_proxy();
 		}
@@ -885,7 +896,7 @@ public:
 		}
 
 	basic_string(_Myt&& _Right) _NOEXCEPT
-		: _Mybase(_Right._Getal())
+		: _Mybase(_STD move(_Right._Getal()))
 		{	// construct by moving _Right
 		_Tidy();
 		_Assign_rv(_STD forward<_Myt>(_Right));

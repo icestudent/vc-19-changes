@@ -35,6 +35,18 @@
   #define _NOEXCEPT_OP(x)
  #endif /* _HAS_EXCEPTIONS */
 
+ #ifndef _HAS_CONSTEXPR
+  #define _HAS_CONSTEXPR	1
+ #endif /* _HAS_CONSTEXPR */
+
+ #if _HAS_CONSTEXPR
+  #define _CONST_DATA	constexpr
+  #define _CONST_FUN	constexpr
+ #else /* _HAS_CONSTEXPR */
+  #define _CONST_DATA	const
+  #define _CONST_FUN
+ #endif /* _HAS_CONSTEXPR */
+
  #ifndef _HAS_AUTO_PTR_ETC
   #define _HAS_AUTO_PTR_ETC	1
  #endif /* _HAS_AUTO_PTR_ETC */

@@ -642,8 +642,13 @@ public:
             return E_INVALIDARG;
         }
 
-        int size = lstrlenA(clsidStringA) + 1;
-        int destSize = MultiByteToWideChar(CP_ACP, 0, clsidStringA, size, NULL, 0);
+        size_t const size = strlen(clsidStringA) + 1;
+
+        if (size > INT_MAX) {
+            return E_INVALIDARG;
+        }
+
+        int const destSize = MultiByteToWideChar(CP_ACP, 0, clsidStringA, static_cast<int>(size), NULL, 0);
 
         if (destSize == 0) {
             return HRESULT_FROM_WIN32(GetLastError());
@@ -656,7 +661,7 @@ public:
             return E_OUTOFMEMORY;
         }
 
-        if (MultiByteToWideChar(CP_ACP, 0, clsidStringA, size, clsidStringW, destSize) == 0) {
+        if (MultiByteToWideChar(CP_ACP, 0, clsidStringA, static_cast<int>(size), clsidStringW, destSize) == 0) {
            _freea(clsidStringW);
            return HRESULT_FROM_WIN32(GetLastError());
         }
@@ -726,8 +731,13 @@ public:
             return E_INVALIDARG;
         }
 
-        int size = lstrlenA(clsidStringA) + 1;
-        int destSize = MultiByteToWideChar(CP_ACP, 0, clsidStringA, size, NULL, 0);
+        size_t const size = strlen(clsidStringA) + 1;
+        
+        if (size > INT_MAX) {
+            return E_INVALIDARG;
+        }
+
+        int const destSize = MultiByteToWideChar(CP_ACP, 0, clsidStringA, static_cast<int>(size), NULL, 0);
 
         LPWSTR clsidStringW;
         __try {
@@ -741,7 +751,7 @@ public:
             return E_OUTOFMEMORY;
         }
 
-        if (MultiByteToWideChar(CP_ACP, 0, clsidStringA, size, clsidStringW, destSize) == 0) {
+        if (MultiByteToWideChar(CP_ACP, 0, clsidStringA, static_cast<int>(size), clsidStringW, destSize) == 0) {
             return HRESULT_FROM_WIN32(GetLastError());
         }
 
@@ -806,7 +816,7 @@ private:
         if (p != NULL) {
             // Query for this interface
             //
-            Interface* pInterface;
+            Interface* pInterface = NULL;
             hr = p->QueryInterface(GetIID(), reinterpret_cast<void**>(&pInterface));
 
             // Save the interface without AddRef()ing.

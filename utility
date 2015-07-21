@@ -67,7 +67,7 @@ struct piecewise_construct_t
 	{	// tag type for pair tuple arguments
 	};
 
-const piecewise_construct_t piecewise_construct{};
+_CONST_DATA piecewise_construct_t piecewise_construct{};
 
 		// TEMPLATE STRUCT pair
 
@@ -83,12 +83,12 @@ template<class _Ty1,
 	typedef _Ty1 first_type;
 	typedef _Ty2 second_type;
 
-	pair()
+	_CONST_FUN pair()
 		: first(), second()
 		{	// default construct
 		}
 
-	pair(const _Ty1& _Val1, const _Ty2& _Val2)
+	_CONST_FUN pair(const _Ty1& _Val1, const _Ty2& _Val2)
 		: first(_Val1), second(_Val2)
 		{	// construct from specified values
 		}
@@ -101,7 +101,7 @@ template<class _Ty1,
 		class = typename enable_if<is_convertible<const _Other1&, _Ty1>::value
 			&& is_convertible<const _Other2&, _Ty2>::value,
 			void>::type>
-		pair(const pair<_Other1, _Other2>& _Right)
+		_CONST_FUN pair(const pair<_Other1, _Other2>& _Right)
 		: first(_Right.first), second(_Right.second)
 		{	// construct from compatible pair
 		}
@@ -137,7 +137,7 @@ template<class _Ty1,
 		class = typename enable_if<is_convertible<_Other1, _Ty1>::value
 			&& is_convertible<_Other2, _Ty2>::value,
 			void>::type>
-		pair(_Other1&& _Val1, _Other2&& _Val2)
+		_CONST_FUN pair(_Other1&& _Val1, _Other2&& _Val2)
 			_NOEXCEPT_OP((is_nothrow_constructible<_Ty1, _Other1&&>::value
 				&& is_nothrow_constructible<_Ty2, _Other2&&>::value))
 		: first(_STD forward<_Other1>(_Val1)),
@@ -150,7 +150,7 @@ template<class _Ty1,
 		class = typename enable_if<is_convertible<_Other1, _Ty1>::value
 			&& is_convertible<_Other2, _Ty2>::value,
 			void>::type>
-		pair(pair<_Other1, _Other2>&& _Right)
+		_CONST_FUN pair(pair<_Other1, _Other2>&& _Right)
 			_NOEXCEPT_OP((is_nothrow_constructible<_Ty1, _Other1&&>::value
 				&& is_nothrow_constructible<_Ty2, _Other2&&>::value))
 		: first(_STD forward<_Other1>(_Right.first)),
@@ -210,7 +210,7 @@ template<class _Ty1,
 
 template<class _Ty1,
 	class _Ty2> inline
-	bool operator==(const pair<_Ty1, _Ty2>& _Left,
+	_CONST_FUN bool operator==(const pair<_Ty1, _Ty2>& _Left,
 		const pair<_Ty1, _Ty2>& _Right)
 	{	// test for pair equality
 	return (_Left.first == _Right.first && _Left.second == _Right.second);
@@ -218,7 +218,7 @@ template<class _Ty1,
 
 template<class _Ty1,
 	class _Ty2> inline
-	bool operator!=(const pair<_Ty1, _Ty2>& _Left,
+	_CONST_FUN bool operator!=(const pair<_Ty1, _Ty2>& _Left,
 		const pair<_Ty1, _Ty2>& _Right)
 	{	// test for pair inequality
 	return (!(_Left == _Right));
@@ -226,7 +226,7 @@ template<class _Ty1,
 
 template<class _Ty1,
 	class _Ty2> inline
-	bool operator<(const pair<_Ty1, _Ty2>& _Left,
+	_CONST_FUN bool operator<(const pair<_Ty1, _Ty2>& _Left,
 		const pair<_Ty1, _Ty2>& _Right)
 	{	// test if _Left < _Right for pairs
 	return (_Left.first < _Right.first ||
@@ -235,7 +235,7 @@ template<class _Ty1,
 
 template<class _Ty1,
 	class _Ty2> inline
-	bool operator>(const pair<_Ty1, _Ty2>& _Left,
+	_CONST_FUN bool operator>(const pair<_Ty1, _Ty2>& _Left,
 		const pair<_Ty1, _Ty2>& _Right)
 	{	// test if _Left > _Right for pairs
 	return (_Right < _Left);
@@ -243,7 +243,7 @@ template<class _Ty1,
 
 template<class _Ty1,
 	class _Ty2> inline
-	bool operator<=(const pair<_Ty1, _Ty2>& _Left,
+	_CONST_FUN bool operator<=(const pair<_Ty1, _Ty2>& _Left,
 		const pair<_Ty1, _Ty2>& _Right)
 	{	// test if _Left <= _Right for pairs
 	return (!(_Right < _Left));
@@ -251,7 +251,7 @@ template<class _Ty1,
 
 template<class _Ty1,
 	class _Ty2> inline
-	bool operator>=(const pair<_Ty1, _Ty2>& _Left,
+	_CONST_FUN bool operator>=(const pair<_Ty1, _Ty2>& _Left,
 		const pair<_Ty1, _Ty2>& _Right)
 	{	// test if _Left >= _Right for pairs
 	return (!(_Left < _Right));
@@ -261,7 +261,7 @@ template<class _Ty1,
 
 template<class _Ty1,
 	class _Ty2> inline
-	pair<typename _Unrefwrap<_Ty1>::type,
+	_CONST_FUN pair<typename _Unrefwrap<_Ty1>::type,
 		typename _Unrefwrap<_Ty2>::type>
 		make_pair(_Ty1&& _Val1, _Ty2&& _Val2)
 	{	// return pair composed from arguments
@@ -436,7 +436,7 @@ template<size_t _Index,
 	// TUPLE INTERFACE TO pair
 template<class _Ret,
 	class _Pair> inline
-	_Ret _Pair_get(_Pair& _Pr,
+	_CONST_FUN _Ret _Pair_get(_Pair& _Pr,
 		integral_constant<size_t, 0>) _NOEXCEPT
 	{	// get reference to element 0 in pair _Pr
 	return (_Pr.first);
@@ -444,7 +444,7 @@ template<class _Ret,
 
 template<class _Ret,
 	class _Pair> inline
-	_Ret _Pair_get(_Pair& _Pr,
+	_CONST_FUN _Ret _Pair_get(_Pair& _Pr,
 		integral_constant<size_t, 1>) _NOEXCEPT
 	{	// get reference to element 1 in pair _Pr
 	return (_Pr.second);
@@ -453,7 +453,7 @@ template<class _Ret,
 template<size_t _Idx,
 	class _Ty1,
 	class _Ty2> inline
-	typename tuple_element<_Idx, pair<_Ty1, _Ty2> >::type&
+	_CONST_FUN typename tuple_element<_Idx, pair<_Ty1, _Ty2> >::type&
 		get(pair<_Ty1, _Ty2>& _Pr) _NOEXCEPT
 	{	// get reference to element at _Idx in pair _Pr
 	typedef typename tuple_element<_Idx, pair<_Ty1, _Ty2> >::type& _Rtype;
@@ -462,14 +462,14 @@ template<size_t _Idx,
 
 template<class _Ty1,
 	class _Ty2> inline
-	_Ty1& get(pair<_Ty1, _Ty2>& _Pr) _NOEXCEPT
+	_CONST_FUN _Ty1& get(pair<_Ty1, _Ty2>& _Pr) _NOEXCEPT
 	{	// get reference to element _Ty1 in pair _Pr
 	return (_STD get<0>(_Pr));
 	}
 
 template<class _Ty2,
 	class _Ty1> inline
-	_Ty2& get(pair<_Ty1, _Ty2>& _Pr) _NOEXCEPT
+	_CONST_FUN _Ty2& get(pair<_Ty1, _Ty2>& _Pr) _NOEXCEPT
 	{	// get reference to element _Ty2 in pair _Pr
 	return (_STD get<1>(_Pr));
 	}
@@ -477,7 +477,7 @@ template<class _Ty2,
 template<size_t _Idx,
 	class _Ty1,
 	class _Ty2> inline
-	const typename tuple_element<_Idx, pair<_Ty1, _Ty2> >::type&
+	_CONST_FUN const typename tuple_element<_Idx, pair<_Ty1, _Ty2> >::type&
 		get(const pair<_Ty1, _Ty2>& _Pr) _NOEXCEPT
 	{	// get const reference to element at _Idx in pair _Pr
 	typedef const typename tuple_element<_Idx, pair<_Ty1, _Ty2> >::type&
@@ -487,14 +487,14 @@ template<size_t _Idx,
 
 template<class _Ty1,
 	class _Ty2> inline
-	const _Ty1& get(const pair<_Ty1, _Ty2>& _Pr) _NOEXCEPT
+	_CONST_FUN const _Ty1& get(const pair<_Ty1, _Ty2>& _Pr) _NOEXCEPT
 	{	// get const reference to element _Ty1 in pair _Pr
 	return (_STD get<0>(_Pr));
 	}
 
 template<class _Ty2,
 	class _Ty1> inline
-	const _Ty2& get(const pair<_Ty1, _Ty2>& _Pr) _NOEXCEPT
+	_CONST_FUN const _Ty2& get(const pair<_Ty1, _Ty2>& _Pr) _NOEXCEPT
 	{	// get const reference to element _Ty2 in pair _Pr
 	return (_STD get<1>(_Pr));
 	}
@@ -502,7 +502,7 @@ template<class _Ty2,
 template<size_t _Idx,
 	class _Ty1,
 	class _Ty2> inline
-	typename tuple_element<_Idx, pair<_Ty1, _Ty2> >::type&&
+	_CONST_FUN typename tuple_element<_Idx, pair<_Ty1, _Ty2> >::type&&
 		get(pair<_Ty1, _Ty2>&& _Pr) _NOEXCEPT
 	{	// get rvalue reference to element at _Idx in pair _Pr
 	typedef typename tuple_element<_Idx, pair<_Ty1, _Ty2> >::type&& _RRtype;
@@ -511,14 +511,14 @@ template<size_t _Idx,
 
 template<class _Ty1,
 	class _Ty2> inline
-	_Ty1&& get(pair<_Ty1, _Ty2>&& _Pr) _NOEXCEPT
+	_CONST_FUN _Ty1&& get(pair<_Ty1, _Ty2>&& _Pr) _NOEXCEPT
 	{	// get rvalue reference to element _Ty1 in pair _Pr
 	return (_STD get<0>(_STD move(_Pr)));
 	}
 
 template<class _Ty2,
 	class _Ty1> inline
-	_Ty2&& get(pair<_Ty1, _Ty2>&& _Pr) _NOEXCEPT
+	_CONST_FUN _Ty2&& get(pair<_Ty1, _Ty2>&& _Pr) _NOEXCEPT
 	{	// get rvalue reference to element _Ty2 in pair _Pr
 	return (_STD get<1>(_STD move(_Pr)));
 	}

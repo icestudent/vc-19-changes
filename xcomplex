@@ -123,7 +123,7 @@ _TMPLT(_Ty) inline
 
 		// TEMPLATE FUNCTION operator==
 _TMPLT(_Ty) inline
-	bool operator==(const _CMPLX(_Ty)& _Left,
+	_CONST_FUN bool operator==(const _CMPLX(_Ty)& _Left,
 		const _CMPLX(_Ty)& _Right)
 	{	// test complex equal to complex
 	return (_Left.real() == _Right.real()
@@ -131,7 +131,7 @@ _TMPLT(_Ty) inline
 	}
 
 _TMPLT(_Ty) inline
-	bool operator==(const _CMPLX(_Ty)& _Left,
+	_CONST_FUN bool operator==(const _CMPLX(_Ty)& _Left,
 		const _Ty& _Right)
 	{	// test real equal to complex
 	return (_Left.real() == _Right
@@ -139,7 +139,7 @@ _TMPLT(_Ty) inline
 	}
 
 _TMPLT(_Ty) inline
-	bool operator==(const _Ty& _Left,
+	_CONST_FUN bool operator==(const _Ty& _Left,
 		const _CMPLX(_Ty)& _Right)
 	{	// test complex equal to real
 	return (_Left == _Right.real()
@@ -148,21 +148,21 @@ _TMPLT(_Ty) inline
 
 		// TEMPLATE FUNCTION operator!=
 _TMPLT(_Ty) inline
-	bool operator!=(const _CMPLX(_Ty)& _Left,
+	_CONST_FUN bool operator!=(const _CMPLX(_Ty)& _Left,
 		const _CMPLX(_Ty)& _Right)
 	{	// test complex not equal to complex
 	return (!(_Left == _Right));
 	}
 
 _TMPLT(_Ty) inline
-	bool operator!=(const _CMPLX(_Ty)& _Left,
+	_CONST_FUN bool operator!=(const _CMPLX(_Ty)& _Left,
 		const _Ty& _Right)
 	{	// test real not equal to complex
 	return (!(_Left == _Right));
 	}
 
 _TMPLT(_Ty) inline
-	bool operator!=(const _Ty& _Left,
+	_CONST_FUN bool operator!=(const _Ty& _Left,
 		const _CMPLX(_Ty)& _Right)
 	{	// test complex not equal to real
 	return (!(_Left == _Right));
@@ -170,14 +170,14 @@ _TMPLT(_Ty) inline
 
 		// TEMPLATE FUNCTION imag
 _TMPLT(_Ty) inline
-	_Ty imag(const _CMPLX(_Ty)& _Left)
+	_CONST_FUN _Ty imag(const _CMPLX(_Ty)& _Left)
 	{	// return imaginary component
 	return (_Left.imag());
 	}
 
 		// TEMPLATE FUNCTION real
 _TMPLT(_Ty) inline
-	_Ty real(const _CMPLX(_Ty)& _Left)
+	_CONST_FUN _Ty real(const _CMPLX(_Ty)& _Left)
 	{	// return real component
 	return (_Left.real());
 	}

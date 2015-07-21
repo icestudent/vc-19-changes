@@ -211,8 +211,8 @@ public:
 
 	typedef const _Ty *pointer;
 
-	istream_iterator()
-		: _Myistr(0)
+	_CONST_FUN istream_iterator()
+		: _Myistr(0), _Myval()
 		{	// construct singular iterator
 		}
 

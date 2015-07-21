@@ -22,32 +22,21 @@ template<intmax_t _Val>
 	// CLASS TEMPLATE _Safe_mult
 template<intmax_t _Ax,
 	intmax_t _Bx,
-	bool _Good>
-	struct _Safe_multX
-	{	// computes _Ax * _Bx without overflow
-	static const intmax_t value = _Ax * _Bx;
-	};
-
-template<intmax_t _Ax,
-	intmax_t _Bx>
-	struct _Safe_multX<_Ax, _Bx, false>
-	{	// _Ax * _Bx would overflow
-	static_assert(_Always_false<_Safe_multX>::value,
-		"integer arithmetic overflow");
-	};
-
-template<intmax_t _Ax,
-	intmax_t _Bx>
+	bool _Sfinae = false,
+	bool _Good = (_Abs<_Ax>::value
+		<= INTMAX_MAX / (_Bx == 0 ? 1 : _Abs<_Bx>::value))>
 	struct _Safe_mult
-	{	// computes _Ax * _Bx, forbids overflow
-	static const intmax_t value = _Safe_multX<_Ax, _Bx,
-		(_Abs<_Ax>::value <= INTMAX_MAX / _Abs<_Bx>::value)>::value;
+		: integral_constant<intmax_t, _Ax * _Bx>
+	{	// computes _Ax * _Bx without overflow
 	};
 
-template<intmax_t _Ax>
-	struct _Safe_mult<_Ax, 0>
-	{	// computes _Ax * 0, avoids division by 0
-	static const intmax_t value = 0;
+template<intmax_t _Ax,
+	intmax_t _Bx,
+	bool _Sfinae>
+	struct _Safe_mult<_Ax, _Bx, _Sfinae, false>
+	{	// _Ax * _Bx would overflow
+	static_assert(_Sfinae,
+		"integer arithmetic overflow");
 	};
 
 	// CLASS TEMPLATE _Sign_of
@@ -124,10 +113,11 @@ template<intmax_t _Nx,
 	static_assert(-INTMAX_MAX <= _Dx,
 		"denominator too negative");
 
-	static const intmax_t num = _Sign_of<_Nx>::value * _Sign_of<_Dx>::value
-		* _Abs<_Nx>::value / _Gcd<_Nx, _Dx>::value;
+	static _CONST_DATA intmax_t num = _Sign_of<_Nx>::value
+		* _Sign_of<_Dx>::value * _Abs<_Nx>::value / _Gcd<_Nx, _Dx>::value;
 
-	static const intmax_t den = _Abs<_Dx>::value / _Gcd<_Nx, _Dx>::value;
+	static _CONST_DATA intmax_t den = _Abs<_Dx>::value / _Gcd<_Nx, _Dx>
+		::value;
 
 	typedef ratio<num, den> type;
 	};
@@ -212,16 +202,36 @@ template<class _R1,
 	static const intmax_t _Gx = _Gcd<_N1, _D2>::value;
 	static const intmax_t _Gy = _Gcd<_N2, _D1>::value;
 
-	// typename ratio<>::type is unnecessary here
+	typedef _Safe_mult<_N1 / _Gx, _N2 / _Gy, true> _Num;
+	typedef _Safe_mult<_D1 / _Gy, _D2 / _Gx, true> _Den;
+	};
+
+template<class _R1,
+	class _R2,
+	bool _Sfinae = true,
+	class = void>
+	struct _Ratio_multiply_sfinae
+	{	// detect overflow during multiplication
+	static_assert(_Sfinae,
+		"integer arithmetic overflow");
+	};
+
+template<class _R1,
+	class _R2,
+	bool _Sfinae>
+	struct _Ratio_multiply_sfinae<_R1, _R2, _Sfinae, typename _Param_tester<
+		typename _Ratio_multiply<_R1, _R2>::_Num::type,
+		typename _Ratio_multiply<_R1, _R2>::_Den::type>::type>
+	{	// typename ratio<>::type is unnecessary here
 	typedef ratio<
-		_Safe_mult<_N1 / _Gx, _N2 / _Gy>::value,
-		_Safe_mult<_D1 / _Gy, _D2 / _Gx>::value
-		> type;
+		_Ratio_multiply<_R1, _R2>::_Num::value,
+		_Ratio_multiply<_R1, _R2>::_Den::value> type;
 	};
 
 template<class _R1,
 	class _R2>
-	using ratio_multiply = typename _Ratio_multiply<_R1, _R2>::type;
+	using ratio_multiply = typename _Ratio_multiply_sfinae<_R1, _R2, false>
+		::type;
 
 	// ALIAS TEMPLATE ratio_divide
 template<class _R1,
@@ -234,12 +244,18 @@ template<class _R1,
 	static const intmax_t _N2 = _R2::num;
 	static const intmax_t _D2 = _R2::den;
 
-	typedef ratio_multiply<_R1, ratio<_D2, _N2> > type;
+	typedef ratio<_D2, _N2> _R2_inverse;
 	};
 
 template<class _R1,
+	class _R2,
+	bool _Sfinae = true>
+	using _Ratio_divide_sfinae = typename _Ratio_multiply_sfinae<
+		_R1, typename _Ratio_divide<_R1, _R2>::_R2_inverse, _Sfinae>::type;
+
+template<class _R1,
 	class _R2>
-	using ratio_divide = typename _Ratio_divide<_R1, _R2>::type;
+	using ratio_divide = _Ratio_divide_sfinae<_R1, _R2, false>;
 
 	// CLASS TEMPLATE ratio_equal
 template<class _R1,

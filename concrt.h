@@ -268,8 +268,8 @@ namespace details
     //
     // A utility to hide operator delete from certain objects while still allowing the runtime to delete them internally.
     //
-    template<class _T>
-    void _InternalDeleteHelper(_T * _PObject)
+    template<class _Ty>
+    void _InternalDeleteHelper(_Ty * _PObject)
     {
         delete _PObject;
     }
@@ -2020,10 +2020,10 @@ public:
     ///     Returns the internal binding as a specified object.
     /// </summary>
     /**/
-    template<typename T>
-    T* _As() const
+    template<typename _Ty>
+    _Ty* _As() const
     {
-        return reinterpret_cast<T *>(_M_pBinding);
+        return reinterpret_cast<_Ty *>(_M_pBinding);
     }
 
     /// <summary>
@@ -2165,7 +2165,7 @@ protected:
     //
     // Privatize operator delete. Clients should utilize Release to relinquish a schedule group.
     //
-    template<class _T> friend void Concurrency::details::_InternalDeleteHelper(_T * _PObject);
+    template<class _Ty> friend void Concurrency::details::_InternalDeleteHelper(_Ty * _PObject);
 
     virtual ~ScheduleGroup() {};
 };
@@ -3452,7 +3452,7 @@ protected:
     //
     // Privatize operator delete. The scheduler internally manages contexts.
     //
-    template<class _T> friend void Concurrency::details::_InternalDeleteHelper(_T * _PObject);
+    template<class _Ty> friend void Concurrency::details::_InternalDeleteHelper(_Ty * _PObject);
 
     virtual ~Context() {};
 };
@@ -4222,9 +4222,9 @@ namespace details
 
         // Set flag that indicates whether the scheduler owns the lifetime of the object and is responsible for freeing it.
         // The flag is ignored by _StructuredTaskCollection
-        void _SetRuntimeOwnsLifetime(bool fValue)
+        void _SetRuntimeOwnsLifetime(bool _FValue)
         {
-            _M_fRuntimeOwnsLifetime = fValue;
+            _M_fRuntimeOwnsLifetime = _FValue;
         }
 
         // Returns the flag that indicates whether the scheduler owns the lifetime of the object and is responsible for freeing it.
@@ -4294,7 +4294,7 @@ namespace details
         static void _InternalFree(_UnrealizedChore * _PChore);
 
         // Cancellation via token to a stolen chore
-        static void __cdecl _CancelViaToken(::Concurrency::details::ContextBase *pContext);
+        static void __cdecl _CancelViaToken(::Concurrency::details::ContextBase *_PContext);
     };
 
     // Represents possible results of waiting on a task collection.
@@ -4683,7 +4683,7 @@ namespace details
         ///     of two cancellation tokens.
         /// </summary>
         /**/
-        static void __cdecl _CancelViaToken(_StructuredTaskCollection *pCollection);
+        static void __cdecl _CancelViaToken(_StructuredTaskCollection *_PCollection);
 
         //
         // _StructuredTaskCollection::_M_event is used to construct an structured event object only when it is needed to block. The structured event object
@@ -4880,11 +4880,11 @@ namespace details
         /// <summary>
         ///     Internal routine to abort work on the task collection.
         /// </summary>
-        /// <param name="fLeaveCanceled">
+        /// <param name="_FLeaveCanceled">
         ///     An indication as to whether or not to leave the task collection canceled after the abort.
         /// </param>
         /**/
-        void _Abort(bool fLeaveCanceled = false);
+        void _Abort(bool _FLeaveCanceled = false);
 
         /// <summary>
         ///     Returns whether the task collection is an indirect alias.
@@ -5070,17 +5070,17 @@ namespace details
         /// <summary>
         ///     Performs task cleanup normally done at destruction time.
         /// </summary>
-        /// <param name="fExceptional">
+        /// <param name="_FExceptional">
         ///     An indication if the cleanup is exceptional and the collection should be left in a canceled state.
         /// </param>
         /**/
-        bool _TaskCleanup(bool fExceptional);
+        bool _TaskCleanup(bool _FExceptional);
 
         /// <summary>
         ///     Called when the task collection is canceled via a cancellation token.
         /// </summary>
         /**/
-        static void __cdecl _CancelViaToken(_TaskCollection *pCollection);
+        static void __cdecl _CancelViaToken(_TaskCollection *_PCollection);
 
         /// <summary>
         ///     Tracks contexts that have stolen chores from this collection. This is storage for an internal list and lock. Note that this list is only
@@ -5381,21 +5381,23 @@ namespace details
         volatile unsigned long EnableFlags;    // Determines which class of events to log
         volatile unsigned char EnableLevel;    // Determines the severity of events to log
 
-        void _EnableTrace(unsigned char level, unsigned long flags)
+        void _EnableTrace(unsigned char _Level, unsigned long _Flags)
         {
-            EnableFlags = flags;
-            EnableLevel = level;
+            EnableFlags = _Flags;
+            EnableLevel = _Level;
         }
-
+#pragma warning ( push )
+#pragma warning ( disable : 5393 )  // unreachable code
         void _DisableTrace()
         {
             EnableLevel = 0;
             EnableFlags = 0;
         }
+#pragma warning ( pop )
 
-        bool _IsEnabled(unsigned char level, unsigned long flags) const
+        bool _IsEnabled(unsigned char _Level, unsigned long _Flags) const
         {
-            return ((level <= EnableLevel) &&  ((EnableFlags & flags) == flags));
+            return ((_Level <= EnableLevel) &&  ((EnableFlags & _Flags) == _Flags));
         }
     };
 
@@ -5710,7 +5712,7 @@ enum Agents_EventType
 //        };
 
 // Emit a trace event specific to the agents library of the given type and payload
-_CONCRTIMP void __cdecl _Trace_agents(Agents_EventType _Type, __int64 agentId, ...);
+_CONCRTIMP void __cdecl _Trace_agents(Agents_EventType _Type, __int64 _AgentId, ...);
 }
 
 #ifndef _NO_DEFAULT_CONCRT_LIB

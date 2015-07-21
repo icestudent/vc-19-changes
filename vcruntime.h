@@ -201,10 +201,6 @@ _CRT_BEGIN_C_HEADER
 #endif
 
 // Indicate that these common types are defined
-// CRT_REFACTOR TODO PHASE3 These three #defines were added to fix build breaks
-// in Windows where time_t and size_t are defined with other types, causing
-// conflicts.  We should remove those conflicting typedefs and fix the resulting
-// fallout.
 #ifndef _SIZE_T_DEFINED
     #define _SIZE_T_DEFINED
 #endif

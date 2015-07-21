@@ -142,18 +142,18 @@ namespace details
 
         void _Invoke()
         {
-            long tid = ::Concurrency::details::platform::GetCurrentThreadId();
-            _ASSERTE((tid & 0x3) == 0); // If this ever fires, we need a different encoding for this.
+            long _Tid = ::Concurrency::details::platform::GetCurrentThreadId();
+            _ASSERTE((_Tid & 0x3) == 0); // If this ever fires, we need a different encoding for this.
 
-            long result = atomic_compare_exchange(_M_state, tid, _STATE_CLEAR);
+            long _Result = atomic_compare_exchange(_M_state, _Tid, _STATE_CLEAR);
 
-            if (result == _STATE_CLEAR)
+            if (_Result == _STATE_CLEAR)
             {
                 _Exec();
 
-                result = atomic_compare_exchange(_M_state, _STATE_CALLED, tid);
+                _Result = atomic_compare_exchange(_M_state, _STATE_CALLED, _Tid);
 
-                if (result == _STATE_SYNCHRONIZE)
+                if (_Result == _STATE_SYNCHRONIZE)
                 {
                     {
                         std::lock_guard<std::mutex> _Lock(_M_Mutex);
@@ -198,8 +198,8 @@ namespace details
     {
     public:
 
-        CancellationTokenRegistration_TaskProc(TaskProc_t proc, _In_ void *pData, int initialRefs) :
-            _CancellationTokenRegistration(initialRefs), m_proc(proc), m_pData(pData)
+        CancellationTokenRegistration_TaskProc(TaskProc_t _Proc, _In_ void *_PData, int _InitialRefs) :
+            _CancellationTokenRegistration(_InitialRefs), _M_proc(_Proc), _M_pData(_PData)
         {
         }
 
@@ -207,13 +207,13 @@ namespace details
 
         virtual void _Exec()
         {
-            m_proc(m_pData);
+            _M_proc(_M_pData);
         }
 
     private:
 
-        TaskProc_t m_proc;
-        void *m_pData;
+        TaskProc_t _M_proc;
+        void *_M_pData;
 
     };
 
@@ -228,7 +228,7 @@ namespace details
                 _CancellationTokenRegistration* _M_token;
                 _Node *_M_next;
 
-                _Node(_CancellationTokenRegistration* token) : _M_token(token), _M_next(nullptr)
+                _Node(_CancellationTokenRegistration* _Token) : _M_token(_Token), _M_next(nullptr)
                 {
                 }
             } Node;
@@ -240,19 +240,19 @@ namespace details
 
             ~TokenRegistrationContainer()
             {
-                auto node = _M_begin;
-                while (node != nullptr)
+                auto _Node = _M_begin;
+                while (_Node != nullptr)
                 {
-                    Node* tmp = node;
-                    node = node->_M_next;
-                    delete tmp;
+                    Node* _Tmp = _Node;
+                    _Node = _Node->_M_next;
+                    delete _Tmp;
                 }
             }
 
-            void swap(TokenRegistrationContainer& list)
+            void swap(TokenRegistrationContainer& _List)
             {
-                std::swap(list._M_begin, _M_begin);
-                std::swap(list._M_last, _M_last);
+                std::swap(_List._M_begin, _M_begin);
+                std::swap(_List._M_last, _M_last);
             }
 
             bool empty()
@@ -260,61 +260,61 @@ namespace details
                 return _M_begin == nullptr;
             }
 
-            template<typename T>
-            void for_each(T lambda)
+            template<typename _Ty>
+            void for_each(_Ty _Lambda)
             {
-                Node* node = _M_begin;
+                Node* _Node = _M_begin;
 
-                while (node != nullptr)
+                while (_Node != nullptr)
                 {
-                    lambda(node->_M_token);
-                    node = node->_M_next;
+                    _Lambda(_Node->_M_token);
+                    _Node = _Node->_M_next;
                 }
             }
 
-            void push_back(_CancellationTokenRegistration* token)
+            void push_back(_CancellationTokenRegistration* _Token)
             {
-                auto node = new Node(token);
+                auto _Node = new Node(_Token);
                 if (_M_begin == nullptr)
                 {
-                    _M_begin = node;
+                    _M_begin = _Node;
                 }
                 else
                 {
-                    _M_last->_M_next = node;
+                    _M_last->_M_next = _Node;
                 }
 
-                _M_last = node;
+                _M_last = _Node;
             }
 
-            void remove(_CancellationTokenRegistration* token)
+            void remove(_CancellationTokenRegistration* _Token)
             {
-                Node* node = _M_begin;
-                Node* prev = nullptr;
+                Node* _Node = _M_begin;
+                Node* _Prev = nullptr;
 
-                while (node != nullptr)
+                while (_Node != nullptr)
                 {
-                    if (node->_M_token == token) {
-                        if (prev == nullptr)
+                    if (_Node->_M_token == _Token) {
+                        if (_Prev == nullptr)
                         {
-                            _M_begin = node->_M_next;
+                            _M_begin = _Node->_M_next;
                         }
                         else
                         {
-                            prev->_M_next = node->_M_next;
+                            _Prev->_M_next = _Node->_M_next;
                         }
 
-                        if (node->_M_next == nullptr)
+                        if (_Node->_M_next == nullptr)
                         {
-                            _M_last = prev;
+                            _M_last = _Prev;
                         }
 
-                        delete node;
+                        delete _Node;
                         break;
                     }
 
-                    prev = node;
-                    node = node->_M_next;
+                    _Prev = _Node;
+                    _Node = _Node->_M_next;
                 }
             }
 
@@ -346,16 +346,16 @@ namespace details
 
         ~_CancellationTokenState()
         {
-            TokenRegistrationContainer rundownList;
+            TokenRegistrationContainer _RundownList;
             {
                 std::lock_guard<std::mutex> _Lock(_M_listLock);
-                _M_registrations.swap(rundownList);
+                _M_registrations.swap(_RundownList);
             }
 
-            rundownList.for_each([](_CancellationTokenRegistration * pRegistration)
+            _RundownList.for_each([](_CancellationTokenRegistration * _PRegistration)
             {
-                pRegistration->_M_state = _CancellationTokenRegistration::_STATE_SYNCHRONIZE;
-                pRegistration->_Release();
+                _PRegistration->_M_state = _CancellationTokenRegistration::_STATE_SYNCHRONIZE;
+                _PRegistration->_Release();
             });
         }
 
@@ -368,15 +368,15 @@ namespace details
         {
             if (atomic_compare_exchange(_M_stateFlag, 1l, 0l) == 0)
             {
-                TokenRegistrationContainer rundownList;
+                TokenRegistrationContainer _RundownList;
                 {
                     std::lock_guard<std::mutex> _Lock(_M_listLock);
-                    _M_registrations.swap(rundownList);
+                    _M_registrations.swap(_RundownList);
                 }
 
-                rundownList.for_each([](_CancellationTokenRegistration * pRegistration)
+                _RundownList.for_each([](_CancellationTokenRegistration * _PRegistration)
                 {
-                    pRegistration->_Invoke();
+                    _PRegistration->_Invoke();
                 });
 
                 _M_stateFlag = 2;
@@ -385,9 +385,9 @@ namespace details
 
         _CancellationTokenRegistration *_RegisterCallback(TaskProc_t _PCallback, _In_ void *_PData, int _InitialRefs = 1)
         {
-            _CancellationTokenRegistration *pRegistration = new CancellationTokenRegistration_TaskProc(_PCallback, _PData, _InitialRefs);
-            _RegisterCallback(pRegistration);
-            return pRegistration;
+            _CancellationTokenRegistration *_PRegistration = new CancellationTokenRegistration_TaskProc(_PCallback, _PData, _InitialRefs);
+            _RegisterCallback(_PRegistration);
+            return _PRegistration;
         }
 
         void _RegisterCallback(_In_ _CancellationTokenRegistration *_PRegistration)
@@ -396,7 +396,7 @@ namespace details
             _PRegistration->_Reference();
             _PRegistration->_M_pTokenState = this;
 
-            bool invoke = true;
+            bool _Invoke = true;
 
             if (!_IsCanceled())
             {
@@ -404,12 +404,12 @@ namespace details
 
                 if (!_IsCanceled())
                 {
-                    invoke = false;
+                    _Invoke = false;
                     _M_registrations.push_back(_PRegistration);
                 }
             }
 
-            if (invoke)
+            if (_Invoke)
             {
                 _PRegistration->_Invoke();
             }
@@ -417,7 +417,7 @@ namespace details
 
         void _DeregisterCallback(_In_ _CancellationTokenRegistration *_PRegistration)
         {
-            bool synchronize = false;
+            bool _Synchronize = false;
 
             {
                 std::lock_guard<std::mutex> _Lock(_M_listLock);
@@ -435,7 +435,7 @@ namespace details
                 }
                 else
                 {
-                    synchronize = true;
+                    _Synchronize = true;
                 }
             }
 
@@ -447,15 +447,15 @@ namespace details
             // - The callback is in progress elsewhere      --> synchronize with it
             // - The callback is in progress on this thread --> do nothing
             //
-            if (synchronize)
+            if (_Synchronize)
             {
-                long result = atomic_compare_exchange(
+                long _Result = atomic_compare_exchange(
                     _PRegistration->_M_state,
                     _CancellationTokenRegistration::_STATE_DEFER_DELETE,
                     _CancellationTokenRegistration::_STATE_CLEAR
                     );
 
-                switch(result)
+                switch(_Result)
                 {
                     case _CancellationTokenRegistration::_STATE_CLEAR:
                     case _CancellationTokenRegistration::_STATE_CALLED:
@@ -466,7 +466,7 @@ namespace details
                         break;
                     default:
                     {
-                        if (result == ::Concurrency::details::platform::GetCurrentThreadId())
+                        if (_Result == ::Concurrency::details::platform::GetCurrentThreadId())
                         {
                             //
                             // It is entirely legal for a caller to Deregister during a callback instead of having to provide their own synchronization
@@ -476,9 +476,9 @@ namespace details
                             break;
                         }
 
-                        long result_1 = atomic_exchange(_PRegistration->_M_state, _CancellationTokenRegistration::_STATE_SYNCHRONIZE);
+                        long _Result_1 = atomic_exchange(_PRegistration->_M_state, _CancellationTokenRegistration::_STATE_SYNCHRONIZE);
 
-                        if (result_1 != _CancellationTokenRegistration::_STATE_CALLED)
+                        if (_Result_1 != _CancellationTokenRegistration::_STATE_CALLED)
                         {
                             std::unique_lock<std::mutex> _Lock(_PRegistration->_M_Mutex);
                             _PRegistration->_M_CondVar.wait(_Lock,
@@ -894,9 +894,9 @@ public:
     /// </returns>
     static cancellation_token_source create_linked_source(cancellation_token& _Src)
     {
-        cancellation_token_source newSource;
-        _Src.register_callback( [newSource](){ newSource.cancel(); } );
-        return newSource;
+        cancellation_token_source _NewSource;
+        _Src.register_callback( [_NewSource](){ _NewSource.cancel(); } );
+        return _NewSource;
     }
 
     /// <summary>
@@ -916,12 +916,12 @@ public:
     template<typename _Iter>
     static cancellation_token_source create_linked_source(_Iter _Begin, _Iter _End)
     {
-        cancellation_token_source newSource;
+        cancellation_token_source _NewSource;
         for (_Iter _It = _Begin; _It != _End; ++_It)
         {
-            _It->register_callback( [newSource](){ newSource.cancel(); } );
+            _It->register_callback( [_NewSource](){ _NewSource.cancel(); } );
         }
-        return newSource;
+        return _NewSource;
     }
 
     /// <summary>

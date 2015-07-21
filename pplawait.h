@@ -44,7 +44,7 @@ namespace std
 
                 bool final_suspend() const { return (false); }
 
-                void set_result(const _Ty &_Val)
+                void return_value(const _Ty &_Val)
                 {
                     _M_tce.set(_Val);
                 }
@@ -72,7 +72,7 @@ namespace std
 
                 bool final_suspend() const { return (false); }
 
-                void set_result()
+                void return_void()
                 {
                     _M_tce.set();
                 }

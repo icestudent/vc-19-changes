@@ -704,6 +704,13 @@ public:
 		_Construct();
 		}
 
+	_Tree_comp_alloc(const key_compare& _Parg, allocator_type&& _Al)
+		: _Mypair(_One_then_variadic_args_t(), _Parg,
+			_One_then_variadic_args_t(), _STD move(_Al))
+		{	// construct from comparator, allocator
+		_Construct();
+		}
+
  #if _ITERATOR_DEBUG_LEVEL == 0
 	void _Construct()
 		{	// construct head node
@@ -1018,7 +1025,7 @@ public:
 		}
 
 	_Tree(_Myt&& _Right)
-		: _Mybase(_Right.key_comp(), _Right._Getal())
+		: _Mybase(_Right.key_comp(), _STD move(_Right._Getal()))
 		{	// construct tree by moving _Right
 		_Assign_rv(_STD forward<_Myt>(_Right), true_type());
 		}

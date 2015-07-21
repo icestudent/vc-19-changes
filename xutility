@@ -269,9 +269,11 @@ template<class _Ty1,
 private:
 	_Ty2 _Myval2;
 
+	typedef _Ty1 _Mybase;	// for visualization
+
 public:
 	template<class... _Other2>
-		explicit _Compressed_pair(_Zero_then_variadic_args_t,
+		_CONST_FUN explicit _Compressed_pair(_Zero_then_variadic_args_t,
 			_Other2&&... _Val2)
 		: _Ty1(), _Myval2(_STD forward<_Other2>(_Val2)...)
 		{	// construct from forwarded values
@@ -339,7 +341,7 @@ private:
 
 public:
 	template<class... _Other2>
-		explicit _Compressed_pair(_Zero_then_variadic_args_t,
+		_CONST_FUN explicit _Compressed_pair(_Zero_then_variadic_args_t,
 			_Other2&&... _Val2)
 		: _Myval1(), _Myval2(_STD forward<_Other2>(_Val2)...)
 		{	// construct from forwarded values
@@ -726,21 +728,21 @@ template<class _Elem1,
 template<class _Pr,
 	class _Ty1,
 	class _Ty2> inline
-	bool _Debug_lt_pred(_Pr _Pred,
+	_CONST_FUN bool _Debug_lt_pred(_Pr _Pred,
 		_Ty1&& _Left, _Ty2&& _Right,
 		_Dbfile_t _File, _Dbline_t _Line)
 	{	// test if _Pred(_Left, _Right) and _Pred is strict weak ordering
-	if (!_Pred(_Left, _Right))
-		return (false);
-	else if (_Pred(_Right, _Left))
-		_DEBUG_ERROR2("invalid comparator", _File, _Line);
-	return (true);
+	return (!_Pred(_Left, _Right)
+		? false
+		: _Pred(_Right, _Left)
+			? (_DEBUG_ERROR2("invalid comparator", _File, _Line), true)
+			: true);
 	}
 
 		// TEMPLATE FUNCTION _Debug_lt
 template<class _Ty1,
 	class _Ty2> inline
-	bool _Debug_lt(_Ty1&& _Left, _Ty2&& _Right,
+	_CONST_FUN bool _Debug_lt(_Ty1&& _Left, _Ty2&& _Right,
 		_Dbfile_t _File, _Dbline_t _Line)
 	{	// test if _Left < _Right and operator< is strict weak ordering
 	return (_Debug_lt_pred(less<>(),
@@ -1245,21 +1247,21 @@ template<class _Container>
 
 template<class _Ty,
 	size_t _Size> inline
-	_Ty *begin(_Ty (&_Array)[_Size]) _NOEXCEPT
+	_CONST_FUN _Ty *begin(_Ty (&_Array)[_Size]) _NOEXCEPT
 	{	// get beginning of array
 	return (_Array);
 	}
 
 template<class _Ty,
 	size_t _Size> inline
-	_Ty *end(_Ty (&_Array)[_Size]) _NOEXCEPT
+	_CONST_FUN _Ty *end(_Ty (&_Array)[_Size]) _NOEXCEPT
 	{	// get end of array
 	return (_Array + _Size);
 	}
 
 		// TEMPLATE FUNCTIONS cbegin AND cend
 template<class _Container>
-	auto inline cbegin(const _Container& _Cont)
+	_CONST_FUN auto inline cbegin(const _Container& _Cont)
 		_NOEXCEPT_OP(_NOEXCEPT_OP(_STD begin(_Cont)))
 		-> decltype(_STD begin(_Cont))
 	{	// get beginning of sequence
@@ -1267,7 +1269,7 @@ template<class _Container>
 	}
 
 template<class _Container>
-	auto inline cend(const _Container& _Cont)
+	_CONST_FUN auto inline cend(const _Container& _Cont)
 		_NOEXCEPT_OP(_NOEXCEPT_OP(_STD end(_Cont)))
 		-> decltype(_STD end(_Cont))
 	{	// get end of sequence
@@ -1344,7 +1346,7 @@ template<class _Container>
 
 
 template<class _Container>
-	auto inline size(const _Container& _Cont)
+	_CONST_FUN auto inline size(const _Container& _Cont)
 		-> decltype(_Cont.size())
 	{	// get size() for container
 	return (_Cont.size());
@@ -1352,13 +1354,13 @@ template<class _Container>
 
 template<class _Ty,
 	size_t _Size> inline
-	size_t size(const _Ty(&)[_Size]) _NOEXCEPT
+	_CONST_FUN size_t size(const _Ty(&)[_Size]) _NOEXCEPT
 	{	// get dimension for array
 	return (_Size);
 	}
 
 template<class _Container>
-	auto inline empty(const _Container& _Cont)
+	_CONST_FUN auto inline empty(const _Container& _Cont)
 		-> decltype(_Cont.empty())
 	{	// get empty() for container
 	return (_Cont.empty());
@@ -1366,27 +1368,27 @@ template<class _Container>
 
 template<class _Ty,
 	size_t _Size> inline
-	bool empty(const _Ty(&)[_Size]) _NOEXCEPT
+	_CONST_FUN bool empty(const _Ty(&)[_Size]) _NOEXCEPT
 	{	// get dimension==0 for array (can't happen)
 	return (false);
 	}
 
 template<class _Elem> inline
-	bool empty(
+	_CONST_FUN bool empty(
 		_XSTD initializer_list<_Elem> _Ilist) _NOEXCEPT
 	{	// get dimension==0 for initializer_list
 	return (_Ilist.size() == 0);
 	}
 
 template<class _Container>
-	auto inline data(_Container& _Cont)
+	_CONST_FUN auto inline data(_Container& _Cont)
 		-> decltype(_Cont.data())
 	{	// get data() for container
 	return (_Cont.data());
 	}
 
 template<class _Container>
-	auto inline data(const _Container& _Cont)
+	_CONST_FUN auto inline data(const _Container& _Cont)
 		-> decltype(_Cont.data())
 	{	// get pointer to data of const container
 	return (_Cont.data());
@@ -1394,13 +1396,14 @@ template<class _Container>
 
 template<class _Ty,
 	size_t _Size> inline
-	_Ty *data(_Ty(&_Array)[_Size]) _NOEXCEPT
+	_CONST_FUN _Ty *data(_Ty(&_Array)[_Size]) _NOEXCEPT
 	{	// get pointer to data of array
 	return (_Array);
 	}
 
 template<class _Elem> inline
-	const _Elem *data(_XSTD initializer_list<_Elem> _Ilist) _NOEXCEPT
+	_CONST_FUN const _Elem *data(
+		_XSTD initializer_list<_Elem> _Ilist) _NOEXCEPT
 	{	// get pointer to data of initializer_list
 	return (_Ilist.begin());
 	}
@@ -3702,7 +3705,7 @@ struct allocator_arg_t
 	{	// tag type for added allocator argument
 	};
 
-const allocator_arg_t allocator_arg{};
+_CONST_DATA allocator_arg_t allocator_arg{};
 
 _CRTIMP2_PURE _NO_RETURN(__CLRCALL_PURE_OR_CDECL _Xbad_alloc());
 _CRTIMP2_PURE _NO_RETURN(__CLRCALL_PURE_OR_CDECL _Xinvalid_argument(_In_z_ const char *));

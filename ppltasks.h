@@ -61,8 +61,8 @@
 // so don't blindly change it to std::declval.
 namespace stdx
 {
-    template<class _T>
-    _T&& declval();
+    template<class _Ty>
+    _Ty&& declval();
 }
 
 /// <summary>
@@ -132,6 +132,19 @@ inline __declspec(noreturn) void __cdecl cancel_current_task()
 
 namespace details
 {
+    struct _DefaultTaskHelper
+    {
+        /// <summary>
+        /// Helper function for throwing an error for task functions that cannot be called
+        /// from a default constructed task.
+        /// </summary>
+        static void __declspec(noreturn) __cdecl _NoCallOnDefaultTask_ErrorImpl()
+        {
+            const char* _Err_Msg = "This function cannot be called on a default constructed task";
+            throw invalid_operation(_Err_Msg);
+        }
+    };
+
     /// <summary>
     ///     Callstack container, which is used to capture and preserve callstacks in ppltasks.
     ///     Members of this class is examined by vc debugger, thus there will be no public access methods.
@@ -195,7 +208,7 @@ namespace details
         typedef _Unit_type _Type;
     };
 
-    template<typename _T>
+    template<typename _Ty>
     struct _IsUnwrappedAsyncSelector
     {
         static const bool _Value = true;
@@ -219,8 +232,8 @@ namespace details
         typedef _Ty _Type;
     };
 
-    template <typename _T>
-    _TypeSelectorAsyncTask _AsyncOperationKindSelector(task<_T>);
+    template <typename _Ty>
+    _TypeSelectorAsyncTask _AsyncOperationKindSelector(task<_Ty>);
 
     _TypeSelectorNoAsync _AsyncOperationKindSelector(...);
 
@@ -269,16 +282,16 @@ namespace details
         static const bool _Value = __is_base_of(Windows::Foundation::IAsyncInfo, typename _Unhat<_Type>::_Value);
     };
 
-    template <typename _T>
-    _TypeSelectorAsyncOperation _AsyncOperationKindSelector(Windows::Foundation::IAsyncOperation<_T>^);
+    template <typename _Ty>
+    _TypeSelectorAsyncOperation _AsyncOperationKindSelector(Windows::Foundation::IAsyncOperation<_Ty>^);
 
     _TypeSelectorAsyncAction _AsyncOperationKindSelector(Windows::Foundation::IAsyncAction^);
 
     template <typename _T1, typename _T2>
     _TypeSelectorAsyncOperationWithProgress _AsyncOperationKindSelector(Windows::Foundation::IAsyncOperationWithProgress<_T1, _T2>^);
 
-    template <typename _T>
-    _TypeSelectorAsyncActionWithProgress _AsyncOperationKindSelector(Windows::Foundation::IAsyncActionWithProgress<_T>^);
+    template <typename _Ty>
+    _TypeSelectorAsyncActionWithProgress _AsyncOperationKindSelector(Windows::Foundation::IAsyncActionWithProgress<_Ty>^);
 
     template <typename _Type, bool _IsAsync = _IsIAsyncInfo<_Type>::_Value>
     struct _TaskTypeTraits
@@ -419,8 +432,8 @@ namespace details
         static const bool _IsUnwrappedTaskOrAsync = _TaskTypeTraits<_FuncRetType>::_IsUnwrappedTaskOrAsync;
     };
 
-    template<typename T>
-    struct _InitFunctorTypeTraits<T, T>
+    template<typename _Ty>
+    struct _InitFunctorTypeTraits<_Ty, _Ty>
     {
         typedef _TypeSelectorNoAsync _AsyncKind;
         static const bool _IsAsyncTask = false;
@@ -816,11 +829,11 @@ namespace details
                 return _M_CompletedHandler;
             }
 
-            void set(Windows::Foundation::AsyncOperationCompletedHandler<_Result>^ value)
+            void set(Windows::Foundation::AsyncOperationCompletedHandler<_Result>^ _Value)
             {
-                _M_CompletedHandler = value;
-                _M_asyncInfo.Get()->Completed = ref new _CompletionHandlerType([&](_AsyncOperationType, Windows::Foundation::AsyncStatus status) {
-                    _M_CompletedHandler->Invoke(this, status);
+                _M_CompletedHandler = _Value;
+                _M_asyncInfo.Get()->Completed = ref new _CompletionHandlerType([&](_AsyncOperationType, Windows::Foundation::AsyncStatus _Status) {
+                    _M_CompletedHandler->Invoke(this, _Status);
                 });
             }
         }
@@ -1038,8 +1051,8 @@ namespace details
         }
     };
 
-    inline _Internal_task_options &_get_internal_task_options(task_options &options);
-    inline const _Internal_task_options &_get_internal_task_options(const task_options &options);
+    inline _Internal_task_options &_get_internal_task_options(task_options &_Options);
+    inline const _Internal_task_options &_get_internal_task_options(const task_options &_Options);
 }
 /// <summary>
 ///     Represents the allowed options for creating a task
@@ -1092,7 +1105,7 @@ public:
         : _M_Scheduler(get_ambient_scheduler()),
           _M_CancellationToken(_Token),
           _M_ContinuationContext(_ContinuationContext),
-          _M_HasCancellationToken(false),
+          _M_HasCancellationToken(true),
           _M_HasScheduler(false)
     {
     }
@@ -1220,14 +1233,14 @@ private:
 namespace details
 {
 
-    /// _ThenImplOptions contains state variables used when calling the internal _ThenImpl function.  
+    /// _ThenImplOptions contains state variables used when calling the internal _ThenImpl function.
     /// This is a non-templated object that was introduced to reduce the generated code size of PPLTasks continuations.
     struct _ThenImplOptions
     {
-        _ThenImplOptions(_CancellationTokenState *token_state, const task_continuation_context* continuation_context,
-            scheduler_ptr scheduler, _TaskCreationCallstack creation_stack, _TaskInliningMode_t inlining_mode = _NoInline) :
-            _PTokenState(token_state), _PContinuationContext(const_cast<task_continuation_context*>(continuation_context)), _Scheduler(scheduler),
-            _CreationStack(creation_stack), _InliningMode(inlining_mode) {};
+        _ThenImplOptions(_CancellationTokenState *_Token_state, const task_continuation_context* _Continuation_context,
+            scheduler_ptr _PScheduler, _TaskCreationCallstack _Creation_stack, _TaskInliningMode_t _Inlining_mode = _NoInline) :
+            _PTokenState(_Token_state), _PContinuationContext(const_cast<task_continuation_context*>(_Continuation_context)), _Scheduler(_PScheduler),
+            _CreationStack(_Creation_stack), _InliningMode(_Inlining_mode) {}
 
         _CancellationTokenState *_PTokenState;
         scheduler_ptr _Scheduler;
@@ -1235,10 +1248,10 @@ namespace details
         _TaskInliningMode_t _InliningMode;
         task_continuation_context* _PContinuationContext;
 
-        static _ThenImplOptions _CreateOptions(const task_options& _Task_Options, const task_continuation_context& _ContinuationContext, 
+        static _ThenImplOptions _CreateOptions(const task_options& _Task_Options, const task_continuation_context& _ContinuationContext,
             const scheduler_ptr& impl_scheduler)
         {
-            _CancellationTokenState *_TokenState = _Task_Options.has_cancellation_token() ? 
+            _CancellationTokenState *_TokenState = _Task_Options.has_cancellation_token() ?
                 _Task_Options.get_cancellation_token()._GetImplValue() : nullptr;
             auto _Scheduler = _Task_Options.has_scheduler() ? _Task_Options.get_scheduler() : impl_scheduler;
             auto _InliningMode = _Task_Options.get_continuation_context()._ForceInline() ? details::_ForceInline : details::_NoInline;
@@ -1251,13 +1264,13 @@ namespace details
         }
     };
 
-    inline _Internal_task_options & _get_internal_task_options(task_options &options)
+    inline _Internal_task_options & _get_internal_task_options(task_options &_Options)
     {
-        return options._M_InternalTaskOptions;
+        return _Options._M_InternalTaskOptions;
     }
-    inline const _Internal_task_options & _get_internal_task_options(const task_options &options)
+    inline const _Internal_task_options & _get_internal_task_options(const task_options &_Options)
     {
-        return options._M_InternalTaskOptions;
+        return _Options._M_InternalTaskOptions;
     }
 
     struct _Task_impl_base;
@@ -2509,8 +2522,8 @@ private:
     }
 
 
-    template <typename T> friend class task; // task can register itself with the event by calling the private _RegisterTask
-    template <typename T> friend class task_completion_event;
+    template <typename _Ty> friend class task; // task can register itself with the event by calling the private _RegisterTask
+    template <typename _Ty> friend class task_completion_event;
 
     typedef typename details::_Task_completion_event_impl<_ResultType>::_TaskList _TaskList;
 
@@ -2705,7 +2718,7 @@ public:
     }
 
 private:
-    template <typename T> friend class task; // task can register itself with the event by calling the private _RegisterTask
+    template <typename _Ty> friend class task; // task can register itself with the event by calling the private _RegisterTask
 
     /// <summary>
     ///     Register a task with this event. This function is called when a task is constructed using
@@ -3236,7 +3249,7 @@ public:
     {
         if (!_M_Impl)
         {
-            throw invalid_operation("wait() cannot be called on a default constructed task.");
+            details::_DefaultTaskHelper::_NoCallOnDefaultTask_ErrorImpl();
         }
 
         return _M_Impl->_Wait();
@@ -3258,7 +3271,7 @@ public:
     {
         if (!_M_Impl)
         {
-            throw invalid_operation("get() cannot be called on a default constructed task.");
+            details::_DefaultTaskHelper::_NoCallOnDefaultTask_ErrorImpl();
         }
 
         if (_M_Impl->_Wait() == canceled)
@@ -3282,7 +3295,7 @@ public:
     {
         if (!_M_Impl)
         {
-            throw invalid_operation("is_done() cannot be called on a default constructed task.");
+            details::_DefaultTaskHelper::_NoCallOnDefaultTask_ErrorImpl();
         }
 
         return _M_Impl->_IsDone();
@@ -3298,7 +3311,7 @@ public:
     {
         if (!_M_Impl)
         {
-            throw invalid_operation("scheduler() cannot be called on a default constructed task.");
+            details::_DefaultTaskHelper::_NoCallOnDefaultTask_ErrorImpl();
         }
 
         return _M_Impl->_GetScheduler();
@@ -3315,7 +3328,7 @@ public:
     {
         if (!_M_Impl)
         {
-            throw invalid_operation("is_apartment_aware() cannot be called on a default constructed task.");
+            details::_DefaultTaskHelper::_NoCallOnDefaultTask_ErrorImpl();
         }
         return _M_Impl->_IsApartmentAware();
     }
@@ -3369,7 +3382,7 @@ public:
     {
         if (!_M_Impl)
         {
-            throw invalid_operation("then() cannot be called on a default constructed task.");
+            details::_DefaultTaskHelper::_NoCallOnDefaultTask_ErrorImpl();
         }
 
         return _M_Impl;
@@ -3422,7 +3435,7 @@ public:
         auto _Scheduler = _GetImpl()->_GetScheduler();
 
         // Note: _ThenImpl's implemenation makes a copy of the continuation_context when it schedules the continuation.  '
-        //       The Continuation Context used to create the _ThenImplOptions must still exist when _ThenImpl executes. 
+        //       The Continuation Context used to create the _ThenImplOptions must still exist when _ThenImpl executes.
         auto _Default_Context = task_continuation_context::use_default();
         details::_ThenImplOptions _Options (_PTokenState, &_Default_Context, _Scheduler, _CAPTURE_CALLSTACK(), _InliningMode);
 
@@ -3434,7 +3447,7 @@ public:
     }
 
 private:
-    template <typename T> friend class task;
+    template <typename _Ty> friend class task;
 
 
     // The task handle type used to construct an 'initial task' - a task with no dependents.
@@ -4094,7 +4107,7 @@ public:
         details::_get_internal_task_options(_TaskOptions)._set_creation_callstack(_CAPTURE_CALLSTACK());
 
         // Note: _ThenImpl's implemenation makes a copy of the continuation_context when it schedules the continuation.  '
-        //       The Continuation Context used to create the _ThenImplOptions must still exist when _ThenImpl executes. 
+        //       The Continuation Context used to create the _ThenImplOptions must still exist when _ThenImpl executes.
         auto _ContinuationContext = _TaskOptions.get_continuation_context();
         auto _Options = details::_ThenImplOptions::_CreateOptions(_TaskOptions, _ContinuationContext, _ThenGetImpl()->_GetScheduler());
 
@@ -4259,7 +4272,7 @@ public:
     {
         if (!_M_unitTask._M_Impl)
         {
-            throw invalid_operation("then() cannot be called on a default constructed task.");
+            details::_DefaultTaskHelper::_NoCallOnDefaultTask_ErrorImpl();
         }
 
         return _M_unitTask._M_Impl;
@@ -4321,8 +4334,8 @@ public:
     }
 
 private:
-    template <typename T> friend class task;
-    template <typename T> friend class task_completion_event;
+    template <typename _Ty> friend class task;
+    template <typename _Ty> friend class task_completion_event;
 
     /// <summary>
     ///     Initializes a task using a task completion event.
@@ -4532,27 +4545,27 @@ task<_ReturnType> create_task(const task<_ReturnType>& _Task)
 #if defined (__cplusplus_winrt)
 namespace details
 {
-    template<typename _T>
-    task<_T> _To_task_helper(Windows::Foundation::IAsyncOperation<_T>^ op)
+    template<typename _Ty>
+    task<_Ty> _To_task_helper(Windows::Foundation::IAsyncOperation<_Ty>^ _Op)
     {
-        return task<_T>(op);
+        return task<_Ty>(_Op);
     }
 
-    template<typename _T, typename _Progress>
-    task<_T> _To_task_helper(Windows::Foundation::IAsyncOperationWithProgress<_T, _Progress>^ op)
+    template<typename _Ty, typename _Progress>
+    task<_Ty> _To_task_helper(Windows::Foundation::IAsyncOperationWithProgress<_Ty, _Progress>^ _Op)
     {
-        return task<_T>(op);
+        return task<_Ty>(_Op);
     }
 
-    inline task<void> _To_task_helper(Windows::Foundation::IAsyncAction^ op)
+    inline task<void> _To_task_helper(Windows::Foundation::IAsyncAction^ _Op)
     {
-        return task<void>(op);
+        return task<void>(_Op);
     }
 
     template<typename _Progress>
-    task<void> _To_task_helper(Windows::Foundation::IAsyncActionWithProgress<_Progress>^ op)
+    task<void> _To_task_helper(Windows::Foundation::IAsyncActionWithProgress<_Progress>^ _Op)
     {
-        return task<void>(op);
+        return task<void>(_Op);
     }
 
     template<typename _ProgressType>
@@ -4852,7 +4865,7 @@ namespace details
     template<typename _ReturnType>
     _ZeroArgumentFunctor _ArgumentCountHelper(_ReturnType(__fastcall *)());
 
-    template<typename _T>
+    template<typename _Ty>
     struct _FunctorArguments
     {
         static const size_t _Count = 0;
@@ -4870,44 +4883,44 @@ namespace details
         static const size_t _Count = 2;
     };
 
-    template<typename _T>
+    template<typename _Ty>
     struct _FunctorTypeTraits
     {
-        typedef decltype(_ArgumentCountHelper(&(_T::operator()))) _ArgumentCountType;
+        typedef decltype(_ArgumentCountHelper(&(_Ty::operator()))) _ArgumentCountType;
         static const size_t _ArgumentCount = _FunctorArguments<_ArgumentCountType>::_Count;
 
-        typedef decltype(_ReturnTypeClassHelperThunk(&(_T::operator()))) _ReturnType;
-        typedef decltype(_Arg1ClassHelperThunk(&(_T::operator()))) _Argument1Type;
-        typedef decltype(_Arg2ClassHelperThunk(&(_T::operator()))) _Argument2Type;
+        typedef decltype(_ReturnTypeClassHelperThunk(&(_Ty::operator()))) _ReturnType;
+        typedef decltype(_Arg1ClassHelperThunk(&(_Ty::operator()))) _Argument1Type;
+        typedef decltype(_Arg2ClassHelperThunk(&(_Ty::operator()))) _Argument2Type;
     };
 
-    template<typename _T>
-    struct _FunctorTypeTraits<_T *>
+    template<typename _Ty>
+    struct _FunctorTypeTraits<_Ty *>
     {
-        typedef decltype(_ArgumentCountHelper(stdx::declval<_T*>())) _ArgumentCountType;
+        typedef decltype(_ArgumentCountHelper(stdx::declval<_Ty*>())) _ArgumentCountType;
         static const size_t _ArgumentCount = _FunctorArguments<_ArgumentCountType>::_Count;
 
-        typedef decltype(_ReturnTypePFNHelperThunk(stdx::declval<_T*>())) _ReturnType;
-        typedef decltype(_Arg1PFNHelperThunk(stdx::declval<_T*>())) _Argument1Type;
-        typedef decltype(_Arg2PFNHelperThunk(stdx::declval<_T*>())) _Argument2Type;
+        typedef decltype(_ReturnTypePFNHelperThunk(stdx::declval<_Ty*>())) _ReturnType;
+        typedef decltype(_Arg1PFNHelperThunk(stdx::declval<_Ty*>())) _Argument1Type;
+        typedef decltype(_Arg2PFNHelperThunk(stdx::declval<_Ty*>())) _Argument2Type;
     };
 
-    template<typename _T>
+    template<typename _Ty>
     struct _ProgressTypeTraits
     {
         static const bool _TakesProgress = false;
         typedef void _ProgressType;
     };
 
-    template<typename _T>
-    struct _ProgressTypeTraits<progress_reporter<_T>>
+    template<typename _Ty>
+    struct _ProgressTypeTraits<progress_reporter<_Ty>>
     {
         static const bool _TakesProgress = true;
-        typedef typename _T _ProgressType;
+        typedef typename _Ty _ProgressType;
     };
 
 
-    template<typename _T, size_t count = _FunctorTypeTraits<_T>::_ArgumentCount>
+    template<typename _Ty, size_t _Count = _FunctorTypeTraits<_Ty>::_ArgumentCount>
     struct _CAFunctorOptions
     {
         static const bool _TakesProgress = false;
@@ -4915,12 +4928,12 @@ namespace details
         typedef void _ProgressType;
     };
 
-    template<typename _T>
-    struct _CAFunctorOptions<_T, 1>
+    template<typename _Ty>
+    struct _CAFunctorOptions<_Ty, 1>
     {
     private:
 
-        typedef typename _FunctorTypeTraits<_T>::_Argument1Type _Argument1Type;
+        typedef typename _FunctorTypeTraits<_Ty>::_Argument1Type _Argument1Type;
 
     public:
 
@@ -4929,12 +4942,12 @@ namespace details
         typedef typename _ProgressTypeTraits<_Argument1Type>::_ProgressType _ProgressType;
     };
 
-    template<typename _T>
-    struct _CAFunctorOptions<_T, 2>
+    template<typename _Ty>
+    struct _CAFunctorOptions<_Ty, 2>
     {
     private:
 
-        typedef typename _FunctorTypeTraits<_T>::_Argument1Type _Argument1Type;
+        typedef typename _FunctorTypeTraits<_Ty>::_Argument1Type _Argument1Type;
 
     public:
 
@@ -5387,7 +5400,7 @@ namespace details
     //
     // Internal base class implementation for async operations (based on internal Windows representation for ABI level async operations)
     //
-    template < typename _Attributes, _AsyncResultType resultType = SingleResult >
+    template < typename _Attributes, _AsyncResultType _ResultType = SingleResult >
     ref class _AsyncInfoBase abstract : _Attributes::_AsyncBaseType
     {
     internal:
@@ -5635,7 +5648,7 @@ namespace details
 #pragma warning(push)
 #pragma warning(disable: 4127) // Conditional expression is constant
             // single result illegal before transition to Completed or Cancelled state
-            if (resultType == SingleResult)
+            if (_ResultType == SingleResult)
 #pragma warning(pop)
             {
                 if (_Current != _AsyncCompleted)
@@ -5778,6 +5791,12 @@ namespace details
     // ***************************************************************************
     // Progress Layer (optional):
     //
+
+    // __declspec(no_empty_identity_interface) is used to suppress generation of WinRT
+    // default functions (e.g. QueryInterface, AddRef, etc).  _AsyncProgressBase is never
+    // used directly, so generation of WinRT functions is not needed and unnecessarily
+    // increases generated code size.
+
     template< typename _Attributes, bool _HasProgress, _AsyncResultType _ResultType = SingleResult >
     ref class __declspec(no_empty_identity_interface) _AsyncProgressBase abstract : _AsyncInfoBase<_Attributes, _ResultType>
     {
@@ -5838,7 +5857,7 @@ namespace details
     // Async Creation Layer:
     //
     template<typename _Function>
-    ref class _AsyncTaskGeneratorThunk sealed : _AsyncProgressBase<typename _AsyncLambdaTypeTraits<_Function>::_AsyncAttributes, 
+    ref class _AsyncTaskGeneratorThunk sealed : _AsyncProgressBase<typename _AsyncLambdaTypeTraits<_Function>::_AsyncAttributes,
         _AsyncLambdaTypeTraits<_Function>::_AsyncAttributes::_TakesProgress>
     {
     internal:
@@ -5960,7 +5979,7 @@ details::_AsyncTaskGeneratorThunk<_Function> ^create_async(const _Function& _Fun
     static_assert(std::is_same<decltype(details::_IsValidCreateAsync(_Func,0,0,0,0)),std::true_type>::value,
         "argument to create_async must be a callable object taking zero, one or two arguments");
 
-    
+
 
     return ref new details::_AsyncTaskGeneratorThunk<_Function>(_Func, _CAPTURE_CALLSTACK());
 }
@@ -7069,19 +7088,19 @@ namespace details
     /// <summary>
     /// A convenient extension to Concurrency: loop until a condition is no longer met
     /// </summary>
-    /// <param name="func">
+    /// <param name="_Func">
     ///   A function representing the body of the loop. It will be invoked at least once and
     ///   then repetitively as long as it returns true.
     /// </param>
     inline
-    task<bool> do_while(std::function<task<bool>(void)> func)
+    task<bool> do_while(std::function<task<bool>(void)> _Func)
     {
-        task<bool> first = func();
-        return first.then([=](bool guard) -> task<bool> {
-            if (guard)
-                return do_while(func);
+        task<bool> _First = _Func();
+        return _First.then([=](bool _Guard) -> task<bool> {
+            if (_Guard)
+                return do_while(_Func);
             else
-                return first;
+                return _First;
             });
     }
 

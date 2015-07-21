@@ -491,8 +491,8 @@ public:
 	typedef typename traits_type::int_type int_type;
 	typedef const _Elem *pointer;
 
-	istreambuf_iterator(streambuf_type *_Sb = 0) _THROW0()
-		: _Strbuf(_Sb), _Got(_Sb == 0)
+	_CONST_FUN istreambuf_iterator(streambuf_type *_Sb = 0) _THROW0()
+		: _Strbuf(_Sb), _Got(_Sb == 0), _Val()
 		{	// construct from stream buffer _Sb
 		}
 

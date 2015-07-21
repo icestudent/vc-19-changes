@@ -395,11 +395,10 @@ inline _bstr_t _com_error::Source() const
 
 inline _GUID _com_error::GUID() const throw()
 {
-    _GUID guid;
-    _COM_MEMCPY_S(&guid, sizeof(_GUID), &__uuidof(NULL), sizeof(_GUID));
+    _GUID guid{};
     if (m_perrinfo != NULL) {
         if (FAILED(m_perrinfo->GetGUID(&guid))) {
-            _COM_MEMCPY_S(&guid, sizeof(_GUID), &__uuidof(NULL), sizeof(_GUID));
+            guid = _GUID{};
         }
     } 
     return guid;
@@ -418,7 +417,11 @@ inline const TCHAR * _com_error::ErrorMessage() const throw()
                       0,
                       NULL);
         if (m_pszMsg != NULL) {
-            int nLen = lstrlen(m_pszMsg);
+            #ifdef UNICODE
+            size_t const nLen = wcslen(m_pszMsg);
+            #else
+            size_t const nLen = strlen(m_pszMsg);
+            #endif
             if (nLen > 1 && m_pszMsg[nLen - 1] == '\n') {
                 m_pszMsg[nLen - 1] = 0;
                 if (m_pszMsg[nLen - 2] == '\r') {

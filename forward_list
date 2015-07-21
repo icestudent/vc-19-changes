@@ -501,6 +501,11 @@ public:
 		{	// construct allocator from _Al
 		}
 
+	_Flist_alloc(_Alloc&& _Al)
+		: _Mypair(_One_then_variadic_args_t(), _STD move(_Al))
+		{	// construct allocator from _Al
+		}
+
 	~_Flist_alloc() _NOEXCEPT
 		{	// destroy head node
 		}
@@ -523,6 +528,12 @@ public:
  #else /* _ITERATOR_DEBUG_LEVEL == 0 */
 	_Flist_alloc(const _Alloc& _Al = _Alloc())
 		: _Mypair(_One_then_variadic_args_t(), _Al)
+		{	// construct allocator from _Al
+		_Alloc_proxy();
+		}
+
+	_Flist_alloc(_Alloc&& _Al)
+		: _Mypair(_One_then_variadic_args_t(), _STD move(_Al))
 		{	// construct allocator from _Al
 		_Alloc_proxy();
 		}
@@ -644,6 +655,11 @@ public:
 
 	_Flist_buy(const _Alloc& _Al = _Alloc())
 		: _Mybase(_Al)
+		{	// construct from allocator
+		}
+
+	_Flist_buy(_Alloc&& _Al)
+		: _Mybase(_STD move(_Al))
 		{	// construct from allocator
 		}
 
@@ -810,7 +826,7 @@ public:
 		}
 
 	forward_list(_Myt&& _Right)
-		: _Mybase(_Right._Getal())
+		: _Mybase(_STD move(_Right._Getal()))
 		{	// construct list by moving _Right
 		_Assign_rv(_STD forward<_Myt>(_Right));
 		}

@@ -4,9 +4,85 @@
 ;; with the -FA compiler switch to be assembled by MASM (Microsoft Macro
 ;; Assembler).
 ;;
-;; Copyright (c) 1993-2003, Microsoft Corporation. All rights reserved.
+;; Copyright (c) 1993-2015, Microsoft Corporation. All rights reserved.
 
-;; non destructive nops
+;; Generates VS2015 'multi-byte' nops.  If desired, uncomment
+;; the following EQU to generate 'legacy' nops
+
+;_ARCHIA32 EQU 1
+
+ifndef _ARCHIA32
+
+;; non destructive 'multi-byte' nops
+npad macro size
+if size eq 1
+  DB 90H
+else
+ if size eq 2
+   DB 66H, 90H
+ else
+  if size eq 3
+    DB 0FH, 1FH, 00H
+  else
+   if size eq 4
+     DB 0FH, 1FH, 40H, 00H
+   else
+    if size eq 5
+      DB 0FH, 1FH, 44H, 00H, 00H
+    else
+     if size eq 6
+       DB 66H, 0FH, 1FH, 44H, 00H, 00H
+     else
+      if size eq 7
+        DB 0FH, 1FH, 80H, 00H, 00H, 00H, 00H
+      else
+       if size eq 8
+         DB 0FH, 1FH, 84H, 00H, 00H, 00H, 00H, 00H
+       else
+        if size eq 9
+          DB 66H, 0FH, 1FH, 84H, 00H, 00H, 00H, 00H, 00H
+        else
+         if size eq 10
+           DB 66H, 66H, 0FH, 1FH, 84H, 00H, 00H, 00H, 00H, 00H
+         else
+          if size eq 11
+           DB 66H, 66H, 66H, 0FH, 1FH, 84H, 00H, 00H, 00H, 00H, 00H
+          else
+           if size eq 12
+             DB 0FH, 1FH, 40H, 00H, 0FH, 1FH, 84H, 00H, 00H, 00H, 00H, 00H
+           else
+            if size eq 13
+              DB 0FH, 1FH, 40H, 00H, 66H, 0FH, 1FH, 84H, 00H, 00H, 00H, 00H, 00H
+            else
+             if size eq 14
+               DB 0FH, 1FH, 40H, 00H, 66H, 66H, 0FH, 1FH, 84H, 00H, 00H, 00H, 00H, 00H
+             else
+              if size eq 15
+                DB 0FH, 1FH, 40H, 00H, 66H, 66H, 66H, 0FH, 1FH, 84H, 00H, 00H, 00H, 00H, 00H
+              else
+	       %out error: unsupported npad size
+               .err
+              endif
+             endif
+            endif
+           endif
+          endif
+         endif
+        endif
+       endif
+      endif
+     endif
+    endif
+   endif
+  endif
+ endif
+endif
+endm
+;; end non destructive 'multi-byte' nops
+
+else
+
+;; non destructive 'legacy' nops
 npad macro size
 if size eq 1
   nop
@@ -23,7 +99,8 @@ else
      DB 8DH, 64H, 24H, 00H
    else
     if size eq 5
-      add eax, DWORD PTR 0
+      ; jmp .+5; .npad 3
+      DB 0EBH, 03H, 8DH, 49H, 00H
     else
      if size eq 6
        ; lea ebx, [ebx+00000000]
@@ -59,7 +136,7 @@ else
             else
              if size eq 14
               ; jmp .+E; .npad 7; .npad 5
-              DB 0EBH, 0CH, 8DH, 0A4H, 24H, 00H, 00H, 00H, 00H, 05H, 00H, 00H, 00H, 00H
+              DB 0EBH, 0CH, 8DH, 0A4H, 24H, 00H, 00H, 00H, 00H, 0EBH, 03H, 8DH, 49H, 00H
              else
               if size eq 15
                ; jmp .+F; .npad 7; .npad 6
@@ -83,6 +160,9 @@ else
  endif
 endif
 endm
+;; end non destructive 'legacy' nops
+
+endif
 
 ;; destructive nops
 dpad macro size, reg

@@ -53,54 +53,54 @@ public:
 		{	// constants for formatting options
 		_Fmtmask = 0xffff, _Fmtzero = 0};
 
-	static const _Fmtflags skipws = (_Fmtflags)_IOSskipws;
-	static const _Fmtflags unitbuf = (_Fmtflags)_IOSunitbuf;
-	static const _Fmtflags uppercase = (_Fmtflags)_IOSuppercase;
-	static const _Fmtflags showbase = (_Fmtflags)_IOSshowbase;
-	static const _Fmtflags showpoint = (_Fmtflags)_IOSshowpoint;
-	static const _Fmtflags showpos = (_Fmtflags)_IOSshowpos;
-	static const _Fmtflags left = (_Fmtflags)_IOSleft;
-	static const _Fmtflags right = (_Fmtflags)_IOSright;
-	static const _Fmtflags internal = (_Fmtflags)_IOSinternal;
-	static const _Fmtflags dec = (_Fmtflags)_IOSdec;
-	static const _Fmtflags oct = (_Fmtflags)_IOSoct;
-	static const _Fmtflags hex = (_Fmtflags)_IOShex;
-	static const _Fmtflags scientific = (_Fmtflags)_IOSscientific;
-	static const _Fmtflags fixed = (_Fmtflags)_IOSfixed;
+	static _CONST_DATA _Fmtflags skipws = (_Fmtflags)_IOSskipws;
+	static _CONST_DATA _Fmtflags unitbuf = (_Fmtflags)_IOSunitbuf;
+	static _CONST_DATA _Fmtflags uppercase = (_Fmtflags)_IOSuppercase;
+	static _CONST_DATA _Fmtflags showbase = (_Fmtflags)_IOSshowbase;
+	static _CONST_DATA _Fmtflags showpoint = (_Fmtflags)_IOSshowpoint;
+	static _CONST_DATA _Fmtflags showpos = (_Fmtflags)_IOSshowpos;
+	static _CONST_DATA _Fmtflags left = (_Fmtflags)_IOSleft;
+	static _CONST_DATA _Fmtflags right = (_Fmtflags)_IOSright;
+	static _CONST_DATA _Fmtflags internal = (_Fmtflags)_IOSinternal;
+	static _CONST_DATA _Fmtflags dec = (_Fmtflags)_IOSdec;
+	static _CONST_DATA _Fmtflags oct = (_Fmtflags)_IOSoct;
+	static _CONST_DATA _Fmtflags hex = (_Fmtflags)_IOShex;
+	static _CONST_DATA _Fmtflags scientific = (_Fmtflags)_IOSscientific;
+	static _CONST_DATA _Fmtflags fixed = (_Fmtflags)_IOSfixed;
 
-	static const _Fmtflags hexfloat =
+	static _CONST_DATA _Fmtflags hexfloat =
 		(_Fmtflags)_IOShexfloat;	// added with TR1 (not in C++11)
 
-	static const _Fmtflags boolalpha = (_Fmtflags)_IOSboolalpha;
-	static const _Fmtflags _Stdio = (_Fmtflags)_IOS_Stdio;
-	static const _Fmtflags adjustfield = (_Fmtflags)(_IOSleft
+	static _CONST_DATA _Fmtflags boolalpha = (_Fmtflags)_IOSboolalpha;
+	static _CONST_DATA _Fmtflags _Stdio = (_Fmtflags)_IOS_Stdio;
+	static _CONST_DATA _Fmtflags adjustfield = (_Fmtflags)(_IOSleft
 		| _IOSright | _IOSinternal);
-	static const _Fmtflags basefield = (_Fmtflags)(_IOSdec
+	static _CONST_DATA _Fmtflags basefield = (_Fmtflags)(_IOSdec
 		| _IOSoct | _IOShex);
-	static const _Fmtflags floatfield = (_Fmtflags)(_IOSscientific
+	static _CONST_DATA _Fmtflags floatfield = (_Fmtflags)(_IOSscientific
 		| _IOSfixed);
 
 	enum _Iostate
 		{	// constants for stream states
 		_Statmask = 0x17};
 
-	static const _Iostate goodbit = (_Iostate)0x0;
-	static const _Iostate eofbit = (_Iostate)0x1;
-	static const _Iostate failbit = (_Iostate)0x2;
-	static const _Iostate badbit = (_Iostate)0x4;
+	static _CONST_DATA _Iostate goodbit = (_Iostate)0x0;
+	static _CONST_DATA _Iostate eofbit = (_Iostate)0x1;
+	static _CONST_DATA _Iostate failbit = (_Iostate)0x2;
+	static _CONST_DATA _Iostate badbit = (_Iostate)0x4;
 
 	enum _Openmode
 		{	// constants for file opening options
 		_Openmask = 0xff};
 
-	static const _Openmode in = (_Openmode)0x01;
-	static const _Openmode out = (_Openmode)0x02;
-	static const _Openmode ate = (_Openmode)0x04;
-	static const _Openmode app = (_Openmode)0x08;
-	static const _Openmode trunc = (_Openmode)0x10;
-	static const _Openmode _Nocreate = (_Openmode)_IOS_Nocreate;
-	static const _Openmode _Noreplace = (_Openmode)_IOS_Noreplace;
-	static const _Openmode binary = (_Openmode)_IOSbinary;
+	static _CONST_DATA _Openmode in = (_Openmode)0x01;
+	static _CONST_DATA _Openmode out = (_Openmode)0x02;
+	static _CONST_DATA _Openmode ate = (_Openmode)0x04;
+	static _CONST_DATA _Openmode app = (_Openmode)0x08;
+	static _CONST_DATA _Openmode trunc = (_Openmode)0x10;
+	static _CONST_DATA _Openmode _Nocreate = (_Openmode)_IOS_Nocreate;
+	static _CONST_DATA _Openmode _Noreplace = (_Openmode)_IOS_Noreplace;
+	static _CONST_DATA _Openmode binary = (_Openmode)_IOSbinary;
 
 	enum _Seekdir
 		{	// constants for file positioning options
@@ -109,9 +109,9 @@ public:
 		_Seekend
 		};
 
-	static const _Seekdir beg = _Seekbeg;
-	static const _Seekdir cur = _Seekcur;
-	static const _Seekdir end = _Seekend;
+	static _CONST_DATA _Seekdir beg = _Seekbeg;
+	static _CONST_DATA _Seekdir cur = _Seekcur;
+	static _CONST_DATA _Seekdir end = _Seekend;
 
 	enum
 		{	// constant for default file opening protection

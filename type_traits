@@ -201,7 +201,7 @@ template<class _Ty>
 	typedef _Ty type;
 	};
 
-template<class _Ty, unsigned int _Ix>
+template<class _Ty, size_t _Ix>
 	struct remove_extent<_Ty[_Ix]>
 	{	// remove array extent
 	typedef _Ty type;
@@ -220,7 +220,7 @@ template<class _Ty>
 	typedef _Ty type;
 	};
 
-template<class _Ty, unsigned int _Ix>
+template<class _Ty, size_t _Ix>
 	struct remove_all_extents<_Ty[_Ix]>
 	{	// remove all array extents
 	typedef typename remove_all_extents<_Ty>::type type;
@@ -467,13 +467,13 @@ template<class _Ty>
 	{	// determine whether _Ty is const qualified
 	};
 
-template<class _Ty, unsigned int _Nx>
+template<class _Ty, size_t _Nx>
 	struct is_const<_Ty[_Nx]>
 		: false_type
 	{	// determine whether _Ty is const qualified
 	};
 
-template<class _Ty, unsigned int _Nx>
+template<class _Ty, size_t _Nx>
 	struct is_const<const _Ty[_Nx]>
 		: true_type
 	{	// determine whether _Ty is const qualified
@@ -1061,7 +1061,7 @@ template<class _Ty>
 	{	// determine number of dimensions of array _Ty
 	};
 
-template<class _Ty, unsigned int _Ix>
+template<class _Ty, size_t _Ix>
 	struct rank<_Ty[_Ix]>
 		: integral_constant<size_t, rank<_Ty>::value + 1>
 	{	// determine number of dimensions of array _Ty
@@ -1080,13 +1080,13 @@ template<class _Ty, unsigned int _Nx>
 	{	// determine extent of dimension _Nx of array _Ty
 	};
 
-template<class _Ty, unsigned int _Ix>
+template<class _Ty, size_t _Ix>
 	struct _Extent<_Ty[_Ix], 0>
 		: integral_constant<size_t, _Ix>
 	{	// determine extent of dimension _Nx of array _Ty
 	};
 
-template<class _Ty, unsigned int _Nx, unsigned int _Ix>
+template<class _Ty, unsigned int _Nx, size_t _Ix>
 	struct _Extent<_Ty[_Ix], _Nx>
 		: _Extent<_Ty, _Nx - 1>
 	{	// determine extent of dimension _Nx of array _Ty
@@ -1222,7 +1222,7 @@ template<class _Ty,
 	typedef integer_sequence<_Ty, _Vals...> type;
 	typedef _Ty value_type;
 
-	static size_t size() _NOEXCEPT
+	static _CONST_FUN size_t size() _NOEXCEPT
 		{	// get length of parameter list
 		return (sizeof...(_Vals));
 		}
@@ -1288,14 +1288,14 @@ template<class _Ty>
 
 	// TEMPLATE FUNCTION forward
 template<class _Ty> inline
-	_Ty&& forward(
+	_CONST_FUN _Ty&& forward(
 		typename remove_reference<_Ty>::type& _Arg) _NOEXCEPT
 	{	// forward an lvalue as either an lvalue or an rvalue
 	return (static_cast<_Ty&&>(_Arg));
 	}
 
 template<class _Ty> inline
-	_Ty&& forward(
+	_CONST_FUN _Ty&& forward(
 		typename remove_reference<_Ty>::type&& _Arg) _NOEXCEPT
 	{	// forward an rvalue as an rvalue
 	static_assert(!is_lvalue_reference<_Ty>::value, "bad forward call");
@@ -1304,7 +1304,7 @@ template<class _Ty> inline
 
 		// TEMPLATE FUNCTION move
 template<class _Ty> inline
-	typename remove_reference<_Ty>::type&&
+	_CONST_FUN typename remove_reference<_Ty>::type&&
 		move(_Ty&& _Arg) _NOEXCEPT
 	{	// forward _Arg as movable
 	return (static_cast<typename remove_reference<_Ty>::type&&>(_Arg));
@@ -1312,7 +1312,7 @@ template<class _Ty> inline
 
 		// TEMPLATE FUNCTION _Move
 template<class _Ty> inline
-	typename remove_reference<_Ty>::type&&
+	_CONST_FUN typename remove_reference<_Ty>::type&&
 		_Move(_Ty&& _Arg) _NOEXCEPT
 	{	// forward _Arg as movable
 	return (static_cast<typename remove_reference<_Ty>::type&&>(_Arg));
@@ -1320,7 +1320,7 @@ template<class _Ty> inline
 
 		// TEMPLATE FUNCTION move_if_noexcept
 template<class _Ty> inline
-	typename _If<!is_nothrow_move_constructible<_Ty>::value
+	_CONST_FUN typename _If<!is_nothrow_move_constructible<_Ty>::value
 		&& is_copy_constructible<_Ty>::value,
 			const _Ty&, _Ty&&>::type
 	move_if_noexcept(_Ty& _Arg) _NOEXCEPT
@@ -1477,7 +1477,8 @@ template<class _Callable,
 		_STD forward<_Callable>(_Obj), _STD forward<_Types>(_Args)...));
 	}
 
-template<class _Rx>
+template<class _Rx,
+	bool = is_void<_Rx>::value>
 	struct _Forced
 	{	// tag to give INVOKE an explicit return type
 	};
@@ -1486,21 +1487,22 @@ struct _Unforced
 	{	// tag to distinguish bind() from bind<R>()
 	};
 
-template<class... _Valtys> inline
-	void _Invoke_ret(_Forced<void>, _Valtys&&... _Vals)
+template<class _Cv_void,
+	class... _Valtys> inline
+	void _Invoke_ret(_Forced<_Cv_void, true>, _Valtys&&... _Vals)
 	{	// INVOKE, "implicitly" converted to void
 	_STD invoke(_STD forward<_Valtys>(_Vals)...);
 	}
 
 template<class _Rx,
 	class... _Valtys> inline
-	_Rx _Invoke_ret(_Forced<_Rx>, _Valtys&&... _Vals)
+	_Rx _Invoke_ret(_Forced<_Rx, false>, _Valtys&&... _Vals)
 	{	// INVOKE, implicitly converted to _Rx
 	return (_STD invoke(_STD forward<_Valtys>(_Vals)...));
 	}
 
 template<class... _Valtys> inline
-	auto _Invoke_ret(_Forced<_Unforced>, _Valtys&&... _Vals)
+	auto _Invoke_ret(_Forced<_Unforced, false>, _Valtys&&... _Vals)
 	-> decltype(_STD invoke(_STD forward<_Valtys>(_Vals)...))
 	{	// INVOKE, unchanged
 	return (_STD invoke(_STD forward<_Valtys>(_Vals)...));
@@ -1611,8 +1613,8 @@ public:
 		}
 
 	template<class... _Types>
-		typename result_of<_Ty&(_Types&&...)>::type
-		operator()(_Types&&... _Args) const
+		auto operator()(_Types&&... _Args) const
+		-> decltype(_STD invoke(get(), _STD forward<_Types>(_Args)...))
 		{	// invoke object/function
 		return (_STD invoke(get(), _STD forward<_Types>(_Args)...));
 		}

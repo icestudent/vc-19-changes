@@ -12,6 +12,8 @@
  #pragma push_macro("new")
  #undef new
 
+ #pragma warning(disable: 4702 6385)
+
 _STD_BEGIN
 	// TEMPLATE CLASS array
 template<class _Ty,
@@ -113,17 +115,17 @@ public:
 		return (rend());
 		}
 
-	size_type size() const _NOEXCEPT
+	_CONST_FUN size_type size() const _NOEXCEPT
 		{	// return length of sequence
 		return (_Size);
 		}
 
-	size_type max_size() const _NOEXCEPT
+	_CONST_FUN size_type max_size() const _NOEXCEPT
 		{	// return maximum possible length of sequence
 		return (_Size);
 		}
 
-	bool empty() const _NOEXCEPT
+	_CONST_FUN bool empty() const _NOEXCEPT
 		{	// test if sequence is empty
 		return (false);
 		}
@@ -135,11 +137,11 @@ public:
 		return (_Elems[_Pos]);
 		}
 
-	const_reference at(size_type _Pos) const
+	_CONST_FUN const_reference at(size_type _Pos) const
 		{	// subscript nonmutable sequence with checking
-		if (_Size <= _Pos)
-			_Xran();
-		return (_Elems[_Pos]);
+		return (_Size <= _Pos
+			? (_Xran(), _Elems[_Pos])
+			: _Elems[_Pos]);
 		}
 
 	reference operator[](size_type _Pos)
@@ -157,19 +159,26 @@ public:
 		return (_Elems[_Pos]);
 		}
 
-	const_reference operator[](size_type _Pos) const
-		{	// subscript nonmutable sequence
+	static void _Bad_subscript()
+		{	// report invalid subscript
  #if _ITERATOR_DEBUG_LEVEL == 2
-		if (_Size <= _Pos)
-			_DEBUG_ERROR("array subscript out of range");
+		_DEBUG_ERROR("array subscript out of range");
 
  #elif _ITERATOR_DEBUG_LEVEL == 1
-		_SCL_SECURE_VALIDATE_RANGE(_Pos < _Size);
+		_SCL_SECURE_VALIDATE_RANGE(false);
  #endif /* _ITERATOR_DEBUG_LEVEL */
+		}
 
-		_Analysis_assume_(_Pos < _Size);
-
+	_CONST_FUN const_reference operator[](size_type _Pos) const
+		{	// subscript nonmutable sequence
+ #if _ITERATOR_DEBUG_LEVEL == 0
 		return (_Elems[_Pos]);
+
+ #else /* _ITERATOR_DEBUG_LEVEL == 0 */
+		return (_Size <= _Pos
+			? (_Bad_subscript(), _Elems[_Pos])
+			: _Elems[_Pos]);
+ #endif /* _ITERATOR_DEBUG_LEVEL == 0 */
 		}
 
 	reference front()
@@ -177,7 +186,7 @@ public:
 		return (_Elems[0]);
 		}
 
-	const_reference front() const
+	_CONST_FUN const_reference front() const
 		{	// return first element of nonmutable sequence
 		return (_Elems[0]);
 		}
@@ -187,7 +196,7 @@ public:
 		return (_Elems[_Size - 1]);
 		}
 
-	const_reference back() const
+	_CONST_FUN const_reference back() const
 		{	// return last element of nonmutable sequence
 		return (_Elems[_Size - 1]);
 		}
@@ -300,17 +309,17 @@ public:
 		return (rend());
 		}
 
-	size_type size() const
+	_CONST_FUN size_type size() const
 		{	// return length of sequence
 		return (0);
 		}
 
-	size_type max_size() const
+	_CONST_FUN size_type max_size() const
 		{	// return maximum possible length of sequence
 		return (0);
 		}
 
-	bool empty() const
+	_CONST_FUN bool empty() const
 		{	// test if sequence is empty
 		return (true);
 		}
@@ -485,28 +494,28 @@ template<class _Ty,
 template<size_t _Idx,
 	class _Ty,
 	size_t _Size>
-	_Ty& get(array<_Ty, _Size>& _Arr) _NOEXCEPT
+	_CONST_FUN _Ty& get(array<_Ty, _Size>& _Arr) _NOEXCEPT
 	{	// return element at _Idx in array _Arr
 	static_assert(_Idx < _Size, "array index out of bounds");
-	return (_Arr[_Idx]);
+	return (_Arr._Elems[_Idx]);
 	}
 
 template<size_t _Idx,
 	class _Ty,
 	size_t _Size>
-	const _Ty& get(const array<_Ty, _Size>& _Arr) _NOEXCEPT
+	_CONST_FUN const _Ty& get(const array<_Ty, _Size>& _Arr) _NOEXCEPT
 	{	// return element at _Idx in array _Arr
 	static_assert(_Idx < _Size, "array index out of bounds");
-	return (_Arr[_Idx]);
+	return (_Arr._Elems[_Idx]);
 	}
 
 template<size_t _Idx,
 	class _Ty,
 	size_t _Size>
-	_Ty&& get(array<_Ty, _Size>&& _Arr) _NOEXCEPT
+	_CONST_FUN _Ty&& get(array<_Ty, _Size>&& _Arr) _NOEXCEPT
 	{	// return element at _Idx in array _Arr
 	static_assert(_Idx < _Size, "array index out of bounds");
-	return (_STD move(_Arr[_Idx]));
+	return (_STD move(_Arr._Elems[_Idx]));
 	}
 
 namespace tr1 {	// TR1 ADDITIONS

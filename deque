@@ -826,6 +826,13 @@ public:
 		_Alloc_proxy();
 		}
 
+	_Deque_alloc(_Alloc&& _Al)
+		: _Mypair(_One_then_variadic_args_t(),
+			_STD move(_Al))
+		{	// construct allocator from _Al
+		_Alloc_proxy();
+		}
+
 	~_Deque_alloc() _NOEXCEPT
 		{	// destroy proxy
 		_Free_proxy();
@@ -1103,7 +1110,7 @@ public:
 	++this->_Mysize()
 
 	deque(_Myt&& _Right)
-		: _Mybase(_Right._Getal())
+		: _Mybase(_STD move(_Right._Getal()))
 		{	// construct by moving _Right
 		_Assign_rv(_STD forward<_Myt>(_Right), true_type());
 		}

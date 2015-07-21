@@ -114,10 +114,10 @@ public:
 		}
 
 	file_status(const file_status&) _NOEXCEPT = default;
-	file_status(file_status&&) = default;
 	~file_status() _NOEXCEPT = default;
-
 	file_status& operator=(const file_status&) _NOEXCEPT = default;
+
+	file_status(file_status&&) = default;
 	file_status& operator=(file_status&&) = default;
 
 	_File_type type() const _NOEXCEPT
@@ -843,7 +843,7 @@ class path
 public:
 	typedef _Pchar value_type;
 	typedef basic_string<value_type> string_type;
-	static const value_type preferred_separator = _FS_PREF;
+	static _CONST_DATA value_type preferred_separator = _FS_PREF;
 
 	path()
 		{	// default construct
@@ -1676,10 +1676,10 @@ public:
 		}
 
 	directory_entry(const directory_entry&) = default;
-	directory_entry(directory_entry&&) = default;
 	~directory_entry() _NOEXCEPT = default;
-
 	directory_entry& operator=(const directory_entry&) = default;
+
+	directory_entry(directory_entry&&) = default;
 	directory_entry& operator=(directory_entry&&) = default;
 
 	explicit directory_entry(const _FSPFX path& _Path,
@@ -1833,10 +1833,10 @@ public:
 		}
 
 	_Directory_iterator(const _Myt&) = default;
-	_Directory_iterator(_Myt&&) = default;
 	~_Directory_iterator() _NOEXCEPT = default;
-
 	_Myt& operator=(const _Myt&) = default;
+
+	_Directory_iterator(_Myt&&) = default;
 	_Myt& operator=(_Myt&&) = default;
 
 	const value_type& operator*() const
@@ -2026,10 +2026,10 @@ public:
 		}
 
 	recursive_directory_iterator(const _Myt&) = default;
-	recursive_directory_iterator(_Myt&&) = default;
 	~recursive_directory_iterator() _NOEXCEPT = default;
-
 	_Myt& operator=(const _Myt&) = default;
+
+	recursive_directory_iterator(_Myt&&) = default;
 	_Myt& operator=(_Myt&&) = default;
 
 	_Directory_options options() const
@@ -2332,7 +2332,7 @@ inline void copy(const path& _Oldpval, const path& _Newpval,
 	else if (is_directory(_Oldstat)
 		&& (_Opts & _Copy_options::recursive) != _Copy_options::none)
 		{	// copy directory recursively
-		if (!exists(_Newpval) && !create_directory(_Newpval))
+		if (!exists(_Newpval) && !create_directory(_Newpval, _Code) && !_Code)
 			_Code = make_error_code(errc::operation_not_permitted);
 		for (directory_iterator _Next(_Oldpval), _End;
 			_Code == error_code() && _Next != _End; ++_Next)
@@ -2362,25 +2362,26 @@ inline bool copy_file(const path& _Oldpval, const path& _Newpval,
 	_Copy_options _Opt,
 	error_code& _Code) _NOEXCEPT
 	{	// copy _Oldpval to _Newpval
-	_Opt = _Copy_options(_Opt & (copy_options::skip_existing
+	_Opt &= (copy_options::skip_existing
 		| copy_options::overwrite_existing
-		| copy_options::update_existing));
+		| copy_options::update_existing);
 	bool _Exists = exists(_Newpval);
 	bool _Ans = false;
+	file_time_type _Oldtime;
+	file_time_type _Newtime;
 
 	_Code = error_code();
-	if (_Exists
-		&& ((_Opt & copy_options::skip_existing) != copy_options::none))
-		;
-	else if (!exists(_Oldpval)
-		|| (_Exists && (_Opt == copy_options::none
-			|| equivalent(_Oldpval, _Newpval, _Code))))
+	if (_Exists && (_Opt == copy_options::none
+		|| equivalent(_Oldpval, _Newpval, _Code)))
 		_Code = make_error_code(errc::file_exists);
+	else if (_Code)
+		;	// equivalent() failed, report error
 	else if (!_Exists
 		|| (_Opt & copy_options::overwrite_existing) != copy_options::none
 		|| ((_Opt & copy_options::update_existing) != copy_options::none
-			&& last_write_time(_Oldpval) < last_write_time(_Newpval))
-		|| _Opt == copy_options::none)
+			&& ((void)(_Oldtime = last_write_time(_Oldpval, _Code)), !_Code)
+			&& ((void)(_Newtime = last_write_time(_Newpval, _Code)), !_Code)
+			&& _Newtime < _Oldtime))
 		{	// ok to overwrite, if necessary
 		if (_Copy_file(_Oldpval.c_str(), _Newpval.c_str()) == 0)
 			_Ans = true;
@@ -2426,8 +2427,14 @@ inline bool create_directories(const path& _Path,
 		return (false);
 	else if (!exists(_Path))
 		{	// recursively create parent directories, then current
-		create_directories(_Path.parent_path());
-		create_directory(_Path);
+		create_directories(_Path.parent_path(), _Code);
+		if (_Code)
+			return (false);	// report error
+
+		create_directory(_Path, _Code);
+		if (_Code)
+			return (false);	// report error
+
 		return (true);
 		}
 	else if (is_directory(_Path))
@@ -2558,7 +2565,10 @@ inline path current_path(
 	_Code = error_code();
 	_Pchar _Dest[_MAX_FILESYS_NAME];
 	if (!_Current_get(_Dest))
+		{	// report error
 		_Code = make_error_code(errc::operation_not_permitted);
+		return (path());
+		}
 	return (path(_Dest));
 	}
 
@@ -2725,16 +2735,11 @@ inline bool is_empty(const path& _Path,
 	file_status _Stat = status(_Path);
 
 	_Code = error_code();
-	if (!exists(_Stat))
-		{	// file doesn't exist, report error
-		_Code = make_error_code(errc::operation_not_permitted);
-		return (true);
-		}
-	else if (is_directory(_Stat))
+	if (is_directory(_Stat))
 		return (directory_iterator(_Path)
 			== directory_iterator());
 	else
-		return (file_size(_Path) == 0);
+		return (file_size(_Path, _Code) == 0);
 	}
 
 inline bool is_fifo(file_status _Stat) _NOEXCEPT
@@ -2837,7 +2842,10 @@ inline file_time_type last_write_time(const path& _Path,
 
 	_Code = error_code();
 	if (_Ticks == -1)
+		{	// report error
 		_Code = make_error_code(errc::operation_not_permitted);
+		return ((file_time_type::min)());
+		}
 	return (file_time_type(chrono::system_clock::duration(_Ticks)));
 	}
 
@@ -2905,7 +2913,10 @@ inline path read_symlink(const path& _Path,
 	{	// read symbolic link
 	_Code = error_code();
 	if (!is_symlink(_Path))
+		{	// report error
 		_Code = make_error_code(errc::no_such_file_or_directory);
+		return (path());
+		}
 	_Pchar _Dest[_MAX_FILESYS_NAME];
 	return (path(_Symlink_get(_Dest, _Path.c_str())));
 	}
@@ -2992,7 +3003,10 @@ inline uintmax_t remove_all(const path& _Path,
 	error_code& _Code) _NOEXCEPT
 	{	// recursively remove a directory
 	uintmax_t _Ans = 0;
-	return (_Remove_all(_Path, _Ans, _Code));
+	_Remove_all(_Path, _Ans, _Code);
+	if (_Code)
+		return (static_cast<uintmax_t>(-1));
+	return (_Ans);
 	}
 
 inline void rename(const path& _Oldpval, const path& _Newpval)
@@ -3097,12 +3111,15 @@ inline file_status symlink_status(const path& _Path,
 
 inline path system_complete(const path& _Path)
 	{	// get completely specified path
-	error_code _Code;
-	path _Ans = system_complete(_Path, _Code);
-	if (_Code != error_code())
-		_THROW_NCEE(filesystem_error,
-			"system_complete(p): invalid argument");
-	return (_Ans);
+	if (_Path.is_absolute())
+		return (_Path);
+	path _Curpath = current_path();
+	if (!_Path.has_root_name() || _Path.root_name() == _Curpath.root_name())
+		return (absolute(_Path));
+	current_path(_Path.root_name());	// switch to new device
+	path _Altpath = current_path();	// get its full current path
+	current_path(_Curpath);	// revert to original current path
+	return (_Altpath / _Path.relative_path());
 	}
 
 inline path system_complete(const path& _Path,
@@ -3110,15 +3127,16 @@ inline path system_complete(const path& _Path,
 	{	// get completely specified path
 	_Code = error_code();
 
-	if (_Path.is_absolute())
-		return (_Path);
-	path _Curpath = current_path(_Code);
-	if (!_Path.has_root_name() || _Path.root_name() == _Curpath.root_name())
-		return (absolute(_Path));	// _Code???
-	current_path(_Path.root_name(), _Code);	// switch to new device
-	path _Altpath = current_path();	// get its full current path
-	current_path(_Curpath, _Code);	// revert to original current path
-	return (_Altpath / _Path.relative_path());
+	path _Ans;
+
+	_TRY_BEGIN
+	_Ans = system_complete(_Path);
+	_CATCH_ALL
+	_Code = make_error_code(errc::operation_not_permitted);
+	return (path());
+	_CATCH_END
+
+	return (_Ans);
 	}
 
 inline path temp_directory_path()
@@ -3140,7 +3158,10 @@ inline path temp_directory_path(
 
 	_Code = error_code();
 	if (!exists(_Ans) || !is_directory(_Ans))
+		{	// report error
 		_Code = make_error_code(errc::no_such_file_or_directory);
+		return (path());
+		}
 	return (_Ans);
 	}
 		}	// inline namespace v1

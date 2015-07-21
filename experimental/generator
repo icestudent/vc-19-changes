@@ -170,7 +170,7 @@ namespace experimental {
 	struct coroutine_traits<generator<_Ty, _Alloc>, _Ts...>
 	{
 		template <typename... _Us>
-		static auto get_allocator(_Us&&...) 
+		static auto get_allocator(_Us&&...)
 		{
 			return _Alloc{};
 		}

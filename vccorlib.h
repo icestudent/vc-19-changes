@@ -75,6 +75,11 @@
 #pragma warning(disable: 4483) // Allows us to use __identifier
 #pragma warning(disable: 4820) // bytes padding added after data member
 
+#define _VCCORLIB_THREADING_MODEL_DEFAULT  0
+#define _VCCORLIB_THREADING_MODEL_STA      1
+#define _VCCORLIB_THREADING_MODEL_MTA      2
+#define _VCCORLIB_THREADING_MODEL_OVERRIDE 3
+
 #pragma initialize_winrt_types_start
 
 struct HSTRING__;

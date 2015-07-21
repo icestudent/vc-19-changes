@@ -188,7 +188,7 @@ public:
 		}
 
 	unordered_set(_Myt&& _Right)
-		: _Mybase(_STD move(_Right), _Right._List._Getal())
+		: _Mybase(_STD move(_Right), _STD move(_Right._List._Getal()))
 		{	// construct set by moving _Right
 		}
 
@@ -473,7 +473,7 @@ public:
 		}
 
 	unordered_multiset(_Myt&& _Right)
-		: _Mybase(_STD move(_Right), _Right._List._Getal())
+		: _Mybase(_STD move(_Right), _STD move(_Right._List._Getal()))
 		{	// construct set by moving _Right
 		}
 

@@ -262,7 +262,7 @@ inline void atomic_flag_clear_explicit(
 template<unsigned _Bytes>
 	struct _Atomic_impl
 	{	// struct for managing locks around operations on atomic types
-	_Atomic_impl() _NOEXCEPT
+	_CONST_FUN _Atomic_impl() _NOEXCEPT
 		: _My_flag(0)
 		{	// default constructor
 		}
@@ -500,7 +500,7 @@ template<class _Ty,
 	struct _Atomic_base
 		: _Atomic_impl<_Bytes>
 	{	// struct that defines most member functions of std::atomic
-	_Atomic_base(_Ty _Val) _NOEXCEPT
+	_CONST_FUN _Atomic_base(_Ty _Val) _NOEXCEPT
 		: _My_val(_Val)
 		{	// construct from _Val, initialization is not an atomic operation
 		}
@@ -664,7 +664,7 @@ template<class _Ty>
 	atomic& operator=(const atomic&) = delete;
 	atomic& operator=(const atomic&) volatile = delete;
 
-	atomic(_Ty _Val) _NOEXCEPT
+	_CONST_FUN atomic(_Ty _Val) _NOEXCEPT
 		: _My_base(_Val)
 		{	// construct from _Val
 		}

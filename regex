@@ -552,7 +552,7 @@ public:
 	typedef _BidIt iterator;
 	typedef basic_string<value_type> string_type;
 
-	sub_match()
+	_CONST_FUN sub_match()
 		: matched(false)
 		{	// construct
 		}
@@ -1605,6 +1605,8 @@ public:
 	_Root_node()
 		: _Node_base(_N_begin), _Loops(0), _Marks(0), _Refs(0)
 		{	// construct
+		static_assert(sizeof (_Refs) == sizeof (_Atomic_counter_t),
+			"invalid _Refs size");
 		}
 
 	regex_constants::syntax_option_type _Fl;
@@ -2182,16 +2184,16 @@ public:
 	typedef typename _RxTraits::string_type string_type;
 	typedef regex_constants::syntax_option_type flag_type;
 
-	static const flag_type icase = regex_constants::icase;
-	static const flag_type nosubs = regex_constants::nosubs;
-	static const flag_type optimize = regex_constants::optimize;
-	static const flag_type collate = regex_constants::collate;
-	static const flag_type ECMAScript = regex_constants::ECMAScript;
-	static const flag_type basic = regex_constants::basic;
-	static const flag_type extended = regex_constants::extended;
-	static const flag_type awk = regex_constants::awk;
-	static const flag_type grep = regex_constants::grep;
-	static const flag_type egrep = regex_constants::egrep;
+	static _CONST_DATA flag_type icase = regex_constants::icase;
+	static _CONST_DATA flag_type nosubs = regex_constants::nosubs;
+	static _CONST_DATA flag_type optimize = regex_constants::optimize;
+	static _CONST_DATA flag_type collate = regex_constants::collate;
+	static _CONST_DATA flag_type ECMAScript = regex_constants::ECMAScript;
+	static _CONST_DATA flag_type basic = regex_constants::basic;
+	static _CONST_DATA flag_type extended = regex_constants::extended;
+	static _CONST_DATA flag_type awk = regex_constants::awk;
+	static _CONST_DATA flag_type grep = regex_constants::grep;
+	static _CONST_DATA flag_type egrep = regex_constants::egrep;
 
 	basic_regex()
 		: _Rep(0)
@@ -2442,7 +2444,8 @@ private:
 
 	void _Tidy()
 		{	// free all storage
-		if (_Rep != 0 && --_Rep->_Refs == 0)
+		if (_Rep != 0 && _MT_DECR(_Mtx,
+			reinterpret_cast<_Atomic_counter_t&>(_Rep->_Refs)) == 0)
 			_Destroy_node(_Rep);
 		_Rep = 0;
 		}
@@ -2474,7 +2477,7 @@ private:
 	void _Reset(_Root_node *_Rx)
 		{	// build regular expression holding root node _Rx
 		if (_Rx != 0)
-			++_Rx->_Refs;
+			_MT_INCR(_Mtx, reinterpret_cast<_Atomic_counter_t&>(_Rx->_Refs));
 		_Tidy();
 		_Rep = _Rx;
 		}

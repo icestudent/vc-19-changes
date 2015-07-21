@@ -191,7 +191,7 @@ public:
 		}
 
 	hash_map(_Myt&& _Right)
-		: _Mybase(_STD move(_Right), _Right._List._Getal())
+		: _Mybase(_STD move(_Right), _STD move(_Right._List._Getal()))
 		{	// construct map by moving _Right
 		}
 
@@ -438,7 +438,7 @@ public:
 		}
 
 	hash_multimap(_Myt&& _Right)
-		: _Mybase(_STD move(_Right), _Right._List._Getal())
+		: _Mybase(_STD move(_Right), _STD move(_Right._List._Getal()))
 		{	// construct map by moving _Right
 		}
 

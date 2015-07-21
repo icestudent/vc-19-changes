@@ -140,7 +140,7 @@ extern "C" {
         };
 
         template <typename _Ty>
-        void __vcrt_va_start_verify_argument_type()
+        void __vcrt_va_start_verify_argument_type() throw()
         {
             static_assert(!__vcrt_va_list_is_reference<_Ty>::__the_value, "va_start argument must not have reference type and must not be parenthesized");
         }

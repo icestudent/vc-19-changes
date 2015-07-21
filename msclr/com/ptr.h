@@ -221,7 +221,7 @@ namespace com
 
             IUnknown * iunk = static_cast<IUnknown *>(static_cast<void*>(iface_intptr));
 
-            _interface_type * interface_ptr;
+            _interface_type * interface_ptr = NULL;
             System::Runtime::InteropServices::Marshal::ThrowExceptionForHR(iunk->QueryInterface(__uuidof(_interface_type), (void **)&interface_ptr));
 
             iunk->Release();
@@ -285,7 +285,7 @@ namespace com
         void QueryInterface(REFIID riid, ptr<_other_type> % other)
         {
             _detail::smart_com_ptr<_interface_type> interface_ptr(GetInterface());
-            _other_type * other_ptr;
+            _other_type * other_ptr = NULL;
 
             System::Runtime::InteropServices::Marshal::ThrowExceptionForHR(interface_ptr->QueryInterface(riid,(void **)&other_ptr));
             other.Attach(other_ptr);

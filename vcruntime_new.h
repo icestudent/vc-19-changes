@@ -82,8 +82,10 @@ void __CRTDECL operator delete[](
 
 #ifndef __PLACEMENT_NEW_INLINE
     #define __PLACEMENT_NEW_INLINE
-    inline void* __CRTDECL operator new(size_t, void* _Where) throw()
+    _Ret_notnull_ _Post_writable_byte_size_(_Size)
+    inline void* __CRTDECL operator new(size_t _Size, _Writable_bytes_(_Size) void* _Where) throw()
     {
+        (void)_Size;
         return _Where;
     }
 
@@ -95,8 +97,10 @@ void __CRTDECL operator delete[](
 
 #ifndef __PLACEMENT_VEC_NEW_INLINE
     #define __PLACEMENT_VEC_NEW_INLINE
-    inline void* __CRTDECL operator new[](size_t, void* _Where) throw()
+    _Ret_notnull_ _Post_writable_byte_size_(_Size)
+    inline void* __CRTDECL operator new[](size_t _Size, _Writable_bytes_(_Size) void* _Where) throw()
     {
+        (void)_Size;
         return _Where;
     }
 

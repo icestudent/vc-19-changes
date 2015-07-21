@@ -950,7 +950,6 @@ template<class _Ty,
 	return (!(_Left == _Right));
 	}
 
-
 		// TEMPLATE FUNCTION _Pocca
 template<class _Alty> inline
 	void _Pocca(_Alty& _Left, const _Alty& _Right, true_type) _NOEXCEPT

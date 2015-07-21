@@ -168,12 +168,11 @@ template<>
 		: _ATOMIC_ITYPE
 	{	/* template specialization that manages
 			values of _ITYPE atomically */
-
 	atomic() _NOEXCEPT = default;
 
-	atomic(_ITYPE _Val) _NOEXCEPT
+	_CONST_FUN atomic(_ITYPE _Val) _NOEXCEPT
+		: _ATOMIC_ITYPE{(_ATOMIC_UINT)_Val}
 		{	// construct from _Val, initialization is not atomic
-		this->_My_val = (_ATOMIC_UINT)_Val;
 		}
 
 	_ITYPE operator=(_ITYPE _Val) volatile _NOEXCEPT
@@ -198,15 +197,15 @@ template<class _Ty>
 	struct atomic<_Ty *>
 		: _Atomic_address
 	{	// template that manages values of _Ty * atomically
-	atomic() _NOEXCEPT = default;
-
 	atomic(const atomic&) = delete;
 	atomic& operator=(const atomic&) = delete;
 	atomic& operator=(const atomic&) volatile = delete;
 
-	atomic(_Ty *_Right) _NOEXCEPT
+	atomic() _NOEXCEPT = default;
+
+	_CONST_FUN atomic(_Ty *_Right) _NOEXCEPT
+		: _Atomic_address{(_ATOMIC_UINT)_Right}
 		{	// construct from _Right, initialization is not atomic
-		this->_My_val = (_ATOMIC_UINT)_Right;
 		}
 
 	_Ty *operator=(_Ty *_Right) volatile _NOEXCEPT
