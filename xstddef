@@ -241,14 +241,11 @@ template<class _Ty = void>
 		}
 	};
 
-		// is_transparent MACHINERY
-typedef int _Is_trans;	// type for is_transparent
-
 		// TEMPLATE STRUCT SPECIALIZATION plus
 template<>
 	struct plus<void>
 	{	// transparent functor for operator+
-	typedef _Is_trans is_transparent;
+	typedef int is_transparent;
 
 	template<class _Ty1,
 		class _Ty2>
@@ -265,7 +262,7 @@ template<>
 template<>
 	struct minus<void>
 	{	// transparent functor for operator-
-	typedef _Is_trans is_transparent;
+	typedef int is_transparent;
 
 	template<class _Ty1,
 		class _Ty2>
@@ -282,7 +279,7 @@ template<>
 template<>
 	struct multiplies<void>
 	{	// transparent functor for operator*
-	typedef _Is_trans is_transparent;
+	typedef int is_transparent;
 
 	template<class _Ty1,
 		class _Ty2>
@@ -299,7 +296,7 @@ template<>
 template<>
 	struct equal_to<void>
 	{	// transparent functor for operator==
-	typedef _Is_trans is_transparent;
+	typedef int is_transparent;
 
 	template<class _Ty1,
 		class _Ty2>
@@ -316,7 +313,7 @@ template<>
 template<>
 	struct less<void>
 	{	// transparent functor for operator<
-	typedef _Is_trans is_transparent;
+	typedef int is_transparent;
 
 	template<class _Ty1,
 		class _Ty2>

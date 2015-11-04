@@ -5672,12 +5672,12 @@ private:
         }
     }
 
-    _Ret_ _Ubiquitous_buffer* _Get_buffer() __CPU_ONLY const
+    _Ret_ _Ubiquitous_buffer* _Get_buffer() const __CPU_ONLY
     {
         return _M_buffer_descriptor._Get_buffer_ptr(); 
     }
 
-    _Event _Get_access_async(_Access_mode _Mode, _Buffer_ptr &_Buf_ptr, bool _Zero_copy_cpu_access = false) __CPU_ONLY const
+    _Event _Get_access_async(_Access_mode _Mode, _Buffer_ptr &_Buf_ptr, bool _Zero_copy_cpu_access = false) const __CPU_ONLY
     {
         _ASSERTE(!_Zero_copy_cpu_access || (_Get_buffer()->_Get_master_buffer()->_Get_allowed_host_access_mode() != _No_access));
 

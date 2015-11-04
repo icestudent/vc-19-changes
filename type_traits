@@ -64,40 +64,6 @@
 	__is_trivially_constructible
 
 _STD_BEGIN
-	// TEMPLATE CLASS _Ptr_traits
-template<class _Ty>
-	struct _Ptr_traits
-	{	// basic definition
-	};
-
-template<class _Ty>
-	struct _Ptr_traits<_Ty *>
-	{	// pointer properties
-	static const bool _Is_const = false;
-	static const bool _Is_volatile = false;
-	};
-
-template<class _Ty>
-	struct _Ptr_traits<const _Ty *>
-	{	// pointer to const properties
-	static const bool _Is_const = true;
-	static const bool _Is_volatile = false;
-	};
-
-template<class _Ty>
-	struct _Ptr_traits<volatile _Ty *>
-	{	// pointer to volatile properties
-	static const bool _Is_const = false;
-	static const bool _Is_volatile = true;
-	};
-
-template<class _Ty>
-	struct _Ptr_traits<const volatile _Ty *>
-	{	// pointer to const volatile properties
-	static const bool _Is_const = true;
-	static const bool _Is_volatile = true;
-	};
-
 template<class _Ty>
 	struct _Is_memfunptr
 	{	// base class for member function pointer predicates
@@ -462,52 +428,26 @@ template<class _Ty>
 	// TEMPLATE CLASS is_const
 template<class _Ty>
 	struct is_const
-		: _Cat_base<_Ptr_traits<_Ty *>::_Is_const
-		&& !is_function<_Ty>::value>
-	{	// determine whether _Ty is const qualified
-	};
-
-template<class _Ty, size_t _Nx>
-	struct is_const<_Ty[_Nx]>
 		: false_type
 	{	// determine whether _Ty is const qualified
 	};
 
-template<class _Ty, size_t _Nx>
-	struct is_const<const _Ty[_Nx]>
+template<class _Ty>
+	struct is_const<const _Ty>
 		: true_type
-	{	// determine whether _Ty is const qualified
-	};
-
-template<class _Ty>
-	struct is_const<_Ty&>
-		: false_type
-	{	// determine whether _Ty is const qualified
-	};
-
-template<class _Ty>
-	struct is_const<_Ty&&>
-		: false_type
 	{	// determine whether _Ty is const qualified
 	};
 
 	// TEMPLATE CLASS is_volatile
 template<class _Ty>
 	struct is_volatile
-		: _Cat_base<_Ptr_traits<_Ty *>::_Is_volatile
-		&& !is_function<_Ty>::value>
-	{	// determine whether _Ty is volatile qualified
-	};
-
-template<class _Ty>
-	struct is_volatile<_Ty&>
 		: false_type
 	{	// determine whether _Ty is volatile qualified
 	};
 
 template<class _Ty>
-	struct is_volatile<_Ty&&>
-		: false_type
+	struct is_volatile<volatile _Ty>
+		: true_type
 	{	// determine whether _Ty is volatile qualified
 	};
 

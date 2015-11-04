@@ -36,13 +36,11 @@ public:
 		}
 	};
 
-template<class _Memptr> inline
-	typename enable_if<is_member_pointer<_Memptr>::value,
-		_Mem_fn<_Memptr> >::type mem_fn(_Memptr _Pm) _NOEXCEPT
+template<class _Rx,
+	class _Ty> inline
+	_Mem_fn<_Rx _Ty::*> mem_fn(_Rx _Ty::* _Pm) _NOEXCEPT
 	{	// wrap a pointer to member function/data
-		// NOTE: This template parameter differs from the Standard
-		// in order to handle arbitrary calling conventions.
-	return (_Mem_fn<_Memptr>(_Pm));
+	return (_Mem_fn<_Rx _Ty::*>(_Pm));
 	}
 
 // IMPLEMENT function
@@ -62,7 +60,7 @@ public:
 		}
 	};
 
-_CRTIMP2_PURE _NO_RETURN(__CLRCALL_PURE_OR_CDECL _Xbad_function_call());
+[[noreturn]] _CRTIMP2_PURE void __CLRCALL_PURE_OR_CDECL _Xbad_function_call();
 
 	// TEMPLATE FUNCTION _Test_callable
 template<class _Fty>

@@ -105,10 +105,10 @@ enum class future_status {	// names for timed wait function returns
 typedef future_status _Future_status;
 
 		// HELPER FUNCTIONS
-_CRTIMP2_PURE _NO_RETURN(__CLRCALL_PURE_OR_CDECL _Throw_future_error(
-	const error_code& _Code));
-_CRTIMP2_PURE _NO_RETURN(__CLRCALL_PURE_OR_CDECL _Rethrow_future_exception(
-	_XSTD exception_ptr _Ptr));
+[[noreturn]] _CRTIMP2_PURE void __CLRCALL_PURE_OR_CDECL _Throw_future_error(
+	const error_code& _Code);
+[[noreturn]] _CRTIMP2_PURE void __CLRCALL_PURE_OR_CDECL _Rethrow_future_exception(
+	_XSTD exception_ptr _Ptr);
 
 		// TEMPLATE CLASS SPECIALIZATION is_error_code_enum
 template<>
@@ -476,6 +476,7 @@ protected:
 			}
 		}
 
+public:
 	_Ty _Result;
 	_XSTD exception_ptr _Exception;
 	mutex _Mtx;

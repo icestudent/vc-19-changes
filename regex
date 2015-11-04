@@ -30,7 +30,11 @@
  #endif /* _REGEX_MAX_COMPLEXITY_COUNT */
 
  #ifndef _REGEX_MAX_STACK_COUNT
-  #define _REGEX_MAX_STACK_COUNT	1000L	/* set to 0 to disable */
+  #ifdef _WIN64
+   #define _REGEX_MAX_STACK_COUNT	600L	/* set to 0 to disable */
+  #else /* _WIN64 */
+   #define _REGEX_MAX_STACK_COUNT	1000L	/* set to 0 to disable */
+  #endif /* _WIN64 */
  #endif /* _REGEX_MAX_STACK_COUNT */
 
  #ifndef _ENHANCED_REGEX_VISUALIZER
@@ -153,8 +157,8 @@ enum error_type
 	};
 	}	// namespace regex_constants
 
-_CRTIMP2_PURE _NO_RETURN(__CLRCALL_PURE_OR_CDECL _Xregex_error(
-	regex_constants::error_type _Code));
+[[noreturn]] _CRTIMP2_PURE void __CLRCALL_PURE_OR_CDECL _Xregex_error(
+	regex_constants::error_type _Code);
 
 	// TEMPLATE CLASS regex_traits
 template<class _Elem>

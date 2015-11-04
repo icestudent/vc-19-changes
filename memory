@@ -415,12 +415,6 @@ public:
 		}
 
 	template<class _Ty2>
-		void _Resetw(const _Ty2 *_Other_ptr, _Ref_count_base *_Other_rep)
-		{	// point to _Other_ptr through _Other_rep
-		_Resetw(const_cast<_Ty2*>(_Other_ptr), _Other_rep);
-		}
-
-	template<class _Ty2>
 		void _Resetw(_Ty2 *_Other_ptr, _Ref_count_base *_Other_rep)
 		{	// point to _Other_ptr through _Other_rep
 		if (_Other_rep)
@@ -428,7 +422,7 @@ public:
 		if (_Rep != 0)
 			_Rep->_Decwref();
 		_Rep = _Other_rep;
-		_Ptr = _Other_ptr;
+		_Ptr = const_cast<remove_cv_t<_Ty2> *>(_Other_ptr);
 		}
 
 private:
@@ -1999,7 +1993,7 @@ template<class _Ty> inline
 template<class _Ty> inline
 	shared_ptr<_Ty> atomic_load(const shared_ptr<_Ty> *_Ptr)
 	{	// load *_Ptr atomically
-	return (atomic_load_explicit(_Ptr, memory_order_seq_cst));
+	return (_STD atomic_load_explicit(_Ptr, memory_order_seq_cst));
 	}
 
 template<class _Ty> inline
@@ -2013,7 +2007,7 @@ template<class _Ty> inline
 template<class _Ty> inline
 	void atomic_store(shared_ptr<_Ty> *_Ptr, shared_ptr<_Ty> _Other)
 	{	// store _Other to *_Ptr atomically
-	atomic_store_explicit(_Ptr, _Other, memory_order_seq_cst);
+	_STD atomic_store_explicit(_Ptr, _STD move(_Other), memory_order_seq_cst);
 	}
 
 template<class _Ty> inline
@@ -2030,7 +2024,7 @@ template<class _Ty> inline
 	shared_ptr<_Ty> atomic_exchange(
 		shared_ptr<_Ty> *_Ptr, shared_ptr<_Ty> _Other)
 	{	// copy _Other to *_Ptr and return previous value of *_Ptr atomically
-	return (atomic_exchange_explicit(_Ptr, _Other, memory_order_seq_cst));
+	return (_STD atomic_exchange_explicit(_Ptr, _STD move(_Other), memory_order_seq_cst));
 	}
 
 template<class _Ty> inline
@@ -2058,7 +2052,7 @@ template<class _Ty> inline
 		shared_ptr<_Ty> *_Ptr, shared_ptr<_Ty> *_Exp,
 			shared_ptr<_Ty> _Value)
 	{	// atomically compare and exchange
-	return (atomic_compare_exchange_weak_explicit(_Ptr, _Exp, _Value,
+	return (_STD atomic_compare_exchange_weak_explicit(_Ptr, _Exp, _STD move(_Value),
 		memory_order_seq_cst, memory_order_seq_cst));
 	}
 
@@ -2067,7 +2061,7 @@ template<class _Ty> inline
 		shared_ptr<_Ty> *_Ptr, shared_ptr<_Ty> *_Exp, shared_ptr<_Ty> _Value,
 		memory_order, memory_order)
 	{	// atomically compare and exchange
-	return (atomic_compare_exchange_weak_explicit(_Ptr, _Exp, _Value,
+	return (_STD atomic_compare_exchange_weak_explicit(_Ptr, _Exp, _STD move(_Value),
 		memory_order_seq_cst, memory_order_seq_cst));
 	}
 
@@ -2076,7 +2070,7 @@ template<class _Ty> inline
 	shared_ptr<_Ty> *_Ptr, shared_ptr<_Ty> *_Exp,
 		shared_ptr<_Ty> _Value)
 	{	// atomically compare and exchange
-	return (atomic_compare_exchange_strong_explicit(_Ptr, _Exp, _Value,
+	return (_STD atomic_compare_exchange_strong_explicit(_Ptr, _Exp, _STD move(_Value),
 		memory_order_seq_cst, memory_order_seq_cst));
 	}
 _STD_END

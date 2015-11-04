@@ -307,11 +307,7 @@ template<class _Ty,
 
 	// TEMPLATE STRUCT tuple_size
 template<class _Tuple>
-	struct tuple_size
-	{	// size of non-tuple
-	static_assert(_Always_false<_Tuple>::value,
-		"The C++ Standard doesn't define tuple_size for this type.");
-	};
+	struct tuple_size;
 
 template<class _Ty,
 	size_t _Size>
@@ -355,11 +351,7 @@ template<class _Tuple>
 	// CLASS tuple_element (find element by index)
 template<size_t _Index,
 	class _Tuple>
-	struct tuple_element
-	{	// struct to enforce bounds checking
-	static_assert(_Always_false<_Tuple>::value,
-		"tuple_element index out of bounds");
-	};
+	struct tuple_element;
 
 template<size_t _Idx,
 	class _Ty,
@@ -383,6 +375,13 @@ template<class _Ty1,
 	struct tuple_element<1, pair<_Ty1, _Ty2> >
 	{	// struct to determine type of element 1 in pair
 	typedef _Ty2 type;
+	};
+
+template<size_t _Index>
+	struct tuple_element<_Index, tuple<> >
+	{	// enforce bounds checking
+	static_assert(_Always_false<integral_constant<size_t, _Index> >::value,
+		"tuple index out of bounds");
 	};
 
 template<class _This,

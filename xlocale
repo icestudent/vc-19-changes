@@ -2502,7 +2502,7 @@ protected:
 		if (0 < _Ctype._Delfl)
 			_CSTD free((void *)_Ctype._Table);
 		else if (_Ctype._Delfl < 0)
-			delete[] (void *)_Ctype._Table;
+			delete[] _Ctype._Table;
 
 		_CSTD free(_Ctype._LocaleName);
 		}

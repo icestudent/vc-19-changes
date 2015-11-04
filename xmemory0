@@ -47,20 +47,20 @@ _STD_BEGIN
   #endif /* defined(_WIN64) */
  #endif /* _DEBUG */
 
-		// TEMPLATE FUNCTION _Allocate
-template<class _Ty> inline
-	_DECLSPEC_ALLOCATOR _Ty *_Allocate(size_t _Count, _Ty *,
+		// FUNCTION _Allocate
+inline
+	_DECLSPEC_ALLOCATOR void *_Allocate(size_t _Count, size_t _Sz,
 		bool _Try_aligned_allocation = true)
-	{	// allocate storage for _Count elements of type _Ty
+	{	// allocate storage for _Count elements of size _Sz
 	void *_Ptr = 0;
 
 	if (_Count == 0)
-		return (static_cast<_Ty *>(_Ptr));
+		return (_Ptr);
 
 	// check overflow of multiply
-	if ((size_t)(-1) / sizeof (_Ty) < _Count)
+	if ((size_t)(-1) / _Sz < _Count)
 		_Xbad_alloc();	// report no memory
-	const size_t _User_size = _Count * sizeof (_Ty);
+	const size_t _User_size = _Count * _Sz;
 
  #if defined(_M_IX86) || defined(_M_X64)
 	if (_Try_aligned_allocation
@@ -89,16 +89,16 @@ template<class _Ty> inline
 		_Ptr = ::operator new(_User_size);
 		_SCL_SECURE_ALWAYS_VALIDATE(_Ptr != 0);
 		}
-	return (static_cast<_Ty *>(_Ptr));
+	return (_Ptr);
 	}
 
-		// TEMPLATE FUNCTION _Deallocate
-template<class _Ty> inline
-	void _Deallocate(_Ty * _Ptr, size_t _Count)
-	{	// deallocate storage for _Count elements of type _Ty
+		// FUNCTION _Deallocate
+inline
+	void _Deallocate(void * _Ptr, size_t _Count, size_t _Sz)
+	{	// deallocate storage for _Count elements of size _Sz
  #if defined(_M_IX86) || defined(_M_X64)
-	_SCL_SECURE_ALWAYS_VALIDATE(_Count <= (size_t)(-1) / sizeof (_Ty));
-	const size_t _User_size = _Count * sizeof (_Ty);
+	_SCL_SECURE_ALWAYS_VALIDATE(_Count <= (size_t)(-1) / _Sz);
+	const size_t _User_size = _Count * _Sz;
 	if (_BIG_ALLOCATION_THRESHOLD <= _User_size)
 		{	// deallocate large block
 		const uintptr_t _Ptr_user = reinterpret_cast<uintptr_t>(_Ptr);
@@ -131,7 +131,7 @@ template<class _Ty> inline
 		_SCL_SECURE_ALWAYS_VALIDATE(_Ptr_user - _Ptr_container
 			<= _NON_USER_SIZE);
 
-		_Ptr = reinterpret_cast<_Ty *>(_Ptr_container);
+		_Ptr = reinterpret_cast<void *>(_Ptr_container);
 		}
  #endif /* defined(_M_IX86) || defined(_M_X64) */
 
@@ -414,15 +414,15 @@ struct _Alloc_allocate
 		// STRUCT _Alloc_construct
 struct _Alloc_construct
 	{	// determines allocator_traits<_Ty>
-		// ::construct(_Ty&, _Objty *, _Types...)
+		// ::construct(_Ty&, _Objty *, _Types&&...)
 
 	template<class _Ty,
 		class _Objty,
 		class... _Types>
 		static auto _Fn(int, _Ty& _Al, _Objty *_Ptr,
 			_Types&&... _Args)
-			-> decltype(
-				_Al.construct(_Ptr, _STD forward<_Types>(_Args)...))
+			-> void_t<decltype(
+				_Al.construct(_Ptr, _STD forward<_Types>(_Args)...))>
 		{	// call allocator supplied version
 		_Al.construct(_Ptr, _STD forward<_Types>(_Args)...);
 		}
@@ -430,9 +430,8 @@ struct _Alloc_construct
 	template<class _Ty,
 		class _Objty,
 		class... _Types>
-		static auto _Fn(_Wrap_int, _Ty&, _Objty *_Ptr,
+		static void _Fn(_Wrap_int, _Ty&, _Objty *_Ptr,
 			_Types&&... _Args)
-			-> void
 		{	// call default version
 		::new (static_cast<void *>(_Ptr))
 			_Objty(_STD forward<_Types>(_Args)...);
@@ -446,15 +445,14 @@ struct _Alloc_destroy
 	template<class _Ty,
 		class _Objty>
 		static auto _Fn(int, _Ty& _Al, _Objty *_Ptr)
-			-> decltype(_Al.destroy(_Ptr))
+			-> void_t<decltype(_Al.destroy(_Ptr))>
 		{	// call allocator supplied version
 		_Al.destroy(_Ptr);
 		}
 
 	template<class _Ty,
 		class _Objty>
-		static auto _Fn(_Wrap_int, _Ty&, _Objty *_Ptr)
-			-> void
+		static void _Fn(_Wrap_int, _Ty&, _Objty *_Ptr)
 		{	// call default version
 		_Ptr->~_Objty();
 		}
@@ -637,12 +635,12 @@ public:
 
 	void deallocate(pointer _Ptr, size_type _Count)
 		{	// deallocate object at _Ptr
-		_Deallocate(_Ptr, _Count);
+		_Deallocate(_Ptr, _Count, sizeof (_Ty));
 		}
 
 	_DECLSPEC_ALLOCATOR pointer allocate(size_type _Count)
 		{	// allocate array of _Count elements
-		return (_Allocate(_Count, (pointer)0));
+		return (static_cast<pointer>(_Allocate(_Count, sizeof (_Ty))));
 		}
 
 	_DECLSPEC_ALLOCATOR pointer allocate(size_type _Count, const void *)

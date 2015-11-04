@@ -511,8 +511,8 @@ We use the stdext (standard extension) namespace to contain extensions that are 
  #endif /* __cplusplus */
 
 		/* VC++ COMPILER PARAMETERS */
-#define _LONGLONG	__int64
-#define _ULONGLONG	unsigned __int64
+#define _LONGLONG	long long
+#define _ULONGLONG	unsigned long long
 #define _LLONG_MAX	0x7fffffffffffffff
 #define _ULLONG_MAX	0xffffffffffffffff
 
@@ -746,8 +746,6 @@ typedef unsigned long _Uint32t;
 
 #define _Mbstinit(x)	mbstate_t x = {}
 _C_STD_END
-
- #define _NO_RETURN(fun)	__declspec(noreturn) void fun
 
  #pragma pop_macro("new")
  #pragma pack(pop)

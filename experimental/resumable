@@ -3,8 +3,8 @@
 *
 *       Copyright (c) Microsoft Corporation. All rights reserved.
 *
-*Purpose: Library support of stackless resumable functions
-*         http://isocpp.org/files/papers/N4134.pdf
+*       Purpose: Library support of coroutines
+*       http://open-std.org/JTC1/SC22/WG21/docs/papers/2015/p0057r0.pdf
 *
 *       [Public]
 *
@@ -223,24 +223,6 @@ namespace experimental {
 		}
 	};
 
-	// defaults to std::allocator<char> if _Traits::allocator_type does not exist
-
-	template<typename _Traits>
-	struct _Get_coroutine_allocator {
-		template<class _Uty, typename... _Ts>
-		static auto _Fn(int, _Identity<decltype(_Uty::get_allocator(declval<_Ts>()...))>*, _Ts&&... _Args) {
-			return _Traits::get_allocator(_STD forward<_Ts>(_Args)...);
-		}
-		template<class _Uty, typename... _Ts>
-		static auto _Fn(_Wrap_int, void*, _Ts&&...) {
-			return allocator<char>{};
-		}
-		template <typename... _Ts>
-		static auto _Get(_Ts&&... _Args) {
-			return _Fn<_Traits>(0, nullptr, _STD forward<_Ts>(_Args)...);
-		}
-	};
-
 	// _Resumable_helper_traits class isolates front-end from public surface naming changes
 
 		template <typename _Ret,
@@ -250,20 +232,6 @@ namespace experimental {
 			using _Traits = coroutine_traits<_Ret, _Ts...>;
 			using _PromiseT = typename _Traits::promise_type;
 			using _Handle_type = coroutine_handle<_PromiseT>;
-
-			using _Alloc_type = decltype(_Get_coroutine_allocator<_Traits>::_Get(declval<_Ts>()...));
-			using _Alloc_traits = allocator_traits<_Alloc_type>;
-			using _Alloc_of_char_type = typename _Alloc_traits::template rebind_alloc<char>;
-			using _Alloc_char_traits = allocator_traits<_Alloc_of_char_type>;
-
-			static const size_t _ALIGN_REQ = sizeof(void*) * 2;
-
-			static const size_t _ALIGNED_ALLOCATOR_SIZE =
-				is_empty<_Alloc_type>::value
-				? 0
-				: ((sizeof(_Alloc_type) + _ALIGN_REQ - 1) & ~(_ALIGN_REQ - 1));
-
-			static const size_t _EXTRA_SIZE = _ALIGNED_ALLOCATOR_SIZE + _Handle_type::_ALIGNED_SIZE;
 
 			static _PromiseT * _Promise_from_frame(void* _Addr) noexcept
 			{
@@ -277,40 +245,6 @@ namespace experimental {
 
 			static void _Set_exception(void* _Addr) {
 				_Promise_from_frame(_Addr)->set_exception(_STD current_exception());
-			}
-
-			static decltype(auto) _Initial_suspend(void* _Addr)
-			{
-				return _Promise_from_frame(_Addr)->initial_suspend();
-			}
-
-			static decltype(auto) _Final_suspend(void* _Addr)
-			{
-				return _Promise_from_frame(_Addr)->final_suspend();
-			}
-
-			template <typename... _Us>
-			static void * _Alloc(size_t _Size, _Us&&... _Args)
-			{
-				_Alloc_type _Al = _Get_coroutine_allocator<_Traits>::_Get(_STD forward<_Us>(_Args)...);
-				_Alloc_of_char_type _RealAlloc(_Al);
-
-				_Size += _EXTRA_SIZE;
-
-				auto _Ptr = _RealAlloc.allocate(_Size);
-				::new (static_cast<void*>(_Ptr)) _Alloc_of_char_type(_STD move(_RealAlloc));
-
-				_Ptr += _EXTRA_SIZE;
-				return _Ptr;
-			}
-
-			static void _Free(size_t _Size, void* _FramePointer) {
-				auto _Ptr = reinterpret_cast<char*>(_FramePointer);
-				_Ptr -= _EXTRA_SIZE;
-				_Size += _EXTRA_SIZE;
-				auto _AlPtr = reinterpret_cast<_Alloc_of_char_type*>(_Ptr);
-				_Alloc_of_char_type _Allocator(_STD move(*_AlPtr));
-				_Allocator.deallocate(_Ptr, _Size);
 			}
 
 			static void _ConstructPromise(void* _Addr, void* _Resume_addr) {

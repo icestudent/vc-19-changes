@@ -1779,12 +1779,12 @@ protected:
 		return (_Ptr + _Count);
 		}
 
-	__declspec(noreturn) void _Xlen() const
+	[[noreturn]] void _Xlen() const
 		{	// report a length_error
 		_Xlength_error("vector<T> too long");
 		}
 
-	__declspec(noreturn) void _Xran() const
+	[[noreturn]] void _Xran() const
 		{	// report an out_of_range error
 		_Xout_of_range("invalid vector<T> subscript");
 		}
@@ -3030,12 +3030,12 @@ public:
 			this->_Myvec[_Words - 1] &= ((_Vbase)(1) << _Size) - 1;
 		}
 
-	__declspec(noreturn) void _Xlen() const
+	[[noreturn]] void _Xlen() const
 		{	// report a length_error
 		_Xlength_error("vector<bool> too long");
 		}
 
-	__declspec(noreturn) void _Xran() const
+	[[noreturn]] void _Xran() const
 		{	// report an out_of_range error
 		_Xout_of_range("invalid vector<bool> subscript");
 		}

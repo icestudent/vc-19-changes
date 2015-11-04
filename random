@@ -80,7 +80,7 @@ static _CONST_DATA long double _Two32 = 4294967296.0L;
 static _CONST_DATA long double _Two31 = 2147483648.0L;
 
 	// HELPER FUNCTIONS
-_CRTIMP2_PURE _NO_RETURN(__CLRCALL_PURE_OR_CDECL _Rng_abort(_In_z_ const char *_Msg));
+[[noreturn]] _CRTIMP2_PURE void __CLRCALL_PURE_OR_CDECL _Rng_abort(_In_z_ const char *_Msg);
 _CRTIMP2_PURE float __CLRCALL_PURE_OR_CDECL _XLgamma(float);
 _CRTIMP2_PURE double __CLRCALL_PURE_OR_CDECL _XLgamma(double);
 _CRTIMP2_PURE long double __CLRCALL_PURE_OR_CDECL _XLgamma(long double);

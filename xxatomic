@@ -210,12 +210,14 @@ template<class _Ty>
 
 	_Ty *operator=(_Ty *_Right) volatile _NOEXCEPT
 		{	// assign from _Right
-		return (static_cast<_Ty *>(_Atomic_address::operator=((void *)_Right)));
+		return (reinterpret_cast<_Ty *>(
+			_Atomic_address::operator=((void *)_Right)));
 		}
 
 	_Ty *operator=(_Ty *_Right) _NOEXCEPT
 		{	// assign from _Right
-		return (static_cast<_Ty *>(_Atomic_address::operator=((void *)_Right)));
+		return (reinterpret_cast<_Ty *>(
+			_Atomic_address::operator=((void *)_Right)));
 		}
 
 	void store(_Ty *_Value,
@@ -233,36 +235,36 @@ template<class _Ty>
 	_Ty *load(memory_order _Order = memory_order_seq_cst)
 		const volatile _NOEXCEPT
 		{	// return value held in *this
-		return (static_cast<_Ty *>(_Atomic_address::load(_Order)));
+		return (reinterpret_cast<_Ty *>(_Atomic_address::load(_Order)));
 		}
 
 	_Ty *load(memory_order _Order = memory_order_seq_cst)
 		const _NOEXCEPT
 		{	// return value held in *this
-		return (static_cast<_Ty *>(_Atomic_address::load(_Order)));
+		return (reinterpret_cast<_Ty *>(_Atomic_address::load(_Order)));
 		}
 
 	operator _Ty *() const volatile _NOEXCEPT
 		{	// return value held in *this
-		return (static_cast<_Ty *>(_Atomic_address::operator void *()));
+		return (reinterpret_cast<_Ty *>(_Atomic_address::operator void *()));
 		}
 
 	operator _Ty *() const _NOEXCEPT
 		{	// return value held in *this
-		return (static_cast<_Ty *>(_Atomic_address::operator void *()));
+		return (reinterpret_cast<_Ty *>(_Atomic_address::operator void *()));
 		}
 
 	_Ty *exchange(_Ty *_Value,
 		memory_order _Order = memory_order_seq_cst) volatile _NOEXCEPT
 		{	// exchange value stored in *this with _Value
-		return (static_cast<_Ty *>(_Atomic_address::exchange(
+		return (reinterpret_cast<_Ty *>(_Atomic_address::exchange(
 			(void *)_Value, _Order)));
 		}
 
 	_Ty *exchange(_Ty *_Value,
 		memory_order _Order = memory_order_seq_cst) _NOEXCEPT
 		{	// exchange value stored in *this with _Value
-		return (static_cast<_Ty *>(_Atomic_address::exchange(
+		return (reinterpret_cast<_Ty *>(_Atomic_address::exchange(
 			(void *)_Value, _Order)));
 		}
 
@@ -337,28 +339,28 @@ template<class _Ty>
 	_Ty *fetch_add(ptrdiff_t _Value,
 		memory_order _Order = memory_order_seq_cst) volatile _NOEXCEPT
 		{	// add _Value to value stored in *this
-		return (static_cast<_Ty *>(
+		return (reinterpret_cast<_Ty *>(
 			_Atomic_address::fetch_add(_Value * sizeof (_Obj), _Order)));
 		}
 
 	_Ty *fetch_add(ptrdiff_t _Value,
 		memory_order _Order = memory_order_seq_cst) _NOEXCEPT
 		{	// add _Value to value stored in *this
-		return (static_cast<_Ty *>(
+		return (reinterpret_cast<_Ty *>(
 			_Atomic_address::fetch_add(_Value * sizeof (_Obj), _Order)));
 		}
 
 	_Ty *fetch_sub(ptrdiff_t _Value,
 		memory_order _Order = memory_order_seq_cst) volatile _NOEXCEPT
 		{	// subtract _Value from value stored in *this
-		return (static_cast<_Ty *>(
+		return (reinterpret_cast<_Ty *>(
 			_Atomic_address::fetch_sub(_Value * sizeof (_Obj), _Order)));
 		}
 
 	_Ty *fetch_sub(ptrdiff_t _Value,
 		memory_order _Order = memory_order_seq_cst) _NOEXCEPT
 		{	// subtract _Value from value stored in *this
-		return (static_cast<_Ty *>(
+		return (reinterpret_cast<_Ty *>(
 			_Atomic_address::fetch_sub(_Value * sizeof (_Obj), _Order)));
 		}
 

@@ -59,10 +59,13 @@
 // stuff ported from Dev11 CRT
 // NOTE: this doesn't actually match std::declval. it behaves differently for void!
 // so don't blindly change it to std::declval.
-namespace stdx
+namespace Concurrency
 {
-    template<class _Ty>
-    _Ty&& declval();
+    namespace details
+    {
+        template<class _Ty>
+        _Ty&& declval();
+    }
 }
 
 /// <summary>
@@ -127,7 +130,7 @@ template <> class task<void>;
 /**/
 inline __declspec(noreturn) void __cdecl cancel_current_task()
 {
-    throw task_canceled();
+    _THROW_NCEE(task_canceled, _EMPTY_ARGUMENT);
 }
 
 namespace details
@@ -140,8 +143,7 @@ namespace details
         /// </summary>
         static void __declspec(noreturn) __cdecl _NoCallOnDefaultTask_ErrorImpl()
         {
-            const char* _Err_Msg = "This function cannot be called on a default constructed task";
-            throw invalid_operation(_Err_Msg);
+            _THROW_NCEE(invalid_operation, "This function cannot be called on a default constructed task");
         }
     };
 
@@ -273,7 +275,7 @@ namespace details
     template <typename _Type>
     struct _GetProgressType
     {
-        typedef decltype(_ProgressTypeSelector(stdx::declval<_Type>())) _Value;
+        typedef decltype(_ProgressTypeSelector(details::declval<_Type>())) _Value;
     };
 
     template <typename _Type>
@@ -297,7 +299,7 @@ namespace details
     struct _TaskTypeTraits
     {
         typedef typename _UnwrapTaskType<_Type>::_Type _TaskRetType;
-        typedef decltype(_AsyncOperationKindSelector(stdx::declval<_Type>())) _AsyncKind;
+        typedef decltype(_AsyncOperationKindSelector(details::declval<_Type>())) _AsyncKind;
         typedef typename _NormalizeVoidToUnitType<_TaskRetType>::_Type _NormalizedTaskRetType;
 
         static const bool _IsAsyncTask = _IsAsync;
@@ -326,7 +328,7 @@ namespace details
     struct _TaskTypeTraits
     {
         typedef typename _UnwrapTaskType<_Type>::_Type _TaskRetType;
-        typedef decltype(_AsyncOperationKindSelector(stdx::declval<_Type>())) _AsyncKind;
+        typedef decltype(_AsyncOperationKindSelector(details::declval<_Type>())) _AsyncKind;
         typedef typename _NormalizeVoidToUnitType<_TaskRetType>::_Type _NormalizedTaskRetType;
 
         static const bool _IsAsyncTask = false;
@@ -371,17 +373,17 @@ namespace details
     template<typename _Function, typename _ExpectedParameterType>
     struct _FunctionTypeTraits
     {
-        typedef decltype(_ReturnTypeHelper(stdx::declval<_ExpectedParameterType>(),stdx::declval<_Function>(), 0, 0)) _FuncRetType;
+        typedef decltype(_ReturnTypeHelper(details::declval<_ExpectedParameterType>(),details::declval<_Function>(), 0, 0)) _FuncRetType;
         static_assert(!std::is_same<_FuncRetType,_BadContinuationParamType>::value, "incorrect parameter type for the callable object in 'then'; consider _ExpectedParameterType or task<_ExpectedParameterType> (see below)");
 
-        typedef decltype(_IsTaskHelper(stdx::declval<_ExpectedParameterType>(),stdx::declval<_Function>(), 0, 0)) _Takes_task;
+        typedef decltype(_IsTaskHelper(details::declval<_ExpectedParameterType>(),details::declval<_Function>(), 0, 0)) _Takes_task;
     };
 
     template<typename _Function>
     struct _FunctionTypeTraits<_Function, void>
     {
-        typedef decltype(_VoidReturnTypeHelper(stdx::declval<_Function>(), 0, 0)) _FuncRetType;
-        typedef decltype(_VoidIsTaskHelper(stdx::declval<_Function>(), 0, 0)) _Takes_task;
+        typedef decltype(_VoidReturnTypeHelper(details::declval<_Function>(), 0, 0)) _FuncRetType;
+        typedef decltype(_VoidIsTaskHelper(details::declval<_Function>(), 0, 0)) _Takes_task;
     };
 
 #ifndef _PPLTASKS_NO_STDFUNC
@@ -1418,23 +1420,17 @@ namespace details
             }
 
             _M_pTask->_M_taskEventLogger._LogTaskExecutionStarted();
-            try
-            {
-                // All derived task handle must implement this contract function.
-                static_cast<const _DerivedTaskHandle *>(this)->_Perform();
-            }
-            catch(const task_canceled &)
-            {
-                _M_pTask->_Cancel(true);
-            }
-            catch(const _Interruption_exception &)
-            {
-                _M_pTask->_Cancel(true);
-            }
-            catch(...)
-            {
-                _M_pTask->_CancelWithException(std::current_exception());
-            }
+
+            _TRY_BEGIN
+            // All derived task handle must implement this contract function.
+            static_cast<const _DerivedTaskHandle *>(this)->_Perform();
+            _CATCH(const task_canceled &)
+            _M_pTask->_Cancel(true);
+            _CATCH(const _Interruption_exception &)
+            _M_pTask->_Cancel(true);
+            _CATCH_ALL
+            _M_pTask->_CancelWithException(std::current_exception());
+            _CATCH_END
             _M_pTask->_M_taskEventLogger._LogTaskExecutionCompleted();
         }
 
@@ -1499,7 +1495,7 @@ namespace details
                 // if task has not been completed.
                 if (!_IsCompleted() && !_IsCanceled())
                 {
-                    throw invalid_operation("Illegal to wait on a task in a Windows Runtime STA");
+                    _THROW_NCEE(invalid_operation, "Illegal to wait on a task in a Windows Runtime STA");
                 }
                 else
                 {
@@ -1527,41 +1523,34 @@ namespace details
                     // Wait on the task collection to complete. The task collection is guaranteed to still be
                     // valid since the task must be still within scope so that the _Task_impl_base destructor
                     // has not yet been called. This call to _Wait potentially inlines execution of work.
-                    try
-                    {
-                        // Invoking wait on a task collection resets the state of the task collection. This means that
-                        // if the task collection itself were canceled, or had encountered an exception, only the first
-                        // call to wait will receive this status. However, both cancellation and exceptions flowing through
-                        // tasks set state in the task impl itself.
+                    _TRY_BEGIN
+                    // Invoking wait on a task collection resets the state of the task collection. This means that
+                    // if the task collection itself were canceled, or had encountered an exception, only the first
+                    // call to wait will receive this status. However, both cancellation and exceptions flowing through
+                    // tasks set state in the task impl itself.
 
-                        // When it returns cancelled, either work chore or the cancel thread should already have set task's state
-                        // properly -- cancelled state or completed state (because there was no interruption point).
-                        // For tasks with unwrapped tasks, we should not change the state of current task, since the unwrapped task are still running.
-                        _M_TaskCollection._RunAndWait();
-                    }
-                    catch(details::_Interruption_exception&)
+                    // When it returns cancelled, either work chore or the cancel thread should already have set task's state
+                    // properly -- cancelled state or completed state (because there was no interruption point).
+                    // For tasks with unwrapped tasks, we should not change the state of current task, since the unwrapped task are still running.
+                    _M_TaskCollection._RunAndWait();
+                    _CATCH(details::_Interruption_exception&)
+                    // The _TaskCollection will never be an interruption point since it has a none token.
+                    _ASSERTE(false);
+                    _CATCH(task_canceled&)
+                    // task_canceled is a special exception thrown by cancel_current_task. The spec states that cancel_current_task
+                    // must be called from code that is executed within the task (throwing it from parallel work created by and waited
+                    // upon by the task is acceptable). We can safely assume that the task wrapper _PPLTaskHandle::operator() has seen
+                    // the exception and canceled the task. Swallow the exception here.
+                    _ASSERTE(_IsCanceled());
+                    _CATCH_ALL
+                    // It's possible the task body hasn't seen the exception; if so we need to cancel with exception here.
+                    if(!_HasUserException())
                     {
-                        // The _TaskCollection will never be an interruption point since it has a none token.
-                        _ASSERTE(false);
+                        _CancelWithException(std::current_exception());
                     }
-                    catch(task_canceled&)
-                    {
-                        // task_canceled is a special exception thrown by cancel_current_task. The spec states that cancel_current_task
-                        // must be called from code that is executed within the task (throwing it from parallel work created by and waited
-                        // upon by the task is acceptable). We can safely assume that the task wrapper _PPLTaskHandle::operator() has seen
-                        // the exception and canceled the task. Swallow the exception here.
-                        _ASSERTE(_IsCanceled());
-                    }
-                    catch(...)
-                    {
-                        // It's possible the task body hasn't seen the exception; if so we need to cancel with exception here.
-                        if(!_HasUserException())
-                        {
-                            _CancelWithException(std::current_exception());
-                        }
-                        // Rethrow will mark the exception as observed.
-                        _M_exceptionHolder->_RethrowUserException();
-                    }
+                    // Rethrow will mark the exception as observed.
+                    _M_exceptionHolder->_RethrowUserException();
+                    _CATCH_END
 
                     // If the lambda body for this task (executed or waited upon in _RunAndWait above) happened to return a task
                     // which is to be unwrapped and plumbed to the output of this task, we must not only wait on the lambda body, we must
@@ -1719,29 +1708,30 @@ namespace details
         /// </param>
         void _ScheduleTask(_UnrealizedChore_t * _PTaskHandle, _TaskInliningMode_t _InliningMode)
         {
-            try
+            _TRY_BEGIN
+            _M_TaskCollection._ScheduleTask(_PTaskHandle, _InliningMode);
+            _CATCH(const task_canceled &)
+            // task_canceled is a special exception thrown by cancel_current_task. The spec states that cancel_current_task
+            // must be called from code that is executed within the task (throwing it from parallel work created by and waited
+            // upon by the task is acceptable). We can safely assume that the task wrapper _PPLTaskHandle::operator() has seen
+            // the exception and canceled the task. Swallow the exception here.
+            _ASSERTE(_IsCanceled());
+            _CATCH(const _Interruption_exception &)
+            // The _TaskCollection will never be an interruption point since it has a none token.
+            _ASSERTE(false);
+            _CATCH_ALL
+            // The exception could have come from two places:
+            //   1. From the chore body, so it already should have been caught and canceled.
+            //      In this case swallow the exception.
+            //   2. From trying to actually schedule the task on the scheduler.
+            //      In this case cancel the task with the current exception, otherwise the
+            //      task will never be signaled leading to deadlock when waiting on the task.
+
+            if (!_HasUserException())
             {
-                _M_TaskCollection._ScheduleTask(_PTaskHandle, _InliningMode);
+                _CancelWithException(std::current_exception());
             }
-            catch(const task_canceled &)
-            {
-                // task_canceled is a special exception thrown by cancel_current_task. The spec states that cancel_current_task
-                // must be called from code that is executed within the task (throwing it from parallel work created by and waited
-                // upon by the task is acceptable). We can safely assume that the task wrapper _PPLTaskHandle::operator() has seen
-                // the exception and canceled the task. Swallow the exception here.
-                _ASSERTE(_IsCanceled());
-            }
-            catch(const _Interruption_exception &)
-            {
-                // The _TaskCollection will never be an interruption point since it has a none token.
-                _ASSERTE(false);
-            }
-            catch(...)
-            {
-                // This exception could only have come from within the chore body. It should've been caught
-                // and the task should be canceled with exception. Swallow the exception here.
-                _ASSERTE(_HasUserException());
-            }
+            _CATCH_END
         }
 
         /// <summary>
@@ -1817,18 +1807,13 @@ namespace details
                         // a C++ exception that gets tagged on the task. One unfortunate result of this is that various pieces of the task infrastructure will
                         // not be in a valid state after this in /EHsc (due to the lack of destructors running, etc...).
                         //
-                        try
-                        {
-                            // Dev10 compiler needs this!
-                            auto _PTaskHandle1 = _PTaskHandle;
-                            _PTaskHandle->_M_continuationContext._CallInContext( [_PTaskHandle1, _TaskImplPtr](){
-                                _TaskImplPtr->_ScheduleTask(_PTaskHandle1, details::_ForceInline);
-                            });
-                        }
-                        catch(...)
-                        {
-                            _TaskImplPtr->_CancelWithException(std::current_exception());
-                        }
+                        _TRY_BEGIN
+                        _PTaskHandle->_M_continuationContext._CallInContext( [_PTaskHandle, _TaskImplPtr](){
+                            _TaskImplPtr->_ScheduleTask(_PTaskHandle, details::_ForceInline);
+                        });
+                        _CATCH_ALL
+                        _TaskImplPtr->_CancelWithException(std::current_exception());
+                        _CATCH_END
                     }
                 }, _PTaskHandle->_M_inliningMode);
             }
@@ -1965,7 +1950,17 @@ namespace details
                 else
                 {
                     _ASSERTE(_Status == Windows::Foundation::AsyncStatus::Completed);
-                    _OuterTask->_FinalizeAndRunContinuations(_Operation->GetResults());
+
+                    try
+                    {
+                        _OuterTask->_FinalizeAndRunContinuations(_Operation->GetResults());
+                    }
+                    catch (...)
+                    {
+                        // unknown exceptions thrown from GetResult
+                        _OuterTask->_CancelWithException(std::current_exception());
+                    }
+
                 }
 
                 // Take away this shared pointers reference on the task instead of waiting for the delegate to be released. It could
@@ -2753,7 +2748,7 @@ namespace details
 
     // Allow parameters with set: this covers task_completion_event
     template<typename _ReturnType, typename _Ty>
-    auto _IsValidTaskCtor(_Ty _Param, int, int, ...) -> decltype(_Param.set(stdx::declval<_ReturnType>()), std::true_type());
+    auto _IsValidTaskCtor(_Ty _Param, int, int, ...) -> decltype(_Param.set(details::declval<_ReturnType>()), std::true_type());
 
     template<typename _ReturnType, typename _Ty>
     auto _IsValidTaskCtor(_Ty _Param, int, ...) -> decltype(_Param.set(), std::true_type());
@@ -3276,7 +3271,7 @@ public:
 
         if (_M_Impl->_Wait() == canceled)
         {
-            throw task_canceled();
+            _THROW_NCEE(task_canceled, _EMPTY_ARGUMENT);
         }
 
         return _M_Impl->_GetResult();
@@ -4448,7 +4443,7 @@ namespace details
     template<typename _Ty>
     struct _TaskTypeFromParam
     {
-        typedef decltype(_FilterValidTaskType(stdx::declval<_Ty>(), 0)) _Type;
+        typedef decltype(_FilterValidTaskType(details::declval<_Ty>(), 0)) _Type;
     };
 
     inline bool _IsHRCOMDisconnected(int __hr)
@@ -4897,12 +4892,12 @@ namespace details
     template<typename _Ty>
     struct _FunctorTypeTraits<_Ty *>
     {
-        typedef decltype(_ArgumentCountHelper(stdx::declval<_Ty*>())) _ArgumentCountType;
+        typedef decltype(_ArgumentCountHelper(details::declval<_Ty*>())) _ArgumentCountType;
         static const size_t _ArgumentCount = _FunctorArguments<_ArgumentCountType>::_Count;
 
-        typedef decltype(_ReturnTypePFNHelperThunk(stdx::declval<_Ty*>())) _ReturnType;
-        typedef decltype(_Arg1PFNHelperThunk(stdx::declval<_Ty*>())) _Argument1Type;
-        typedef decltype(_Arg2PFNHelperThunk(stdx::declval<_Ty*>())) _Argument2Type;
+        typedef decltype(_ReturnTypePFNHelperThunk(details::declval<_Ty*>())) _ReturnType;
+        typedef decltype(_Arg1PFNHelperThunk(details::declval<_Ty*>())) _Argument1Type;
+        typedef decltype(_Arg2PFNHelperThunk(details::declval<_Ty*>())) _Argument2Type;
     };
 
     template<typename _Ty>
@@ -5239,7 +5234,7 @@ namespace details
             -> decltype(_Generator::_GenerateTask_0(_Func, _Cts, _callstack))
         {
 #ifndef _PPLTASKS_NO_STDFUNC
-            typedef decltype(_Func(stdx::declval<cancellation_token>())) _ReturnType;
+            typedef decltype(_Func(details::declval<cancellation_token>())) _ReturnType;
             return _Generator::_GenerateTask_1C(std::function<_ReturnType __cdecl(cancellation_token)>(_Func), _Cts, _callstack);
 #else
             return _Generator::_GenerateTask_1C(_Func, _Cts, _callstack);
@@ -5255,7 +5250,7 @@ namespace details
             -> decltype(_Generator::_GenerateTask_0(_Func, _Cts, _callstack))
         {
 #ifndef _PPLTASKS_NO_STDFUNC
-            typedef decltype(_Func(stdx::declval<const progress_reporter<_ProgressType>&>())) _ReturnType;
+            typedef decltype(_Func(details::declval<const progress_reporter<_ProgressType>&>())) _ReturnType;
             return _Generator::_GenerateTask_1P(std::function<_ReturnType __cdecl(const progress_reporter<_ProgressType>&)>(_Func), progress_reporter<_ProgressType>::_CreateReporter(_Ptr), _Cts, _callstack);
 #else
             return _Generator::_GenerateTask_1P(_Func, progress_reporter<_ProgressType>::_CreateReporter(_Ptr), _Cts, _callstack);
@@ -5271,7 +5266,7 @@ namespace details
             -> decltype(_Generator::_GenerateTask_0(_Func, _Cts, _callstack))
         {
 #ifndef _PPLTASKS_NO_STDFUNC
-            typedef decltype(_Func(stdx::declval<const progress_reporter<_ProgressType>&>(), stdx::declval<cancellation_token>())) _ReturnType;
+            typedef decltype(_Func(details::declval<const progress_reporter<_ProgressType>&>(), details::declval<cancellation_token>())) _ReturnType;
             return _Generator::_GenerateTask_2PC(std::function<_ReturnType __cdecl(const progress_reporter<_ProgressType>&, cancellation_token)>(_Func), progress_reporter<_ProgressType>::_CreateReporter(_Ptr), _Cts, _callstack);
 #else
             return _Generator::_GenerateTask_2PC(_Func, progress_reporter<_ProgressType>::_CreateReporter(_Ptr), _Cts, _callstack);
@@ -5579,6 +5574,7 @@ namespace details
             if (_M_completeDelegate != nullptr && InterlockedIncrement(&_M_CallbackMade) == 1)
             {
                 _M_completeDelegateContext._CallInContext([=] {
+
                     try
                     {
                         _M_completeDelegate((_Attributes::_AsyncBaseType^)this, this->Status);
@@ -6591,8 +6587,8 @@ namespace details
     template<typename _CompletionType, typename _Function, typename _TaskType>
     void _WhenAnyContinuationWrapper(_RunAnyParam<_CompletionType> * _PParam, const _Function & _Func, task<_TaskType>& _Task)
     {
-        bool _IsTokenCancled = !_PParam->_M_fHasExplicitToken && _Task._GetImpl()->_M_pTokenState != _CancellationTokenState::_None() && _Task._GetImpl()->_M_pTokenState->_IsCanceled();
-        if (_Task._GetImpl()->_IsCompleted() && !_IsTokenCancled)
+        bool _IsTokenCanceled = !_PParam->_M_fHasExplicitToken && _Task._GetImpl()->_M_pTokenState != _CancellationTokenState::_None() && _Task._GetImpl()->_M_pTokenState->_IsCanceled();
+        if (_Task._GetImpl()->_IsCompleted() && !_IsTokenCanceled)
         {
             _Func();
             if (atomic_increment(_PParam->_M_completeCount) == _PParam->_M_numTasks)
@@ -6603,10 +6599,10 @@ namespace details
         }
         else
         {
-            _ASSERTE(_Task._GetImpl()->_IsCanceled() || _IsTokenCancled);
+            _ASSERTE(_Task._GetImpl()->_IsCanceled() || _IsTokenCanceled);
             if (_Task._GetImpl()->_HasUserException())
             {
-                if (!_IsTokenCancled && _PParam->_M_Completed._StoreException(_Task._GetImpl()->_GetExceptionHolder()))
+                if (!_IsTokenCanceled && _PParam->_M_Completed._StoreException(_Task._GetImpl()->_GetExceptionHolder()))
                 {
                     // This can only enter once.
                     _PParam->_M_exceptionRelatedToken = _Task._GetImpl()->_M_pTokenState;
@@ -6660,7 +6656,7 @@ namespace details
         {
             if( _Begin == _End )
             {
-                throw invalid_operation("when_any(begin, end) cannot be called on an empty container.");
+                _THROW_NCEE(invalid_operation, "when_any(begin, end) cannot be called on an empty container.");
             }
             _CancellationTokenState *_PTokenState = _TaskOptions.has_cancellation_token() ? _TaskOptions.get_cancellation_token()._GetImplValue() : nullptr;
             auto _PParam = new _RunAnyParam<std::pair<std::pair<_ElementType, size_t>, _CancellationTokenState *>>();
@@ -6719,7 +6715,7 @@ namespace details
         {
             if( _Begin == _End )
             {
-                throw invalid_operation("when_any(begin, end) cannot be called on an empty container.");
+                _THROW_NCEE(invalid_operation, "when_any(begin, end) cannot be called on an empty container.");
             }
 
             _CancellationTokenState *_PTokenState = _TaskOptions.has_cancellation_token() ? _TaskOptions.get_cancellation_token()._GetImplValue() : nullptr;

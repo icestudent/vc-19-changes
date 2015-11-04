@@ -392,7 +392,7 @@ public:
 
 	size_type max_bucket_count() const _NOEXCEPT
 		{	// return maximum number of buckets
-		return (_Vec.size() / 2);
+		return (_Vec.max_size() / 2);
 		}
 
 	size_type bucket(const key_type& _Keyval) const

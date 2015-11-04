@@ -3,8 +3,8 @@
 *
 *       Copyright (c) Microsoft Corporation. All rights reserved.
 *
-*Purpose: Library support of stackless resumable functions. generator class
-*         http://isocpp.org/files/papers/N4134.pdf
+*       Purpose: Library support of coroutines. generator class
+*       http://open-std.org/JTC1/SC22/WG21/docs/papers/2015/p0057r0.pdf
 *
 *       [Public]
 *
@@ -53,6 +53,21 @@ namespace experimental {
 			void yield_value(_Ty const & _Value)
 			{
 				_CurrentValue = _STD addressof(_Value);
+			}
+
+			using _Alloc_traits = allocator_traits<_Alloc>;
+			using _Alloc_of_char_type = typename _Alloc_traits::template rebind_alloc<char>;
+
+			void* operator new(size_t _Size)
+			{
+				_Alloc_of_char_type _Al;
+				return _Al.allocate(_Size);
+			}
+
+			void operator delete(void* _Ptr, size_t _Size) _NOEXCEPT
+			{
+				_Alloc_of_char_type _Al;
+				return _Al.deallocate(static_cast<char*>(_Ptr), _Size);
 			}
 		};
 
@@ -164,17 +179,6 @@ namespace experimental {
 		}
 	private:
 		coroutine_handle<promise_type> _Coro = nullptr;
-	};
-
-	template <typename _Ty, typename _Alloc, typename... _Ts>
-	struct coroutine_traits<generator<_Ty, _Alloc>, _Ts...>
-	{
-		template <typename... _Us>
-		static auto get_allocator(_Us&&...)
-		{
-			return _Alloc{};
-		}
-		using promise_type = typename generator<_Ty, _Alloc>::promise_type;
 	};
 
 } // namespace experimental

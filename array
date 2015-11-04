@@ -211,7 +211,7 @@ public:
 		return (_Elems);
 		}
 
-	__declspec(noreturn) void _Xran() const
+	[[noreturn]] void _Xran() const
 		{	// report an out_of_range error
 		_Xout_of_range("invalid array<T, N> subscript");
 		}
@@ -424,7 +424,7 @@ public:
 		return (_Elems);
 		}
 
-	__declspec(noreturn) void _Xran() const
+	[[noreturn]] void _Xran() const
 		{	// report an out_of_range error
 		_Xout_of_range("invalid array<T, 0> subscript");
 		}

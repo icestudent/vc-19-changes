@@ -14,7 +14,6 @@
  #pragma warning(push,3)
  #pragma push_macro("new")
  #undef new
- #pragma warning(disable: 4756)	// overflow in constant arithmetic
 
 _STD_BEGIN
 //	ASSUMES:
@@ -48,9 +47,6 @@ _STD_BEGIN
  #define _LDBL_MAX	LDBL_MAX
  #define _LDBL_EPSILON	LDBL_EPSILON
  #define _LDBL_TRUE_MIN	LDBL_TRUE_MIN
-
- #define _INF_LIMIT	INFINITY
- #define _NAN_LIMIT	NAN
 
 		// ENUM float_denorm_style
 typedef enum
@@ -1116,17 +1112,17 @@ public:
 
 	static _CONST_FUN _Ty infinity() _THROW0()
 		{	// return positive infinity
-		return (_INF_LIMIT);
+		return (__builtin_huge_valf());
 		}
 
-	static /* _CONST_FUN */ _Ty quiet_NaN() _THROW0()	// TRANSITION
+	static _CONST_FUN _Ty quiet_NaN() _THROW0()
 		{	// return non-signaling NaN
-		return (_CSTD _FNan._Float);
+		return (__builtin_nanf("0"));
 		}
 
-	static /* _CONST_FUN */ _Ty signaling_NaN() _THROW0()	// TRANSITION
+	static _CONST_FUN _Ty signaling_NaN() _THROW0()
 		{	// return signaling NaN
-		return (_CSTD _FSnan._Float);
+		return (__builtin_nansf("1"));
 		}
 
 	_STCONS(int, digits, FLT_MANT_DIG);
@@ -1179,17 +1175,17 @@ public:
 
 	static _CONST_FUN _Ty infinity() _THROW0()
 		{	// return positive infinity
-		return (_INF_LIMIT);
+		return (__builtin_huge_val());
 		}
 
-	static /* _CONST_FUN */ _Ty quiet_NaN() _THROW0()	// TRANSITION
+	static _CONST_FUN _Ty quiet_NaN() _THROW0()
 		{	// return non-signaling NaN
-		return (_CSTD _Nan._Double);
+		return (__builtin_nan("0"));
 		}
 
-	static /* _CONST_FUN */ _Ty signaling_NaN() _THROW0()	// TRANSITION
+	static _CONST_FUN _Ty signaling_NaN() _THROW0()
 		{	// return signaling NaN
-		return (_CSTD _Snan._Double);
+		return (__builtin_nans("1"));
 		}
 
 	_STCONS(int, digits, DBL_MANT_DIG);
@@ -1242,17 +1238,17 @@ public:
 
 	static _CONST_FUN _Ty infinity() _THROW0()
 		{	// return positive infinity
-		return (_INF_LIMIT);
+		return (__builtin_huge_val());
 		}
 
-	static /* _CONST_FUN */ _Ty quiet_NaN() _THROW0()	// TRANSITION
+	static _CONST_FUN _Ty quiet_NaN() _THROW0()
 		{	// return non-signaling NaN
-		return (_CSTD _LNan._Long_double);
+		return (__builtin_nan("0"));
 		}
 
-	static /* _CONST_FUN */ _Ty signaling_NaN() _THROW0()	// TRANSITION
+	static _CONST_FUN _Ty signaling_NaN() _THROW0()
 		{	// return signaling NaN
-		return (_CSTD _LSnan._Long_double);
+		return (__builtin_nans("1"));
 		}
 
 	_STCONS(int, digits, LDBL_MANT_DIG);
@@ -1368,12 +1364,14 @@ public:
 	_STCONS(int, digits10, (CHAR_BIT * sizeof (short) - 1 - 1)
 		* 301L / 1000);
 
+ #ifdef _NATIVE_WCHAR_T_DEFINED
   #undef _STCLASS
   #define _STCLASS	numeric_limits<unsigned short>
 	_STCONS(bool, is_signed, false);
 	_STCONS(int, digits, CHAR_BIT * sizeof (unsigned short));
 	_STCONS(int, digits10, (CHAR_BIT * sizeof (unsigned short) - 1)
 		* 301L / 1000);
+ #endif /* _NATIVE_WCHAR_T_DEFINED */
 
   #undef _STCLASS
   #define _STCLASS	numeric_limits<char16_t>
@@ -1484,9 +1482,6 @@ public:
  #undef _LDBL_MAX
  #undef _LDBL_EPSILON
  #undef _LDBL_TRUE_MIN
-
-#undef _INF_LIMIT
-#undef _NAN_LIMIT
 _STD_END
  #pragma pop_macro("new")
  #pragma warning(pop)

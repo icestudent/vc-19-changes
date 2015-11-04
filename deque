@@ -1811,12 +1811,12 @@ protected:
 			}
 		}
 
-	__declspec(noreturn) void _Xlen() const
+	[[noreturn]] void _Xlen() const
 		{	// report a length_error
 		_Xlength_error("deque<T> too long");
 		}
 
-	__declspec(noreturn) void _Xran() const
+	[[noreturn]] void _Xran() const
 		{	// report an out_of_range error
 		_Xout_of_range("invalid deque<T> subscript");
 		}

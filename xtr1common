@@ -107,18 +107,6 @@ template<class _Ty>
 	typedef _Ty type;
 	};
 
-template<class _Ty>
-	struct remove_const<const _Ty[]>
-	{	// remove top level const qualifier
-	typedef _Ty type[];
-	};
-
-template<class _Ty, size_t _Nx>
-	struct remove_const<const _Ty[_Nx]>
-	{	// remove top level const qualifier
-	typedef _Ty type[_Nx];
-	};
-
 	// TEMPLATE CLASS remove_volatile
 template<class _Ty>
 	struct remove_volatile
@@ -130,18 +118,6 @@ template<class _Ty>
 	struct remove_volatile<volatile _Ty>
 	{	// remove top level volatile qualifier
 	typedef _Ty type;
-	};
-
-template<class _Ty>
-	struct remove_volatile<volatile _Ty[]>
-	{	// remove top level volatile qualifier
-	typedef _Ty type[];
-	};
-
-template<class _Ty, size_t _Nx>
-	struct remove_volatile<volatile _Ty[_Nx]>
-	{	// remove top level volatile qualifier
-	typedef _Ty type[_Nx];
 	};
 
 	// TEMPLATE CLASS remove_cv

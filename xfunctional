@@ -240,7 +240,7 @@ template<class _Ty = void>
 template<>
 	struct divides<void>
 	{	// transparent functor for operator/
-	typedef _Is_trans is_transparent;
+	typedef int is_transparent;
 
 	template<class _Ty1,
 		class _Ty2>
@@ -255,7 +255,7 @@ template<>
 template<>
 	struct modulus<void>
 	{	// transparent functor for operator%
-	typedef _Is_trans is_transparent;
+	typedef int is_transparent;
 
 	template<class _Ty1,
 		class _Ty2>
@@ -270,7 +270,7 @@ template<>
 template<>
 	struct negate<void>
 	{	// transparent functor for unary operator-
-	typedef _Is_trans is_transparent;
+	typedef int is_transparent;
 
 	template<class _Ty>
 		_CONST_FUN auto operator()(_Ty&& _Left) const
@@ -287,7 +287,7 @@ template<>
 template<>
 	struct not_equal_to<void>
 	{	// transparent functor for operator!=
-	typedef _Is_trans is_transparent;
+	typedef int is_transparent;
 
 	template<class _Ty1,
 		class _Ty2>
@@ -302,7 +302,7 @@ template<>
 template<>
 	struct greater<void>
 	{	// transparent functor for operator>
-	typedef _Is_trans is_transparent;
+	typedef int is_transparent;
 
 	template<class _Ty1,
 		class _Ty2>
@@ -320,7 +320,7 @@ template<>
 template<>
 	struct greater_equal<void>
 	{	// transparent functor for operator>=
-	typedef _Is_trans is_transparent;
+	typedef int is_transparent;
 
 	template<class _Ty1,
 		class _Ty2>
@@ -335,7 +335,7 @@ template<>
 template<>
 	struct less_equal<void>
 	{	// transparent functor for operator<=
-	typedef _Is_trans is_transparent;
+	typedef int is_transparent;
 
 	template<class _Ty1,
 		class _Ty2>
@@ -350,7 +350,7 @@ template<>
 template<>
 	struct logical_and<void>
 	{	// transparent functor for operator&&
-	typedef _Is_trans is_transparent;
+	typedef int is_transparent;
 
 	template<class _Ty1,
 		class _Ty2>
@@ -365,7 +365,7 @@ template<>
 template<>
 	struct logical_or<void>
 	{	// transparent functor for operator||
-	typedef _Is_trans is_transparent;
+	typedef int is_transparent;
 
 	template<class _Ty1,
 		class _Ty2>
@@ -380,7 +380,7 @@ template<>
 template<>
 	struct logical_not<void>
 	{	// transparent functor for unary operator!
-	typedef _Is_trans is_transparent;
+	typedef int is_transparent;
 
 	template<class _Ty>
 		_CONST_FUN auto operator()(_Ty&& _Left) const
@@ -394,7 +394,7 @@ template<>
 template<>
 	struct bit_and<void>
 	{	// transparent functor for operator&
-	typedef _Is_trans is_transparent;
+	typedef int is_transparent;
 
 	template<class _Ty1,
 		class _Ty2>
@@ -409,7 +409,7 @@ template<>
 template<>
 	struct bit_or<void>
 	{	// transparent functor for operator|
-	typedef _Is_trans is_transparent;
+	typedef int is_transparent;
 
 	template<class _Ty1,
 		class _Ty2>
@@ -424,7 +424,7 @@ template<>
 template<>
 	struct bit_xor<void>
 	{	// transparent functor for operator^
-	typedef _Is_trans is_transparent;
+	typedef int is_transparent;
 
 	template<class _Ty1,
 		class _Ty2>
@@ -439,7 +439,7 @@ template<>
 template<>
 	struct bit_not<void>
 	{	// transparent functor for unary operator~
-	typedef _Is_trans is_transparent;
+	typedef int is_transparent;
 
 	template<class _Ty>
 		_CONST_FUN auto operator()(_Ty&& _Left) const

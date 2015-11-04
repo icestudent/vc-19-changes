@@ -411,13 +411,31 @@ typedef int (__stdcall *_Lambda_fp_t)(void *, void *, void **);
 _CRTIMP2_PURE int __CLRCALL_PURE_OR_CDECL _Execute_once(
 	once_flag& _Flag, _Lambda_fp_t _Lambda_fp, void *_Pv) _NOEXCEPT;
 
-_CRTIMP2_PURE _NO_RETURN(__CLRCALL_PURE_OR_CDECL _XGetLastError());
+[[noreturn]] _CRTIMP2_PURE void __CLRCALL_PURE_OR_CDECL _XGetLastError();
 
 template<class _Tuple,
 	size_t... _Ix> inline
 	void _Invoke_once(_Tuple& _Tup, integer_sequence<size_t, _Ix...>)
 	{	// unpack a tuple for call_once()
 	_STD invoke(_STD get<_Ix>(_STD move(_Tup))...);
+	}
+
+template<class _Tuple,
+	class _Seq,
+	size_t _Idx> inline
+	int __stdcall _Callback_once(void *, void *_Pv, void **)
+	{	// adapt call_once() to callback API
+	_Tuple *_Ptup = static_cast<_Tuple *>(_Pv);
+
+	_TRY_BEGIN
+		_Invoke_once(*_Ptup, _Seq());
+	_CATCH_ALL
+		auto& _Ref = _STD get<_Idx>(*_Ptup);
+		_Ref = _XSTD current_exception();
+		return (0);
+	_CATCH_END
+
+	return (1);
 	}
 
 template<class _Fn,
@@ -430,22 +448,9 @@ template<class _Fn,
 	_XSTD exception_ptr _Exc;
 	_Tuple _Tup(_STD forward<_Fn>(_Fx), _STD forward<_Args>(_Ax)..., _Exc);
 
-	auto _Lambda = [](void *, void *_Pv, void **)
-		{	// adapt call_once() to callback API
-		_Tuple *_Ptup = static_cast<_Tuple *>(_Pv);
+	_Lambda_fp_t _Fp = &_Callback_once<_Tuple, _Seq, 1 + sizeof...(_Args)>;
 
-		_TRY_BEGIN
-			_Invoke_once(*_Ptup, _Seq());
-		_CATCH_ALL
-			auto& _Ref = _STD get<1 + sizeof...(_Args)>(*_Ptup);
-			_Ref = _XSTD current_exception();
-			return (0);
-		_CATCH_END
-
-		return (1);
-		};
-
-	if (_Execute_once(_Flag, _Lambda, _STD addressof(_Tup)) != 0)
+	if (_Execute_once(_Flag, _Fp, _STD addressof(_Tup)) != 0)
 		return;
 
 	if (_Exc)

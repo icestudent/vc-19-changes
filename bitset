@@ -330,9 +330,9 @@ public:
 		return (_Val);
 		}
 
-	template<class _Elem,
-		class _Tr,
-		class _Alloc>
+	template<class _Elem = char,
+		class _Tr = char_traits<_Elem>,
+		class _Alloc = allocator<_Elem> >
 		basic_string<_Elem, _Tr, _Alloc>
 			to_string(_Elem _E0 = (_Elem)'0',
 				_Elem _E1 = (_Elem)'1') const
@@ -347,30 +347,6 @@ public:
 			else
 				_Str += _E0;
 		return (_Str);
-		}
-
-	template<class _Elem,
-		class _Tr>
-		basic_string<_Elem, _Tr, allocator<_Elem> >
-			to_string(_Elem _E0 = (_Elem)'0',
-				_Elem _E1 = (_Elem)'1') const
-		{	// convert bitset to string
-		return (to_string<_Elem, _Tr, allocator<_Elem> >(_E0, _E1));
-		}
-
-	template<class _Elem>
-		basic_string<_Elem, char_traits<_Elem>, allocator<_Elem> >
-			to_string(_Elem _E0 = (_Elem)'0',
-				_Elem _E1 = (_Elem)'1') const
-		{	// convert bitset to string
-		return (to_string<_Elem, char_traits<_Elem>,
-			allocator<_Elem> >(_E0, _E1));
-		}
-
-	string to_string(char _E0 = '0', char _E1 = '1') const
-		{	// convert bitset to string
-		return (to_string<char, char_traits<char>, allocator<char> >(
-			_E0, _E1));
 		}
 
 	size_t count() const _NOEXCEPT
@@ -483,7 +459,7 @@ private:
 
 	void _Trim()
 		{	// clear any trailing bits in last word
-		_Trim_if(integral_constant<bool, _Bits % _Bitsperword != 0>());
+		_Trim_if(bool_constant<_Bits == 0 || _Bits % _Bitsperword != 0>());
 		}
 
 	void _Trim_if(true_type)
@@ -495,17 +471,17 @@ private:
 		{	// no bits to trim, do nothing
 		}
 
-	__declspec(noreturn) void _Xinv() const
+	[[noreturn]] void _Xinv() const
 		{	// report invalid string element in bitset conversion
 		_Xinvalid_argument("invalid bitset<N> char");
 		}
 
-	__declspec(noreturn) void _Xoflo() const
+	[[noreturn]] void _Xoflo() const
 		{	// report converted value too big to represent
 		_Xoverflow_error("bitset<N> overflow");
 		}
 
-	__declspec(noreturn) void _Xran() const
+	[[noreturn]] void _Xran() const
 		{	// report bit index out of range
 		_Xout_of_range("invalid bitset<N> position");
 		}
